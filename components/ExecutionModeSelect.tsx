@@ -3,9 +3,24 @@
 import { useEffect, useRef, useState } from "react";
 
 const modes = [
-    { value: "=m", label: "=m x" },
-    { value: "=t", label: "=t" },
-    { value: "=r", label: "=r" },
+    {
+        value: "=m",
+        label: "=m x",
+        title: "Macro Execute",
+        description: "Execute as Macroscript"
+    },
+    {
+        value: "=t",
+        label: "=t",
+        title: "Render Tiles",
+        description: "Render as Tiles"
+    },
+    {
+        value: "=r",
+        label: "=r",
+        title: "Render Texts",
+        description: "Render as Texts"
+    },
 ] as const;
 
 export default function ExecutionModeSelect() {
@@ -38,7 +53,7 @@ export default function ExecutionModeSelect() {
                 className={`kill-styling execution-mode-select ${isOpen ? "clicked" : ""}`}
                 onClick={() => setIsOpen((prev) => !prev)}
             >
-                {selectedMode.label}
+                =<span className="emph">{(selectedMode.label).replace(/^=(.*)/, "$1")}</span>
             </button>
 
             <div
@@ -46,6 +61,9 @@ export default function ExecutionModeSelect() {
                     isOpen ? "visible" : ""
                 }`}
             >
+                <div className="execution-mode-select-options-title">
+                    Execution Mode
+                </div>
                 {modes.map((item) => (
                     <div
                         key={item.value}
@@ -55,7 +73,13 @@ export default function ExecutionModeSelect() {
                         }}
                         className="execution-mode-select-options-labels"
                     >
-                        {item.label}
+                        <div className="emsol-label">
+                            =<span className="emph">{(item.label).replace(/^=(.*)/, "$1")}</span>
+                        </div>
+                        <div>
+                            <div className="emsol-title">{item.title}</div>
+                            <div className="emsol-description">{item.description}</div>
+                        </div>
                     </div>
                 ))}
             </div>

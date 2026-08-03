@@ -38,7 +38,7 @@
 
     --selection: #dcdfdc20;
     --label: #999a9e;
-    --description: #3a3a3d;
+    --description: #9a9da1;
 
     --flag-name: #8bd1ec;
     --flag-value: #84cc7b;
@@ -337,12 +337,12 @@ hr {
     border: 1px solid var(--editor-outline);
     border-radius: 8px;
     box-shadow: 0 5px 15px #00000080;
-    transform: translateY(6px) scale(0.95);
+    transform: translateY(0) scale(0.95);
     transition: 0.2s ease;
 }
 .execution-mode-select-options {
     opacity: 0;
-    transform: translateY(6px) scale(0.95);
+    transform: translateY(0px) scale(0.95);
     pointer-events: none;
 }
 
@@ -353,13 +353,38 @@ hr {
 }
 
 .execution-mode-select-options-labels {
-    margin: 8px;
-    padding: 5px 10px;
-    border-radius: 8px;
+    display: flex;
+    padding: 10px 20px;
+}
+
+.execution-mode-select-options-title {
+    display: flex;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--editor-outline);
 }
 
 .execution-mode-select-options-labels:hover {
     background-color: var(--editor-current-line);
+    cursor: pointer;
+}
+
+.emsol-label {
+    width: 54px;
+    font-weight: bold;
+}
+
+.emph {
+    font-weight: bold;
+    color: var(--complete);
+}
+
+.emsol-title {
+    font-weight: bold;
+}
+
+.emsol-description {
+    color: var(--description);
+    font-size: 0.8em;
 }
 
 /*
@@ -477,7 +502,7 @@ span {
 
     width: stretch;
     padding: 10px;
-    height: calc(100vh - 400px - 13px - 61px);
+    height: calc(100vh - 400px - 13px - 30px);
     min-height: 200px;
 
     background-color: var(--editor-body);

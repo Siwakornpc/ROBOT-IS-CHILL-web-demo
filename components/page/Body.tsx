@@ -7,14 +7,14 @@ export default function Body() {
     return (
         <main style={{ width: "stretch" }}>
             <div className="main-body">
-                <p className="text-label">Execute</p>
                 <div className="run-controls">
+                    <p className="text-label">Execute</p>
                     <ExecutionModeSelect />
                     <button id="run" disabled>Run</button>
                 </div>
                 <EditorScreen />
                 <MacroInitializer />
-                
+
                 <hr />
 
                 <p className="text-label">Render</p>
