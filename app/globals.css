@@ -135,8 +135,10 @@ hr {
 */
 
 .sb-left {
+    --width: 50px;
     display: flex;
-    width: 50px;
+    width: var(--width);
+    min-width: var(--width);
     bottom: 0;
 
     background-color: var(--editor-body);

@@ -1,0 +1,42 @@
+renderHighlight
+macroHighlight
+
+both of these do different jobs
+
+1. renderHighlight does:
+
+get flags & variants from robot-is-chill:
+
+a = ((?:--|-)(?:[^- &:;>]+))(=)?([^ &:;>]+)?
+b = ([:;])([^ &:;>]+)
+
+a and b does check if name is valid with startsWith
+
+b will do extra work because it has to highlight only the name, not the value
+
+(
+    old uses :name(values?)?+ / :name(values1?)(values2?)...?+ while new uses :namevalue?+ and values are separated by /
+)
+
+then a and b will highlight the values only on values except "/"s.
+
+2. macroHighlight does:
+
+do bracketDepths + check escape state
+
+highlight [], [/anything] while when doing [/any[thing]], it will ignore [thing] when bracketdepth is > 1
+
+highlight brackets along with bracket data for highlight brackets (outline) when inside or on caret
+
+highlight macro names when [name] and values when [name/arg/arg] highlights arg as macro value
+
+also highlight value escape because i made it to make it easier to determine escaped values and unescaped values
+
+both do a very decent job but i want to find a way to do:
+
+:abc[:test]
+------------
+render (1) :abc[:test] as <span class="variant-name">:</span><span class="variant-name">a</span><span class="variant-value">bc[</span><span class="variant-name">:</span><span class="variant-value">test]</span>
+render (2) :abc[:test] as :abc<span class="macro-brackets open-bracket bracket-level-0" data-bid="0" data-pos="4">[</span><span class="macro-name" data-pos="5">:test</span><span class="macro-brackets close-bracket bracket-level-0" data-bid="0" data-pos="10">]</span>
+------------
+then merge it as <span class="variant-name">:</span><span class="variant-name">a</span><span class="variant-value">bc</span><span class="macro-brackets open-bracket bracket-level-0" data-bid="0" data-pos="4">[</span><span class="macro-name" data-pos="5">:test</span><span class="macro-brackets close-bracket bracket-level-0" data-bid="0" data-pos="10">]</span>

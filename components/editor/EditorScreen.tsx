@@ -25,6 +25,8 @@ type WindowWithEditor = Window & typeof globalThis & {
 
 let resolveEditorReady: ((api: EditorApi) => void) | null = null;
 
+const parser = new DOMParser();
+
 function ensureEditorReady() {
     if (typeof window === "undefined") {
         return null;
@@ -103,10 +105,20 @@ export function EditorScreen() {
 
         const highlighter = (text: string) => {
             const isRenderMode = win.executionMode === "=t" || win.executionMode === "=r";
-            return isRenderMode
-                ? win.renderHighlighter?.(text) ?? text
-                : win.macroHighlighter?.(text) ?? text;
+
+            if (!isRenderMode) {
+                return win.macroHighlighter?.(text);
+            }
+
+            if (isRenderMode) {
+                const render = win.renderHighlighter?.(text);
+                const macro = win.macroHighlighter?.(text);
+                
+                console.log(render, macro);
+                return win.macroHighlighter?.(text);
+            }
         };
+        
         const updateCaretMatch = (start: number, end: number) => {
             win.updateHighlightState?.(editorArea, start, end);
         };

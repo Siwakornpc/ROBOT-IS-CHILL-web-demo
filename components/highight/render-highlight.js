@@ -66,20 +66,32 @@ export function highlightText(
     variantNames = variants,
     flagNames = flags,
 ) {
-    const flagPattern = /^((?:--|-)(?:[^ >:;&]+))(=)([^ >:;&]+)/;
+    const flagPattern = /^((?:--|-)(?:[^- >:;&=]+))(=)?([^ >:;&]+)?/;
     const variantPattern = /^([:;])([^ >:;&]+)/;
 
     let result = "";
     let index = 0;
 
     while (index < text.length) {
+        const char = text[index];
         const remaining = text.slice(index);
+
         const flagMatch = remaining.match(flagPattern);
 
         if (flagMatch) {
-            const [, name, equals, value] = flagMatch;
+            // const [, name, equals, value] = flagMatch;
+            const name = flagMatch[1];
+            const equals = flagMatch[2] ?? 0;
+            const value = flagMatch[3] ?? 0;
 
-            result += createSpan("flag-name", name);
+            const isKnownFlag = flagNames.some(flag => flag.startsWith(name));
+
+            if (isKnownFlag) {
+                result += createSpan("flag-name", name);
+            } else {
+                result += escapeHtml(name);
+            }
+
             index += name.length;
 
             if (equals) {
@@ -88,14 +100,16 @@ export function highlightText(
             }
 
             if (value) {
-                result += value
-                    .split("/")
-                    .map((part) => createSpan("flag-value", part))
-                    .join("/");
-
+                if (isKnownFlag) {
+                    result += value
+                        .split("/")
+                        .map(part => createSpan("flag-value", part))
+                        .join("/");
+                } else {
+                    result += escapeHtml(value);
+                }
                 index += value.length;
             }
-
             continue;
         }
 
