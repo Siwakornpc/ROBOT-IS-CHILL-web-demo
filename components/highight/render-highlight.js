@@ -14,11 +14,18 @@ async function loadFlags() {
 
     const flagsSource = await fetch(sourceUrls.flags).then((response) => response.text());
 
-    flags = [
-        ...new Set(
-            [...flagsSource.matchAll(/--[\w-]+|-\w\b/g)].map((match) => match[0]),
-        ),
-    ];
+    const parsedFlags = [
+        ...flagsSource.matchAll(/--[\w-]+|-[\w-]+/g),
+        ...flagsSource.matchAll(/@flags\.register\(match=r"([^"]+)"/g),
+    ].flatMap((match) => {
+        if (match[0].startsWith("@flags.register")) {
+            return match[1].split("|").map((part) => part.trim()).filter(Boolean);
+        }
+
+        return [match[0]];
+    });
+
+    flags = [...new Set(parsedFlags)];
 }
 
 async function loadVariantData() {
@@ -79,7 +86,6 @@ export function highlightText(
         const flagMatch = remaining.match(flagPattern);
 
         if (flagMatch) {
-            // const [, name, equals, value] = flagMatch;
             const name = flagMatch[1];
             const equals = flagMatch[2] ?? 0;
             const value = flagMatch[3] ?? 0;
@@ -99,7 +105,7 @@ export function highlightText(
                 index += equals.length;
             }
 
-            if (value) {
+            if (equals && value) {
                 if (isKnownFlag) {
                     result += value
                         .split("/")

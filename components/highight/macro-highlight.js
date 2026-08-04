@@ -1,21 +1,26 @@
 if (typeof window !== "undefined") {
-    window.macroHighlighter = (text) => {
-        const escapeHtml = (str) => str
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;");
+    const escapeHtml = (str) => str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
 
-        const span = (className, textValue, kind = "", id = -1, depth = 0, pos = -1) => {
-            if (kind === "open" || kind === "close") {
-                return `<span class="${className} ${kind}-bracket bracket-level-${depth % 3}" data-bid="${id}" data-pos="${pos}">${escapeHtml(textValue)}</span>`;
-            }
+    const span = (className, textValue, kind = "", id = -1, depth = 0, pos = -1) => {
+        if (kind === "open" || kind === "close") {
+            return `<span class="${className} ${kind}-bracket bracket-level-${depth % 3}" data-bid="${id}" data-pos="${pos}">${escapeHtml(textValue)}</span>`;
+        }
 
-            const position = pos >= 0 ? ` data-pos="${pos}"` : "";
-            return `<span class="${className}"${position}>${escapeHtml(textValue)}</span>`;
-        };
+        const position = pos >= 0 ? ` data-pos="${pos}"` : "";
+        return `<span class="${className}"${position}>${escapeHtml(textValue)}</span>`;
+    };
 
+    // Shared escape-aware bracket pairing. Used both to know which "]" closes
+    // which "[" (validPairs) and to find the top-level (depth 0) [...] ranges,
+    // which is what combined-highlight.js needs to know where macro syntax
+    // "takes over" from render syntax.
+    const findBracketPairs = (text) => {
         const validPairs = new Map();
         const pairStack = [];
+        const topLevel = [];
 
         for (let i = 0; i < text.length; i++) {
             if (text[i] === "\\") {
@@ -25,9 +30,23 @@ if (typeof window !== "undefined") {
                 pairStack.push(i);
             }
             else if (text[i] === "]" && pairStack.length) {
-                validPairs.set(pairStack.pop(), i);
+                const open = pairStack.pop();
+                validPairs.set(open, i);
+                if (pairStack.length === 0) {
+                    topLevel.push([open, i]);
+                }
             }
         }
+
+        return { validPairs, topLevel };
+    };
+
+    // Builds the raw token list (same tokens macroHighlighter used to build
+    // inline). Kept separate so both macroHighlighter (joined string) and
+    // macroHighlightSegments (positioned pieces, for combined-highlight.js)
+    // can share one tokenizing pass.
+    const buildMacroTokens = (text) => {
+        const { validPairs } = findBracketPairs(text);
 
         const tokens = [];
         const appendText = (textValue, className = "", pos = -1) => {
@@ -67,6 +86,8 @@ if (typeof window !== "undefined") {
                 stateStack.push("name");
                 tokens.push({
                     type: "bracket",
+                    pos: i,
+                    length: 1,
                     html: span(empty ? "macro-empty" : "macro-brackets", "[", "open", id, bracketStack.length - 1, i),
                 });
             }
@@ -75,6 +96,8 @@ if (typeof window !== "undefined") {
                 stateStack.pop();
                 tokens.push({
                     type: "bracket",
+                    pos: i,
+                    length: 1,
                     html: span(item.empty ? "macro-empty" : "macro-brackets", "]", "close", item.id, bracketStack.length, i),
                 });
             }
@@ -95,12 +118,30 @@ if (typeof window !== "undefined") {
             }
         }
 
-        return tokens.map((token) => {
-            if (token.type === "bracket") return token.html;
-            if (!token.className) return escapeHtml(token.text);
-            return span(token.className, token.text, "", -1, 0, token.pos);
-        }).join("");
+        return tokens;
     };
+
+    const tokenHtml = (token) => {
+        if (token.type === "bracket") return token.html;
+        if (!token.className) return escapeHtml(token.text);
+        return span(token.className, token.text, "", -1, 0, token.pos);
+    };
+
+    window.macroHighlighter = (text) => buildMacroTokens(text).map(tokenHtml).join("");
+
+    // Same output as macroHighlighter, but as {start, end, html} pieces
+    // instead of one joined string, so combined-highlight.js can pick out
+    // just the pieces that fall inside a given [...] range and drop the rest.
+    window.macroHighlightSegments = (text) =>
+        buildMacroTokens(text).map((token) => ({
+            start: token.pos,
+            end: token.pos + (token.type === "bracket" ? token.length : token.text.length),
+            html: tokenHtml(token),
+        }));
+
+    // Top-level (depth 0) [start, end] bracket ranges (inclusive), e.g. for
+    // "[/any[thing]]" this returns [[0, 12]] — the outer pair only.
+    window.findTopLevelBrackets = (text) => findBracketPairs(text).topLevel;
 
     window.updateHighlightState = (editorArea, start, end) => {
         editorArea

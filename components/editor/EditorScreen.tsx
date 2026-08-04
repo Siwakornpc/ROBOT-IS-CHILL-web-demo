@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import "@/components/highight/macro-highlight.js";
 import "@/components/highight/render-highlight.js";
+import "@/components/highight/combined-highlight.js";
 
 type HistoryEntry = {
     value: string;
@@ -20,12 +21,11 @@ type WindowWithEditor = Window & typeof globalThis & {
     executionMode?: string;
     macroHighlighter?: (value: string) => string;
     renderHighlighter?: (value: string) => string;
+    combinedHighlighter?: (value: string) => string;
     updateHighlightState?: (editorArea: HTMLElement, start: number, end: number) => void;
 };
 
 let resolveEditorReady: ((api: EditorApi) => void) | null = null;
-
-const parser = new DOMParser();
 
 function ensureEditorReady() {
     if (typeof window === "undefined") {
@@ -110,13 +110,7 @@ export function EditorScreen() {
                 return win.macroHighlighter?.(text);
             }
 
-            if (isRenderMode) {
-                const render = win.renderHighlighter?.(text);
-                const macro = win.macroHighlighter?.(text);
-                
-                console.log(render, macro);
-                return win.macroHighlighter?.(text);
-            }
+            return win.combinedHighlighter?.(text);
         };
         
         const updateCaretMatch = (start: number, end: number) => {
