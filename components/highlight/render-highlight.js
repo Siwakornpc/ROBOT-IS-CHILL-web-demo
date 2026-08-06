@@ -73,8 +73,12 @@ export function highlightText(
     variantNames = variants,
     flagNames = flags,
 ) {
-    const flagPattern = /^((?:--|-)(?:[^- >:;&=]+))(=)?([^ >:;&]+)?/;
-    const variantPattern = /^([:;])([^ >:;&]+)/;
+    // "\n" is excluded from every char class below so a flag/variant name or value
+    // can never match across a line break. That keeps every generated <span> free of
+    // embedded newlines, which lets callers safely split the rendered HTML on "\n"
+    // to get one chunk per source line without cutting a tag in half.
+    const flagPattern = /^((?:--|-)(?:[^- >:;&=\n]+))(=)?([^ >:;&\n]+)?/;
+    const variantPattern = /^([:;])([^ >:;&\n]+)/;
 
     let result = "";
     let index = 0;

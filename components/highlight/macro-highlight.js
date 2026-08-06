@@ -74,7 +74,17 @@ if (typeof window !== "undefined") {
             const ch = text[i];
             const next = text[i + 1];
 
-            if (ch === "\\" && next && escapable.has(next)) {
+            // "\n" is always emitted as its own plain/uncoloured token, regardless of
+            // bracket depth or name/value state. This does two things: it keeps a
+            // multi-line macro call (name or value text that continues across a line
+            // break) tokenizing correctly, since state carries through untouched, and
+            // it guarantees no <span> ever contains a literal newline - callers can
+            // safely split the rendered HTML on "\n" to get one chunk per source line
+            // without ever splitting a tag in half.
+            if (ch === "\n") {
+                appendText(ch, "", i);
+            }
+            else if (ch === "\\" && next && escapable.has(next)) {
                 const state = stateStack.at(-1);
                 appendText(ch + next, state === "value" ? "macro-value-escape" : "escape", i);
                 i++;
