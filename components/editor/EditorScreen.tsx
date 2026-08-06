@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import "@/components/highight/macro-highlight.js";
 import "@/components/highight/render-highlight.js";
+import "@/components/highight/combined-highlight.js";
 import { useEditorEngine } from "./useEditorEngine";
 import "./editorReady";
 
