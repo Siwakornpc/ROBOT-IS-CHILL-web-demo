@@ -145,6 +145,17 @@ hr {
     border-right: 1px solid var(--editor-outline);
 }
 
+.sb-right {
+    --width: 50px;
+    display: flex;
+    width: var(--width);
+    min-width: var(--width);
+    bottom: 0;
+
+    background-color: var(--editor-body);
+    border-left: 1px solid var(--editor-outline);
+}
+
 /*
     editor screen
 */
@@ -248,7 +259,8 @@ hr {
     line-height: var(--editor-line-height);
     caret-color: var(--normal);
     word-wrap: break-word;
-    white-space: pre-wrap;
+    white-space: break-spaces;
+    overflow-wrap: anywhere;
 }
 
 .editor-line.current {
@@ -269,7 +281,8 @@ hr {
     background-color: var(--editor-body);
     overflow: auto;
     word-wrap: break-word;
-    white-space: pre-wrap;
+    white-space: break-spaces;
+    overflow-wrap: anywhere;
 }
 
 #output-screen.error {

@@ -14,7 +14,6 @@ export async function initMacro() {
     const editor = await window.editorReady;
     const output = document.getElementById("output-screen");
     const button = document.getElementById("run");
-    const shareButton = document.getElementById("share"); // optional
 
     let running = false;
     let tiles = {};

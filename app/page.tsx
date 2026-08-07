@@ -1,11 +1,12 @@
 import Body from "@/components/page/Body";
-import { SBLeft } from "@/components/page/SBLeft";
+import { LeftBar, RightBar } from "@/components/page/SideBars";
 
 export default function Home() {
     return (
         <main className="align-layout">
-            <SBLeft />
+            <LeftBar />
             <Body />
+            <RightBar />
         </main>
     );
 }
