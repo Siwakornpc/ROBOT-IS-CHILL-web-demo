@@ -15,16 +15,24 @@ export default function Body() {
             doCustomCaret();
         };
 
+        const handleScroll = (e: Event) => {
+            doCustomCaret(false);
+        };
+
         document.addEventListener("focusin", handleInteraction);
         document.addEventListener("click", handleInteraction);
         document.addEventListener("keyup", handleInteraction);
         document.addEventListener("selectionchange", handleInteraction);
+
+        document.addEventListener("scroll", handleScroll, true);
 
         return () => {
             document.removeEventListener("focusin", handleInteraction);
             document.removeEventListener("click", handleInteraction);
             document.removeEventListener("keyup", handleInteraction);
             document.removeEventListener("selectionchange", handleInteraction);
+
+            document.removeEventListener("scroll", handleScroll, true);
         };
     }, []);
     return (

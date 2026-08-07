@@ -44,8 +44,15 @@ export function createBeforeInputHandler(deps: BeforeInputDeps) {
                         newStart = start + 1;
                         newEnd = end + 1;
                     } else if (start === end) {
-                        newValue = value.slice(0, start) + "[]" + value.slice(end);
-                        newStart = newEnd = start + 1;
+                        const nextChar = value[start];
+
+                        if (/[^\]]/.test(nextChar) && nextChar !== undefined) {
+                            newValue = value.slice(0, start) + "[" + value.slice(end);
+                            newStart = newEnd = start + 1;
+                        } else {
+                            newValue = value.slice(0, start) + "[]" + value.slice(end);
+                            newStart = newEnd = start + 1;
+                        }
                     }
                 } else if (text === "]") {
                     const shouldSkipClosingBracket =
