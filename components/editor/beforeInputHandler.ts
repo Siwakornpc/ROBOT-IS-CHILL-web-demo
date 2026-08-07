@@ -11,6 +11,14 @@ type BeforeInputDeps = {
     redo: () => void;
 };
 
+let isLeftBracketPressed = false;
+let leftBracketPressedCount = 0;
+
+export function clearLeftBracketStatesFromKeyDirections() {
+    isLeftBracketPressed = false;
+    leftBracketPressedCount = 0;
+}
+
 export function createBeforeInputHandler(deps: BeforeInputDeps) {
     const { editorArea, state, saveState, render, undo, redo } = deps;
 
@@ -28,20 +36,40 @@ export function createBeforeInputHandler(deps: BeforeInputDeps) {
             case "insertCompositionText": {
                 const text = e.data ?? "";
 
-                if (text === "[" && start !== end) {
-                    newValue = value.slice(0, start) + "[" + value.slice(start, end) + "]" + value.slice(end);
-                    newStart = start + 1;
-                    newEnd = end + 1;
-                } else if (text === "[" && start === end) {
-                    newValue = value.slice(0, start) + "[]" + value.slice(end);
-                    newStart = newEnd = start + 1;
-                } else if (text === "]" && start === end && value[start] === "]") {
-                    newValue = value;
-                    newStart = newEnd = start + 1;
+                if (text === "[") {
+                    isLeftBracketPressed = true;
+                    leftBracketPressedCount++;
+                    if (start !== end) {
+                        newValue = value.slice(0, start) + "[" + value.slice(start, end) + "]" + value.slice(end);
+                        newStart = start + 1;
+                        newEnd = end + 1;
+                    } else if (start === end) {
+                        newValue = value.slice(0, start) + "[]" + value.slice(end);
+                        newStart = newEnd = start + 1;
+                    }
+                } else if (text === "]") {
+                    const shouldSkipClosingBracket =
+                        start === end &&
+                        value[start] === "]" &&
+                        leftBracketPressedCount > 0;
+
+                    if (shouldSkipClosingBracket) {
+                        newValue = value;
+                        newStart = newEnd = start + 1;
+                    } else {
+                        newValue = value.slice(0, start) + text + value.slice(end);
+                        newStart = newEnd = start + text.length;
+                    }
+
+                    leftBracketPressedCount = Math.max(0, leftBracketPressedCount - 1);
+                    isLeftBracketPressed = leftBracketPressedCount > 0;
                 } else {
                     newValue = value.slice(0, start) + text + value.slice(end);
                     newStart = newEnd = start + text.length;
+                    leftBracketPressedCount = 0;
+                    isLeftBracketPressed = false;
                 }
+                console.log(isLeftBracketPressed, leftBracketPressedCount);
                 break;
             }
 

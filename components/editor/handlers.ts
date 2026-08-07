@@ -5,6 +5,7 @@ import { WindowWithEditor } from "./types";
 import { offsetToLineColumn } from "./lineModel";
 import { updateCurrentLineClass } from "./domUpdaters";
 import { updateCaretMatch } from "./highlighting";
+import { clearLeftBracketStatesFromKeyDirections } from "./beforeInputHandler";
 
 export function createEditorClickHandler(editorArea: HTMLElement) {
     return function handleClick(e: MouseEvent) {
@@ -34,6 +35,15 @@ export function createKeydownHandler(deps: KeydownDeps) {
     const { editorArea, state, saveState, render, undo, redo } = deps;
 
     return function handleKeydown(e: KeyboardEvent) {
+        if (
+            e.key === "ArrowLeft" ||
+            e.key === "ArrowRight" ||
+            e.key === "ArrowUp" ||
+            e.key === "ArrowDown"
+        ) {
+            clearLeftBracketStatesFromKeyDirections();
+        }
+
         if (e.key === "Tab") {
             e.preventDefault();
 

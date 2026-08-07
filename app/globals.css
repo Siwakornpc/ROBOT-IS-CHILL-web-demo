@@ -40,6 +40,8 @@
     --label: #999a9e;
     --description: #9a9da1;
 
+    --bracket-outline: #dcdfdc40;
+
     --flag-name: #8bd1ec;
     --flag-value: #84cc7b;
 
@@ -257,7 +259,7 @@ hr {
     font-family: var(--font-family-code);
     font-size: var(--font-size-code);
     line-height: var(--editor-line-height);
-    caret-color: var(--normal);
+    caret-color: transparent;
     word-wrap: break-word;
     white-space: break-spaces;
     overflow-wrap: anywhere;
@@ -265,6 +267,34 @@ hr {
 
 .editor-line.current {
     background-color: var(--editor-current-line);
+}
+
+.caret {
+    display: block;
+    position: absolute;
+    width: 1px;
+    height: 1.2em;
+    background-color: var(--normal);
+}
+
+.caret-blink {
+    animation: caret-blink 1.2s steps(1) infinite;
+}
+
+.caret.hidden {
+    display: none;
+}
+
+@keyframes caret-blink {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 
 /*
@@ -445,7 +475,7 @@ span {
 }
 
 .macro-bracket-match {
-    outline: 1px solid var(--escape);
+    outline: 1px solid var(--bracket-outline);
 }
 
 /* bracket layers (only brackets) */

@@ -1,0 +1,38 @@
+                if (text === "[" && start !== end) {
+                    newValue = value.slice(0, start) + "[" + value.slice(start, end) + "]" + value.slice(end);
+                    newStart = start + 1;
+                    newEnd = end + 1;
+                } else if (text === "[" && start === end) {
+                    newValue = value.slice(0, start) + "[]" + value.slice(end);
+                    newStart = newEnd = start + 1;
+                } else if (text === "]" && start === end && value[start] === "]") {
+                    newValue = value;
+                    newStart = newEnd = start + 1;
+                } else {
+                    newValue = value.slice(0, start) + text + value.slice(end);
+                    newStart = newEnd = start + text.length;
+                }
+
+
+                if (text === "[") {
+                    isLeftBracketPressed = true;
+                    leftBracketPressedCount++;
+                    if (start !== end) {
+                        newValue = value.slice(0, start) + "[" + value.slice(start, end) + "]" + value.slice(end);
+                        newStart = start + 1;
+                        newEnd = end + 1;
+                    } else if (start === end) {
+                        newValue = value.slice(0, start) + "[]" + value.slice(end);
+                        newStart = newEnd = start + 1;
+                    }
+                } else if (text === "]") {
+                    if (isLeftBracketPressed && start === end && value[start] === "]") {
+                        newValue = value;
+                        newStart = newEnd = start + 1;
+                    }
+                    leftBracketPressedCount--;
+                    isLeftBracketPressed = leftBracketPressedCount < 1 ? false : true;
+                } else {
+                    newValue = value.slice(0, start) + text + value.slice(end);
+                    newStart = newEnd = start + text.length;
+                }
