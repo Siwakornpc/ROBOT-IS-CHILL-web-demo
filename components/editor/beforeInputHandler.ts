@@ -183,5 +183,6 @@ export function createBeforeInputHandler(deps: BeforeInputDeps) {
         state.value = newValue;
         saveState(newStart, newEnd);
         render(newStart, newEnd);
+        editorArea.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: e.inputType, data: e.data }));
     };
 }

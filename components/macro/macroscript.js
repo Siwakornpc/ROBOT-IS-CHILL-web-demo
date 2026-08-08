@@ -1,3 +1,6 @@
+// Delay (ms) between clicking Run and actually invoking the macro engine.
+const EXECUTION_DELAY_MS = 800;
+
 export async function initMacro() {
     const { 
         default: init, 
@@ -12,10 +15,15 @@ export async function initMacro() {
     }
 
     const editor = await window.editorReady;
-    const output = document.getElementById("output-screen");
+    const editorArea = document.getElementById("editor-area");
+    const output = document.getElementById("render-output");
     const button = document.getElementById("run");
+    const statusTime = document.getElementById("status-time");
+    const statusSteps = document.getElementById("status-steps");
 
     let running = false;
+    let delaying = false;
+    let cancelledDuringDelay = false;
     let tiles = {};
 
     output.textContent = "Getting database macros...";
@@ -86,48 +94,76 @@ ${Object.keys(stdMacros).length} macros.
 [Custom macros]:
 ${Object.keys(data).length} macros.
     `;
-
     /*
-        Big Giant Run button
+        Auto execution (good bye big and intimidating run button, you will be MISSED...)
     */
 
-    button.addEventListener("click", async () => {
+    let delayTimer = null; 
+
+    editorArea.addEventListener("input", async () => {
+        if (delayTimer) {
+            clearTimeout(delayTimer);
+            delayTimer = null;
+        }
+
         if (running) {
             cancel_running_macro();
-            return;
-        }
-
-        running = true;
-
-        button.classList.add("stop");
-        button.textContent = "Stop";
-
-        output.textContent = "Running...";
-        output.classList.remove("complete");
-        output.classList.remove("error");
-
-        try {
-            const start = performance.now();
-            const mode = window.executionMode ?? "=m";
-            const result = await evaluate(`${editor.value}`);
-
-            output.classList.remove("error");
-
-            if (result.includes("[MACRO ERROR]")) {
-                output.classList.add("error");
-            }
-
-            const executionTime = (performance.now() - start).toFixed(3);
-            output.textContent = `Took ${executionTime}ms:\n` + result;
-        }
-        catch (err) {
-            output.classList.add("error");
-            output.textContent = `[JAVASCRIPT ERROR]\n${err}`;
-        }
-        finally {
             running = false;
             button.classList.remove("stop");
             button.textContent = "Run";
         }
+
+        const mode = window.executionMode ?? "=m";
+        const isMacroExecution = mode === "=m";
+
+        button.classList.add("stop");
+        button.textContent = "Stop";
+
+        if (isMacroExecution) {
+            output.textContent = "Waiting for pause...";
+            output.classList.remove("complete");
+            output.classList.remove("error");
+        }
+
+        delayTimer = setTimeout(async () => {
+            running = true; 
+
+            if (isMacroExecution) {
+                output.textContent = "Evaluating...";
+            }
+
+            try {
+                const start = performance.now();
+                const result = await evaluate(`${editor.value}`);
+                const executionTime = (performance.now() - start).toFixed(3);
+
+                if (statusTime) {
+                    statusTime.textContent = `${executionTime}ms`;
+                }
+
+                if (isMacroExecution) {
+                    output.classList.remove("error");
+
+                    if (result.includes("[MACRO ERROR]")) {
+                        output.classList.add("error");
+                    }
+
+                    output.textContent = result;
+                }
+            }
+            catch (err) {
+                if (isMacroExecution) {
+                    output.classList.add("error");
+                    output.textContent = `[JAVASCRIPT ERROR]\n${err}`;
+                }
+            }
+            finally {
+                running = false;
+                button.classList.remove("stop");
+                button.textContent = "Run";
+                delayTimer = null; 
+            }
+        }, EXECUTION_DELAY_MS);
     });
+
 }

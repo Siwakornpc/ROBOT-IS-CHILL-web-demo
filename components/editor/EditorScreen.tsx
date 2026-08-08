@@ -43,9 +43,6 @@ export function EditorScreen() {
                     </div>
                 </div>
             </div>
-            <div className="output-panel">
-                <div id="output-screen"></div>
-            </div>
         </div>
     );
 }

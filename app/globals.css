@@ -173,8 +173,7 @@ hr {
     IDE panel
 */
 
-.editor-code,
-.output-panel {
+.editor-code {
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
@@ -182,14 +181,7 @@ hr {
     border-radius: 8px;
     overflow: hidden;
     height: 17.5em;
-}
-
-.editor-code {
     width: 100%;
-}
-
-.output-panel {
-    width: 50%;
 }
 
 /*
@@ -269,31 +261,7 @@ hr {
     background-color: var(--editor-current-line);
 }
 
-/*
-    output screen
-*/
 
-#output-screen {
-    box-sizing: border-box;
-    flex: 1 1 auto;
-    min-height: 0;
-    font-family: var(--font-family-code);
-    font-size: var(--font-size-code);
-    padding: 10px;
-    background-color: var(--editor-body);
-    overflow: auto;
-    word-wrap: break-word;
-    white-space: break-spaces;
-    overflow-wrap: anywhere;
-}
-
-#output-screen.error {
-    color: var(--error);
-}
-
-#output-screen.complete {
-    color: var(--complete);
-}
 
 /*
     run button
@@ -324,9 +292,9 @@ hr {
 }
 
 .run-controls {
+    position: relative;
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 10px;
 }
 
@@ -335,7 +303,7 @@ hr {
     box-sizing: border-box;
     background: var(--editor-body);
     border: 1px solid var(--editor-outline);
-    width: 100px;
+    width: 64px;
     height: 32px;
     padding-left: 10px;
     border-radius: 8px;
@@ -377,12 +345,14 @@ hr {
 .execution-mode-select-options-labels {
     display: flex;
     padding: 10px 20px;
+    user-select: none;
 }
 
 .execution-mode-select-options-title {
     display: flex;
     padding: 10px 20px;
     border-bottom: 1px solid var(--editor-outline);
+    user-select: none;
 }
 
 .execution-mode-select-options-labels:hover {
@@ -490,25 +460,32 @@ span {
 */
 
 .editor-text-scroll::-webkit-scrollbar,
-#output-screen::-webkit-scrollbar {
+#render-output::-webkit-scrollbar {
     width: 10px;
     height: 10px;
 }
 
+#render-output {
+    display: flex;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+}
+
 .editor-text-scroll::-webkit-scrollbar-track,
-#output-screen::-webkit-scrollbar-track {
+#render-output::-webkit-scrollbar-track {
     background: transparent;
 }
 
 .editor-text-scroll::-webkit-scrollbar-thumb,
-#output-screen::-webkit-scrollbar-thumb {
+#render-output::-webkit-scrollbar-thumb {
     background-color: #35353a;
     border-radius: 8px;
     border: 2px solid var(--editor-body);
 }
 
 .editor-text-scroll::-webkit-scrollbar-thumb:hover,
-#output-screen::-webkit-scrollbar-thumb:hover {
+#render-output::-webkit-scrollbar-thumb:hover {
     background-color: #45454b;
 }
 
@@ -530,4 +507,67 @@ span {
     background-color: var(--editor-body);
     border: 1px solid #3a3a3d;
     border-radius: 8px;
+}
+
+#render-output {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    font-family: var(--font-family-code);
+    font-size: var(--font-size-code);
+    overflow: auto;
+    word-wrap: break-word;
+    white-space: break-spaces;
+    overflow-wrap: anywhere;
+}
+
+#render-output.error {
+    color: var(--error);
+}
+
+#render-output.complete {
+    color: var(--complete);
+}
+
+/*
+    status bar
+*/
+
+.status-bar {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    font-size: 0.9em;
+    line-height: 1em;
+    background-color: var(--editor-body);
+    border: 1px solid var(--editor-outline);
+    border-radius: 8px;
+    height: 32px;
+    overflow: hidden;
+
+    right: 0;
+}
+
+.status-bar-label {
+    padding: 0px 10px;
+    display: flex;
+    gap: 6px;
+    height: stretch;
+    align-items: center;
+    border-right: 1px solid var(--editor-outline);
+    margin-right: -1px;
+}
+
+
+/*
+*   ===========
+*   flexibility     ----================----
+*   ===========
+*/
+
+@media only screen and (max-width: 800px) {
+    .sb-left,
+    .sb-right {
+        display: none;
+    }
 }
