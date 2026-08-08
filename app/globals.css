@@ -259,6 +259,7 @@ hr {
     font-family: var(--font-family-code);
     font-size: var(--font-size-code);
     line-height: var(--editor-line-height);
+    caret-color: var(--normal);
     word-wrap: break-word;
     white-space: break-spaces;
     overflow-wrap: anywhere;
