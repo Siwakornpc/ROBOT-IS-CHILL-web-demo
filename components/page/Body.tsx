@@ -8,9 +8,6 @@ import { StatusBar } from "../editor/statsbar/StatusBar";
 import { useEffect } from "react";
 
 export default function Body() {
-    useEffect(() => {
-        // mount macroscript.js
-    }, []);
     return (
         <main style={{ width: "stretch" }}>
             <div className="main-body">

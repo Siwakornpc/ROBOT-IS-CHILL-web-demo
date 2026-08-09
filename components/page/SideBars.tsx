@@ -1,6 +1,9 @@
 export function LeftBar() {
     return (
         <div className="sb-left">
+            <div className="sb-btn exec">
+
+            </div>
             
         </div>
     );
