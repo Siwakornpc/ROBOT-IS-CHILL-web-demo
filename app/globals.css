@@ -147,37 +147,36 @@ hr {
 
     background-color: var(--editor-body);
 }
-
 .sb-left {
+    width: unset;
+    min-width: fit-content;
+    padding: 4px;
     border-right: 1px solid var(--editor-outline);
 }
-
 .sb-right {
     border-left: 1px solid var(--editor-outline);
 }
 
 .sb-btn {
-    --icon-color: #c4c9cf80;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 50px;
-    height: 50px;
-
+    width: 56px;
+    height: 56px;
     background-repeat: no-repeat;
-    background-position: center;
-
-    background-color: var(--icon-color);
-
-    -webkit-mask-size: 32px 32px !important;
-    mask-size: 32px 32px !important;
+    background-color: rgb(var(--md-sys-color-on-surface-variant));
+    -webkit-mask-size: 24px 24px !important;
+    mask-size: 24px 24px !important;
 }
-
-.sb-btn:hover,
-.sb-btn.selected {
-    --icon-color: #c4c9cf;
-    background-color: var(--icon-color);
+.sb-btn:hover {
+    background-color: rgb(var(--md-sys-color-on-surface), 0.08);
     cursor: pointer;
+}
+.sb-btn:active {
+    background-color: rgb(var(--md-sys-color-on-surface), 0.1);
+}
+.sb-btn.selected {
+    background-color: rgb(var(--md-sys-color-on-secondary-container));
 }
 
 .sb-btn.macrosia {
