@@ -216,6 +216,11 @@ hr {
     width: 100%;
 }
 
+.editor-code:hover {
+    border: 1px solid var(--normal);
+    outline: 1px solid var(--normal);
+}
+
 /*
     editor screen
 */
