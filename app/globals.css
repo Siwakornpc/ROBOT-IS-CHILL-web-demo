@@ -217,7 +217,7 @@ hr {
     width: 100%;
 }
 
-.editor-code:hover {
+.editor-code:focus {
     border: 1px solid var(--editor-outline-selected);
     outline: 1px solid var(--editor-outline-selected);
 }
