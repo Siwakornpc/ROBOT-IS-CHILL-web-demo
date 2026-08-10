@@ -33,6 +33,7 @@ export default function RootLayout({
             className={`${nunitoSans.variable} ${ibmPlexMono.variable} h-full antialiased`}
         >
             <body className="min-h-full flex flex-col">
+								<ThemeScript />
                 <Header />
                 {children}
             </body>
