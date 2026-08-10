@@ -1,3 +1,4 @@
+import ThemeScript from './themescript';
 import { Header } from "@/components/Header";
 import type { Metadata } from "next";
 import {
