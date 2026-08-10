@@ -140,12 +140,12 @@ hr {
 .sb-right {
     --width: 50px;
     display: flex;
+    flex-direction: column;
     width: var(--width);
     min-width: var(--width);
     bottom: 0;
 
     background-color: var(--editor-body);
-    justify-content: center;
 }
 
 .sb-left {
@@ -157,6 +157,7 @@ hr {
 }
 
 .sb-btn {
+    --icon-color: #c4c9cf80;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -166,12 +167,27 @@ hr {
     background-repeat: no-repeat;
     background-position: center;
 
-    background-color: var(--normal);
+    background-color: var(--icon-color);
+
+    -webkit-mask-size: 32px 32px !important;
+    mask-size: 32px 32px !important;
 }
 
-.sb-btn.exec {
-    -webkit-mask: url('@/public/icons/exec.svg') no-repeat center;
-    mask: url('@/public/icons/exec.svg') no-repeat center;
+.sb-btn:hover,
+.sb-btn.selected {
+    --icon-color: #c4c9cf;
+    background-color: var(--icon-color);
+    cursor: pointer;
+}
+
+.sb-btn.macrosia {
+    -webkit-mask: url('@/public/icons/macrosia.svg') no-repeat center;
+    mask: url('@/public/icons/macrosia.svg') no-repeat center;
+}
+
+.sb-btn.render {
+    -webkit-mask: url('@/public/icons/render.svg') no-repeat center;
+    mask: url('@/public/icons/render.svg') no-repeat center;
 }
 
 /*
