@@ -81,8 +81,4 @@ export default function ThemeScript() {
   }, []);
 
   return null;
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> c94a32fa5e8f27796bd2bb0b9a4218dc52b1a4d9
