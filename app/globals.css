@@ -26,6 +26,7 @@
 
     --editor-body: #141415;
     --editor-outline: #3a3a3d;
+    --editor-outline-selected: #999a9e;
     --editor-gutter-fg: #55555c;
     --editor-gutter-fg-active: #b7bcc2;
     --editor-current-line: #ffffff08;
@@ -217,8 +218,8 @@ hr {
 }
 
 .editor-code:hover {
-    border: 1px solid var(--normal);
-    outline: 1px solid var(--normal);
+    border: 1px solid var(--editor-outline-selected);
+    outline: 1px solid var(--editor-outline-selected);
 }
 
 /*
