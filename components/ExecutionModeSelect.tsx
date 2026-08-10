@@ -4,12 +4,6 @@ import { useEffect, useRef, useState } from "react";
 
 const modes = [
     {
-        value: "=m",
-        label: "=m x",
-        title: "Macro Execute",
-        description: "Execute as Macroscript"
-    },
-    {
         value: "=t",
         label: "=t",
         title: "Render Tiles",
@@ -24,7 +18,7 @@ const modes = [
 ] as const;
 
 export default function ExecutionModeSelect() {
-    const [mode, setMode] = useState("=m");
+    const [mode, setMode] = useState("=t");
     const [isOpen, setIsOpen] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
 
