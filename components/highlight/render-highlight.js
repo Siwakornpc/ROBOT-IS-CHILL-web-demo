@@ -7,7 +7,7 @@ const sourceUrls = {
     flags: "https://raw.githubusercontent.com/ROBOT-IS-CHILL/robot-is-chill/main/src/cogs/flags.py",
 };
 
-async function loadFlags() {
+export async function loadFlags() {
     if (typeof window === "undefined") {
         return;
     }
@@ -28,7 +28,7 @@ async function loadFlags() {
     flags = [...new Set(parsedFlags)];
 }
 
-async function loadVariantData() {
+export async function loadVariantData() {
     if (typeof window === "undefined") {
         return [];
     }

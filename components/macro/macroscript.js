@@ -1,3 +1,5 @@
+import { flags, variants } from "../highlight/render-highlight";
+
 // Delay (ms) between clicking Run and actually invoking the macro engine.
 const EXECUTION_DELAY_MS = 800;
 
@@ -17,7 +19,7 @@ export async function initMacro() {
     const editor = await window.editorReady;
     const editorArea = document.getElementById("editor-area");
     const output = document.getElementById("render-output");
-    const button = document.getElementById("run");
+    const button = document.getElementById("stop");
     const statusTime = document.getElementById("status-time");
     const statusSteps = document.getElementById("status-steps");
 
@@ -84,9 +86,12 @@ ${err}`;
     const data = await fetch("https://ric-api.sno.mba/macros.json")
     .then(res => res.json());
 
+    const flagsData = flags;
+    const variantsData = variants;
+
     output.classList.add("complete");
     output.textContent =
-    `Loaded ${Object.keys(stdMacros).length + Object.keys(data).length} macros.
+    `Loaded ${Object.keys(stdMacros).length + Object.keys(data).length} macros, ${flagsData.length} flags, ${Object.keys(variantsData).length} varaints.
 
 [Built-in macros]:
 ${Object.keys(stdMacros).length} macros.
@@ -109,15 +114,10 @@ ${Object.keys(data).length} macros.
         if (running) {
             cancel_running_macro();
             running = false;
-            button.classList.remove("stop");
-            button.textContent = "Run";
         }
 
         const mode = window.executionMode ?? "=m";
         const isMacroExecution = mode === "=m";
-
-        button.classList.add("stop");
-        button.textContent = "Stop";
 
         if (isMacroExecution) {
             output.textContent = "Waiting for pause...";
@@ -159,8 +159,6 @@ ${Object.keys(data).length} macros.
             }
             finally {
                 running = false;
-                button.classList.remove("stop");
-                button.textContent = "Run";
                 delayTimer = null; 
             }
         }, EXECUTION_DELAY_MS);
