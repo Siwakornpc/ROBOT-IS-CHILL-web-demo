@@ -5,7 +5,7 @@ import {
     Nunito_Sans,
 } from "next/font/google";
 import "./globals.css";
-import ThemeScript from '@/components/ThemeScript';
+import ThemeScript from '@/components/themescript';
 
 const nunitoSans = Nunito_Sans({
     subsets: ["latin"],
