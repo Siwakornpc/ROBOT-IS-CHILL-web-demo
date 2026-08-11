@@ -2,7 +2,7 @@
 
 import { EditorScreen } from "@/components/editor/EditorScreen";
 import MacroInitializer from "@/components/macro/MacroInitializer";
-import { RenderScreen } from "@/components/RenderScreen";
+import { RenderScreen } from "@/components/render-screen/macrosia/RenderScreen";
 import { StatusBar } from "../../editor/statsbar/macrosia/StatusBar";
 
 export default function Body() {

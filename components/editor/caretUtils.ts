@@ -3,7 +3,6 @@ import { offsetToLineColumn, lineColumnToOffset } from "./lineModel";
 
 /** Finds the ".editor-line" element that owns `node`. If `node` is editorArea itself
  * (e.g. clicking in the gap between lines), falls back to the line at `nodeOffset`. */
-// find the .editor-line element 
 function closestLineElement(editorArea: HTMLElement, node: Node, nodeOffset: number): HTMLElement | null {
     if (node === editorArea) {
         const children = Array.from(editorArea.children) as HTMLElement[];

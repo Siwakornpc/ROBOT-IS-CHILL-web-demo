@@ -3,7 +3,7 @@
 import { EditorScreen } from "@/components/editor/EditorScreen";
 import ExecutionModeSelect from "@/components/ExecutionModeSelect";
 import MacroInitializer from "@/components/macro/MacroInitializer";
-import { RenderScreen } from "@/components/RenderScreen";
+import { RenderScreen } from "@/components/render-screen/render/RenderScreen";
 import { StatusBar } from "../../editor/statsbar/render/StatusBar";
 
 export default function Body() {
