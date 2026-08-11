@@ -5,6 +5,7 @@ import {
     Nunito_Sans,
 } from "next/font/google";
 import "./globals.css";
+import ThemeScript from '@/components/ThemeScript';
 
 const nunitoSans = Nunito_Sans({
     subsets: ["latin"],
@@ -33,6 +34,7 @@ export default function RootLayout({
             className={`${nunitoSans.variable} ${ibmPlexMono.variable} h-full antialiased`}
         >
             <body className="min-h-full flex flex-col">
+                <ThemeScript />
                 <Header />
                 {children}
             </body>
