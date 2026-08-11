@@ -44,7 +44,7 @@ export async function initMacro() {
         const dbMacros = await res.json();
         initialize_executor(dbMacros);
 
-        output.textContent = "";
+        output.textContent = "Fetching...";
 
         const tilesRes = await fetch("https://ric-api.sno.mba/tiles.json", {
             mode: "cors"
@@ -54,7 +54,7 @@ export async function initMacro() {
     }
     catch (err) {
         initialize_executor({});
-        
+
         output.textContent =
     `Failed to get macros from the RIC database!
 
