@@ -187,44 +187,19 @@ hr {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 50px;
-    height: 50px;
-
+    width: 56px;
+    height: 56px;
+    border-radius: 28px;
+    color: rgb(var(--md-sys-color-on-surface-variant));
 }
 .sb-btn:hover {
-    background-color: var(--sb-button-selection);
-}
-.sb-btn.selected {
-    background-color: var(--sb-button-selected);
-}
-
-.sb-btn > .icon {
-    width: 50px;
-    height: 50px;
-    --icon-color: #c4c9cf80;
-    background-color: var(--icon-color);
-
-    background-repeat: no-repeat;
-    background-position: center;
-    -webkit-mask-size: 32px 32px !important;
-    mask-size: 32px 32px !important;
-}
-.sb-btn > .icon:hover,
-.sb-btn > .icon.selected {
-    --icon-color: #c4c9cf;
-    background-color: var(--icon-color);
+    background-color: rgb(var(--md-sys-color-on-surface), 0.08);
     cursor: pointer;
 }
-/*
-.icon.macrosia {
-    -webkit-mask: url('@/public/icons/macrosia.svg') no-repeat center;
-    mask: url('@/public/icons/macrosia.svg') no-repeat center;
+.sb-btn.selected {
+    color: rgb(var(--md-sys-color-on-secondary-container));
+    background-color: rgb(var(--md-sys-color-secondary-container));
 }
-.icon.render {
-    -webkit-mask: url('@/public/icons/render.svg') no-repeat center;
-    mask: url('@/public/icons/render.svg') no-repeat center;
-}
-*/
 
 /*
     editor screen
