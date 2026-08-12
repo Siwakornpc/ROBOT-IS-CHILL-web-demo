@@ -92,7 +92,7 @@ body {
     margin: -2px 0;
 }
 
-.icon, .icon-custom {
+.icon {
     font-family: "Material Symbols Outlined";
     font-weight: normal;
     font-style: normal;
@@ -108,7 +108,7 @@ body {
     -webkit-font-feature-settings: "liga";
     -webkit-font-smoothing: antialiased;
 }
-.icon-custom {
+.icon.custom {
     font-family: ricwd-icons;
 }
 
