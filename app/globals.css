@@ -35,7 +35,7 @@
     --macro-bracket-layer-0: #e4dc6a;
     --macro-bracket-layer-1: #c85acc;
     --macro-bracket-layer-2: #5f94f5;
-    --error: #e23c3c;
+    --error: rgb(var(--md-sys-color-error));
     --complete: #84cc7b;
 
     --selection: #dcdfdc20;
@@ -314,6 +314,7 @@ hr {
 }
 .editor-line.current {
     --normal: rgb(var(--md-sys-color-on-secondary-container));
+    color: var(--normal);
     background-color: var(--editor-current-line);
 }
 
@@ -592,28 +593,31 @@ span {
 */
 
 .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 1px;
     position: absolute;
-    display: flex;
-    align-items: center;
-    font-size: 0.9em;
-    line-height: 1em;
-    background-color: var(--editor-body);
-    border: 1px solid var(--editor-outline);
-    border-radius: 8px;
-    height: 32px;
-    overflow: hidden;
-
     right: 0;
+    height: 24px;
+    font-size: .9em;
+    line-height: 1em;
+    border-radius: 4px;
+    border: 1px solid var(--editor-outline);
+    overflow: hidden;
 }
-
 .status-bar-label {
-    padding: 0px 10px;
     display: flex;
-    gap: 6px;
-    height: stretch;
     align-items: center;
+    gap: 4px;
+    height: -webkit-fill-available;
+    height: -moz-available;
+    height: stretch;
+    padding: 0 8px;
+    margin-right: 0px;
+    background-color: rgb(var(--md-sys-color-surface-container));
+}
+.status-bar-label:not(:last-child) {
     border-right: 1px solid var(--editor-outline);
-    margin-right: -1px;
 }
 
 
