@@ -25,12 +25,12 @@
     --macro-value-escape: #fc9929;
     --macro-empty: #5b5b64;
 
-    --editor-body: #141415;
-    --editor-outline: #3a3a3d;
-    --editor-outline-selected: #999a9e;
-    --editor-gutter-fg: #55555c;
-    --editor-gutter-fg-active: #b7bcc2;
-    --editor-current-line: #ffffff08;
+    --editor-body: rgb(var(--md-sys-color-surface-container-high));
+    --editor-outline: rgb(var(--md-sys-color-outline-variant));
+    --editor-outline-selected: rgb(var(--md-sys-color-primary));
+    --editor-gutter-fg: rgb(var(--md-sys-color-on-surface-variant));
+    --editor-gutter-fg-active: rgb(var(--md-sys-color-on-secondary-container));
+    --editor-current-line: rgb(var(--md-sys-color-secondary-container));
 
     --macro-bracket-layer-0: #e4dc6a;
     --macro-bracket-layer-1: #c85acc;
@@ -50,8 +50,8 @@
     --variant-name: #c06ed4;
     --variant-value: #5f94f5;
 
-    --sb-button-selection: #ffffff08;
-    --sb-button-selected: #1153ce12;
+    --sb-button-hovered: rgb(var(--md-sys-color-on-surface), 0.08);
+    --sb-button-selected: rgb(var(--md-sys-color-secondary-container));
 }
 
 @theme inline {
@@ -197,12 +197,12 @@ hr {
     color: rgb(var(--md-sys-color-on-surface-variant));
 }
 .sb-btn:hover {
-    background-color: rgb(var(--md-sys-color-on-surface), 0.08);
+    background-color: var(--sb-button-hovered);
     cursor: pointer;
 }
 .sb-btn.selected {
     color: rgb(var(--md-sys-color-on-secondary-container));
-    background-color: rgb(var(--md-sys-color-secondary-container));
+    background-color: var(--sb-button-selected);
 }
 
 /*
@@ -223,17 +223,16 @@ hr {
 .editor-code {
     display: flex;
     flex-direction: column;
-    box-sizing: border-box;
-    border: 1px solid var(--editor-outline);
-    border-radius: 8px;
-    overflow: hidden;
-    height: 17.5em;
     width: 100%;
+    height: 17.5em;
+    border-radius: 8px;
+    background-color: var(--editor-body);
+    border: 1px solid rgb(var(--md-sys-color-outline-variant));
+    box-sizing: border-box;
+    overflow: hidden;
 }
-
 .editor-code:focus {
-    border: 1px solid var(--editor-outline-selected);
-    outline: 1px solid var(--editor-outline-selected);
+    box-shadow: 0 0 0 2px var(--editor-outline-selected);
 }
 
 /*
@@ -242,21 +241,19 @@ hr {
 
 .editor-body-row {
     display: flex;
-    flex: 1 1 auto;
+    flex: auto;
     min-height: 0;
-    background-color: var(--editor-body);
 }
 
 .editor-gutter-wrap {
     flex: 0 0 auto;
     min-width: 3em;
     overflow: hidden;
-    background-color: var(--editor-body);
     border-right: 1px solid var(--editor-outline);
 }
 
 .editor-gutter {
-    padding: 10px 10px 10px 14px;
+    padding: 8px 0 8px 8px;
     user-select: none;
 }
 
@@ -265,13 +262,16 @@ hr {
     line-height: var(--editor-line-height);
     font-family: var(--font-family-code);
     font-size: var(--font-size-code);
-    color: var(--editor-gutter-fg);
     text-align: right;
-    transition: color 0.1s ease;
+    padding: 0 8px;
+    border-radius: 4px 0 0 4px;
+    color: rgb(var(--md-sys-color-on-surface-variant));
+    transition: color .1s;
 }
 
 .gutter-line.active {
     color: var(--editor-gutter-fg-active);
+    background: var(--editor-current-line);
 }
 
 .editor-text-scroll {
@@ -298,7 +298,7 @@ hr {
     display: block;
     min-width: 100%;
     min-height: 100%;
-    padding: 10px;
+    padding: 8px 0;
     outline: none;
     font-family: var(--font-family-code);
     font-size: var(--font-size-code);
@@ -309,7 +309,11 @@ hr {
     overflow-wrap: anywhere;
 }
 
+.editor-line {
+    padding-left: 8px;
+}
 .editor-line.current {
+    --normal: rgb(var(--md-sys-color-on-secondary-container));
     background-color: var(--editor-current-line);
 }
 
