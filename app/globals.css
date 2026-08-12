@@ -10,11 +10,12 @@
 * { box-sizing: border-box; }
 
 :root {
-    --body: #19191a;
+    --body: rgb(var(--md-sys-color-surface));
     --font-size-code: 0.9rem;
     --editor-line-height: 21px;
+    --editor-titlebar: rgb(var(--md-sys-color-surface-container-high));
 
-    --normal: #c4c9cf;
+    --normal: rgb(var(--md-sys-color-on-surface));
     --macro-brackets: #dcdfdc;
     --macro-arg-separator: #dcdfdc;
     --macro-name: #72a5e7;
@@ -129,7 +130,6 @@ hr {
     height: 50px;
     background-color: var(--editor-titlebar);
     color: var(--normal);
-    border-bottom: 1px solid var(--editor-outline);
 
     display: flex;
     align-items: center;
@@ -177,7 +177,11 @@ hr {
     background-color: var(--editor-body);
 }
 .sb-left {
-    border-right: 1px solid var(--editor-outline);
+    gap: 4px;
+    width: fit-content;
+    min-width: fit-content;
+    padding: 4px;
+    background-color: rgb(var(--md-sys-color-surface-container));
 }
 .sb-right {
     border-left: 1px solid var(--editor-outline);
