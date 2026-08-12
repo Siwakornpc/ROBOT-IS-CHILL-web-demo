@@ -23,14 +23,14 @@
 
     --escape: #9a9da1;
     --macro-value-escape: #fc9929;
-    --macro-empty: #5b5b64;
+    --macro-empty: rgb(var(--md-sys-color-outline));
 
     --editor-body: rgb(var(--md-sys-color-surface-container-high));
     --editor-outline: rgb(var(--md-sys-color-outline-variant));
     --editor-outline-selected: rgb(var(--md-sys-color-primary));
     --editor-gutter-fg: rgb(var(--md-sys-color-on-surface-variant));
-    --editor-gutter-fg-active: rgb(var(--md-sys-color-on-secondary-container));
-    --editor-current-line: rgb(var(--md-sys-color-primary), .1);
+    --editor-gutter-fg-active: rgb(var(--md-sys-color-on-surface));
+    --editor-current-line: rgb(var(--md-sys-color-on-surface),0.08);
 
     --macro-bracket-layer-0: #e4dc6a;
     --macro-bracket-layer-1: #c85acc;
@@ -38,9 +38,9 @@
     --error: rgb(var(--md-sys-color-error));
     --complete: #84cc7b;
 
-    --selection: #dcdfdc20;
-    --label: #999a9e;
-    --description: #9a9da1;
+    --selection: rgb(var(--md-sys-color-primary), 0.16);
+    --label: rgb(var(--md-sys-color-on-surface-variant));
+    --description: rgb(var(--md-sys-color-on-surface-variant));
 
     --bracket-outline: #dcdfdc40;
 
@@ -52,6 +52,24 @@
 
     --sb-button-hovered: rgb(var(--md-sys-color-on-surface), 0.08);
     --sb-button-selected: rgb(var(--md-sys-color-secondary-container));
+
+    --elevation-0: 0 0 0 0 #00000026, 0 0 0 0 #0000004d;
+	--elevation-1: 0 1px 3px 1px #00000026, 0 1px 2px 0 #0000004d;
+	--elevation-2: 0 2px 6px 2px #00000026, 0 1px 2px 0 #0000004d;
+	--elevation-3: 0 4px 8px 3px #00000026, 0 1px 3px 0 #0000004d;
+	--elevation-4: 0 6px 10px 4px #00000026, 0 2px 3px 0 #0000004d;
+	--elevation-5: 0 8px 12px 6px #00000026, 0 4px 4px 0 #0000004d;
+	--inset-elevation-0: 0 0 0 0 #00000026, 0 0 0 0 #0000004d;
+	--inset-elevation-1:
+		inset 0 1px 3px 1px #00000026, inset 0 1px 2px 0 #0000004d;
+	--inset-elevation-2:
+		inset 0 2px 6px 2px #00000026, inset 0 1px 2px 0 #0000004d;
+	--inset-elevation-3:
+		inset 0 4px 8px 3px #00000026, inset 0 1px 3px 0 #0000004d;
+	--inset-elevation-4:
+		inset 0 6px 10px 4px #00000026, inset 0 2px 3px 0 #0000004d;
+	--inset-elevation-5:
+		inset 0 8px 12px 6px #00000026, inset 0 4px 4px 0 #0000004d;
 }
 
 @theme inline {
@@ -225,7 +243,7 @@ hr {
     flex-direction: column;
     width: 100%;
     height: 17.5em;
-    border-radius: 8px;
+    border-radius: 16px;
     background-color: var(--editor-body);
     border: 1px solid rgb(var(--md-sys-color-outline-variant));
     box-sizing: border-box;
@@ -264,7 +282,7 @@ hr {
     font-size: var(--font-size-code);
     text-align: right;
     padding: 0 8px;
-    border-radius: 4px 0 0 4px;
+    border-radius: 8px 0 0 8px;
     color: rgb(var(--md-sys-color-on-surface-variant));
     transition: color .1s;
 }
@@ -385,7 +403,7 @@ hr {
     background: var(--editor-body);
     border: 1px solid var(--editor-outline);
     border-radius: 8px;
-    box-shadow: 0 5px 15px #00000080;
+    box-shadow: var(--elevation-3);
     transform: translateY(0) scale(0.95);
     transition: 0.2s ease;
 }
@@ -475,8 +493,9 @@ span {
     font-style: italic;
 }
 
-.macro-bracket-match {
-    outline: 1px solid var(--bracket-outline);
+.macro-bracket-match.macro-bracket-match {
+    color: rgb(var(--md-sys-color-on-tertiary-container)) !important;
+    background: rgb(var(--md-sys-color-tertiary-container));
 }
 
 /* bracket layers (only brackets) */
