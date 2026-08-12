@@ -9,19 +9,19 @@ export default function Body() {
     return (
         <main style={{ width: "stretch" }}>
             <div className="main-body">
-                <MacroInitializer />
-
                 <div className="run-controls">
-                    <p className="text-label">Output</p>
+                    <p className="text-label">Execute</p>
                     <button id="run" style={{display: "none"}} disabled>Run</button>
                     <StatusBar />
                 </div>
                 <hr />
-                <RenderScreen />
-
-                <p className="text-label">Execute</p>
-                <hr />
                 <EditorScreen />
+                
+                <MacroInitializer />
+
+                <p className="text-label">Output</p>
+                <hr />
+                <RenderScreen />
             </div>
         </main>
     );
