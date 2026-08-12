@@ -97,8 +97,8 @@ body {
 .main-body {
     display: flex;
     flex-direction: column;
-    margin: 10px;
-    gap: 10px;
+    gap: 8px;
+    margin: 12px;
 }
 
 .align-layout {
@@ -108,7 +108,6 @@ body {
 
 .text-label {
     color: var(--label);
-    margin: -2px 0;
 }
 
 .icon {
@@ -367,12 +366,11 @@ hr {
 }
 
 .run-controls {
-    position: relative;
     display: flex;
     align-items: center;
-    gap: 10px;
-
-    height: 32px;
+    position: relative;
+    gap: 8px;
+    height: 24px;
 }
 
 .execution-mode-select {
