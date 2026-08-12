@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import * as MCU from '@material/material-color-utilities';
 
 const variant = 'dark'; // 'light', 'light-mc', 'light-hc', 'dark', 'dark-mc', 'dark-hc'
+const color = '#68548E';
 
 export default function ThemeScript() {
     useEffect(() => {
@@ -104,17 +105,6 @@ export default function ThemeScript() {
         }
 
         (window as any).setTheme = setTheme;
-
-        let color = '#68548E';
-        intervalId = setInterval(() => {
-            const dsmColor = (window as any).DSM?.pluginSettings?.[
-                'set-primary-color'
-            ]?.primaryColor;
-            if (dsmColor && dsmColor !== color) {
-                color = dsmColor;
-                setTheme(color, variant);
-            }
-        }, 100);
 
         setTheme(color, variant);
 
