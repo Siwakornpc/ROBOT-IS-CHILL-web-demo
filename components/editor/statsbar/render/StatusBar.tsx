@@ -1,20 +1,20 @@
 export function StatusBar() {
     return (
         <div className="status-bar">
-            <div className="status-bar-label">
-                <span>Execution Time</span>
-                <span>·</span>
-                <span id="status-time">0ms</span>
+            <div className="status">
+                <span className="status-label">Steps</span>
+                <span className="status-separator">·</span>
+                <span className="status-value" id="status-steps">0</span>
             </div>
-            <div className="status-bar-label">
-                <span>Render Time</span>
-                <span>·</span>
-                <span id="status-time">0ms</span>
+            <div className="status">
+                <span className="status-label">Execution Time</span>
+                <span className="status-separator">·</span>
+                <span className="status-value" id="status-time">0ms</span>
             </div>
-            <div className="status-bar-label">
-                <span>Steps</span>
-                <span>·</span>
-                <span id="status-steps">0</span>
+            <div className="status">
+                <span className="status-label">Render Time</span>
+                <span className="status-separator">·</span>
+                <span className="status-value" id="status-render-time">0ms</span>
             </div>
         </div>
     );
