@@ -60,6 +60,12 @@
   --font-mono: var(--font-family-code);
 }
 
+@font-face {
+  font-family: 'ricwd-icons';
+  font-style: normal;
+  src: url(/public/ricwd-icons.woff2) format('woff2');
+}
+
 body {
     box-sizing: border-box;
     margin: 0;
@@ -84,6 +90,26 @@ body {
 .text-label {
     color: var(--label);
     margin: -2px 0;
+}
+
+.icon, .icon-custom {
+    font-family: "Material Symbols Outlined";
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    font-feature-settings: "liga";
+    -webkit-font-feature-settings: "liga";
+    -webkit-font-smoothing: antialiased;
+}
+.icon-custom {
+    font-family: ricwd-icons;
 }
 
 hr {
@@ -145,17 +171,14 @@ hr {
     --width: 50px;
     display: flex;
     flex-direction: column;
+    bottom: 0;
     width: var(--width);
     min-width: var(--width);
-    bottom: 0;
-
     background-color: var(--editor-body);
 }
-
 .sb-left {
     border-right: 1px solid var(--editor-outline);
 }
-
 .sb-right {
     border-left: 1px solid var(--editor-outline);
 }
@@ -168,8 +191,14 @@ hr {
     height: 50px;
 
 }
+.sb-btn:hover {
+    background-color: var(--sb-button-selection);
+}
+.sb-btn.selected {
+    background-color: var(--sb-button-selected);
+}
 
-.sb-btn-icon {
+.sb-btn > .icon {
     width: 50px;
     height: 50px;
     --icon-color: #c4c9cf80;
@@ -180,31 +209,22 @@ hr {
     -webkit-mask-size: 32px 32px !important;
     mask-size: 32px 32px !important;
 }
-
-.sb-btn-icon:hover,
-.sb-btn-icon.selected {
+.sb-btn > .icon:hover,
+.sb-btn > .icon.selected {
     --icon-color: #c4c9cf;
     background-color: var(--icon-color);
     cursor: pointer;
 }
-
-.sb-btn:hover {
-    background-color: var(--sb-button-selection);
-}
-
-.sb-btn.selected {
-    background-color: var(--sb-button-selected);
-}
-
-.sb-btn-icon.macrosia {
+/*
+.icon.macrosia {
     -webkit-mask: url('@/public/icons/macrosia.svg') no-repeat center;
     mask: url('@/public/icons/macrosia.svg') no-repeat center;
 }
-
-.sb-btn-icon.render {
+.icon.render {
     -webkit-mask: url('@/public/icons/render.svg') no-repeat center;
     mask: url('@/public/icons/render.svg') no-repeat center;
 }
+*/
 
 /*
     editor screen

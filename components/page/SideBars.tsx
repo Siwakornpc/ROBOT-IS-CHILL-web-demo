@@ -2,14 +2,10 @@ export function LeftBar() {
     return (
         <div className="sb-left">
             <div className="sb-btn">
-                <a href="../macrosia" className="sb-btn-icon macrosia">
-
-                </a>
+                <a href="../macrosia" className="icon macrosia">macrosia</a>
             </div>
             <div className="sb-btn">
-                <a href="../render" className="sb-btn-icon render">
-
-                </a>
+                <a href="../render" className="icon render">render</a>
             </div>
         </div>
     );

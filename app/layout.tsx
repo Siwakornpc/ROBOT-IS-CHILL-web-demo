@@ -33,6 +33,12 @@ export default function RootLayout({
             lang="en"
             className={`${nunitoSans.variable} ${ibmPlexMono.variable} h-full antialiased`}
         >
+            <head>
+                <link
+                    rel="stylesheet"
+                    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=search,description,globe,settings,help"
+                />
+            </head>
             <body className="min-h-full flex flex-col">
                 <ThemeScript />
                 <Header />

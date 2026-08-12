@@ -6,10 +6,10 @@ import { useEffect } from "react";
 
 export default function Home() {
     useEffect(() => {
-        const render_btn = document.querySelector(".sb-btn:has(.sb-btn-icon.render)");
+        const render_btn = document.querySelector(".sb-btn:has(.icon.render)");
 
         render_btn?.classList.add("selected");
-        render_btn?.querySelector(".sb-btn-icon.render")?.classList.add("selected");
+        render_btn?.querySelector(".icon.render")?.classList.add("selected");
     }, []);
     return (
         <main className="align-layout">
