@@ -101,13 +101,13 @@ export function createKeydownHandler(deps: KeydownDeps) {
             return;
         }
 
-        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+        if ((e.ctrlKey || e.metaKey) && e.code.toLowerCase() === "keyz") {
             e.preventDefault();
             if (e.shiftKey) redo(); else undo();
             return;
         }
 
-        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") {
+        if ((e.ctrlKey || e.metaKey) && e.code.toLowerCase() === "keyy") {
             e.preventDefault();
             redo();
         }
