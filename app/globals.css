@@ -188,6 +188,7 @@ hr {
 .sb-left,
 .sb-right {
     display: flex;
+    flex-direction: column;
     width: fit-content;
     min-width: fit-content;
     background-color: rgb(var(--md-sys-color-surface-container));
@@ -580,6 +581,9 @@ span {
     background-color: var(--editor-body);
     border: 1px solid #3a3a3d;
     border-radius: 8px;
+}
+.render-screen.vignette {
+    box-shadow: inset 0 0 140px var(--body);
 }
 
 #render-output {
