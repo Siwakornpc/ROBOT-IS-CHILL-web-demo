@@ -16,12 +16,12 @@
     --editor-titlebar: rgb(var(--md-sys-color-surface-container-high));
 
     --normal: rgb(var(--md-sys-color-on-surface));
-    --macro-brackets: #dcdfdc;
-    --macro-arg-separator: #dcdfdc;
-    --macro-name: #72a5e7;
+    --macro-brackets: rgb(var(--md-sys-color-on-surface));
+    --macro-arg-separator: rgb(var(--md-sys-color-on-surface-variant));
+    --macro-name: rgb(var(--md-sys-color-tertiary));
     --macro-value: #e7be72;
 
-    --escape: #9a9da1;
+    --escape: rgb(var(--md-sys-color-outline));
     --macro-value-escape: #fc9929;
     --macro-empty: rgb(var(--md-sys-color-outline));
 
@@ -155,6 +155,10 @@ hr {
     border-bottom: 1px solid var(--editor-outline);
 }
 
+.title-name #name-1,
+.title-name #name-2 {
+    transition: 0.2s ease;
+}
 .title-name {
     font-size: 1.2rem;
     position: relative;
@@ -163,22 +167,14 @@ hr {
     color: var(--normal);
     text-decoration: none;
 }
-
-.title-name #name-1,
 .title-name #name-2 {
-    transition: 0.2s ease;
+    color: rgb(var(--md-sys-color-on-surface-variant));
 }
-
-.title-name #name-2 {
-    color: #999a9e;
-}
-
 .title-name:hover #name-1 {
-    color: #999a9e;
+    color: rgb(var(--md-sys-color-primary));
 }
-
 .title-name:hover #name-2 {
-    color: var(--normal);
+    color: rgb(var(--md-sys-color-on-surface));
 }
 
 /*
