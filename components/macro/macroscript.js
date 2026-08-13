@@ -19,6 +19,7 @@ export async function initMacro() {
     const editor = await window.editorReady;
     const editorArea = document.getElementById("editor-area");
     const output = document.getElementById("render-output");
+    const outputSc = document.querySelector(".render-screen");
     const button = document.getElementById("stop");
     const statusTime = document.getElementById("status-time");
     const statusSteps = document.getElementById("status-steps");
@@ -94,15 +95,14 @@ ${err}`;
 ${Object.keys(stdMacros).length} macros.
 
 [Custom macros]:
-${Object.keys(data).length} macros.
-    `;
+${Object.keys(data).length} macros.`;
     /*
         Auto execution (good bye big and intimidating run button, you will be MISSED...)
     */
 
     let delayTimer = null; 
 
-    editorArea.addEventListener("input", async () => {
+    function macroRunner() {
         if (delayTimer) {
             clearTimeout(delayTimer);
             delayTimer = null;
@@ -118,6 +118,7 @@ ${Object.keys(data).length} macros.
 
         if (isMacroExecution) {
             output.textContent = "Waiting for pause...";
+            outputSc.classList.remove("vignette");
             output.classList.remove("complete");
             output.classList.remove("error");
         }
@@ -140,6 +141,7 @@ ${Object.keys(data).length} macros.
 
                 if (isMacroExecution) {
                     output.classList.remove("error");
+                    outputSc.classList.add("vignette");
 
                     if (result.includes("[MACRO ERROR]")) {
                         output.classList.add("error");
@@ -159,6 +161,17 @@ ${Object.keys(data).length} macros.
                 delayTimer = null; 
             }
         }, EXECUTION_DELAY_MS);
+    }
+
+    editorArea.addEventListener("input", async () => {
+        macroRunner();
     });
 
+    editorArea.addEventListener("keydown", async (e) => {
+        if (
+            ((e.ctrlKey || e.metaKey) && e.code.toLowerCase() === "keyz") ||
+            ((e.ctrlKey || e.metaKey) && e.code.toLowerCase() === "keyy")
+        )
+        macroRunner();
+    });
 }
