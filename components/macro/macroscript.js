@@ -118,7 +118,6 @@ ${Object.keys(data).length} macros.`;
 
         if (isMacroExecution) {
             output.textContent = "Waiting for pause...";
-            outputSc.classList.remove("vignette");
             output.classList.remove("complete");
             output.classList.remove("error");
         }
@@ -141,7 +140,6 @@ ${Object.keys(data).length} macros.`;
 
                 if (isMacroExecution) {
                     output.classList.remove("error");
-                    outputSc.classList.add("vignette");
 
                     if (result.includes("[MACRO ERROR]")) {
                         output.classList.add("error");
