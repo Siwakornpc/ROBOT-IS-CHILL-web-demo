@@ -187,18 +187,18 @@ hr {
 
 .sb-left,
 .sb-right {
-    gap: 4px;
+    display: flex;
     width: fit-content;
     min-width: fit-content;
-    padding: 4px;
     background-color: rgb(var(--md-sys-color-surface-container));
 }
-
 .sb-left {
-    border-right: 1px solid var(--editor-outline);
+    gap: 4px;
+    padding: 4px;
 }
 .sb-right {
-    border-left: 1px solid var(--editor-outline);
+    gap: 8px;
+    padding: 8px;
 }
 
 .sb-btn {
@@ -267,19 +267,19 @@ hr {
 }
 
 .editor-gutter {
-    padding: 8px 0 8px 8px;
+    padding: 4px 0 4px 4px;
     user-select: none;
 }
 
 .gutter-line {
-    height: var(--editor-line-height);
+    min-height: var(--editor-line-height);
     line-height: var(--editor-line-height);
     font-family: var(--font-family-code);
     font-size: var(--font-size-code);
     text-align: right;
     padding: 0 8px;
     border-radius: 4px 0 0 4px;
-    color: rgb(var(--md-sys-color-on-surface-variant));
+    color: rgb(var(--md-sys-color-outline));
     transition: color .1s;
 }
 
@@ -312,7 +312,7 @@ hr {
     display: block;
     min-width: 100%;
     min-height: 100%;
-    padding: 8px 0;
+    padding: 4px 0;
     outline: none;
     font-family: var(--font-family-code);
     font-size: var(--font-size-code);
