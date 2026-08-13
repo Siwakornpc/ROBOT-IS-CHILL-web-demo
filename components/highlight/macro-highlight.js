@@ -84,11 +84,13 @@ if (typeof window !== "undefined") {
             if (ch === "\n") {
                 appendText(ch, "", i);
             }
+
             else if (ch === "\\" && next && escapable.has(next)) {
                 const state = stateStack.at(-1);
                 appendText(ch + next, state === "value" ? "macro-value-escape" : "escape", i);
                 i++;
             }
+            
             else if (ch === "[" && validPairs.has(i)) {
                 const id = bracketId++;
                 const empty = validPairs.get(i) === i + 1 || next === "/";
@@ -207,14 +209,42 @@ if (typeof window !== "undefined") {
 
         let bestPair = null;
         let bestWidth = Infinity;
+
         for (const pair of pairs.values()) {
             if (pair.length !== 2) continue;
 
             const left = Math.min(pair[0].pos, pair[1].pos);
             const right = Math.max(pair[0].pos, pair[1].pos);
-            if (start >= left && start <= right + 1 && right - left < bestWidth) {
-                bestWidth = right - left;
-                bestPair = pair;
+
+            if (start >= left && start <= right) {
+                if (right - left < bestWidth) {
+                    bestWidth = right - left;
+                    bestPair = pair;
+                }
+            }
+        }
+
+        if (!bestPair) {
+            const pairStartingAtCaret = [...pairs.values()].find(pair =>
+                pair.length === 2 &&
+                pair.some(item => item.pos === start)
+            );
+
+            if (pairStartingAtCaret) {
+                bestPair = pairStartingAtCaret;
+            } else {
+                for (const pair of pairs.values()) {
+                    if (pair.length !== 2) continue;
+
+                    const right = Math.max(pair[0].pos, pair[1].pos);
+
+                    if (right === start - 1) {
+                        if (!bestPair || right - Math.min(pair[0].pos, pair[1].pos) < bestWidth) {
+                            bestPair = pair;
+                            bestWidth = right - Math.min(pair[0].pos, pair[1].pos);
+                        }
+                    }
+                }
             }
         }
 
