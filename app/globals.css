@@ -102,8 +102,13 @@ body {
 }
 
 .align-layout {
-    display: flex;
     flex: 100%;
+    display: grid;
+    grid-template-areas: 'nav main details';
+    grid-auto-columns: auto 1fr auto;
+}
+.align-layout > main {
+    grid-area: main;
 }
 
 .text-label {
@@ -190,10 +195,12 @@ hr {
     background-color: rgb(var(--md-sys-color-surface-container));
 }
 .sb-left {
-    gap: 4px;
+    grid-area: nav;
+    gap: 12px;
     padding: 4px;
 }
 .sb-right {
+    grid-area: details;
     gap: 8px;
     padding: 8px;
 }
@@ -647,8 +654,10 @@ span {
 */
 
 @media only screen and (max-width: 700px) {
-    .sb-left,
-    .sb-right {
-        display: none;
-    }
+    .align-layout {
+    grid-template-areas: 'main details'
+                         'nav nav';
+    grid-auto-columns: 1fr auto;
+    grid-auto-rows: 1fr auto;
+}
 }
