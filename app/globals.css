@@ -137,6 +137,10 @@ body {
     grid-template-areas: 'nav main details';
     grid-auto-columns: auto 1fr auto;
 }
+.align-layout:has(.nav-btn.selected[aria-label="search"]) {
+    grid-template-areas: 'nav filters main details';
+    grid-auto-columns: auto auto 1fr auto;
+}
 .align-layout > main {
     grid-area: main;
 }

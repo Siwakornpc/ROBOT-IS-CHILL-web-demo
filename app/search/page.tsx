@@ -12,6 +12,7 @@ export default function Home() {
     return (
         <main className="align-layout">
             <LeftBar />
+            <Filters />
             <Body />
             <RightBar />
         </main>

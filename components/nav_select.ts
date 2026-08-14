@@ -4,5 +4,4 @@ export function nav_btn_select(name: string) {
     nav_btn?.classList.add("selected");
 
     const nav_btn_a = nav_btn?.querySelector("a");
-    nav_btn_a?.setAttribute('aria-disabled', 'true');
 }
