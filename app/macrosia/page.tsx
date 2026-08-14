@@ -3,13 +3,11 @@
 import Body from "@/components/page/macrosia/Body";
 import { LeftBar, RightBar } from "@/components/page/SideBars";
 import { useEffect } from "react";
+import { nav_btn_select } from "@/components/nav_select";
 
 export default function Home() {
     useEffect(() => {
-        const macrosia_btn = document.querySelector(".nav-btn[aria-label='macrosia']");
-
-        macrosia_btn?.classList.add("selected");
-        macrosia_btn?.querySelector(".icon.macrosia")?.classList.add("selected");
+        nav_btn_select("macrosia");
     }, []);
     return (
         <main className="align-layout">

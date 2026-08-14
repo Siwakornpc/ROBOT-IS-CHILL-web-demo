@@ -16,7 +16,7 @@ export function LeftBar() {
 
 export function RightBar() {
     return (
-        <div className="right-sheet">
+        <div className="sb-right">
             
         </div>
     );
