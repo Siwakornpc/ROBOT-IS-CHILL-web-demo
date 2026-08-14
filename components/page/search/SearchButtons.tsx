@@ -1,6 +1,6 @@
 export default function SearchButtons() {
     return (
-        <main className="cbtn-group full-width medium">
+        <main className="cbtn-group full-width small">
             <button className="cbtn">Tiles</button>
             <button className="cbtn">Macros</button>
             <button className="cbtn">Palettes</button>
