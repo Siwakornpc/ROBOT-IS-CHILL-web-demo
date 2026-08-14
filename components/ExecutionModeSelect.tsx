@@ -50,12 +50,8 @@ export default function ExecutionModeSelect() {
                 =<span className="emph">{(selectedMode.label).replace(/^=(.*)/, "$1")}</span>
             </button>
 
-            <div
-                className={`execution-mode-select-options ${
-                    isOpen ? "visible" : ""
-                }`}
-            >
-                <div className="execution-mode-select-options-title">
+            <div className={`menu execution-mode-select-options ${isOpen ? "visible" : ""}`}>
+                <div className="menu-title">
                     Execution Mode
                 </div>
                 {modes.map((item) => (
@@ -65,14 +61,14 @@ export default function ExecutionModeSelect() {
                             setMode(item.value);
                             setIsOpen(false);
                         }}
-                        className="execution-mode-select-options-labels"
+                        className="menu-option"
                     >
-                        <div className="emsol-label">
+                        <div className="menu-option-icon">
                             =<span className="emph">{(item.label).replace(/^=(.*)/, "$1")}</span>
                         </div>
                         <div>
-                            <div className="emsol-title">{item.title}</div>
-                            <div className="emsol-description">{item.description}</div>
+                            <div className="menu-option-label">{item.title}</div>
+                            <div className="menu-option-desc">{item.description}</div>
                         </div>
                     </div>
                 ))}
