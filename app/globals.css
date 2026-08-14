@@ -468,7 +468,6 @@ span {
 }
 
 .macro-name {
-    font-weight: bold;
     color: var(--macro-name);
 }
 
@@ -640,7 +639,7 @@ span {
 @media only screen and (max-width: 700px) {
     .align-layout {
         grid-template-areas: 'main details'
-                            'nav nav';
+                             'nav nav';
         grid-auto-columns: 1fr auto;
         grid-auto-rows: 1fr auto;
     }
