@@ -25,7 +25,9 @@ export default function ThemeScript() {
 
     function setTheme(sourceColor: string, variant = 'dark') {
       document.documentElement.setAttribute('data-theme-variant', variant);
-      const hct = MCU.Hct.fromInt(MCU.argbFromHex(sourceColor));
+      
+      const sourceArgb = MCU.argbFromHex(sourceColor);
+      const hct = MCU.Hct.fromInt(sourceArgb);
       const target = document.documentElement;
 
       const isDark = variant.startsWith('dark');
