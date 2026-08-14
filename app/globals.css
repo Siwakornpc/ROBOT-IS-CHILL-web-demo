@@ -240,7 +240,7 @@ hr {
     box-sizing: border-box;
     overflow: hidden;
 }
-.editor-code:focus {
+.editor-code:has(#editor-area:focus) {
     box-shadow: 0 0 0 2px var(--editor-outline-selected);
 }
 
