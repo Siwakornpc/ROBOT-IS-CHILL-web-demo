@@ -1,4 +1,5 @@
-import SearchTags from "./SearchTags";
+import RecieveScreen from "./RecieveScreen";
+import SearchTags from "./SearchButtons";
 
 export default function Body() {
     return (
@@ -7,13 +8,16 @@ export default function Body() {
                 <div className="filter-controls">
                     <p className="text-label">Search</p>
                     <SearchTags/>
-                    <hr />
                 </div>
+                <hr />
                 <input
                     className="searchbar"
                     contentEditable="true"
                     placeholder="search for something..."
                 />
+                <p className="text-label">---</p>
+                <hr />
+                <RecieveScreen/>
             </div>
         </main>
     );

@@ -124,8 +124,11 @@ body {
 .main-body {
     display: flex;
     flex-direction: column;
+    height: calc(100% - 24px);
     gap: 8px;
     margin: 12px;
+
+    position: relative;
 }
 
 .align-layout {
@@ -424,7 +427,7 @@ hr {
     transition: 0s ease;
 }
 
-.run-controls {
+[class$="-controls"] {
     display: flex;
     align-items: center;
     position: relative;
@@ -608,7 +611,7 @@ hr {
     position: relative;
 
     width: stretch;
-    height: calc(100vh - 400px - 20px - 30px);
+    flex: 100%;
     min-height: 200px;
     padding: 8px 12px;
 
@@ -703,6 +706,35 @@ hr {
 .searchbar::placeholder {
     color: var(--editor-outline);
 }
+
+/*
+    recieve screen (search)
+*/
+
+.recieve-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    position: relative;
+
+    flex: 100%;
+    width: stretch;
+    padding: 8px 12px;
+
+    background-color: var(--editor-body);
+    border: 1px solid var(--editor-outline);
+    border-radius: 8px;
+}
+
+/*
+    search buttons
+*/
+
+.search-tabs {
+    display: flex;
+}
+
 /*
 *
 *       FLEXIBILITY
