@@ -1,4 +1,4 @@
-import RecieveScreen from "./RecieveScreen";
+import SearchResults from "./SearchResultsGrid";
 import SearchTags from "./SearchButtons";
 
 export function FilterPanel() {
@@ -20,7 +20,7 @@ export function Body() {
                     placeholder="search for something..."
                 />
                 <hr />
-                <RecieveScreen/>
+                <SearchResults />
             </div>
         </main>
     );
