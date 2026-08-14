@@ -10,37 +10,37 @@
 * { box-sizing: border-box; }
 
 :root {
-    --body: rgb(var(--md-sys-color-surface));
+    --body: rgb(var(--md-color-surface));
     --font-size-code: 0.9rem;
     --editor-line-height: 21px;
-    --editor-titlebar: rgb(var(--md-sys-color-surface-container-high));
+    --editor-titlebar: rgb(var(--md-color-secondary-container));
 
-    --normal: rgb(var(--md-sys-color-on-surface));
-    --macro-brackets: rgb(var(--md-sys-color-on-surface));
-    --macro-arg-separator: rgb(var(--md-sys-color-on-surface-variant));
-    --macro-name: rgb(var(--md-sys-color-tertiary));
-    --macro-value: #e7be72;
+    --normal: rgb(var(--md-color-on-surface));
+    --macro-brackets: rgb(var(--md-color-on-surface));
+    --macro-arg-separator: rgb(var(--md-color-on-surface-variant));
+    --macro-name: rgb(var(--md-color-syntax-name));
+    --macro-value: rgb(var(--md-color-syntax-value));
 
-    --escape: rgb(var(--md-sys-color-outline));
-    --macro-value-escape: #fc9929;
-    --macro-empty: rgb(var(--md-sys-color-outline));
+    --escape: rgb(var(--md-color-outline));
+    --macro-value-escape: rgb(var(--md-color-syntax-escaped));
+    --macro-empty: rgb(var(--md-color-outline));
 
-    --editor-body: rgb(var(--md-sys-color-surface-container-high));
-    --editor-outline: rgb(var(--md-sys-color-outline-variant));
-    --editor-outline-selected: rgb(var(--md-sys-color-primary));
-    --editor-gutter-fg: rgb(var(--md-sys-color-on-surface-variant));
-    --editor-gutter-fg-active: rgb(var(--md-sys-color-on-surface));
-    --editor-current-line: rgb(var(--md-sys-color-on-surface),0.08);
+    --editor-body: rgb(var(--md-color-surface-container-high));
+    --editor-outline: rgb(var(--md-color-outline-variant));
+    --editor-outline-selected: rgb(var(--md-color-primary));
+    --editor-gutter-fg: rgb(var(--md-color-on-surface-variant));
+    --editor-gutter-fg-active: rgb(var(--md-color-on-surface));
+    --editor-current-line: rgb(var(--md-color-on-surface),0.08);
 
-    --macro-bracket-layer-0: #e4dc6a;
-    --macro-bracket-layer-1: #c85acc;
-    --macro-bracket-layer-2: #5f94f5;
-    --error: rgb(var(--md-sys-color-error));
+    --macro-bracket-layer-0: rgb(var(--md-color-syntax-bracket-layer0));
+    --macro-bracket-layer-1: rgb(var(--md-color-syntax-bracket-layer1));
+    --macro-bracket-layer-2: rgb(var(--md-color-syntax-bracket-layer2));
+    --error: rgb(var(--md-color-error));
     --complete: #84cc7b;
 
-    --selection: rgb(var(--md-sys-color-primary), 0.16);
-    --label: rgb(var(--md-sys-color-on-surface-variant));
-    --description: rgb(var(--md-sys-color-on-surface-variant));
+    --selection: rgb(var(--md-color-primary), 0.16);
+    --label: rgb(var(--md-color-on-surface-variant));
+    --description: rgb(var(--md-color-on-surface-variant));
 
     --bracket-outline: #dcdfdc40;
 
@@ -50,8 +50,8 @@
     --variant-name: #c06ed4;
     --variant-value: #5f94f5;
 
-    --sb-button-hovered: rgb(var(--md-sys-color-on-surface), 0.08);
-    --sb-button-selected: rgb(var(--md-sys-color-secondary-container));
+    --sb-button-hovered: rgb(var(--md-color-on-surface), 0.08);
+    --sb-button-selected: rgb(var(--md-color-secondary-container));
 
     --elevation-0: 0 0 0 0 #00000026, 0 0 0 0 #0000004d;
 	--elevation-1: 0 1px 3px 1px #00000026, 0 1px 2px 0 #0000004d;
@@ -148,16 +148,13 @@ hr {
 */
 
 .topbar {
-    box-sizing: border-box;
-    height: 50px;
-    background-color: var(--editor-titlebar);
-    color: var(--normal);
-
     display: flex;
     align-items: center;
-    padding: 15px;
-	
-    border-bottom: 1px solid var(--editor-outline);
+    box-sizing: border-box;
+    height: 56px;
+    padding: 12px;
+    color: var(--normal);
+    background-color: var(--editor-titlebar);
 }
 
 .title-name #name-1,
@@ -169,17 +166,11 @@ hr {
     position: relative;
     top: 2px;
 
-    color: var(--normal);
+    color: rgb(var(--md-color-on-secondary-container));
     text-decoration: none;
 }
-.title-name #name-2 {
-    color: rgb(var(--md-sys-color-on-surface-variant));
-}
 .title-name:hover #name-1 {
-    color: rgb(var(--md-sys-color-primary));
-}
-.title-name:hover #name-2 {
-    color: rgb(var(--md-sys-color-on-surface));
+    color: rgb(var(--md-color-on-primary-container));
 }
 
 /*
@@ -192,7 +183,7 @@ hr {
     flex-direction: column;
     width: fit-content;
     min-width: fit-content;
-    background-color: rgb(var(--md-sys-color-surface-container));
+    background-color: rgb(var(--md-color-surface-container));
 }
 .sb-left {
     grid-area: nav;
@@ -212,14 +203,14 @@ hr {
     width: 48px;
     height: 48px;
     border-radius: 28px;
-    color: rgb(var(--md-sys-color-on-surface-variant));
+    color: rgb(var(--md-color-on-surface-variant));
 }
 .sb-btn:hover {
     background-color: var(--sb-button-hovered);
     cursor: pointer;
 }
 .sb-btn.selected {
-    color: rgb(var(--md-sys-color-on-secondary-container));
+    color: rgb(var(--md-color-on-secondary-container));
     background-color: var(--sb-button-selected);
 }
 
@@ -245,7 +236,7 @@ hr {
     height: 17.5em;
     border-radius: 8px;
     background-color: var(--editor-body);
-    border: 1px solid rgb(var(--md-sys-color-outline-variant));
+    border: 1px solid rgb(var(--md-color-outline-variant));
     box-sizing: border-box;
     overflow: hidden;
 }
@@ -283,7 +274,7 @@ hr {
     text-align: right;
     padding: 0 8px;
     border-radius: 4px 0 0 4px;
-    color: rgb(var(--md-sys-color-outline));
+    color: rgb(var(--md-color-outline));
     transition: color .1s;
 }
 
@@ -331,7 +322,7 @@ hr {
     padding-left: 8px;
 }
 .editor-line.current {
-    --normal: rgb(var(--md-sys-color-on-secondary-container));
+    --normal: rgb(var(--md-color-on-secondary-container));
     color: var(--normal);
     background-color: var(--editor-current-line);
 }
@@ -493,8 +484,8 @@ span {
 }
 
 .macro-bracket-match.macro-bracket-match {
-    color: rgb(var(--md-sys-color-on-tertiary-container)) !important;
-    background: rgb(var(--md-sys-color-tertiary-container));
+    color: rgb(var(--md-color-on-tertiary-container)) !important;
+    background: rgb(var(--md-color-tertiary-container));
 }
 
 /* bracket layers (only brackets) */
@@ -631,16 +622,16 @@ span {
     height: stretch;
     padding: 0 8px;
     margin-right: 0px;
-    background-color: rgb(var(--md-sys-color-surface-container));
+    background-color: rgb(var(--md-color-surface-container));
 }
 .status:not(:last-child) {
     border-right: 1px solid var(--editor-outline);
 }
 .status-label.emph {
-    color: rgb(var(--md-sys-color-tertiary));
+    color: rgb(var(--md-color-tertiary));
 }
 .status-separator {
-    color: rgb(var(--md-sys-color-on-surface-variant));
+    color: rgb(var(--md-color-on-surface-variant));
 }
 
 

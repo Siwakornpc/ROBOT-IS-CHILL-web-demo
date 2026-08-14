@@ -6,14 +6,25 @@ import * as MCU from '@material/material-color-utilities';
 const variant = 'dark'; // 'light', 'light-mc', 'light-hc', 'dark', 'dark-mc', 'dark-hc'
 const color = '#2a36e5';
 
+const customThemeColors = {
+  syntaxName: '#72a5e7',
+  syntaxValue: '#e7be72',
+  syntaxEscaped: '#fc9929',
+  syntaxBracketLayer0: '#e4dc6a', 
+  syntaxBracketLayer1: '#c85acc', 
+  syntaxBracketLayer2: '#5f94f5',
+};
+
 export default function ThemeScript() {
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme-variant', variant);
+    const toKebab = (str: string) =>
+      str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
 
     const rgbStr = (argb: number) =>
       `${MCU.redFromArgb(argb)}, ${MCU.greenFromArgb(argb)}, ${MCU.blueFromArgb(argb)}`;
 
-    function setTheme(sourceColor: string, variant = 'dark', suffix = '') {
+    function setTheme(sourceColor: string, variant = 'dark') {
+      document.documentElement.setAttribute('data-theme-variant', variant);
       const hct = MCU.Hct.fromInt(MCU.argbFromHex(sourceColor));
       const target = document.documentElement;
 
@@ -96,10 +107,28 @@ export default function ThemeScript() {
         if (dynamicColors[camelToken]) {
           const argb = dynamicColors[camelToken].getArgb(scheme);
           target.style.setProperty(
-            `--md-sys-color-${token}${suffix}`,
+            `--md-color-${token}`,
             rgbStr(argb)
           );
         }
+      });
+      
+      // custom color harmonization
+      Object.entries(customThemeColors).forEach(([name, hex]) => {
+        const designArgb = MCU.argbFromHex(hex);
+        const harmonizedArgb = MCU.Blend.harmonize(designArgb, sourceArgb);
+        const customGroup = MCU.customColor(sourceArgb, {
+          value: harmonizedArgb,
+          name: name,
+          blend: true,
+        });
+        const themeGroup = isDark ? customGroup.dark : customGroup.light;
+
+        const kebabName = toKebab(name);
+        target.style.setProperty(`--md-color-${kebabName}`, rgbStr(themeGroup.color));
+        target.style.setProperty(`--md-color-on-${kebabName}`, rgbStr(themeGroup.onColor));
+        target.style.setProperty(`--md-color-${kebabName}-container`, rgbStr(themeGroup.colorContainer));
+        target.style.setProperty(`--md-color-on-${kebabName}-container`, rgbStr(themeGroup.onColorContainer));
       });
     }
 
