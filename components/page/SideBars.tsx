@@ -7,6 +7,9 @@ export function LeftBar() {
             <div className="sb-btn">
                 <a href="../render" className="icon custom render">render</a>
             </div>
+            <div className="sb-btn">
+                <a href="../search" className="icon search">search</a>
+            </div>
         </div>
     );
 }
