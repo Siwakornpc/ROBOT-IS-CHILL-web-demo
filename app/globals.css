@@ -579,8 +579,6 @@ hr {
     height: 48px;
     border-radius: 28px;
     color: rgb(var(--md-color-on-surface-variant));
-    
-    transition: 0.2s ease;
 }
 .nav-btn:hover {
     background-color: var(--surface-hovered);
