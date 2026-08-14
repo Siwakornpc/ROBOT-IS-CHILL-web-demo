@@ -6,16 +6,16 @@ import { useEffect } from "react";
 
 export default function Home() {
     useEffect(() => {
-        const macrosia_btn = document.querySelector(".sb-btn:has(.icon.macrosia)");
+        const macrosia_btn = document.querySelector(".nav-btn:has(.icon.macrosia)");
 
         macrosia_btn?.classList.add("selected");
         macrosia_btn?.querySelector(".icon.macrosia")?.classList.add("selected");
     }, []);
     return (
         <main className="align-layout">
-            <LeftBar />
+            <NavRail />
             <Body />
-            <RightBar />
+            <DetailPanel />
         </main>
     );
 }

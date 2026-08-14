@@ -1,22 +1,22 @@
-export function LeftBar() {
+export function NavRail() {
     return (
-        <div className="sb-left">
-            <div className="sb-btn">
+        <div className="navrail">
+            <div className="nav-btn">
                 <a href="../macrosia" className="icon custom macrosia">macrosia</a>
             </div>
-            <div className="sb-btn">
+            <div className="nav-btn">
                 <a href="../render" className="icon custom render">render</a>
             </div>
-            <div className="sb-btn">
-                <a href="../search" className="icon search">search</a>
+            <div className="nav-btn">
+                <a href="../macrosia" className="icon search">search</a>
             </div>
         </div>
     );
 }
 
-export function RightBar() {
+export function DetailPanel() {
     return (
-        <div className="sb-right">
+        <div className="right-sheet">
             
         </div>
     );
