@@ -10,9 +10,9 @@ const customThemeColors = {
   syntaxName: '#72a5e7',
   syntaxValue: '#e7be72',
   syntaxEscaped: '#fc9929',
-  syntaxBracketLayer0: '#e4dc6a', 
-  syntaxBracketLayer1: '#c85acc', 
-  syntaxBracketLayer2: '#5f94f5',
+  syntaxBracketLayer0: { color: '#e4dc6a', blend: false }, 
+  syntaxBracketLayer1: { color: '#c85acc', blend: false }, 
+  syntaxBracketLayer2: { color: '#5f94f5', blend: false },
 };
 
 export default function ThemeScript() {
@@ -116,14 +116,25 @@ export default function ThemeScript() {
       });
       
       // custom color harmonization
-      Object.entries(customThemeColors).forEach(([name, hex]) => {
+      // Custom color processing with per-color blending option
+      Object.entries(customThemeColors).forEach(([name, config]) => {
+        // Normalize string vs object config
+        const hex = typeof config === 'string' ? config : config.color;
+        const blend = typeof config === 'string' ? true : config.blend;
+
         const designArgb = MCU.argbFromHex(hex);
-        const harmonizedArgb = MCU.Blend.harmonize(designArgb, sourceArgb);
+        
+        // Only harmonize if shouldBlend is true
+        const targetArgb = blend 
+          ? MCU.Blend.harmonize(designArgb, sourceArgb) 
+          : designArgb;
+
         const customGroup = MCU.customColor(sourceArgb, {
-          value: harmonizedArgb,
+          value: targetArgb,
           name: name,
-          blend: true,
+          blend,
         });
+
         const themeGroup = isDark ? customGroup.dark : customGroup.light;
 
         const kebabName = toKebab(name);

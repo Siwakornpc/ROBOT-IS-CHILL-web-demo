@@ -463,6 +463,7 @@ span {
 }
 
 .macro-name {
+    font-style: bold;
     color: var(--macro-name);
 }
 
@@ -479,8 +480,8 @@ span {
 }
 
 .macro-empty {
-    color: var(--macro-empty) !important;
     font-style: italic;
+    color: var(--macro-empty) !important;
 }
 
 .macro-bracket-match.macro-bracket-match {
