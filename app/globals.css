@@ -197,11 +197,6 @@ hr {
     background-color: var(--editor-titlebar);
 }
 
-.title-name #name-1,
-.title-name #name-2 {
-    transition: 0.2s ease;
-}
-
 .title-name {
     font-size: 1.2rem;
     position: relative;
@@ -211,6 +206,10 @@ hr {
     text-decoration: none;
 }
 
+.title-name #name-1,
+.title-name #name-2 {
+    transition: 0.2s ease;
+}
 .title-name:hover #name-1 {
     color: rgb(var(--md-color-on-primary-container));
 }
@@ -257,7 +256,7 @@ hr {
 }
 
 /*
-    editor screen
+    IDE panel
 */
 
 .editor-container {
@@ -266,10 +265,6 @@ hr {
     position: relative;
     gap: 10px;
 }
-
-/*
-    IDE panel
-*/
 
 .editor-code {
     display: flex;
@@ -285,7 +280,6 @@ hr {
     box-shadow: 0 0 0 0 var(--editor-outline-selected);
     transition: box-shadow 0.1s ease-out;
 }
-
 .editor-code:has(#editor-area:focus) {
     box-shadow: 0 0 0 2px var(--editor-outline-selected);
 }
@@ -323,17 +317,16 @@ hr {
     color: rgb(var(--md-color-outline));
     transition: color .1s;
 }
-
 .gutter-line.active {
     color: var(--editor-gutter-fg-active);
     background: var(--editor-current-line);
 }
 
-.editor-text-scroll {
-    position: relative;
+.editor-text {
     flex: 1 1 auto;
-    overflow: auto;
+    position: relative;
     min-width: 0;
+    width: stretch;
 }
 
 .editor-current-line {
@@ -367,7 +360,6 @@ hr {
 .editor-line {
     padding-left: 8px;
 }
-
 .editor-line.current {
     --normal: rgb(var(--md-color-on-secondary-container));
     color: var(--normal);
@@ -390,12 +382,10 @@ hr {
     border-radius: 8px;
     transition: 0.2s ease;
 }
-
 #run:hover {
     background-color: #222225;
     border: 1px solid #4b4b50;
 }
-
 #run:active {
     background-color: #1a1a1d;
     border: 1px solid #353538;
@@ -413,19 +403,18 @@ hr {
 .execution-mode-select {
     display: block;
     box-sizing: border-box;
-    background: var(--editor-body);
-    border: 1px solid var(--editor-outline);
     width: 64px;
     height: 32px;
     padding-left: 10px;
     border-radius: 8px;
+    background: var(--editor-body);
+    border: 1px solid var(--editor-outline);
 
     font-family: var(--font-family-code);
     font-size: var(--font-size-code);
     transition: 0.2s ease;
     font-weight: bold;
 }
-
 .execution-mode-select.clicked {
     background-color: var(--editor-current-line);
     transition: 0s ease;
@@ -433,31 +422,21 @@ hr {
 
 .execution-mode-select-options {
     position: absolute;
-    z-index: calc(pow(10, pow(100, 100)));
+    pointer-events: none;
     width: 230px;
+    border-radius: 8px;
     background: var(--editor-body);
     border: 1px solid var(--editor-outline);
-    border-radius: 8px;
     box-shadow: var(--elevation-3);
+    opacity: 0;
     transform: translateY(0) scale(0.95);
     transition: 0.2s ease;
+    z-index: 9999;
 }
-.execution-mode-select-options {
-    opacity: 0;
-    transform: translateY(0px) scale(0.95);
-    pointer-events: none;
-}
-
 .execution-mode-select-options.visible {
     opacity: 1;
     transform: translateY(6px) scale(1);
     pointer-events: auto;
-}
-
-.execution-mode-select-options-labels {
-    display: flex;
-    padding: 10px 20px;
-    user-select: none;
 }
 
 .execution-mode-select-options-title {
@@ -466,26 +445,27 @@ hr {
     border-bottom: 1px solid var(--editor-outline);
     user-select: none;
 }
-
+.execution-mode-select-options-labels {
+    display: flex;
+    padding: 10px 20px;
+    user-select: none;
+}
 .execution-mode-select-options-labels:hover {
     background-color: var(--editor-current-line);
     cursor: pointer;
-}
-
-.emsol-label {
-    width: 54px;
-    font-weight: bold;
 }
 
 .emph {
     font-weight: bold;
     color: var(--complete);
 }
-
+.emsol-label {
+    width: 54px;
+    font-weight: bold;
+}
 .emsol-title {
     font-weight: bold;
 }
-
 .emsol-description {
     color: var(--description);
     font-size: 0.8em;
@@ -495,39 +475,32 @@ hr {
     syntax highlighting
 */
 
-span {
+.editor-line > span {
     border-radius: 1px;
 }
 
 .macro-brackets {
     color: var(--macro-brackets);
 }
-
 .macro-arg-separator {
     color: var(--macro-arg-separator);
 }
-
 .macro-name {
     color: var(--macro-name);
 }
-
 .macro-value {
     color: var(--macro-value);
 }
-
 .escape {
     color: var(--escape);
 }
-
 .macro-value-escape {
     color: var(--macro-value-escape);
 }
-
 .macro-empty {
     font-style: italic;
     color: var(--macro-empty) !important;
 }
-
 .macro-bracket-match.macro-bracket-match {
     color: rgb(var(--md-color-on-tertiary-container)) !important;
     background: rgb(var(--md-color-tertiary-container), .32);
@@ -562,55 +535,37 @@ span {
     render screen
 */
 
-#render-output {
-    display: flex;
-    position: relative;
-    justify-content: center;
-    align-items: center;
-}
-
 .render-screen {
-    position: relative;
-    
-    box-sizing: border-box;
     display: flex;
     justify-content: center;
     align-items: center;
+    box-sizing: border-box;
+    position: relative;
 
     width: stretch;
     height: calc(100vh - 400px - 20px - 30px);
     min-height: 200px;
+    padding: 12px;
 
     background-color: var(--editor-body);
     border: 1px solid var(--editor-outline);
     border-radius: 8px;
 }
 
-.render-screen-scroll {
-    position: relative;
-    box-sizing: border-box;
-    padding: 10px;
-    
-    display: flex;
-    justify-content: center;
-}
-
 #render-output {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: sticky;
     font-family: var(--font-family-code);
     font-size: var(--font-size-code);
-    
-    display: flex;
-
     word-wrap: break-word;
     white-space: break-spaces;
     overflow-wrap: anywhere;
 }
-
 #render-output.error {
     color: var(--error);
 }
-
 #render-output.complete {
     color: var(--complete);
 }
