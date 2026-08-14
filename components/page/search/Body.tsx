@@ -1,7 +1,7 @@
 import RecieveScreen from "./RecieveScreen";
 import SearchTags from "./SearchButtons";
 
-export default function FilterPanel() {
+export function FilterPanel() {
     return(
         <div className="filter-controls">
             <p className="text-label">Search</p>
@@ -10,7 +10,7 @@ export default function FilterPanel() {
     );
 }
 
-export default function Body() {
+export function Body() {
     return (
         <main style={{ width: "stretch" }}>
             <div className="main-body">
