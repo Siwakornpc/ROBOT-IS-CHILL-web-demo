@@ -1,4 +1,4 @@
-export function NavRail() {
+export function LeftBar() {
     return (
         <div className="navrail">
             <div className="nav-btn">
@@ -14,7 +14,7 @@ export function NavRail() {
     );
 }
 
-export function DetailPanel() {
+export function RightBar() {
     return (
         <div className="right-sheet">
             

@@ -13,9 +13,9 @@ export default function Home() {
     }, []);
     return (
         <main className="align-layout">
-            <NavRail />
+            <LeftBar />
             <Body />
-            <DetailPanel />
+            <RightBar />
         </main>
     );
 }
