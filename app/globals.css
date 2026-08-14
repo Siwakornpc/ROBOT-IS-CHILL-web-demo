@@ -428,17 +428,14 @@ hr {
     pointer-events: none;
     width: 230px;
     padding: 4px;
-    border-radius: 8px;
-    border: 1px solid rgb(var(--md-color-surface-container-high));
+    border-radius: 16px;
     background: rgb(var(--md-color-surface-container-low));
-    
     box-shadow: var(--elevation-3);
     transform: translateY(0)scale(.95);
     opacity: 0;
     transition: all .2s;
     z-index: 9999;
 }
-
 .menu.visible {
     opacity: 1;
     transform: translateY(4px) scale(1);
@@ -451,9 +448,7 @@ hr {
     font-size: 14px;
     font-weight: 500;
     line-height: 20px;
-    padding: 8px 16px;
-
-    border-bottom: 1px solid rgb(var(--md-color-surface-container-high));
+    padding: 8px 16px 0;
     color: rgb(var(--md-color-on-surface-variant));
 }
 .menu-option {
@@ -462,7 +457,7 @@ hr {
     -webkit-user-select: none;
     user-select: none;
     height: 44px;
-    padding: 24px 16px;
+    padding: 12px;
     border-radius: 4px;
 }
 .menu-option:hover {
