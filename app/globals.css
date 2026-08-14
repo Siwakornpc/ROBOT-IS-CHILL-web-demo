@@ -25,12 +25,12 @@
     --macro-value-escape: rgb(var(--md-color-syntax-escaped));
     --macro-empty: rgb(var(--md-color-outline));
 
-    --editor-body: rgb(var(--md-color-surface-container-high));
+    --editor-body: rgb(var(--md-color-surface-container));
     --editor-outline: rgb(var(--md-color-outline-variant));
     --editor-outline-selected: rgb(var(--md-color-primary));
     --editor-gutter-fg: rgb(var(--md-color-on-surface-variant));
     --editor-gutter-fg-active: rgb(var(--md-color-on-surface));
-    --editor-current-line: rgb(var(--md-color-on-surface),0.08);
+    --editor-current-line: rgb(var(--md-color-surface-container-highest));
 
     --macro-bracket-layer-0: rgb(var(--md-color-syntax-bracket-layer0));
     --macro-bracket-layer-1: rgb(var(--md-color-syntax-bracket-layer1));
@@ -44,11 +44,11 @@
 
     --bracket-outline: rgb(var(--md-color-on-tertiary-container), .32);
 
-    --flag-name: #8bd1ec;
-    --flag-value: #84cc7b;
+    --flag-name: rgb(var(--md-color-render-flag-name));
+    --flag-value: rgb(var(--md-color-render-flag-value));
 
-    --variant-name: #c06ed4;
-    --variant-value: #5f94f5;
+    --variant-name: rgb(var(--md-color-render-variant-name));
+    --variant-value: rgb(var(--md-color-render-variant-value));
 
     --sb-button-hovered: rgb(var(--md-color-on-surface), 0.08);
     --sb-button-selected: rgb(var(--md-color-secondary-container));
