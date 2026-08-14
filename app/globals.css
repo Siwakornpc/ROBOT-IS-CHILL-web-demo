@@ -25,12 +25,12 @@
     --macro-value-escape: rgb(var(--md-color-syntax-escaped));
     --macro-empty: rgb(var(--md-color-outline));
 
-    --editor-body: rgb(var(--md-color-surface-container-high));
+    --editor-body: rgb(var(--md-color-surface-container));
     --editor-outline: rgb(var(--md-color-outline-variant));
     --editor-outline-selected: rgb(var(--md-color-primary));
     --editor-gutter-fg: rgb(var(--md-color-on-surface-variant));
     --editor-gutter-fg-active: rgb(var(--md-color-on-surface));
-    --editor-current-line: rgb(var(--md-color-on-surface),0.08);
+    --editor-current-line: rgb(var(--md-color-surface-container-highest));
 
     --macro-bracket-layer-0: rgb(var(--md-color-syntax-bracket-layer0));
     --macro-bracket-layer-1: rgb(var(--md-color-syntax-bracket-layer1));
