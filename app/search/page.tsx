@@ -7,7 +7,7 @@ import { nav_btn_select } from "@/components/nav_select";
 
 export default function Home() {
     useEffect(() => {
-        nav_btn_select("search");
+        nav_btn_select("Search");
     }, []);
     return (
         <main className="align-layout">
