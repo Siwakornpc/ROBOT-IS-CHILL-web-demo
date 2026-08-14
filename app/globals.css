@@ -36,7 +36,7 @@
     --macro-bracket-layer-1: rgb(var(--md-color-syntax-bracket-layer1));
     --macro-bracket-layer-2: rgb(var(--md-color-syntax-bracket-layer2));
     --error: rgb(var(--md-color-error));
-    --complete: #84cc7b;
+    --success: rgb(var(--md-color-success));
 
     --selection: rgb(var(--md-color-primary), 0.16);
     --label: rgb(var(--md-color-on-surface-variant));
@@ -469,18 +469,18 @@ hr {
     cursor: pointer;
     background-color: rgb(var(--md-color-on-surface), 0.08);
 }
-.emenu-option:first-child {
+.menu-option:first-child {
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
 }
-.emenu-option:last-child {
+.menu-option:last-child {
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
 }
 
 .emph {
     font-weight: bold;
-    color: var(--complete);
+    color: var(--success);
 }
 
 .menu-option-icon {
@@ -596,7 +596,7 @@ hr {
     color: var(--error);
 }
 #render-output.complete {
-    color: var(--complete);
+    color: var(--success);
 }
 
 /*
