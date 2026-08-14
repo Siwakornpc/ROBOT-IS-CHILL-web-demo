@@ -3,12 +3,12 @@ import SearchTags from "./SearchButtons";
 
 export default function Body() {
     return (
+        <div className="filter-controls">
+            <p className="text-label">Search</p>
+            <SearchTags/>
+        </div>
         <main style={{ width: "stretch" }}>
             <div className="main-body">
-                <div className="filter-controls">
-                    <p className="text-label">Search</p>
-                    <SearchTags/>
-                </div>
                 <input
                     className="searchbar"
                     contentEditable="true"
