@@ -464,6 +464,15 @@ hr {
     cursor: pointer;
     background-color: rgb(var(--md-color-on-surface), 0.08);
 }
+.menu-option:active {
+    cursor: pointer;
+    background-color: rgb(var(--md-color-on-surface), 0.1);
+}
+.menu-option.selected {
+    border-radius: 12px;
+    color: rgb(var(--md-color-on-tertiary-container));
+    background-color: rgb(var(--md-color-tertiary-container));
+}
 .menu-option:first-child {
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
