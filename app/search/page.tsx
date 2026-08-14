@@ -3,11 +3,11 @@
 import Body from "@/components/page/search/Body";
 import { LeftBar, RightBar } from "@/components/page/SideBars";
 import { useEffect } from "react";
-import { sb_btn_select } from "@/components/sb_select";
+import { nav_btn_select } from "@/components/nav_select";
 
 export default function Home() {
     useEffect(() => {
-        sb_btn_select("search");
+        nav_btn_select("search");
     }, []);
     return (
         <main className="align-layout">
