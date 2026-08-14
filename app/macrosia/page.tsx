@@ -6,7 +6,7 @@ import { useEffect } from "react";
 
 export default function Home() {
     useEffect(() => {
-        const macrosia_btn = document.querySelector(".nav-btn:has(.icon.macrosia)");
+        const macrosia_btn = document.querySelector(".nav-btn[aria-label='macrosia']");
 
         macrosia_btn?.classList.add("selected");
         macrosia_btn?.querySelector(".icon.macrosia")?.classList.add("selected");

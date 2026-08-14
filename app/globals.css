@@ -259,6 +259,21 @@ hr {
     color: rgb(var(--md-color-on-secondary-container));
     background-color: var(--nav-button-selected);
 }
+.nav-btn:hover::after {
+    content: attr(aria-label);
+    text-transform: capitalize;
+    display: block;
+    position: absolute;
+    left: 60px;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.4px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: rgb(var(--md-color-inverse-on-surface));
+    background-color: rgb(var(--md-color-inverse-surface));
+    z-index: 9999;
+}
 
 /*
     IDE panel

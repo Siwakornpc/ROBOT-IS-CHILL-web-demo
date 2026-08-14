@@ -2,13 +2,13 @@ export function LeftBar() {
     return (
         <div className="navrail">
             <div className="nav-btn">
-                <a href="../macrosia" className="icon custom macrosia">macrosia</a>
+                <a href="../macrosia" className="icon custom" aria-label="macrosia">macrosia</a>
             </div>
             <div className="nav-btn">
-                <a href="../render" className="icon custom render">render</a>
+                <a href="../render" className="icon custom" aria-label="render">render</a>
             </div>
             <div className="nav-btn">
-                <a href="../macrosia" className="icon search">search</a>
+                <a href="../macrosia" className="icon" aria-label="search">search</a>
             </div>
         </div>
     );

@@ -6,7 +6,7 @@ import { useEffect } from "react";
 
 export default function Home() {
     useEffect(() => {
-        const render_btn = document.querySelector(".nav-btn:has(.icon.render)");
+        const render_btn = document.querySelector(".nav-btn[aria-label='render']");
 
         render_btn?.classList.add("selected");
         render_btn?.querySelector(".icon.render")?.classList.add("selected");
