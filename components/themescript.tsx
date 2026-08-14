@@ -7,6 +7,7 @@ const variant = 'dark'; // 'light', 'light-mc', 'light-hc', 'dark', 'dark-mc', '
 const color = '#2a36e5';
 
 const customThemeColors = {
+  success: '#84cc7b',
   syntaxName: '#72a5e7',
   syntaxValue: '#e7be72',
   syntaxEscaped: '#fc9929',

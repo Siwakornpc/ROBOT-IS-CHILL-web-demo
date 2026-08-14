@@ -36,7 +36,7 @@
     --macro-bracket-layer-1: rgb(var(--md-color-syntax-bracket-layer1));
     --macro-bracket-layer-2: rgb(var(--md-color-syntax-bracket-layer2));
     --error: rgb(var(--md-color-error));
-    --complete: #84cc7b;
+    --success: rgb(var(--md-color-success));
 
     --selection: rgb(var(--md-color-primary), 0.16);
     --label: rgb(var(--md-color-on-surface-variant));
@@ -476,7 +476,7 @@ hr {
 
 .emph {
     font-weight: bold;
-    color: var(--complete);
+    color: var(--success);
 }
 .menu-option-icon {
     min-width: 20px;
@@ -589,7 +589,7 @@ hr {
     color: var(--error);
 }
 #render-output.complete {
-    color: var(--complete);
+    color: var(--success);
 }
 
 /*
