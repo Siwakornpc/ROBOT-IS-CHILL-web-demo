@@ -27,7 +27,7 @@
 
     --editor-body: rgb(var(--md-color-surface-container-high));
     --editor-outline: rgb(var(--md-color-outline-variant));
-    --editor-outline-selected: rgb(var(--md-color-outline));
+    --editor-outline-selected: rgb(var(--md-color-primary));
     --editor-gutter-fg: rgb(var(--md-color-on-surface-variant));
     --editor-gutter-fg-active: rgb(var(--md-color-on-surface));
     --editor-current-line: rgb(var(--md-color-on-surface),0.08);
@@ -42,7 +42,7 @@
     --label: rgb(var(--md-color-on-surface-variant));
     --description: rgb(var(--md-color-on-surface-variant));
 
-    --bracket-outline: rgb(var(--md-sys-color-on-tertiary-container), calc((2 * 16)/100));
+    --bracket-outline: rgb(var(--md-color-on-tertiary-container), .32);
 
     --flag-name: #8bd1ec;
     --flag-value: #84cc7b;
@@ -83,6 +83,11 @@
   font-family: 'ricwd-icons';
   font-style: normal;
   src: url(/ricwd-icons.woff2) format('woff2');
+}
+
+::selection,
+.selection {
+    background-color: var(--selection);
 }
 
 body {
@@ -485,10 +490,9 @@ span {
 }
 
 .macro-bracket-match.macro-bracket-match {
-    color: rgb(var(--md-sys-color-on-tertiary-container)) !important;
-    background: rgb(var(--md-sys-color-tertiary-container), calc((4 * 16)/100));
-    
-    outline: 1px solid var(--bracket-outline);
+    color: rgb(var(--md-color-on-tertiary-container)) !important;
+    background: rgb(var(--md-color-tertiary-container), .32);
+    outline: 1px solid rgb(var(--md-color-on-tertiary-container), .32);
 }
 
 /* bracket layers (only brackets) */
@@ -496,60 +500,57 @@ span {
 .bracket-level-0 {
     color: var(--macro-bracket-layer-0);
 }
-
 .bracket-level-1 {
     color: var(--macro-bracket-layer-1);
 }
-
 .bracket-level-2 {
     color: var(--macro-bracket-layer-2);
 }
-
-::selection,
-.selection {
-    background-color: var(--selection);
-}
-
-/* flags and variant (in render-highlight.js) */
-
 .flag-name {
     color: var(--flag-name)
 }
-
 .flag-value {
     color: var(--flag-value)
 }
-
 .variant-name {
     color: var(--variant-name)
 }
-
 .variant-value {
     color: var(--variant-value)
 }
 
 /*
-    scrollbars (webkit)
+    scroll bars (webkit)
 */
 
-::-webkit-scrollbar {
+.editor-text-scroll::-webkit-scrollbar,
+#render-output::-webkit-scrollbar {
     width: 10px;
     height: 10px;
 }
 
-::-webkit-scrollbar-track {
+#render-output {
+    display: flex;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+}
+
+.editor-text-scroll::-webkit-scrollbar-track,
+#render-output::-webkit-scrollbar-track {
     background: transparent;
 }
 
-::-webkit-scrollbar-thumb {
-    background-color: var(--editor-outline);    /* HERE */
+.editor-text-scroll::-webkit-scrollbar-thumb,
+#render-output::-webkit-scrollbar-thumb {
+    background-color: #35353a;
     border-radius: 8px;
-
     border: 2px solid var(--editor-body);
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background-color: var(--editor-outline-selected);       /* HERE */
+.editor-text-scroll::-webkit-scrollbar-thumb:hover,
+#render-output::-webkit-scrollbar-thumb:hover {
+    background-color: #45454b;
 }
 
 /*
@@ -557,25 +558,23 @@ span {
 */
 
 .render-screen {
-    position: relative;
-    
     box-sizing: border-box;
     display: flex;
     justify-content: center;
     align-items: center;
 
     width: stretch;
+    padding: 10px;
     height: calc(100vh - 400px - 13px - 30px);
     min-height: 200px;
 
     background-color: var(--editor-body);
-    border: 1px solid var(--editor-outline);
+    border: 1px solid #3a3a3d;
     border-radius: 8px;
 }
 
 #render-output {
     box-sizing: border-box;
-    padding: 10px;
     width: 100%;
     height: 100%;
     font-family: var(--font-family-code);
@@ -584,13 +583,6 @@ span {
     word-wrap: break-word;
     white-space: break-spaces;
     overflow-wrap: anywhere;
-}
-
-#render-output {
-    display: flex;
-    position: relative;
-    justify-content: center;
-    align-items: center;
 }
 
 #render-output.error {
@@ -635,14 +627,14 @@ span {
     color: rgb(var(--md-color-tertiary));
 }
 .status-separator {
-    color: rgb(var(--md-color-on-surface-variant));
+    color: rgb(var(--md-color-outline));
 }
 
 
 /*
-*   ===========
-*   flexibility     ----================----
-*   ===========
+*
+*       FLEXIBILITY
+*
 */
 
 @media only screen and (max-width: 700px) {
