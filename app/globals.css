@@ -562,14 +562,6 @@ span {
     render screen
 */
 
-<<<<<<< HEAD
-=======
-::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-}
-
->>>>>>> 297e595ed6166122ad37551d6fc4d322db9254bd
 #render-output {
     display: flex;
     position: relative;
@@ -577,27 +569,6 @@ span {
     align-items: center;
 }
 
-<<<<<<< HEAD
-=======
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: #35353a;
-    border-radius: 8px;
-    border: 2px solid var(--editor-body);
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background-color: #45454b;
-}
-
-/*
-    render screen
-*/
-
->>>>>>> 297e595ed6166122ad37551d6fc4d322db9254bd
 .render-screen {
     position: relative;
     
