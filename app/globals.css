@@ -228,16 +228,17 @@ hr {
 }
 .sb-left {
     grid-area: nav;
-    gap: 12px;
+    gap: 8px;
     padding: 4px;
 }
 .sb-right {
     grid-area: details;
     gap: 8px;
-    padding: 8px;
+    padding: 4px;
 }
 
 .nav-btn {
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -245,6 +246,8 @@ hr {
     height: 48px;
     border-radius: 28px;
     color: rgb(var(--md-color-on-surface-variant));
+    
+    transition: 0.2s ease;
 }
 .nav-btn:hover {
     background-color: var(--sb-button-hovered);
@@ -254,13 +257,17 @@ hr {
     color: rgb(var(--md-color-on-secondary-container));
     background-color: var(--sb-button-selected);
 }
+.nav-btn::after {
+    opacity: 0;
+    transform: scale(0.8) translateX(-6px);
+}
 .nav-btn:hover::after {
     content: attr(aria-label);
     text-transform: capitalize;
     display: block;
     position: absolute;
     left: 60px;
-    font-size: 12px;
+    font-size: 0.8em;
     line-height: 16px;
     letter-spacing: 0.4px;
     padding: 4px 8px;
@@ -268,6 +275,9 @@ hr {
     color: rgb(var(--md-color-inverse-on-surface));
     background-color: rgb(var(--md-color-inverse-surface));
     z-index: 9999;
+
+    opacity: 1;
+    transform: scale(1) translateX(6px);
 }
 
 /*
@@ -593,7 +603,7 @@ hr {
     width: stretch;
     height: calc(100vh - 400px - 20px - 30px);
     min-height: 200px;
-    padding: 12px;
+    padding: 8px 12px;
 
     background-color: var(--editor-body);
     border: 1px solid var(--editor-outline);
@@ -655,7 +665,37 @@ hr {
     color: rgb(var(--md-color-outline));
 }
 
+/*
+    search elements
+*/
 
+.searchbar {
+    /*searchbart simpSON*/
+    box-sizing: border-box;
+    position: relative;
+
+    width: stretch;
+    padding: 8px 12px;
+
+    font-family: var(--font-family-code);
+    font-size: var(--font-size-code);
+
+    background-color: var(--editor-body);
+    border: 1px solid var(--editor-outline);
+    border-radius: 8px;
+    overflow-wrap: anywhere;
+    outline: none;
+
+    box-shadow: 0 0 0 0 var(--editor-outline-selected);
+    transition: box-shadow 0.1s ease-out;
+}
+.searchbar:focus {
+    box-shadow: 0 0 0 2px var(--editor-outline-selected);
+}
+
+.searchbar::placeholder {
+    color: var(--editor-outline);
+}
 /*
 *
 *       FLEXIBILITY

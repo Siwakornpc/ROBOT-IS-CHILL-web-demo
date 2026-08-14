@@ -2,4 +2,7 @@ export function nav_btn_select(name: string) {
     const nav_btn = document.querySelector(`.nav-btn[aria-label='${name}']`);
 
     nav_btn?.classList.add("selected");
+
+    const nav_btn_a = nav_btn?.querySelector("a");
+    nav_btn_a?.setAttribute('aria-disabled', 'true');
 }
