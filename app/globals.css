@@ -44,11 +44,11 @@
 
     --bracket-outline: rgb(var(--md-color-on-tertiary-container), .32);
 
-    --flag-name: #8bd1ec;
-    --flag-value: #84cc7b;
+    --flag-name: var(--md-color-render-flag-name);
+    --flag-value: var(--md-color-render-flag-value);
 
-    --variant-name: #c06ed4;
-    --variant-value: #5f94f5;
+    --variant-name: var(--md-color-render-variant-name);
+    --variant-value: var(--md-color-render-variant-value);
 
     --surface-button-hovered: rgb(var(--md-color-on-surface), 0.08);
     --surface-button-pressed: rgb(var(--md-color-on-surface), 0.1);
