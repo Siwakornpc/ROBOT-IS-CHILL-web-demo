@@ -8,13 +8,11 @@ const modes = [
     value: "=t",
     label: "=t",
     title: "Render Tiles",
-    description: "Render as Tiles",
   },
   {
     value: "=r",
     label: "=r",
     title: "Render Texts",
-    description: "Render as Texts",
   },
 ] as const;
 
