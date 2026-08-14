@@ -237,7 +237,7 @@ hr {
     padding: 8px;
 }
 
-.sb-btn {
+.nav-btn {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -246,11 +246,11 @@ hr {
     border-radius: 28px;
     color: rgb(var(--md-color-on-surface-variant));
 }
-.sb-btn:hover {
+.nav-btn:hover {
     background-color: var(--sb-button-hovered);
     cursor: pointer;
 }
-.sb-btn.selected {
+.nav-btn.selected {
     color: rgb(var(--md-color-on-secondary-container));
     background-color: var(--sb-button-selected);
 }
