@@ -57,26 +57,30 @@ export default function MenuSelect<T extends string>({
 
       <div className={`menu ${className}-options ${isOpen ? "visible" : ""}`}>
         {title && <div className="menu-title">{title}</div>}
-        {options.map((item) => (
-          <div
-            key={item.value}
-            onClick={() => {
-              onChange(item.value);
-              setIsOpen(false);
-            }}
-            className="menu-option"
-          >
-            {(renderOptionIcon || item.icon) && (
-              <div className="menu-option-icon">
-                {renderOptionIcon ? renderOptionIcon(item) : item.icon}
+        {options.map((item) => {
+          const hasIcon = Boolean(renderOptionIcon || item.icon);
+
+          return (
+            <div
+              key={item.value}
+              onClick={() => {
+                onChange(item.value);
+                setIsOpen(false);
+              }}
+              className="menu-option"
+            >
+              {hasIcon && (
+                <div className="menu-option-icon">
+                  {renderOptionIcon ? renderOptionIcon(item) : item.icon}
+                </div>
+              )}
+              <div>
+                <div className="menu-option-label">{item.title}</div>
+                {item.description && <div className="menu-option-desc">{item.description}</div>}
               </div>
-            )}
-            <div>
-              <div className="menu-option-label">{item.title}</div>
-              {item.description && <div className="menu-option-desc">{item.description}</div>}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
