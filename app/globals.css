@@ -137,7 +137,7 @@ body {
     grid-template-areas: 'nav main details';
     grid-auto-columns: auto 1fr auto;
 }
-.align-layout:has(.nav-btn.selected[aria-label="search"]) {
+.align-layout:has(.nav-btn.selected[aria-label="Search"]) {
     grid-template-areas: 'nav filters main details';
     grid-auto-columns: auto auto 1fr auto;
 }
@@ -651,8 +651,7 @@ hr {
     border: 1px solid #353538;
     transition: 0s ease;
 }
-
-[class$="-controls"] {
+.run-controls {
     display: flex;
     align-items: center;
     position: relative;
@@ -679,6 +678,23 @@ hr {
     background-color: var(--editor-current-line);
     transition: 0s ease;
 }
+
+/*
+    filter panel
+*/
+
+.filter-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 0 16px 16px 0;
+    background: rgb(var(--md-color-surface-container-low));
+}
+
+/*
+    menus
+*/
 
 .menu {
     display: flex;
