@@ -370,16 +370,20 @@ hr {
     background: rgb(var(--md-color-secondary));
 }
 .btn-outline {
-    color: rgb(var(--md-color-on-secondary-container));
-    background: rgb(var(--md-color-secondary-container));
+    margin: -1px;
+    color: rgb(var(--md-color-on-surface-variant));
+    border: 1px solid rgb(var(--md-color-outline-variant));
 }
 .btn-outline:has(input[type="checkbox"]:checked) {
-    color: rgb(var(--md-color-on-secondary));
-    background: rgb(var(--md-color-secondary));
+    color: rgb(var(--md-color-inverse-on-surface));
+    background: rgb(var(--md-color-inverse-surface));
+    border: 1px solid transparent;
 }
 .btn-text {
     color: rgb(var(--md-color-primary));
-    background: none;
+}
+.btn-text:has(input[type="checkbox"]:not(:checked)) {
+    color: rgb(var(--md-color-on-surface-variant));
 }
 
 /*
