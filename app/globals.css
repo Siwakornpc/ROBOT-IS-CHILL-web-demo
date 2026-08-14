@@ -44,11 +44,11 @@
 
     --bracket-outline: rgb(var(--md-color-on-tertiary-container), .32);
 
-    --flag-name: var(--md-color-render-flag-name);
-    --flag-value: var(--md-color-render-flag-value);
+    --flag-name: rgb(var(--md-color-render-flag-name));
+    --flag-value: rgb(var(--md-color-render-flag-value));
 
-    --variant-name: var(--md-color-render-variant-name);
-    --variant-value: var(--md-color-render-variant-value);
+    --variant-name: rgb(var(--md-color-render-variant-name));
+    --variant-value: rgb(var(--md-color-render-variant-value));
 
     --surface-button-hovered: rgb(var(--md-color-on-surface), 0.08);
     --surface-button-pressed: rgb(var(--md-color-on-surface), 0.1);
