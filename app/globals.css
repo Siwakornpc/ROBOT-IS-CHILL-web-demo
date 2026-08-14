@@ -463,7 +463,7 @@ span {
 }
 
 .macro-name {
-    font-style: bold;
+    font-weight: bold;
     color: var(--macro-name);
 }
 
