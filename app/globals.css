@@ -428,14 +428,17 @@ hr {
     pointer-events: none;
     width: 230px;
     padding: 4px;
-    border-radius: 16px;
+    border-radius: 8px;
+    border: 1px solid rgb(var(--md-color-surface-container-high));
     background: rgb(var(--md-color-surface-container-low));
+    
     box-shadow: var(--elevation-3);
     transform: translateY(0)scale(.95);
     opacity: 0;
     transition: all .2s;
     z-index: 9999;
 }
+
 .menu.visible {
     opacity: 1;
     transform: translateY(4px) scale(1);
@@ -448,8 +451,9 @@ hr {
     font-size: 14px;
     font-weight: 500;
     line-height: 20px;
-    padding: 4px 12px 0;
-    margin-bottom: -2px;
+    padding: 8px 16px;
+
+    border-bottom: 1px solid rgb(var(--md-color-surface-container-high));
     color: rgb(var(--md-color-on-surface-variant));
 }
 .menu-option {
@@ -458,7 +462,7 @@ hr {
     -webkit-user-select: none;
     user-select: none;
     height: 44px;
-    padding: 12px;
+    padding: 24px 16px;
     border-radius: 4px;
 }
 .menu-option:hover {
@@ -478,15 +482,18 @@ hr {
     font-weight: bold;
     color: var(--complete);
 }
+
 .menu-option-icon {
     min-width: 20px;
-    margin-right: 8px;
+    margin-right: 16px;
 }
+
 .menu-option-label {
     font-size: 14px;
     font-weight: 500;
     line-height: 20px;
 }
+
 .menu-option-desc {
     font-size: 12px;
     line-height: 16px;
