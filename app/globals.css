@@ -42,7 +42,7 @@
     --label: rgb(var(--md-color-on-surface-variant));
     --description: rgb(var(--md-color-on-surface-variant));
 
-    --bracket-outline: rgb(var(--md-sys-color-on-tertiary-container), calc((2 * 16)/100));
+    --bracket-outline: rgb(var(--md-color-on-secondary-container), calc((2 * 16)/100));
 
     --flag-name: #8bd1ec;
     --flag-value: #84cc7b;
@@ -463,7 +463,6 @@ span {
 }
 
 .macro-name {
-    font-weight: bold;
     color: var(--macro-name);
 }
 
@@ -484,9 +483,9 @@ span {
     color: var(--macro-empty) !important;
 }
 
-.macro-bracket-match.macro-bracket-match {
-    color: rgb(var(--md-sys-color-on-tertiary-container)) !important;
-    background: rgb(var(--md-sys-color-tertiary-container), calc((4 * 16)/100));
+.macro-bracket-match {
+    color: rgb(var(--md-color-secondary-container));
+    background: rgb(var(--md-color-secondary-container), calc((4 * 16)/100));
     
     outline: 1px solid var(--bracket-outline);
 }
