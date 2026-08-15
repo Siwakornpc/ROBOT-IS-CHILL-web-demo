@@ -39,6 +39,7 @@ export default function Executionoptionselect() {
             className="menu-select"
             triggerValue={renderBadge}
             optionIcon={renderBadge}
+            style={{fontFamily: "var(--font-family-code)"}}
         />
     );
 }
