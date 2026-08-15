@@ -20,8 +20,11 @@ export default function Executionoptionselect() {
     const [mode, setMode] = useState<ExecutionMode>("=t");
 
     useEffect(() => {
-        window.executionMode = mode;
+        (window as any).executionMode = mode;
         window.dispatchEvent(new Event("executionmodechange"));
+
+        const menuSelect = document.querySelector(".menu-select") as HTMLElement | null;
+        menuSelect?.style.setProperty("font-family", "var(--font-family-code)");
     }, [mode]);
 
     const renderBadge = (item: MenuOption<ExecutionMode>) => (
@@ -39,7 +42,6 @@ export default function Executionoptionselect() {
             className="menu-select"
             triggerValue={renderBadge}
             optionIcon={renderBadge}
-            style={{fontFamily: "var(--font-family-code)"}}
         />
     );
 }
