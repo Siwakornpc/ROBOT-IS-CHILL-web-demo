@@ -10,7 +10,7 @@ export function FilterPanel() {
     );
 }
 
-export function Body() {
+export default function Body() {
     return (
         <main style={{ width: "stretch" }}>
             <div className="main-body">
