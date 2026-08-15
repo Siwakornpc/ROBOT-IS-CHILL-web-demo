@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import MenuSelect from "../search/MenuSelect";
+import MenuSelect from "../../MenuSelect";
 
 const modes = [
     {
@@ -28,7 +28,7 @@ export default function SearchSelect() {
     const [mode, setMode] = useState<Selects>("tile");
 
     useEffect(() => {
-        (window as any).executionMode = mode;
+        (window as any).selection = mode;
         window.dispatchEvent(new Event("executionmodechange"));
     }, [mode]);
 

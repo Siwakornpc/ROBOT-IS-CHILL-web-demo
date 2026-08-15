@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import MenuSelect, { MenuOption } from "../render/MenuSelect";
+import MenuSelect, { MenuOption } from "../../MenuSelect";
 
 const modes = [
     {
