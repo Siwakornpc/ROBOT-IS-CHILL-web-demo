@@ -15,8 +15,8 @@ interface MenuSelectProps<T extends string> {
     value: T;
     options: readonly MenuOption<T>[] | MenuOption<T>[];
     onChange: (value: T) => void;
-    renderTrigger?: (selectedOption: MenuOption<T>) => ReactNode;
-    renderOptionIcon?: (option: MenuOption<T>) => ReactNode;
+    triggerValue?: (selectedOption: MenuOption<T>) => ReactNode;
+    optionIcon?: (option: MenuOption<T>) => ReactNode;
     className?: string;
 }
 
@@ -25,8 +25,8 @@ export default function MenuSelect<T extends string>({
     value,
     options,
     onChange,
-    renderTrigger,
-    renderOptionIcon,
+    triggerValue,
+    optionIcon,
     className = "",
 }: MenuSelectProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
@@ -52,13 +52,13 @@ export default function MenuSelect<T extends string>({
                 className={`kill-styling ${className} ${isOpen ? "clicked" : ""}`}
                 onClick={() => setIsOpen((prev) => !prev)}
             >
-                {renderTrigger ? renderTrigger(selectedOption) : (selectedOption.label ?? selectedOption.title)}
+                {triggerValue ? triggerValue(selectedOption) : (selectedOption.label ?? selectedOption.title)}
             </button>
 
             <div className={`menu ${className}-options ${isOpen ? "visible" : ""}`}>
                 {title && <div className="menu-title">{title}</div>}
                 {options.map((item) => {
-                    const hasIcon = Boolean(renderOptionIcon || item.icon);
+                    const hasIcon = Boolean(optionIcon || item.icon);
 
                     return (
                         <div
@@ -71,7 +71,7 @@ export default function MenuSelect<T extends string>({
                         >
                             {hasIcon && (
                                 <div className="menu-option-icon">
-                                    {renderOptionIcon ? renderOptionIcon(item) : item.icon}
+                                    {optionIcon ? optionIcon(item) : item.icon}
                                 </div>
                             )}
                             <div>

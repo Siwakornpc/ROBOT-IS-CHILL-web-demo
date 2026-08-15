@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,600;0,600;0,700;1,100;1,200;1,300;1,400;1,600;1,600;1,700&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap');
 @import "tailwindcss";
 
 /*
@@ -178,10 +178,6 @@ hr {
     button styles
 */
 
-button {
-    cursor: pointer;
-}
-
 .btn {
     display: flex;
     justify-content: space-between;
@@ -211,7 +207,7 @@ button {
 .btn.xsmall {
     gap: 4px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 20px;
     padding: 6px 12px;
     border-radius: 16px;
@@ -242,7 +238,7 @@ button {
 .btn.small {
     gap: 8px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 20px;
     padding: 10px 16px;
     border-radius: 20px;
@@ -277,7 +273,7 @@ button {
 .btn.medium {
     gap: 8px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 20px;
     padding: 16px 24px;
     border-radius: 28px;
@@ -431,7 +427,7 @@ button {
 }
 .cbtn-group.xsmall .cbtn {
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 20px;
     border-radius: 4px;
 }
@@ -445,7 +441,7 @@ button {
 }
 .cbtn-group.small .cbtn {
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 20px;
     border-radius: 8px;
 }
@@ -459,7 +455,7 @@ button {
 }
 .cbtn-group.medium .cbtn {
     font-size: 16px;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 24px;
     border-radius: 8px;
 }
@@ -513,6 +509,11 @@ button {
 }
 .ascroll-y {
     overflow-y: auto;
+}
+
+.emph {
+    font-weight: bold;
+    color: var(--success);
 }
 
 .kill-styling {
@@ -594,7 +595,6 @@ button {
 .nav-btn.selected {
     color: rgb(var(--md-color-on-secondary-container));
     background-color: var(--sb-button-selected);
-    cursor: default;
 }
 .nav-btn::after {
     content: attr(aria-label, "ERROR");
@@ -763,7 +763,7 @@ button {
     display: block;
     box-sizing: border-box;
     width: stretch;
-    min-width: 48px;
+    min-width: 64px;
     height: 32px;
     padding-left: 10px;
     border-radius: 8px;
@@ -810,7 +810,7 @@ button {
     -webkit-user-select: none;
     user-select: none;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 20px;
     padding: 8px 16px 0;
     color: rgb(var(--md-color-on-surface-variant));
@@ -845,19 +845,15 @@ button {
     border-bottom-right-radius: 12px;
 }
 
-.emph {
-    font-weight: bold;
-    color: var(--success);
-}
-
 .menu-option-icon {
+    text-align: center;
     min-width: 20px;
     margin-right: 16px;
 }
 
 .menu-option-label {
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 20px;
 }
 
@@ -1012,7 +1008,7 @@ button {
     flex-direction: column;
     gap: 8px;
     min-width: 200px;
-    padding: 12px;
+    padding: 8px;
     border-radius: 0 16px 16px 0;
     background: rgb(var(--md-color-surface-container-low));
 }
