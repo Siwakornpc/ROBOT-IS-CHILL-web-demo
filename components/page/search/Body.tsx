@@ -1,5 +1,5 @@
 import SearchResults from "./SearchResultsGrid";
-import SearchTags from "./SearchButtons";
+import SearchTags from "./SearchSelect";
 
 export function FilterPanel() {
     return(

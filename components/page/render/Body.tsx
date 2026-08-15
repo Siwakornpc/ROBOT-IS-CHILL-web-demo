@@ -1,7 +1,7 @@
 "use client";
 
 import { EditorScreen } from "@/components/editor/EditorScreen";
-import ExecutionModeSelect from "@/components/ExecutionModeSelect";
+import ExecutionModeSelect from "@/components/page/render/ExecutionModeSelect";
 import MacroInitializer from "@/components/macro/MacroInitializer";
 import { RenderScreen } from "@/components/render-screen/render/RenderScreen";
 import { StatusBar } from "../../editor/statsbar/render/StatusBar";

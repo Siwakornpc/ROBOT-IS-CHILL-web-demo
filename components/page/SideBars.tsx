@@ -1,15 +1,15 @@
 export function LeftBar() {
     return (
         <div className="sb-left">
-            <div className="nav-btn" aria-label="Macrosia">
-                <a href="../macrosia" className="icon custom">macrosia</a>
-            </div>
-            <div className="nav-btn" aria-label="Render">
-                <a href="../render" className="icon custom">render</a>
-            </div>
-            <div className="nav-btn" aria-label="Search">
-                <a href="../search" className="icon">search</a>
-            </div>
+            <a href="../macrosia" className="nav-btn" aria-label="Macrosia">
+                <div className="icon custom">macrosia</div>
+            </a>
+            <a href="../render" className="nav-btn" aria-label="Render">
+                <div className="icon custom">render</div>
+            </a>
+            <a href="../search" className="nav-btn" aria-label="Search">
+                <div className="icon">search</div>
+            </a>
         </div>
     );
 }
