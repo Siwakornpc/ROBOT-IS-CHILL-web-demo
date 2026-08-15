@@ -27,10 +27,10 @@ type Selects = (typeof options)[number]["value"];
 export default function SearchSelect() {
     const [mode, setMode] = useState<Selects>("tile");
 
-    useEffect(() => {
-        (window as any).executionMode = mode;
-        window.dispatchEvent(new Event("executionmodechange"));
-    }, [mode]);
+    //useEffect(() => {
+    //    (window as any).executionMode = mode;
+    //    window.dispatchEvent(new Event("executionmodechange"));
+    //}, [mode]);
 
     return (
         <MenuSelect
