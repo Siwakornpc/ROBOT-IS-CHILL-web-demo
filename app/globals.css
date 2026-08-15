@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,600;0,600;0,700;1,100;1,200;1,300;1,400;1,600;1,600;1,700&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap');
 @import "tailwindcss";
 
 /*
@@ -207,7 +207,7 @@ hr {
 .btn.xsmall {
     gap: 4px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 20px;
     padding: 6px 12px;
     border-radius: 16px;
@@ -238,7 +238,7 @@ hr {
 .btn.small {
     gap: 8px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 20px;
     padding: 10px 16px;
     border-radius: 20px;
@@ -273,7 +273,7 @@ hr {
 .btn.medium {
     gap: 8px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 20px;
     padding: 16px 24px;
     border-radius: 28px;
@@ -427,7 +427,7 @@ hr {
 }
 .cbtn-group.xsmall .cbtn {
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 20px;
     border-radius: 4px;
 }
@@ -441,7 +441,7 @@ hr {
 }
 .cbtn-group.small .cbtn {
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 20px;
     border-radius: 8px;
 }
@@ -455,7 +455,7 @@ hr {
 }
 .cbtn-group.medium .cbtn {
     font-size: 16px;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 24px;
     border-radius: 8px;
 }
@@ -804,7 +804,7 @@ hr {
     -webkit-user-select: none;
     user-select: none;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 20px;
     padding: 8px 16px 0;
     color: rgb(var(--md-color-on-surface-variant));
@@ -851,7 +851,7 @@ hr {
 
 .menu-option-label {
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 20px;
 }
 
