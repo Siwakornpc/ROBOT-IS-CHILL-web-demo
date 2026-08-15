@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import MenuSelect from "../search/MenuSelect";
+import MenuSelect from "@/components/MenuSelect";
 
-const modes = [
+const options = [
     {
         value: "tile",
         title: "Tiles",
@@ -17,12 +17,12 @@ const modes = [
         title: "Filters",
     },
     {
-        value: "overlays",
+        value: "overlay",
         title: "Overlays",
     },
 ] as const;
 
-type Selects = (typeof modes)[number]["value"];
+type Selects = (typeof options)[number]["value"];
 
 export default function SearchSelect() {
     const [mode, setMode] = useState<Selects>("tile");
@@ -36,7 +36,7 @@ export default function SearchSelect() {
         <MenuSelect
             title="Search Filters"
             value={mode}
-            options={modes}
+            options={options}
             onChange={setMode}
             className="menu-select"
         />

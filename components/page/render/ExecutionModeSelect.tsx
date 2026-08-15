@@ -1,24 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import MenuSelect, { MenuOption } from "../render/MenuSelect";
+import MenuSelect, { MenuOption } from "@/components/MenuSelect";
 
-const modes = [
+const options = [
     {
         value: "=t",
-        label: "=t",
+        optionIcon: "=t",
         title: "Render Tiles",
     },
     {
         value: "=r",
-        label: "=r",
+        optionIcon: "=r",
         title: "Render Texts",
     },
 ] as const;
 
-type ExecutionMode = (typeof modes)[number]["value"];
+type ExecutionMode = (typeof options)[number]["value"];
 
-export default function ExecutionModeSelect() {
+export default function Executionoptionselect() {
     const [mode, setMode] = useState<ExecutionMode>("=t");
 
     useEffect(() => {
@@ -28,7 +28,7 @@ export default function ExecutionModeSelect() {
 
     const renderBadge = (item: MenuOption<ExecutionMode>) => (
         <>
-            =<span className="emph">{(item.label ?? item.value).replace(/^=(.*)/, "$1")}</span>
+            =<span className="emph">{(item.optionIcon ?? item.value).replace(/^=(.*)/, "$1")}</span>
         </>
     );
 
@@ -36,11 +36,12 @@ export default function ExecutionModeSelect() {
         <MenuSelect
             title="Execution Mode"
             value={mode}
-            options={modes}
+            options={options}
             onChange={setMode}
             className="menu-select"
-            renderTrigger={renderBadge}
-            renderOptionIcon={renderBadge}
+            triggerValue={renderBadge}
+            optionIcon={renderBadge}
+            style={{fontFamily: "var(--font-family-code)"}}
         />
     );
 }

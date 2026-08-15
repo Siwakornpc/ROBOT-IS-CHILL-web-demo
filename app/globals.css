@@ -178,10 +178,6 @@ hr {
     button styles
 */
 
-button {
-    cursor: pointer;
-}
-
 .btn {
     display: flex;
     justify-content: space-between;
@@ -515,6 +511,11 @@ button {
     overflow-y: auto;
 }
 
+.emph {
+    font-weight: bold;
+    color: var(--success);
+}
+
 .kill-styling {
     all: unset
 }
@@ -594,7 +595,6 @@ button {
 .nav-btn.selected {
     color: rgb(var(--md-color-on-secondary-container));
     background-color: var(--sb-button-selected);
-    cursor: default;
 }
 .nav-btn::after {
     content: attr(aria-label, "ERROR");
@@ -759,11 +759,10 @@ button {
     height: 24px;
 }
 
-.menu-select {
+.execution-mode-select {
     display: block;
     box-sizing: border-box;
-    width: stretch;
-    min-width: 48px;
+    width: 64px;
     height: 32px;
     padding-left: 10px;
     border-radius: 8px;
@@ -775,7 +774,7 @@ button {
     transition: 0.2s ease;
     font-weight: bold;
 }
-.menu-select.clicked {
+.execution-mode-select.clicked {
     background-color: var(--editor-current-line);
     transition: 0s ease;
 }
@@ -845,12 +844,8 @@ button {
     border-bottom-right-radius: 12px;
 }
 
-.emph {
-    font-weight: bold;
-    color: var(--success);
-}
-
 .menu-option-icon {
+    text-align: center;
     min-width: 20px;
     margin-right: 16px;
 }
@@ -1012,7 +1007,7 @@ button {
     flex-direction: column;
     gap: 8px;
     min-width: 200px;
-    padding: 12px;
+    padding: 8px;
     border-radius: 0 16px 16px 0;
     background: rgb(var(--md-color-surface-container-low));
 }
