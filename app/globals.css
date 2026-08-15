@@ -178,6 +178,10 @@ hr {
     button styles
 */
 
+button {
+    cursor: pointer;
+}
+
 .btn {
     display: flex;
     justify-content: space-between;
@@ -590,6 +594,7 @@ hr {
 .nav-btn.selected {
     color: rgb(var(--md-color-on-secondary-container));
     background-color: var(--sb-button-selected);
+    cursor: default;
 }
 .nav-btn::after {
     content: attr(aria-label, "ERROR");
@@ -754,10 +759,11 @@ hr {
     height: 24px;
 }
 
-.execution-mode-select {
+.menu-select {
     display: block;
     box-sizing: border-box;
-    width: 64px;
+    width: stretch;
+    min-width: 48px;
     height: 32px;
     padding-left: 10px;
     border-radius: 8px;
@@ -769,7 +775,7 @@ hr {
     transition: 0.2s ease;
     font-weight: bold;
 }
-.execution-mode-select.clicked {
+.menu-select.clicked {
     background-color: var(--editor-current-line);
     transition: 0s ease;
 }
@@ -1006,7 +1012,7 @@ hr {
     flex-direction: column;
     gap: 8px;
     min-width: 200px;
-    padding: 8px;
+    padding: 12px;
     border-radius: 0 16px 16px 0;
     background: rgb(var(--md-color-surface-container-low));
 }

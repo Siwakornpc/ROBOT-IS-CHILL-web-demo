@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import MenuSelect, { MenuOption } from "./MenuSelect";
+import MenuSelect, { MenuOption } from "../render/MenuSelect";
 
 const modes = [
     {
@@ -38,7 +38,7 @@ export default function ExecutionModeSelect() {
             value={mode}
             options={modes}
             onChange={setMode}
-            className="execution-mode-select"
+            className="menu-select"
             renderTrigger={renderBadge}
             renderOptionIcon={renderBadge}
         />
