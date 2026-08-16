@@ -5,6 +5,7 @@ import { type SearchMode } from "./SearchSelect";
 
 const BATCH_SIZE = 32;
 const MAX_IMAGE_RETRIES = 3;
+const IMAGE_RETRY_DELAY_MS = 250;
 
 const endpoints: Partial<Record<SearchMode, string>> = {
     tile: "tiles.json",
@@ -140,7 +141,7 @@ export default function SearchResults({
         setSettledImageCount((count) => count + 1);
     }
 
-    async function retryFailedImage(name: string, imageBatch: number, imageUrl: string) {
+    async function retryFailedImage(name: string, imageBatch: number) {
         if (imageBatch !== activeBatchRef.current || retryingImagesRef.current.has(name)) {
             return;
         }
@@ -148,7 +149,7 @@ export default function SearchResults({
         retryingImagesRef.current.add(name);
 
         try {
-            const response = await fetch(imageUrl, {
+            const response = await fetch(`/api/tiles/${encodeURIComponent(name)}`, {
                 method: "HEAD",
                 cache: "no-store",
             });
@@ -164,6 +165,9 @@ export default function SearchResults({
                 return;
             }
 
+            await new Promise((resolve) => setTimeout(resolve, IMAGE_RETRY_DELAY_MS));
+            if (imageBatch !== activeBatchRef.current) return;
+
             imageRetryCountsRef.current.set(name, retryCount + 1);
             setImageRetries((current) => ({
                 ...current,
@@ -175,6 +179,9 @@ export default function SearchResults({
                 markImageSettled(name, imageBatch);
                 return;
             }
+
+            await new Promise((resolve) => setTimeout(resolve, IMAGE_RETRY_DELAY_MS));
+            if (imageBatch !== activeBatchRef.current) return;
 
             imageRetryCountsRef.current.set(name, retryCount + 1);
             setImageRetries((current) => ({
@@ -236,7 +243,7 @@ export default function SearchResults({
                         src={`${imageUrl}?retry=${retry}`}
                         alt=""
                         onLoad={() => markImageSettled(name, imageBatch)}
-                        onError={() => retryFailedImage(name, imageBatch, imageUrl)}
+                        onError={() => retryFailedImage(name, imageBatch)}
                     />
                     <span className="search-item-name">{name}</span>
                 </button>
