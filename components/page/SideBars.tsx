@@ -10,6 +10,9 @@ export function LeftBar() {
             <a href="../search" className="nav-btn" aria-label="Search">
                 <div className="icon">search</div>
             </a>
+            <a href="../settings" className="nav-btn" aria-label="Settings">
+                <div className="icon">settings</div>
+            </a>
         </div>
     );
 }
