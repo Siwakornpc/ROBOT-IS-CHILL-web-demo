@@ -12,7 +12,7 @@
 :root {
     --body: rgb(var(--md-color-surface));
     --font-size-code: .875rem;
-    --editor-line-height: 21px;
+    --editor-line-height: 24px;
     --editor-titlebar: rgb(var(--md-color-secondary-container));
 
     --normal: rgb(var(--md-color-on-surface));
@@ -787,26 +787,6 @@ hr {
     menus
 */
 
-.menu-select {
-    display: block;
-    box-sizing: border-box;
-    width: stretch;
-    min-width: 64px;
-    height: 32px;
-    padding-inline: 8px;
-    border-radius: 8px;
-    background: var(--editor-body);
-    border: 1px solid var(--editor-outline);
-
-    font-size: var(--font-size-code);
-    transition: .2s ease;
-    font-weight: bold;
-}
-.menu-select.clicked {
-    background: var(--editor-current-line);
-    transition: 0s ease;
-}
-
 .menu {
     display: flex;
     flex-direction: column;
@@ -884,6 +864,26 @@ hr {
     font-size: 12px;
     line-height: 16px;
     color: var(--description);
+}
+
+.execution-mode-select {
+    display: block;
+    box-sizing: border-box;
+    width: stretch;
+    min-width: 64px;
+    height: 32px;
+    padding-inline: 8px;
+    border-radius: 8px;
+    background: var(--editor-body);
+    border: 1px solid var(--editor-outline);
+    font-family: var(--font-family-code);
+    font-size: var(--font-size-code);
+    transition: .2s ease;
+    font-weight: bold;
+}
+.execution-mode-select.clicked {
+    background: var(--editor-current-line);
+    transition: 0s ease;
 }
 
 /*

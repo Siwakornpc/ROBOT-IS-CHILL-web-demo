@@ -49,7 +49,7 @@ export default function MenuSelect<T extends string>({
         <div ref={wrapperRef} style={{ position: "relative", display: "inline-block" }}>
             <button
                 type="button"
-                className={`kill-styling ${className} ${isOpen ? "clicked" : ""}`}
+                className={`kill-styling menu-trigger ${className} ${isOpen ? "clicked" : ""}`}
                 onClick={() => setIsOpen((prev) => !prev)}
             >
                 {triggerValue ? triggerValue(selectedOption) : (selectedOption.label ?? selectedOption.title)}
