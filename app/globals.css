@@ -384,22 +384,22 @@ hr {
     background: rgb(var(--md-color-inverse-surface));
     border: 1px solid transparent;
 }
-.btn-text {
+.btn-text, .ibtn.btn-text:has(input[type="checkbox"]:checked) {
     color: rgb(var(--md-color-primary));
 }
-.btn-text:hover {
+.btn-text:hover, .ibtn.btn-text:has(input[type="checkbox"]:checked):hover {
     background: rgb(var(--md-color-primary), .08);
 }
-.btn-text:active {
+.btn-text:active, .ibtn.btn-text:has(input[type="checkbox"]:checked):active {
     background: rgb(var(--md-color-primary), .1);
 }
-.btn-text:has(input[type="checkbox"]:not(:checked)) {
+.btn-text:has(input[type="checkbox"]:not(:checked)), .ibtn.btn-text {
     color: rgb(var(--md-color-on-surface-variant));
 }
-.btn-text:has(input[type="checkbox"]:not(:checked)):hover {
+.btn-text:has(input[type="checkbox"]:not(:checked)):hover, .ibtn.btn-text:hover {
     background: rgb(var(--md-color-on-surface-variant), .08);
 }
-.btn-text:has(input[type="checkbox"]:not(:checked)):active {
+.btn-text:has(input[type="checkbox"]:not(:checked)):active, .ibtn.btn-text:active {
     background: rgb(var(--md-color-on-surface-variant), .1);
 }
 
