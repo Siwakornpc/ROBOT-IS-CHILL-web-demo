@@ -34,11 +34,10 @@ export default function SearchSelect() {
 
     return (
         <MenuSelect
-            title="Search Filters"
             value={mode}
             options={options}
             onChange={setMode}
-            className="menu-select"
+            className="search-type-select"
         />
     );
 }
