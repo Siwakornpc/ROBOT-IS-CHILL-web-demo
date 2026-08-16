@@ -74,13 +74,15 @@ export default function MenuSelect<T extends string>({
                             }}
                             className={`menu-option ${isSelected ? "selected" : ""}`}
                         >
-                            <div className="menu-option-icon">
-                                {isSelected ? (
-                                    <span className="icon">check</span>
-                                ) : hasIcon ? (
+                            {isSelected ? (
+                                <span className="menu-option-icon icon">
+                                    check
+                                </span>
+                            ) : hasIcon ? (
+                                <span className="menu-option-icon icon">
                                     optionIcon ? optionIcon(item) : item.icon
-                                ) : null}
-                            </div>
+                                </span>
+                            ) : null}
                             <div>
                                 <div className="menu-option-label">{item.title}</div>
                                 {item.description && <div className="menu-option-desc">{item.description}</div>}
