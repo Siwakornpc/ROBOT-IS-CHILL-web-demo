@@ -1024,7 +1024,8 @@ hr {
     gap: 8px;
     min-width: 200px;
     padding: 8px;
-    border-radius: 0 16px 16px 0;
+    border-start-end-radius: 16px;
+    border-end-end-radius: 16px;
     background: rgb(var(--md-color-surface-container-low));
 }
 
@@ -1042,16 +1043,17 @@ hr {
     position: relative;
 
     width: stretch;
-    padding: 8px 12px;
+    padding: 12px;
+    padding-inline-start: 52px;
+    border-radius: 28px;
 
     font-family: var(--font-family-code);
     font-size: var(--font-size-code);
 
     background: var(--editor-body);
     border: 1px solid var(--editor-outline);
-    border-radius: 28px;
-    overflow-wrap: anywhere;
     outline: none;
+    overflow-wrap: anywhere;
 
     box-shadow: 0 0 0 0 var(--editor-outline-selected);
     transition: box-shadow .1s ease-out;
