@@ -16,6 +16,7 @@
     --editor-titlebar: rgb(var(--md-color-secondary-container));
 
     --normal: rgb(var(--md-color-on-surface));
+    --variant: rgb(var(--md-color-on-surface-variant));
     --macro-brackets: rgb(var(--md-color-on-surface));
     --macro-arg-separator: rgb(var(--md-color-on-surface-variant));
     --macro-name: rgb(var(--md-color-syntax-name));
@@ -1043,15 +1044,13 @@ hr {
     position: relative;
 
     width: stretch;
-    padding: 12px;
-    padding-inline-start: 52px;
+    padding: 12px 52px;
     border-radius: 28px;
 
-    font-family: var(--font-family-code);
-    font-size: var(--font-size-code);
+    font-size: 16px;
+    line-height: 24px;
 
-    background: var(--editor-body);
-    border: 1px solid var(--editor-outline);
+    background: rgb(var(--md-color-surface-container-high));
     outline: none;
     overflow-wrap: anywhere;
 
@@ -1062,7 +1061,7 @@ hr {
     box-shadow: 0 0 0 2px var(--editor-outline-selected);
 }
 .searchbar::placeholder {
-    color: var(--editor-outline);
+    color: var(--variant);
 }
 
 .search > .btn {
