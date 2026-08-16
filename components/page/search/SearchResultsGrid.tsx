@@ -245,7 +245,7 @@ export default function SearchResults({
                         onLoad={() => markImageSettled(name, imageBatch)}
                         onError={() => retryFailedImage(name, imageBatch)}
                     />
-                    <span className="search-item-name">{name.replace(/_/g, '_<wbr>')}</span>
+                    <span className="search-item-name">{name}</span>
                 </button>
                 );
             })}
