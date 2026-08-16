@@ -37,6 +37,7 @@ export default function SearchSelect({
             options={options}
             onChange={onChange}
             className="btn small btn-filled"
+            anchor="sb"
         />
     );
 }

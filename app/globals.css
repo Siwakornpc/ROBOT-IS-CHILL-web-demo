@@ -808,6 +808,11 @@ hr {
     transform: translateY(4px) scale(1);
     pointer-events: auto;
 }
+.menu.visible[class^="anchor-"][class$="b"] {
+    opacity: 1;
+    transform: translateY(-4px) scale(1);
+    pointer-events: auto;
+}
 
 .menu-title {
     -webkit-user-select: none;
@@ -893,6 +898,10 @@ hr {
 [dir="rtl"] .anchor-sb { transform-origin: right bottom; }
 [dir="rtl"] .anchor-et { transform-origin: left top; }
 [dir="rtl"] .anchor-eb { transform-origin: left bottom; }
+
+[class^="anchor-"][class$="b"] {
+    bottom: 100%;
+}
 
 .menu-option-label {
     font-size: 14px;
