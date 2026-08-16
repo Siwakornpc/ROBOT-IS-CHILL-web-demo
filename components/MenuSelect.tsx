@@ -80,7 +80,7 @@ export default function MenuSelect<T extends string>({
                                 </span>
                             ) : hasIcon ? (
                                 <span className="menu-option-icon icon">
-                                    optionIcon ? optionIcon(item) : item.icon
+                                    {optionIcon ? optionIcon(item) : item.icon}
                                 </span>
                             ) : null}
                             <div>
