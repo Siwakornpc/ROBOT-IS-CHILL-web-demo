@@ -535,9 +535,10 @@ hr {
 }
 
 .title-name {
-    font-size: 1.2rem;
+    display: flex;
     position: relative;
     top: 2px;
+    font-size: 1.2rem;
 
     color: rgb(var(--md-color-on-secondary-container));
     text-decoration: none;
@@ -668,12 +669,14 @@ hr {
     flex: 0 0 auto;
     min-width: 3em;
     overflow: hidden;
-    border-right: 1px solid var(--editor-outline);
+    border-inline-end: 1px solid var(--editor-outline);
 }
 
 .editor-gutter {
-    padding: 4px 0 4px 4px;
+    -webkit-user-select: none;
     user-select: none;
+    padding: 4px;
+    padding-inline-end: 0;
 }
 
 .gutter-line {
@@ -681,9 +684,10 @@ hr {
     line-height: var(--editor-line-height);
     font-family: var(--font-family-code);
     font-size: var(--font-size-code);
-    text-align: right;
+    text-align: end;
     padding: 0 8px;
-    border-radius: 4px 0 0 4px;
+    border-start-start-radius: 4px;
+    border-end-start-radius: 4px;
     color: rgb(var(--md-color-outline));
     transition: color .1s;
 }
@@ -717,7 +721,7 @@ hr {
 }
 
 .editor-line {
-    padding-left: 8px;
+    padding-inline-start: 8px;
     caret-color: rgb(var(--md-color-primary));
 }
 .editor-line.current {
@@ -769,7 +773,7 @@ hr {
     width: stretch;
     min-width: 64px;
     height: 32px;
-    padding-left: 10px;
+    padding-inline: 8px;
     border-radius: 8px;
     background: var(--editor-body);
     border: 1px solid var(--editor-outline);
@@ -847,7 +851,7 @@ hr {
 .menu-option-icon {
     text-align: center;
     min-width: 20px;
-    margin-right: 16px;
+    margin-inline-end: 16px;
 }
 
 .menu-option-label {
@@ -969,7 +973,7 @@ hr {
     display: flex;
     align-items: center;
     position: absolute;
-    right: 0;
+    inset-inline-end: 0;
     height: 24px;
     font-size: .9em;
     line-height: 1em;
@@ -989,7 +993,7 @@ hr {
     background-color: rgb(var(--md-color-surface-container));
 }
 .status:not(:last-child) {
-    border-right: 1px solid var(--editor-outline);
+    border-inline-end: 1px solid var(--editor-outline);
 }
 .status-label.emph {
     color: rgb(var(--md-color-tertiary));
