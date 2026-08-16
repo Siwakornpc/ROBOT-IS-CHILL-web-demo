@@ -11,6 +11,7 @@ export interface MenuOption<T extends string = string> {
 }
 
 interface MenuSelectProps<T extends string> {
+    id?: string;
     title?: string;
     value: T;
     options: readonly MenuOption<T>[] | MenuOption<T>[];
@@ -21,6 +22,7 @@ interface MenuSelectProps<T extends string> {
 }
 
 export default function MenuSelect<T extends string>({
+    id,
     title,
     value,
     options,
@@ -49,13 +51,13 @@ export default function MenuSelect<T extends string>({
         <div ref={wrapperRef} style={{ position: "relative", display: "inline-block" }}>
             <button
                 type="button"
-                className={`kill-styling menu-trigger ${className} ${isOpen ? "clicked" : ""}`}
+                className={`menu-trigger ${className} ${id} ${isOpen ? "clicked" : ""}`}
                 onClick={() => setIsOpen((prev) => !prev)}
             >
                 {triggerValue ? triggerValue(selectedOption) : (selectedOption.label ?? selectedOption.title)}
             </button>
 
-            <div className={`menu ${className}-options ${isOpen ? "visible" : ""}`}>
+            <div className={`menu ${id}-options ${isOpen ? "visible" : ""}`}>
                 {title && <div className="menu-title">{title}</div>}
                 {options.map((item) => {
                     const hasIcon = Boolean(optionIcon || item.icon);

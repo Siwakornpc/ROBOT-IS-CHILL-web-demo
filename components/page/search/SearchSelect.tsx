@@ -32,10 +32,11 @@ export default function SearchSelect({
 }) {
     return (
         <MenuSelect
+            id={"search-type-select"}
             value={value}
             options={options}
             onChange={onChange}
-            className="search-type-select"
+            className="btn small btn-filled"
         />
     );
 }

@@ -32,11 +32,12 @@ export default function Executionoptionselect() {
 
     return (
         <MenuSelect
+            id="execution-mode-select"
             title="Execution Mode"
             value={mode}
             options={options}
             onChange={setMode}
-            className="execution-mode-select"
+            className="kill-styling"
             triggerValue={renderBadge}
             optionIcon={renderBadge}
         />
