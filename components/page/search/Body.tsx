@@ -1,16 +1,29 @@
 import SearchResults from "./SearchResultsGrid";
-import SearchTags from "./SearchSelect";
+import { type SelectedTile } from "./SearchResultsGrid";
+import SearchSelect, { type SearchMode } from "./SearchSelect";
 
-export function FilterPanel() {
+export function FilterPanel({
+    mode,
+    onModeChange,
+}: {
+    mode: SearchMode;
+    onModeChange: (mode: SearchMode) => void;
+}) {
     return(
         <div className="filter-controls">
             <p className="text-label">Search</p>
-            <SearchTags/>
+            <SearchSelect value={mode} onChange={onModeChange} />
         </div>
     );
 }
 
-export default function Body() {
+export default function Body({
+    mode,
+    onTileSelect,
+}: {
+    mode: SearchMode;
+    onTileSelect: (selectedTile: SelectedTile) => void;
+}) {
     return (
         <main style={{ width: "stretch" }}>
             <div className="main-body">
@@ -23,12 +36,12 @@ export default function Body() {
                         contentEditable="true"
                         placeholder="search for something..."
                     />
-                    <button className="btn ibtn small btn-text search-btn">
+                    {/* <button className="btn ibtn small btn-text search-btn">
                         <span className="icon">search</span>
-                    </button>
+                    </button> */}
                 </div>
                 <hr />
-                <SearchResults />
+                <SearchResults key={mode} mode={mode} onTileSelect={onTileSelect} />
             </div>
         </main>
     );
