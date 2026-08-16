@@ -1077,8 +1077,22 @@ hr {
 
 .search-item-tile {
     width: 64px;
+    height: 64px;
     image-rendering: pixelated;
+    overflow: hidden;
 }
+
+@keyframes search-item-tile-animation {
+    0% { top: calc(0 * -64px); }
+    100% { top: calc(2 * -64px); }
+}
+.search-item-tile-frame {
+    position: relative;
+    width: inherit;
+    height: inherit;
+    animation: search-item-tile-animation 1s steps(3) infinite;
+}
+
 .search-item-name {
     font-size: 14px;
     line-height: 20px;
