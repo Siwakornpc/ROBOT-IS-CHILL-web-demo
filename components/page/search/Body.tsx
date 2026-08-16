@@ -58,7 +58,7 @@ export function FilterPanel({
                             <span>{filterType}</span>
                             <input type="text" placeholder="filter value..." />
                             <button
-                                className="btn ibtn small btn-text"
+                                className="btn ibtn xsmall btn-text"
                                 onClick={() => handleRemoveFilter(index)}
                             >
                                 remove

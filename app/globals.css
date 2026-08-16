@@ -121,6 +121,10 @@
     background: var(--selection);
 }
 
+::placeholder {
+    color: var(--variant);
+}
+
 body {
     box-sizing: border-box;
     margin: 0;
@@ -1208,9 +1212,6 @@ hr {
 }
 .searchbar:focus {
     box-shadow: 0 0 0 2px var(--editor-outline-selected);
-}
-.searchbar::placeholder {
-    color: var(--variant);
 }
 
 .search > .btn {
