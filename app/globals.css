@@ -863,11 +863,11 @@ hr {
 .anchor-b  { transform-origin: bottom; }
 .anchor-l  { transform-origin: left; }
 .anchor-r  { transform-origin: right; }
+.anchor-c  { transform-origin: center; }
 .anchor-tl { transform-origin: top left; }
 .anchor-tr { transform-origin: top right; }
 .anchor-bl { transform-origin: bottom left; }
 .anchor-br { transform-origin: bottom right; }
-.anchor-c  { transform-origin: center; }
 
 .anchor-sc { transform-origin: left center; }
 .anchor-cs { transform-origin: center top; }

@@ -31,7 +31,7 @@ export default function MenuSelect<T extends string>({
     triggerValue,
     optionIcon,
     className = "",
-    anchor = "se",
+    anchor = "ss",
 }: MenuSelectProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
