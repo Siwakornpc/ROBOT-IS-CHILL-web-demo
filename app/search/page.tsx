@@ -11,6 +11,7 @@ import { nav_btn_select } from "@/components/nav_select";
 export default function Home() {
     const [mode, setMode] = useState<SearchMode>("tile");
     const [selectedTile, setSelectedTile] = useState<SelectedTile | null>(null);
+    const [filters, setFilters] = useState<Record<string, string[]>>({});
     const showRightBar = mode === "tile" && selectedTile !== null;
 
     function handleModeChange(nextMode: SearchMode) {
@@ -26,8 +27,8 @@ export default function Home() {
     return (
         <main className="align-layout">
             <LeftBar />
-            <FilterPanel mode={mode} onModeChange={handleModeChange} />
-            <Body mode={mode} onTileSelect={setSelectedTile} />
+            <FilterPanel mode={mode} onModeChange={handleModeChange} filters={filters} onFiltersChange={setFilters} />
+            <Body mode={mode} onTileSelect={setSelectedTile} filters={filters} />
             {showRightBar && (
                 <RightBarSearch>
                     <TileDetails selectedTile={selectedTile!} />

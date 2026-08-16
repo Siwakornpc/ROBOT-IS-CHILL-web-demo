@@ -83,10 +83,14 @@ export function FilterPanel({
 export default function Body({
     mode,
     onTileSelect,
+    filters = {},
 }: {
     mode: SearchMode;
     onTileSelect: (selectedTile: SelectedTile) => void;
+    filters?: Record<string, string[]>;
 }) {
+    const [searchQuery, setSearchQuery] = useState("");
+
     return (
         <main style={{ width: "stretch" }}>
             <div className="main-body">
@@ -96,15 +100,16 @@ export default function Body({
                     </button>
                     <input
                         className="searchbar"
-                        contentEditable="true"
                         placeholder="search for something..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.currentTarget.value)}
                     />
                     {/* <button className="btn ibtn small btn-text search-btn">
                         <span className="icon">search</span>
                     </button> */}
                 </div>
                 <hr />
-                <SearchResults key={mode} mode={mode} onTileSelect={onTileSelect} />
+                <SearchResults key={mode} mode={mode} onTileSelect={onTileSelect} searchQuery={searchQuery} filters={filters} />
             </div>
         </main>
     );
