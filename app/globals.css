@@ -886,6 +886,30 @@ hr {
 .anchor-c {
     transform-origin: center;
 }
+.anchor-sc {
+    transform-origin: start center;
+}
+.anchor-cs {
+    transform-origin: center start;
+}
+.anchor-ec {
+    transform-origin: end center;
+}
+.anchor-ce {
+    transform-origin: center end;
+}
+.anchor-ss {
+    transform-origin: start start;
+}
+.anchor-se {
+    transform-origin: start end;
+}
+.anchor-es {
+    transform-origin: end start;
+}
+.anchor-ee {
+    transform-origin: end end;
+}
 
 .menu-option-label {
     font-size: 14px;
