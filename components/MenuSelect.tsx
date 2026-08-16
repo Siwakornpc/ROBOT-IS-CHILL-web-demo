@@ -50,7 +50,7 @@ export default function MenuSelect<T extends string>({
     const selectedOption = options.find((item) => item.value === value) ?? options[0];
 
     return (
-        <div ref={wrapperRef} style={{ position: "relative", display: "inline-block" }}>
+        <div className="menu-wrapper" ref={wrapperRef}>
             <button
                 type="button"
                 className={`menu-trigger ${className} ${id} ${isOpen ? "clicked" : ""}`}
