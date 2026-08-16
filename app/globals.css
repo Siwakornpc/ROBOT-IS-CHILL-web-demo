@@ -859,6 +859,34 @@ hr {
     font-size: 20px;
 }
 
+.anchor-t {
+    transform-origin: top;
+}
+.anchor-b {
+    transform-origin: bottom;
+}
+.anchor-l {
+    transform-origin: left;
+}
+.anchor-r {
+    transform-origin: right;
+}
+.anchor-tl {
+    transform-origin: top left;
+}
+.anchor-tr {
+    transform-origin: top right;
+}
+.anchor-bl {
+    transform-origin: bottom left;
+}
+.anchor-br {
+    transform-origin: bottom right;
+}
+.anchor-c {
+    transform-origin: center;
+}
+
 .menu-option-label {
     font-size: 14px;
     font-weight: 600;

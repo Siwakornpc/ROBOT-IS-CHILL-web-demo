@@ -19,6 +19,7 @@ interface MenuSelectProps<T extends string> {
     triggerValue?: (selectedOption: MenuOption<T>) => ReactNode;
     optionIcon?: (option: MenuOption<T>) => ReactNode;
     className?: string;
+    anchor?: "t" | "b" | "l" | "r" | "tl" | "tr" | "bl" | "br" | "c";
 }
 
 export default function MenuSelect<T extends string>({
@@ -30,6 +31,7 @@ export default function MenuSelect<T extends string>({
     triggerValue,
     optionIcon,
     className = "",
+    anchor = "tl",
 }: MenuSelectProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
@@ -57,7 +59,7 @@ export default function MenuSelect<T extends string>({
                 {triggerValue ? triggerValue(selectedOption) : (selectedOption.label ?? selectedOption.title)}
             </button>
 
-            <div className={`menu ${id}-options ${isOpen ? "visible" : ""}`}>
+            <div className={`menu anchor-${anchor} ${id}-options ${isOpen ? "visible" : ""}`}>
                 {title && <div className="menu-title">{title}</div>}
                 {options.map((item) => {
                     const hasIcon = Boolean(optionIcon || item.icon);
