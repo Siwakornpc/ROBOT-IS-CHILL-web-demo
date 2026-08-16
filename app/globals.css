@@ -1012,6 +1012,15 @@ hr {
     background: rgb(var(--md-color-surface-container-low));
 }
 
+.search {
+    display: grid;
+    grid-template-areas: 'stack';
+}
+
+.search > * {
+    grid-area: stack;
+}
+
 .searchbar {
     box-sizing: border-box;
     position: relative;
@@ -1024,7 +1033,7 @@ hr {
 
     background-color: var(--editor-body);
     border: 1px solid var(--editor-outline);
-    border-radius: 8px;
+    border-radius: 28px;
     overflow-wrap: anywhere;
     outline: none;
 
@@ -1036,6 +1045,12 @@ hr {
 }
 .searchbar::placeholder {
     color: var(--editor-outline);
+}
+
+.search > .icon {
+    justify-self: end;
+    margin: 12px;
+    z-index: 0;
 }
 
 /*

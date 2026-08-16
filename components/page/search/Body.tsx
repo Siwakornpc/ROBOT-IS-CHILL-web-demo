@@ -14,11 +14,17 @@ export default function Body() {
     return (
         <main style={{ width: "stretch" }}>
             <div className="main-body">
-                <input
-                    className="searchbar"
-                    contentEditable="true"
-                    placeholder="search for something..."
-                />
+                <label className="search">
+                    <button className="btn ibtn small text">
+                        <span className="icon">menu</span>
+                    </button>
+                    <input
+                        className="searchbar"
+                        contentEditable="true"
+                        placeholder="search for something..."
+                    />
+                    <i className="icon">search</i>
+                </label>
                 <hr />
                 <SearchResults />
             </div>
