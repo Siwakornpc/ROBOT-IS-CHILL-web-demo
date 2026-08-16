@@ -9,8 +9,11 @@ export default function TileDetails({
 
     return (
         <div className="search-details-panel">
-            <h1>{name}</h1>
-            <img src={`https://ric-api.sno.mba/tiles/${encodeURIComponent(name)}.gif`} alt={name} className="search-details-image"/>
+            <p className="text-label search-details-name">{name}</p>
+            <div className="search-details-image-wrapper">
+              <img alt={name} className="search-details-image" src={`https://ric-api.sno.mba/tiles/${encodeURIComponent(name)}.gif`}/>
+            </div>
+            <hr/>
             <table>
                 <tbody>
                     <tr>
