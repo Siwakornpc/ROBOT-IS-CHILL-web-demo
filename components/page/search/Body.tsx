@@ -61,7 +61,7 @@ export function FilterPanel({
                                 className="btn ibtn xsmall btn-text"
                                 onClick={() => handleRemoveFilter(index)}
                             >
-                                remove
+                                <i className="icon">remove</i>
                             </button>
                         </div>
                     ))}
@@ -72,7 +72,7 @@ export function FilterPanel({
                         options={macroFilterOptions}
                         onChange={handleAddFilter}
                         className="btn ibtn small btn-filled"
-                        triggerValue={() => "add"}
+                        triggerValue={() => <i className="icon">add</i>}
                     />
                 </div>
             )}
