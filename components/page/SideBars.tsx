@@ -24,3 +24,12 @@ export function RightBar() {
         </div>
     );
 }
+
+export function RightBarSearch({ children }: { children?: ReactNode }) {
+    return (
+        <div className="sb-right search-details-panel">
+            {children}
+        </div>
+    );
+}
+import { type ReactNode } from "react";

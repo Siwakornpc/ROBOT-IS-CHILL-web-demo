@@ -72,6 +72,13 @@
 		inset 0 6px 10px 4px #00000026, inset 0 2px 3px 0 #0000004d;
 	--inset-elevation-5:
 		inset 0 8px 12px 6px #00000026, inset 0 4px 4px 0 #0000004d;
+
+    --f-elevation-0: drop-shadow(0 0 0 #00000026) drop-shadow(0 0 0 #0000004d);
+	--f-elevation-1: drop-shadow(0 1px 3px #00000026) drop-shadow(0 1px 2px #0000004d);
+	--f-elevation-2: drop-shadow(0 2px 6px #00000026) drop-shadow(0 1px 2px #0000004d);
+	--f-elevation-3: drop-shadow(0 4px 8px #00000026) drop-shadow(0 1px 3px #0000004d);
+	--f-elevation-4: drop-shadow(0 6px 10px #00000026) drop-shadow(0 2px 3px #0000004d);
+	--f-elevation-5: drop-shadow(0 8px 12px #00000026) drop-shadow(0 4px 4px #0000004d);
 }
 
 @theme inline {
@@ -1024,7 +1031,7 @@ hr {
     flex-direction: column;
     gap: 8px;
     min-width: 200px;
-    padding: 8px;
+    padding: 12px;
     border-start-end-radius: 16px;
     border-end-end-radius: 16px;
     background: rgb(var(--md-color-surface-container-low));
@@ -1084,11 +1091,13 @@ hr {
     width: -webkit-fill-available;
     width: -moz-available;
     border-radius: 8px;
-    flex: 100%;
+
     width: stretch;
+    height: calc(100vh - 150px);
     padding: 8px 12px;
     display: grid;
     position: relative;
+
     grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
     gap: 16px;
     align-content: start;
@@ -1113,14 +1122,55 @@ hr {
 }
 
 .search-item-tile {
-    width: 72px;
+    width: 48px;
+    height: 48px;
     image-rendering: pixelated;
 }
 
 .search-item-name {
     font-size: 14px;
     line-height: 20px;
+    word-wrap: anywhere;
 }
+
+/*
+    search details
+*/
+
+.search-details-panel {
+    padding: 12px;
+    width: 300px;
+}
+.search-details-image {
+    width: 100%;
+    max-width: calc(24px * 8);
+    image-rendering: pixelated;
+    margin: 2em auto;
+    filter: var(--f-elevation-5);
+}
+
+table {
+    outline: 1px solid var(--editor-outline);
+    border-radius: 8px;
+    overflow: hidden;
+    width: stretch;
+    margin-top: 1rem;
+}
+
+.table-description {
+    width: 120px;
+}
+
+th, td {
+    outline: 1px solid var(--editor-outline);
+    padding: 6px 12px;
+    word-wrap: anywhere;
+}
+
+th {
+    background: rgb(var(--md-color-surface-container-high));
+}
+
 
 /*
 *
