@@ -1083,8 +1083,8 @@ hr {
 }
 
 @keyframes search-item-tile-animation {
-    0% { top: calc(0 * -64px); }
-    100% { top: calc(2 * -64px); }
+    0% { top: 0; }
+    100% { top: -192px; }
 }
 .search-item-tile-frame {
     position: relative;
