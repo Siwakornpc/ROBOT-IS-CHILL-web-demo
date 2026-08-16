@@ -849,9 +849,14 @@ hr {
 }
 
 .menu-option-icon {
-    text-align: center;
+    display: flex;
+    align-items: center;
     min-width: 20px;
+    text-align: center;
     margin-inline-end: 16px;
+}
+.menu-option-icon > .icon {
+    font-size: 20px;
 }
 
 .menu-option-label {
