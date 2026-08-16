@@ -21,6 +21,12 @@ export type TileRecord = {
     tiling: string;
 };
 
+export type MacroRecord = {
+    creator: number;
+    description: string;
+    value: string;
+};
+
 export type SelectedTile = {
     name: string;
     tile: TileRecord;
@@ -43,12 +49,23 @@ function isTileRecord(value: unknown): value is TileRecord {
         && "tiling" in value;
 }
 
+function isMacroRecord(value: unknown): value is MacroRecord {
+    return typeof value === "object" && value !== null
+        && "creator" in value
+        && "description" in value
+        && "value" in value;
+}
+
 export default function SearchResults({
     mode,
     onTileSelect,
+    searchQuery = "",
+    filters = {},
 }: {
     mode: SearchMode;
     onTileSelect: (selectedTile: SelectedTile) => void;
+    searchQuery?: string;
+    filters?: Record<string, string[]>;
 }) {
     const gridRef = useRef<HTMLDivElement>(null);
     const [isVisible, setIsVisible] = useState(false);
@@ -120,11 +137,32 @@ export default function SearchResults({
         return () => controller.abort();
     }, [endpoint, isVisible]);
 
-    const entries = results
-        ? Object.entries(results).slice(0, visibleCount)
-        : [];
+    const allEntries = results ? Object.entries(results) : [];
+    const filteredEntries = allEntries.filter(([name, data]) => {
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            const nameMatch = name.toLowerCase().includes(query);
+            const descriptionMatch = isMacroRecord(data) && data.description.toLowerCase().includes(query);
+            if (!nameMatch && !descriptionMatch) {
+                return false;
+            }
+        }
 
-    const totalEntries = results ? Object.keys(results).length : 0;
+        // apply filters
+        for (const [filterKey, filterValues] of Object.entries(filters)) {
+            if (filterValues.length === 0) continue;
+            if (filterKey === "creator" && isMacroRecord(data)) {
+                if (!filterValues.includes(data.creator.toString())) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    });
+
+    const entries = filteredEntries.slice(0, visibleCount);
+    const totalEntries = filteredEntries.length;
     const hasMore = visibleCount < totalEntries;
     const currentBatchStart = Math.max(0, visibleCount - BATCH_SIZE);
     const currentBatchSize = entries.length - currentBatchStart;
