@@ -110,13 +110,13 @@
 
 ::selection,
 .selection {
-    background-color: var(--selection);
+    background: var(--selection);
 }
 
 body {
     box-sizing: border-box;
     margin: 0;
-    background-color: var(--body);
+    background: var(--body);
     overflow: hidden;
     font-family: var(--font-family-sans);
     color: var(--normal);
@@ -387,8 +387,20 @@ hr {
 .btn-text {
     color: rgb(var(--md-color-primary));
 }
+.btn-text:hover {
+    background: rgb(var(--md-color-primary), .08);
+}
+.btn-text:active {
+    background: rgb(var(--md-color-primary), .1);
+}
 .btn-text:has(input[type="checkbox"]:not(:checked)) {
     color: rgb(var(--md-color-on-surface-variant));
+}
+.btn-text:has(input[type="checkbox"]:not(:checked)):hover {
+    background: rgb(var(--md-color-on-surface-variant), .08);
+}
+.btn-text:has(input[type="checkbox"]:not(:checked)):active {
+    background: rgb(var(--md-color-on-surface-variant), .1);
 }
 
 .cbtn-group {
@@ -531,7 +543,7 @@ hr {
     height: 56px;
     padding: 12px;
     color: var(--normal);
-    background-color: var(--editor-titlebar);
+    background: var(--editor-titlebar);
 }
 
 .title-name {
@@ -562,7 +574,7 @@ hr {
     flex-direction: column;
     width: fit-content;
     min-width: fit-content;
-    background-color: rgb(var(--md-color-surface-container));
+    background: rgb(var(--md-color-surface-container));
 }
 .sb-left {
     grid-area: nav;
@@ -587,15 +599,15 @@ hr {
     color: rgb(var(--md-color-on-surface-variant));
 }
 .nav-btn:hover {
-    background-color: var(--surface-hovered);
+    background: var(--surface-hovered);
     cursor: pointer;
 }
 .nav-btn:active {
-    background-color: var(--surface-pressed);
+    background: var(--surface-pressed);
 }
 .nav-btn.selected {
     color: rgb(var(--md-color-on-secondary-container));
-    background-color: var(--sb-button-selected);
+    background: var(--sb-button-selected);
 }
 .nav-btn::after {
     content: attr(aria-label, "ERROR");
@@ -613,7 +625,7 @@ hr {
     text-transform: capitalize;
 
     color: rgb(var(--md-color-inverse-on-surface));
-    background-color: rgb(var(--md-color-inverse-surface));
+    background: rgb(var(--md-color-inverse-surface));
 
     opacity: 0;
     pointer-events: none;
@@ -643,7 +655,7 @@ hr {
     width: 100%;
     height: 17.5em;
     border-radius: 8px;
-    background-color: var(--editor-body);
+    background: var(--editor-body);
     border: 1px solid rgb(var(--md-color-outline-variant));
     box-sizing: border-box;
     overflow: hidden;
@@ -727,7 +739,7 @@ hr {
 .editor-line.current {
     --normal: rgb(var(--md-color-on-secondary-container));
     color: var(--normal);
-    background-color: var(--editor-current-line);
+    background: var(--editor-current-line);
 }
 
 /*
@@ -736,7 +748,7 @@ hr {
 
 #run {
     box-sizing: border-box;
-    background-color: #1c1c1f;
+    background: #1c1c1f;
     border: 1px solid #3a3a3d;
     color: white;
     width: stretch;
@@ -747,11 +759,11 @@ hr {
     transition: .2s ease;
 }
 #run:hover {
-    background-color: #222225;
+    background: #222225;
     border: 1px solid #4b4b50;
 }
 #run:active {
-    background-color: #1a1a1d;
+    background: #1a1a1d;
     border: 1px solid #353538;
     transition: 0s ease;
 }
@@ -783,7 +795,7 @@ hr {
     font-weight: bold;
 }
 .menu-select.clicked {
-    background-color: var(--editor-current-line);
+    background: var(--editor-current-line);
     transition: 0s ease;
 }
 
@@ -829,15 +841,15 @@ hr {
 }
 .menu-option:hover {
     cursor: pointer;
-    background-color: var(--surface-hovered);
+    background: var(--surface-hovered);
 }
 .menu-option:active {
-    background-color: var(--surface-pressed);
+    background: var(--surface-pressed);
 }
 .menu-option.selected {
     border-radius: 12px;
     color: rgb(var(--md-color-on-tertiary-container));
-    background-color: rgb(var(--md-color-tertiary-container));
+    background: rgb(var(--md-color-tertiary-container));
 }
 .menu-option:first-child {
     border-top-left-radius: 12px;
@@ -942,7 +954,7 @@ hr {
     min-height: 200px;
     padding: 8px 12px;
 
-    background-color: var(--editor-body);
+    background: var(--editor-body);
     border: 1px solid var(--editor-outline);
     border-radius: 8px;
 }
@@ -990,7 +1002,7 @@ hr {
     height: stretch;
     padding: 0 8px;
     margin-right: 0px;
-    background-color: rgb(var(--md-color-surface-container));
+    background: rgb(var(--md-color-surface-container));
 }
 .status:not(:last-child) {
     border-inline-end: 1px solid var(--editor-outline);
@@ -1035,7 +1047,7 @@ hr {
     font-family: var(--font-family-code);
     font-size: var(--font-size-code);
 
-    background-color: var(--editor-body);
+    background: var(--editor-body);
     border: 1px solid var(--editor-outline);
     border-radius: 28px;
     overflow-wrap: anywhere;
@@ -1051,10 +1063,15 @@ hr {
     color: var(--editor-outline);
 }
 
-.search > .icon {
-    justify-self: end;
-    margin: 12px;
+.search > .btn {
+    margin: 8px;
+}
+.search-btn {
     z-index: 0;
+    justify-self: end;
+}
+.search-menu-btn {
+    z-index: 1;
 }
 
 /*
@@ -1088,10 +1105,10 @@ hr {
     border-radius: 16px;
 }
 .search-item:hover {
-    background-color: var(--surface-hovered);
+    background: var(--surface-hovered);
 }
 .search-item:active {
-    background-color: var(--surface-pressed);
+    background: var(--surface-pressed);
 }
 
 .search-item-tile {

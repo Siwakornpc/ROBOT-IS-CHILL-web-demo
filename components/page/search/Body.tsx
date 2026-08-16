@@ -14,8 +14,8 @@ export default function Body() {
     return (
         <main style={{ width: "stretch" }}>
             <div className="main-body">
-                <label className="search">
-                    <button className="btn ibtn small text">
+                <div className="search">
+                    <button className="btn ibtn small text search-menu-btn">
                         <span className="icon">menu</span>
                     </button>
                     <input
@@ -23,8 +23,10 @@ export default function Body() {
                         contentEditable="true"
                         placeholder="search for something..."
                     />
-                    <i className="icon">search</i>
-                </label>
+                    <button className="btn ibtn small text search-btn">
+                        <span className="icon">search</span>
+                    </button>
+                </div>
                 <hr />
                 <SearchResults />
             </div>
