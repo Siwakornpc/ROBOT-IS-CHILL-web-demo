@@ -61,6 +61,7 @@ export default function MenuSelect<T extends string>({
                 {title && <div className="menu-title">{title}</div>}
                 {options.map((item) => {
                     const hasIcon = Boolean(optionIcon || item.icon);
+                    const isSelected = item.value === value;
 
                     return (
                         <div
@@ -69,13 +70,15 @@ export default function MenuSelect<T extends string>({
                                 onChange(item.value);
                                 setIsOpen(false);
                             }}
-                            className="menu-option"
+                            className={`menu-option ${isSelected ? "selected" : ""}`}
                         >
-                            {hasIcon && (
-                                <div className="menu-option-icon">
-                                    {optionIcon ? optionIcon(item) : item.icon}
-                                </div>
-                            )}
+                            <div className="menu-option-icon">
+                                {isSelected ? (
+                                    <span className="icon">check</span>
+                                ) : hasIcon ? (
+                                    optionIcon ? optionIcon(item) : item.icon
+                                ) : null}
+                            </div>
                             <div>
                                 <div className="menu-option-label">{item.title}</div>
                                 {item.description && <div className="menu-option-desc">{item.description}</div>}
