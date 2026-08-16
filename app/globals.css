@@ -1109,7 +1109,7 @@ hr {
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    width: fit-content;
+    width: stretch;
     height: fit-content;
     padding: 12px;
     border-radius: 16px;
@@ -1150,7 +1150,7 @@ hr {
     margin-inline-end: 56px;
 }
 
-.search-item-tile, .search-details-image {
+.search-details-image {
     width: 100%;
 }
 
@@ -1179,7 +1179,6 @@ table {
 }
 
 th, td {
-    outline: 1px solid var(--editor-outline);
     padding: 6px 12px;
     word-wrap: anywhere;
 }
