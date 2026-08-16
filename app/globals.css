@@ -918,7 +918,7 @@ hr {
     background: var(--editor-current-line);
     transition: 0s ease;
 }
-.execution-mode-select-options .menu-option-icon {
+.execution-mode-select-options .menu-option:not(.selected) .menu-option-icon {
     font-family: var(--font-family-code);
     font-size: var(--font-size-code);
 }
