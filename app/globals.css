@@ -1183,6 +1183,33 @@ hr {
     background: rgb(var(--md-color-surface-container-low));
 }
 
+.filter-section {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+}
+
+.filter-item {
+    display: flex;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 8px;
+    background: rgb(var(--md-color-surface-container-lowest));
+    align-items: center;
+}
+
+.filter-item input[type="text"] {
+    padding: 8px 16px;
+    border-radius: 4px 4px 0 0;
+    background: rgb(var(--md-color-surface-container-high));
+    box-shadow: inset 0 -1px 0 rgb(var(--md-color-on-surface-variant));
+}
+.filter-item input[type="text"]:focus {
+    box-shadow: inset 0 -3px 0 rgb(var(--md-color-primary));
+    outline: none;
+}
+
 .search {
     display: grid;
     grid-template-areas: 'stack';

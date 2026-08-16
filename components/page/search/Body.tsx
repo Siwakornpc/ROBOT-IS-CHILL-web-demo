@@ -49,10 +49,12 @@ export function FilterPanel({
     return(
         <div className="filter-controls">
             <p className="text-label">Search</p>
+            <hr />
             <SearchSelect value={mode} onChange={onModeChange} />
             {mode === "macro" && (
                 <div className="filter-section">
                     <p className="text-label">Filters</p>
+                    <hr />
                     {activeFilters.map((filterType, index) => (
                         <div key={index} className="filter-item">
                             <span>{filterType}</span>
