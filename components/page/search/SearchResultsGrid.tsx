@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { type SearchMode } from "./SearchSelect";
 
 const BATCH_SIZE = 32;
+const MAX_IMAGE_RETRIES = 3;
 
 const endpoints: Partial<Record<SearchMode, string>> = {
     tile: "tiles.json",
@@ -62,8 +63,11 @@ export default function SearchResults({
     const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
     const activeBatchRef = useRef(0);
     const settledImagesRef = useRef(new Set<string>());
+    const retryingImagesRef = useRef(new Set<string>());
+    const imageRetryCountsRef = useRef(new Map<string, number>());
     const [activeBatch, setActiveBatch] = useState(0);
     const [settledImageCount, setSettledImageCount] = useState(0);
+    const [imageRetries, setImageRetries] = useState<Record<string, number>>({});
 
     useEffect(() => {
         const grid = gridRef.current;
@@ -136,6 +140,52 @@ export default function SearchResults({
         setSettledImageCount((count) => count + 1);
     }
 
+    async function retryFailedImage(name: string, imageBatch: number, imageUrl: string) {
+        if (imageBatch !== activeBatchRef.current || retryingImagesRef.current.has(name)) {
+            return;
+        }
+
+        retryingImagesRef.current.add(name);
+
+        try {
+            const response = await fetch(imageUrl, {
+                method: "HEAD",
+                cache: "no-store",
+            });
+
+            if (response.status === 404) {
+                markImageSettled(name, imageBatch);
+                return;
+            }
+
+            const retryCount = imageRetryCountsRef.current.get(name) ?? 0;
+            if (retryCount >= MAX_IMAGE_RETRIES) {
+                markImageSettled(name, imageBatch);
+                return;
+            }
+
+            imageRetryCountsRef.current.set(name, retryCount + 1);
+            setImageRetries((current) => ({
+                ...current,
+                [name]: retryCount + 1,
+            }));
+        } catch {
+            const retryCount = imageRetryCountsRef.current.get(name) ?? 0;
+            if (retryCount >= MAX_IMAGE_RETRIES) {
+                markImageSettled(name, imageBatch);
+                return;
+            }
+
+            imageRetryCountsRef.current.set(name, retryCount + 1);
+            setImageRetries((current) => ({
+                ...current,
+                [name]: retryCount + 1,
+            }));
+        } finally {
+            retryingImagesRef.current.delete(name);
+        }
+    }
+
     useEffect(() => {
         const sentinel = loadMoreRef.current;
         const scrollArea = gridRef.current;
@@ -148,8 +198,11 @@ export default function SearchResults({
                     observer.disconnect();
                     activeBatchRef.current += 1;
                     settledImagesRef.current.clear();
+                    retryingImagesRef.current.clear();
+                    imageRetryCountsRef.current.clear();
                     setActiveBatch(activeBatchRef.current);
                     setSettledImageCount(0);
+                    setImageRetries({});
                     setVisibleCount((count) => count + BATCH_SIZE);
                 }
             },
@@ -164,6 +217,8 @@ export default function SearchResults({
         <div ref={gridRef} className="search-results ascroll-y" data-loaded={Boolean(results)}>
             {entries.map(([name, tile], index) => {
                 const imageBatch = index >= currentBatchStart ? activeBatch : -1;
+                const imageUrl = `https://ric-api.sno.mba/tiles/${encodeURIComponent(name)}.gif`;
+                const retry = imageRetries[name] ?? 0;
 
                 return (
                 <button
@@ -178,10 +233,10 @@ export default function SearchResults({
                 >
                     <img
                         className="search-item-tile"
-                        src={`https://ric-api.sno.mba/tiles/${encodeURIComponent(name)}.gif`}
+                        src={`${imageUrl}?retry=${retry}`}
                         alt=""
                         onLoad={() => markImageSettled(name, imageBatch)}
-                        onError={() => markImageSettled(name, imageBatch)}
+                        onError={() => retryFailedImage(name, imageBatch, imageUrl)}
                     />
                     <span className="search-item-name">{name}</span>
                 </button>
