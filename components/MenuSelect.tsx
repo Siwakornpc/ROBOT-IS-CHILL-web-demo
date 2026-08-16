@@ -19,7 +19,7 @@ interface MenuSelectProps<T extends string> {
     triggerValue?: (selectedOption: MenuOption<T>) => ReactNode;
     optionIcon?: (option: MenuOption<T>) => ReactNode;
     className?: string;
-    anchor?: "t" | "b" | "l" | "r" | "tl" | "tr" | "bl" | "br" | "c" | "sc" | "cs" | "ec" | "ce" | "ss" | "se" | "es" | "ee";
+    anchor?: "t" | "b" | "l" | "r" | "tl" | "tr" | "bl" | "br" | "c" | "sc" | "ec" | "st" | "sb" | "et" | "eb";
 }
 
 export default function MenuSelect<T extends string>({
@@ -31,7 +31,7 @@ export default function MenuSelect<T extends string>({
     triggerValue,
     optionIcon,
     className = "",
-    anchor = "ss",
+    anchor = "st",
 }: MenuSelectProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);

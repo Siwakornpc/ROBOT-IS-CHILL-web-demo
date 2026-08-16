@@ -859,6 +859,17 @@ hr {
     font-size: 20px;
 }
 
+/*
+    anchor points
+    t: top
+    b: bottom
+    l: left
+    r: right
+    s: start
+    e: end
+    c: center
+*/
+
 .anchor-t  { transform-origin: top; }
 .anchor-b  { transform-origin: bottom; }
 .anchor-l  { transform-origin: left; }
@@ -870,20 +881,18 @@ hr {
 .anchor-br { transform-origin: bottom right; }
 
 .anchor-sc { transform-origin: left center; }
-.anchor-cs { transform-origin: center top; }
 .anchor-ec { transform-origin: right center; }
-.anchor-ce { transform-origin: center bottom; }
-.anchor-ss { transform-origin: left top; }
-.anchor-se { transform-origin: left bottom; }
-.anchor-es { transform-origin: right top; }
-.anchor-ee { transform-origin: right bottom; }
+.anchor-st { transform-origin: left top; }
+.anchor-et { transform-origin: right top; }
+.anchor-sb { transform-origin: left bottom; }
+.anchor-eb { transform-origin: right bottom; }
 
 [dir="rtl"] .anchor-sc { transform-origin: right center; }
 [dir="rtl"] .anchor-ec { transform-origin: left center; }
-[dir="rtl"] .anchor-ss { transform-origin: right top; }
-[dir="rtl"] .anchor-se { transform-origin: right bottom; }
-[dir="rtl"] .anchor-es { transform-origin: left top; }
-[dir="rtl"] .anchor-ee { transform-origin: left bottom; }
+[dir="rtl"] .anchor-st { transform-origin: right top; }
+[dir="rtl"] .anchor-sb { transform-origin: right bottom; }
+[dir="rtl"] .anchor-et { transform-origin: left top; }
+[dir="rtl"] .anchor-eb { transform-origin: left bottom; }
 
 .menu-option-label {
     font-size: 14px;
