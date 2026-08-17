@@ -62,7 +62,9 @@ export function FilterPanel({
                     {activeFilters.map((filterType, index) => (
                         <div key={index} className="filter-item">
                             <span>{filterType}</span>
-                            <input type="text" placeholder="filter value..." />
+                            <label className="text-field small">
+                                <input type="text" placeholder="Filter..." required autoComplete="off" />
+                            </label>
                             <button
                                 className="btn ibtn xsmall btn-text"
                                 onClick={() => handleRemoveFilter(index)}

@@ -34,17 +34,21 @@ export default function Body() {
                         if (matched) setSearchQuery(matched.title);
                     }}
                     trigger={({ getInputProps }) => (
-                        <input
-                            {...getInputProps({
-                                type: "text",
-                                value: searchQuery,
-                                placeholder: "Type to select...",
-                                className: "custom-input-class",
-                                onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-                                    setSearchQuery(e.target.value);
-                                },
-                            })}
-                        />
+                        <label className="text-field">
+                            <span className="text-field-label">test thing idk</span>
+                            <input
+                                {...getInputProps({
+                                    type: "text",
+                                    value: searchQuery,
+                                    placeholder: " ",
+                                    required: true,
+                                    autoComplete: "off",
+                                    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                                        setSearchQuery(e.target.value);
+                                    },
+                                })}
+                            />
+                        </label>
                     )}
                 />
             </div>
