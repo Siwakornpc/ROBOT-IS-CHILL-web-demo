@@ -1358,6 +1358,10 @@ hr {
     word-wrap: break-word;
 }
 
+.search-details-macro-name.builtin .macro-name {
+    font-weight: bold;
+}
+
 .search-details-image {
     width: 100%;
     height: 100%;
