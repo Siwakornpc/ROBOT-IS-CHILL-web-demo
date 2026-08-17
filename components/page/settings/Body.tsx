@@ -21,7 +21,7 @@ const options = [
 
 export default function Body() {
     const [value, setValue] = useState("option1");
-    
+
     return (
         <main style={{ width: "stretch" }}>
             <div className="main-body">
@@ -32,13 +32,13 @@ export default function Body() {
                     value={value}
                     options={options}
                     onChange={setValue}
-                    trigger={({ isOpen, toggle, selectedOption }) => (
+                    trigger={({ open, selectedOption }) => (
                         <input
                             type="text"
                             placeholder="Search options..."
                             value={selectedOption.title}
-                            onClick={toggle}
-                            onFocus={toggle}
+                            onClick={open}
+                            onFocus={open}
                             className="my-text-input"
                         />
                     )}

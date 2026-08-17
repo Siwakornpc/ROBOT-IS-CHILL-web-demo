@@ -20,9 +20,10 @@ interface MenuSelectProps<T extends string> {
     trigger?: (props: {
         isOpen: boolean;
         toggle: () => void;
+        open: () => void;
+        close: () => void;
+        setIsOpen: (open: boolean) => void;
         selectedOption: MenuOption<T>;
-        onFocus?: () => void;
-        onBlur?: () => void;
     }) => ReactNode;
     optionIcon?: (option: MenuOption<T>) => ReactNode;
     className?: string;
@@ -42,14 +43,10 @@ export default function MenuSelect<T extends string>({
     anchor = "st",
 }: MenuSelectProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
-    const [isFocused, setIsFocused] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
-            // don't close the menu if the text input is focused
-            if (isFocused) return;
-            
             if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
                 setIsOpen(false);
             }
@@ -57,20 +54,12 @@ export default function MenuSelect<T extends string>({
 
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, [isFocused]);
+    }, []);
 
     const selectedOption = options.find((item) => item.value === value) ?? options[0];
     const toggleMenu = () => setIsOpen((prev) => !prev);
-    
-    const handleFocus = () => {
-        setIsFocused(true);
-        setIsOpen(true);
-    };
-    
-    const handleBlur = () => {
-        setIsFocused(false);
-        setIsOpen(false);
-    };
+    const openMenu = () => setIsOpen(true);
+    const closeMenu = () => setIsOpen(false);
 
     return (
         <div className="menu-wrapper" ref={wrapperRef}>
@@ -78,9 +67,10 @@ export default function MenuSelect<T extends string>({
                 trigger({
                     isOpen,
                     toggle: toggleMenu,
+                    open: openMenu,
+                    close: closeMenu,
+                    setIsOpen,
                     selectedOption,
-                    onFocus: handleFocus,
-                    onBlur: handleBlur,
                 })
             ) : (
                 <button
@@ -101,6 +91,7 @@ export default function MenuSelect<T extends string>({
                     return (
                         <div
                             key={item.value}
+                            onMouseDown={(e) => e.preventDefault()}
                             onClick={() => {
                                 onChange(item.value);
                                 setIsOpen(false);
