@@ -61,6 +61,7 @@
 	--elevation-3: 0 4px 8px 3px #00000026, 0 1px 3px 0 #0000004d;
 	--elevation-4: 0 6px 10px 4px #00000026, 0 2px 3px 0 #0000004d;
 	--elevation-5: 0 8px 12px 6px #00000026, 0 4px 4px 0 #0000004d;
+
 	--inset-elevation-0: 0 0 0 0 #00000026, 0 0 0 0 #0000004d;
 	--inset-elevation-1:
 		inset 0 1px 3px 1px #00000026, inset 0 1px 2px 0 #0000004d;
@@ -79,6 +80,13 @@
 	--f-elevation-3: drop-shadow(0 4px 8px #00000026) drop-shadow(0 1px 3px #0000004d);
 	--f-elevation-4: drop-shadow(0 6px 10px #00000026) drop-shadow(0 2px 3px #0000004d);
 	--f-elevation-5: drop-shadow(0 8px 12px #00000026) drop-shadow(0 4px 4px #0000004d);
+
+    --t-elevation-0: 0 0 0 #00000026, 0 0 0 #0000004d;
+	--t-elevation-1: 0 1px 3px #00000026, 0 1px 2px #0000004d;
+	--t-elevation-2: 0 2px 6px #00000026, 0 1px 2px #0000004d;
+	--t-elevation-3: 0 4px 8px #00000026, 0 1px 3px #0000004d;
+	--t-elevation-4: 0 6px 10px #00000026, 0 2px 3px #0000004d;
+	--t-elevation-5: 0 8px 12px #00000026, 0 4px 4px #0000004d;
 }
 
 @theme inline {
@@ -1187,7 +1195,7 @@ hr {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 2px;
+    gap: 8px;
 }
 
 .filter-item {
@@ -1268,10 +1276,16 @@ hr {
     display: grid;
     position: relative;
 
-    grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
     gap: 16px;
     align-content: start;
     justify-items: center;
+}
+
+.search-results.tile {
+    grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
+}
+.search-results.macro {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
 .search-item {
@@ -1295,13 +1309,19 @@ hr {
     width: 48px;
     height: 48px;
     image-rendering: pixelated;
-    filter: var(--f-elevation-2);
+    filter: var(--f-elevation-5);
 }
 
 .search-item-name {
     font-size: 14px;
     line-height: 20px;
     word-wrap: anywhere;
+}
+
+.search-item-macro {
+    font-size: 1em;
+    word-wrap: anywhere;
+    font-family: var(--font-family-code);
 }
 
 /*
@@ -1316,8 +1336,16 @@ hr {
 .search-details-name {
     font-size: 22px;
     line-height: 28px;
-    word-wrap: anywhere;
+    word-wrap: break-word;
     margin-inline-end: 56px;
+}
+.search-details-macro-name {
+    text-align: center;
+    font-size: 2em;
+    font-family: var(--font-family-code);
+    margin-bottom: 12px;
+    text-shadow: var(--t-elevation-5);
+    word-wrap: break-word;
 }
 
 .search-details-image {
@@ -1332,6 +1360,28 @@ hr {
     margin: 12px auto;
     border-radius: 16px;
     border: 1px solid var(--editor-outline);
+}
+
+.search-details-detailbox {
+    width: -webkit-fill-available;
+    width: -moz-available;
+    width: stretch;
+
+    padding: 6px 12px;
+    word-wrap: anywhere;
+
+    margin-top: 8px;
+    border-radius: 8px;
+    background: rgb(var(--md-color-surface-container-highest), 0.08);
+    outline: 1px solid var(--editor-outline);
+}
+.search-details-detailbox.macro {
+    font-family: var(--font-family-code);
+    font-size: var(--font-size-code);
+}
+
+.search-details-label {
+    margin-top: 12px;
 }
 
 table {

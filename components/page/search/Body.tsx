@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import SearchResults from "./SearchResultsGrid";
-import { type SelectedTile } from "./SearchResultsGrid";
+import { type SelectedSearchResult } from "./SearchResultsGrid";
 import SearchSelect, { type SearchMode } from "./SearchSelect";
 import MenuSelect, { MenuOption } from "@/components/MenuSelect";
+import stdlib_macros from "./stdlib_macros.js";
+
+console.log(stdlib_macros());
 
 export function FilterPanel({
     mode,
@@ -84,11 +87,11 @@ export function FilterPanel({
 
 export default function Body({
     mode,
-    onTileSelect,
+    onSelect,
     filters = {},
 }: {
     mode: SearchMode;
-    onTileSelect: (selectedTile: SelectedTile) => void;
+    onSelect: (selected: SelectedSearchResult) => void;
     filters?: Record<string, string[]>;
 }) {
     const [searchQuery, setSearchQuery] = useState("");
@@ -111,7 +114,7 @@ export default function Body({
                     </button> */}
                 </div>
                 <hr />
-                <SearchResults key={mode} mode={mode} onTileSelect={onTileSelect} searchQuery={searchQuery} filters={filters} />
+                <SearchResults key={mode} mode={mode} onSelect={onSelect} searchQuery={searchQuery} filters={filters} />
             </div>
         </main>
     );

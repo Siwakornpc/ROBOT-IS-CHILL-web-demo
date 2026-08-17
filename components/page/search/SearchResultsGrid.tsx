@@ -32,11 +32,19 @@ export type SelectedTile = {
     tile: TileRecord;
 };
 
+export type SelectedMacro = {
+    name: string;
+    macro: MacroRecord;
+};
+
+export type SelectedSearchResult = SelectedTile | SelectedMacro;
+
 type SearchResults = Record<string, unknown>;
 type LoadedResults = {
     endpoint: string;
     data: SearchResults;
 };
+
 
 const cachedResults = new Map<string, SearchResults>();
 
@@ -58,12 +66,12 @@ function isMacroRecord(value: unknown): value is MacroRecord {
 
 export default function SearchResults({
     mode,
-    onTileSelect,
+    onSelect,
     searchQuery = "",
     filters = {},
 }: {
     mode: SearchMode;
-    onTileSelect: (selectedTile: SelectedTile) => void;
+    onSelect: (selected: SelectedSearchResult) => void;
     searchQuery?: string;
     filters?: Record<string, string[]>;
 }) {
@@ -105,35 +113,51 @@ export default function SearchResults({
     useEffect(() => {
         const currentEndpoint = endpoint;
         if (!isVisible || !currentEndpoint) return;
-        const endpointToLoad: string = currentEndpoint;
+        const endpointToLoad = currentEndpoint;
 
         const cached = cachedResults.get(endpointToLoad);
         if (cached) {
+            setLoadedResults({
+                endpoint: endpointToLoad,
+                data: cached,
+            });
             return;
         }
 
         const controller = new AbortController();
 
         async function loadResults() {
-            const response = await fetch(`https://ric-api.sno.mba/${endpointToLoad}`, {
-                signal: controller.signal,
-            });
+            try {
+                const response = await fetch(
+                    `https://ric-api.sno.mba/${endpointToLoad}`,
+                    {
+                        signal: controller.signal,
+                    },
+                );
 
-            if (!response.ok) {
-                throw new Error(`RIC API returned ${response.status}`);
+                if (!response.ok) {
+                    throw new Error(
+                        `RIC API returned ${response.status}`,
+                    );
+                }
+
+                const data: SearchResults = await response.json();
+                cachedResults.set(endpointToLoad, data);
+                setLoadedResults({
+                    endpoint: endpointToLoad,
+                    data,
+                });
+            } catch (error: unknown) {
+                if ((error as Error).name !== "AbortError") {
+                    console.error(
+                        "Could not load RIC search results.",
+                        error,
+                    );
+                }
             }
-
-            const data: SearchResults = await response.json();
-            cachedResults.set(endpointToLoad, data);
-            setLoadedResults({ endpoint: endpointToLoad, data });
         }
 
-        loadResults().catch((error: unknown) => {
-            if ((error as Error).name !== "AbortError") {
-                console.error("Could not load RIC search results.", error);
-            }
-        });
-
+        loadResults();
         return () => controller.abort();
     }, [endpoint, isVisible]);
 
@@ -141,10 +165,19 @@ export default function SearchResults({
     const filteredEntries = allEntries.filter(([name, data]) => {
         if (searchQuery) {
             const query = searchQuery.toLowerCase();
-            const nameMatch = name.toLowerCase().includes(query);
-            const descriptionMatch = isMacroRecord(data) && data.description.toLowerCase().includes(query);
-            if (!nameMatch && !descriptionMatch) {
-                return false;
+
+            if (mode === "macro") {
+                try {
+                    const regex = new RegExp(query, "i");
+                    if (!regex.test(name)) {
+                        return false;
+                    }
+                } catch (err) {}
+            } else {
+                const nameMatch = name.toLowerCase().includes(query);
+                if (!nameMatch) {
+                    return false;
+                }
             }
         }
 
@@ -168,7 +201,11 @@ export default function SearchResults({
     const currentBatchSize = entries.length - currentBatchStart;
     const canLoadMore = hasMore
         && currentBatchSize > 0
-        && settledImageCount >= currentBatchSize;
+        && (
+            mode === "macro"
+            || mode === "filter"
+            || settledImageCount >= currentBatchSize
+        );
 
     function markImageSettled(name: string, imageBatch: number) {
         if (imageBatch !== activeBatchRef.current || settledImagesRef.current.has(name)) {
@@ -231,62 +268,124 @@ export default function SearchResults({
         }
     }
 
+    const loadingMoreRef = useRef(false);
+
     useEffect(() => {
         const sentinel = loadMoreRef.current;
         const scrollArea = gridRef.current;
 
-        if (!sentinel || !scrollArea || !canLoadMore) return;
+        if (!sentinel || !scrollArea || !canLoadMore) {
+            return;
+        }
+
+        loadingMoreRef.current = false;
 
         const observer = new IntersectionObserver(
             ([entry]) => {
-                if (entry.isIntersecting) {
-                    observer.disconnect();
-                    activeBatchRef.current += 1;
-                    settledImagesRef.current.clear();
-                    retryingImagesRef.current.clear();
-                    imageRetryCountsRef.current.clear();
-                    setActiveBatch(activeBatchRef.current);
-                    setSettledImageCount(0);
-                    setImageRetries({});
-                    setVisibleCount((count) => count + BATCH_SIZE);
+                if (!entry.isIntersecting || loadingMoreRef.current) {
+                    return;
                 }
+
+                loadingMoreRef.current = true;
+                activeBatchRef.current += 1;
+                settledImagesRef.current.clear();
+                retryingImagesRef.current.clear();
+                imageRetryCountsRef.current.clear();
+
+                setActiveBatch(activeBatchRef.current);
+                setSettledImageCount(0);
+                setImageRetries({});
+                setVisibleCount((count) => count + BATCH_SIZE);
+
+                observer.disconnect();
             },
-            { root: scrollArea },
+            {
+                root: scrollArea,
+                rootMargin: "200px 0px",
+            },
         );
 
         observer.observe(sentinel);
-        return () => observer.disconnect();
-    }, [canLoadMore]);
+
+        return () => {
+            observer.disconnect();
+        };
+    }, [canLoadMore, visibleCount]);
+
+    function displayMacroName(name: string): string {
+        return Array.from(name)
+            .map((char) => {
+                const code = char.charCodeAt(0);
+
+                if (code === 0) return "\\0";
+                if (code < 0x20 || code === 0x7f) {
+                    return `\\x${code.toString(16).padStart(2, "0")}`;
+                }
+
+                return char;
+            })
+            .join("");
+    }
 
     return (
-        <div ref={gridRef} className="search-results ascroll-y" data-loaded={Boolean(results)}>
-            {entries.map(([name, tile], index) => {
-                const imageBatch = index >= currentBatchStart ? activeBatch : -1;
-                const imageUrl = `https://ric-api.sno.mba/tiles/${encodeURIComponent(name)}.gif`;
-                const retry = imageRetries[name] ?? 0;
+        <div
+            ref={gridRef}
+            className={`search-results ${mode} ascroll-y`}
+            data-loaded={Boolean(results)}
+        >
+            {mode === "tile" && (
+                entries.map(([name, tile], index) => {
+                    const imageBatch = index >= currentBatchStart ? activeBatch : -1;
+                    let imageUrl = `https://ric-api.sno.mba/tiles/${encodeURIComponent(name)}.gif`;
 
-                return (
-                <button
-                    type="button"
-                    className="kill-styling search-item"
-                    key={name}
-                    onClick={() => {
-                        if (mode === "tile" && isTileRecord(tile)) {
-                            onTileSelect({ name, tile });
-                        }
-                    }}
-                >
-                    <img
-                        className="search-item-tile"
-                        src={`${imageUrl}?retry=${retry}`}
-                        alt=""
-                        onLoad={() => markImageSettled(name, imageBatch)}
-                        onError={() => retryFailedImage(name, imageBatch)}
-                    />
-                    <span className="search-item-name">{name}</span>
-                </button>
-                );
-            })}
+                    const retry = imageRetries[name] ?? 0;
+
+                    return (
+                    <button
+                        type="button"
+                        className="kill-styling search-item"
+                        key={name}
+                        onClick={() => {
+                            if (isTileRecord(tile)) {
+                                onSelect({ name, tile });
+                            }
+                        }}
+                    >
+                        <img
+                            className="search-item-tile"
+                            src={`${imageUrl}?retry=${retry}`}
+                            alt=""
+                            onLoad={() => markImageSettled(name, imageBatch)}
+                            onError={() => retryFailedImage(name, imageBatch)}
+                        />
+                        <span className="search-item-name">{name}</span>
+                    </button>
+                    );
+                })
+            )}
+
+            {mode === "macro" && (
+                entries.map(([name, macro]) => (
+                    <button
+                        type="button"
+                        className="kill-styling search-item"
+                        key={name}
+                        onClick={() => {
+                            if (isMacroRecord(macro)) {
+                                onSelect({ name, macro });
+                            }
+                        }}
+                    >
+                        <span className="search-item-macro">
+                            <span className="macro-brackets">[</span>
+                            <span className="macro-name">
+                                {displayMacroName(name)}
+                            </span>
+                            <span className="macro-brackets">]</span>
+                        </span>
+                    </button>
+                ))
+            )}
 
             {hasMore && <div ref={loadMoreRef} />}
         </div>
