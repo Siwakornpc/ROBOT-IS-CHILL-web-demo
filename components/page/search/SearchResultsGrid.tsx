@@ -137,13 +137,13 @@ export default function SearchResults({
     onSelect,
     searchQuery = "",
     filters = {},
-    useRegex,
+    useRegex = false,
 }: {
     mode: SearchMode;
     onSelect: (selected: SelectedSearchResult) => void;
     searchQuery?: string;
     filters?: Record<string, string[]>;
-    useRegex: boolean;
+    useRegex?: boolean;
 }) {
     const gridRef = useRef<HTMLDivElement>(null);
     const [isVisible, setIsVisible] = useState(false);
@@ -235,9 +235,9 @@ export default function SearchResults({
     const filteredEntries = allEntries.filter(([name, data]) => {
         if (searchQuery) {
             if (useRegex) {
+                // Use regex search
                 try {
                     const regex = new RegExp(searchQuery, "i");
-
                     if (!regex.test(name)) {
                         return false;
                     }
