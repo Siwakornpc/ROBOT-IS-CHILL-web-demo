@@ -21,6 +21,13 @@ export default function Home() {
         }
     }
 
+    const [modeFilters, setModeFilters] = useState<Record<SearchMode, Record<string, string[]>>>({
+        tile: {},
+        macro: {},
+        filter: {},
+        overlay: {},
+    });
+
     useEffect(() => {
         nav_btn_select("Search");
     }, []);
@@ -29,9 +36,14 @@ export default function Home() {
             <LeftBar />
             <FilterPanel
                 mode={mode}
-                onModeChange={handleModeChange}
-                filters={filters}
-                onFiltersChange={setFilters}
+                onModeChange={setMode}
+                filters={modeFilters[mode] ?? {}}
+                onFiltersChange={(updatedFilters) => {
+                    setModeFilters((prev) => ({
+                        ...prev,
+                        [mode]: updatedFilters,
+                    }));
+                }}
             />
             <Body
                 mode={mode}

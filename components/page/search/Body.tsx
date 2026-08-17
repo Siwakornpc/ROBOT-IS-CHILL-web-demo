@@ -18,68 +18,61 @@ export function FilterPanel({
     filters: Record<string, string[]>;
     onFiltersChange: (filters: Record<string, string[]>) => void;
 }) {
-    const handleCreatorFilter = (creatorId: string) => {
-        onFiltersChange({
-            ...filters,
-            creator: filters.creator?.includes(creatorId)
-                ? filters.creator.filter(id => id !== creatorId)
-                : [...(filters.creator || []), creatorId],
-        });
+    const filterOptions = {
+        tile: [
+            { value: "source", title: "Source" },
+            { value: "color", title: "Active Color" },
+            { value: "iacolor", title: "Inactive Color" },
+            { value: "tiling", title: "Tiling" },
+            { value: "tags", title: "Tags" },
+        ],
+        macro: [
+            { value: "creator", title: "Creator ID" },
+            { value: "desc", title: "Description" },
+        ],
+    } as const;
+
+    const currentOptions = mode in filterOptions 
+        ? filterOptions[mode as keyof typeof filterOptions] 
+        : [];
+
+    const activeFilterKeys = Object.keys(filters);
+
+    const handleAddFilter = (filterType: string) => {
+        if (!filters[filterType]) {
+            onFiltersChange({ ...filters, [filterType]: [] });
+        }
     };
 
-    const macroFilterOptions = [
-    {
-        value: "Creator ID",
-        title: "Creator ID",
-    },
-    {
-        value: "Description",
-        title: "Description",
-    },
-    ] as const;
-    type FilterType = (typeof macroFilterOptions)[number]["value"];
-    
-    const [activeFilters, setActiveFilters] = useState<FilterType[]>([]);
-
-    const handleAddFilter = (filterType: FilterType) => {
-        setActiveFilters([...activeFilters, filterType]);
+    const handleRemoveFilter = (filterKey: string) => {
+        const updated = { ...filters };
+        delete updated[filterKey];
+        onFiltersChange(updated);
     };
 
-    const handleRemoveFilter = (index: number) => {
-        setActiveFilters(activeFilters.filter((_, i) => i !== index));
-    };
-
-    return(
+    return (
         <div className="filter-controls">
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
-                <p className="text-label">Search</p>
             <SearchSelect value={mode} onChange={onModeChange} />
-            </div>
             <hr />
-            {mode === "macro" && (
+            
+            {currentOptions.length > 0 && (
                 <div className="filter-section">
                     <p className="text-label">Filters</p>
-                    {activeFilters.map((filterType, index) => (
-                        <div key={index} className="filter-item">
-                            <span>{filterType}</span>
-                            <label className="text-field small has-placeholder">
-                                <input type="text" placeholder="Filter..." required autoComplete="off" />
-                            </label>
-                            <button
-                                className="btn ibtn xsmall btn-text"
-                                onClick={() => handleRemoveFilter(index)}
-                            >
+                    {activeFilterKeys.map((filterKey) => (
+                        <div key={filterKey} className="filter-item">
+                            <span>{filterKey}</span>
+                            <input type="text" placeholder="Filter..." />
+                            <button onClick={() => handleRemoveFilter(filterKey)}>
                                 <i className="icon">remove</i>
                             </button>
                         </div>
                     ))}
+                    
                     <MenuSelect
-                        id={"filter-select"}
                         title="Add Filter"
-                        value={activeFilters[0] ?? "Creator ID"}
-                        options={macroFilterOptions}
+                        value=""
+                        options={currentOptions.filter(opt => !activeFilterKeys.includes(opt.value))}
                         onChange={handleAddFilter}
-                        className="btn ibtn small btn-filled"
                         triggerValue={() => <i className="icon">add</i>}
                     />
                 </div>
