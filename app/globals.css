@@ -595,6 +595,7 @@ hr {
     flex-direction: column;
     width: fit-content;
     min-width: fit-content;
+    height: calc(100vh - 56px);
     background: rgb(var(--md-color-surface-container));
 }
 .sb-left {
@@ -1271,7 +1272,7 @@ hr {
     border-radius: 8px;
 
     width: stretch;
-    height: calc(100vh - 150px);
+    height: calc(100vh - 153px);
     padding: 8px 12px;
     display: grid;
     position: relative;
@@ -1296,7 +1297,7 @@ hr {
     width: stretch;
     height: fit-content;
     padding: 12px;
-    border-radius: 16px;
+    border-radius: 8px;
 }
 .search-item:hover {
     background: var(--surface-hovered);
@@ -1305,17 +1306,17 @@ hr {
     background: var(--surface-pressed);
 }
 
+.search-item-name {
+    font-size: 14px;
+    line-height: 20px;
+    word-wrap: anywhere;
+}
+
 .search-item-tile, .search-details-image {
     width: 48px;
     height: 48px;
     image-rendering: pixelated;
     filter: var(--f-elevation-5);
-}
-
-.search-item-name {
-    font-size: 14px;
-    line-height: 20px;
-    word-wrap: anywhere;
 }
 
 .search-item-macro {
@@ -1372,7 +1373,7 @@ hr {
 
     margin-top: 8px;
     border-radius: 8px;
-    background: rgb(var(--md-color-surface-container-highest), 0.08);
+    background: rgb(var(--md-color-surface));
     outline: 1px solid var(--editor-outline);
 }
 .search-details-detailbox.macro {

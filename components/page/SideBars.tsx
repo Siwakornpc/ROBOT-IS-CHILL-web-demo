@@ -27,7 +27,7 @@ export function RightBar() {
 
 export function RightBarSearch({ children }: { children?: ReactNode }) {
     return (
-        <div className="sb-right search-details-panel">
+        <div className="sb-right search-details-panel ascroll-y">
             {children}
         </div>
     );
