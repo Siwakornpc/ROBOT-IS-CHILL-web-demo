@@ -2,16 +2,16 @@ export function LeftBar() {
     return (
         <div className="sb-left">
             <a href="../macrosia" className="nav-btn" aria-label="Macrosia">
-                <div className="icon custom">macrosia</div>
+                <i className="icon custom">macrosia</i>
             </a>
             <a href="../render" className="nav-btn" aria-label="Render">
-                <div className="icon custom">render</div>
+                <i className="icon custom">render</i>
             </a>
             <a href="../search" className="nav-btn" aria-label="Search">
-                <div className="icon">search</div>
+                <i className="icon">search</i>
             </a>
             <a href="../settings" className="nav-btn" aria-label="Settings">
-                <div className="icon">settings</div>
+                <i className="icon">settings</i>
             </a>
         </div>
     );
