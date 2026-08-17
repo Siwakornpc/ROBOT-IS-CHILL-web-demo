@@ -63,17 +63,25 @@ export function Details({ selected }: DetailsProps) {
                             <th>Label</th>
                         </tr>
                         <tr>
-                            <td>Active color</td>
+                            <td>{selected.name.startsWith("text_") ? (
+                                <>Active color</>
+                            ) : (
+                                <>Color</>
+                            )}</td>
                             <td>{selected.tile.active_color.join(", ")}</td>
                         </tr>
-                        <tr>
-                            <td>Inactive color</td>
-                            <td>
-                                {selected.tile.inactive_color
-                                    .map((value) => value ?? "none")
-                                    .join(", ")}
-                            </td>
-                        </tr>
+                        {selected.name.startsWith("text_") &&
+                            selected.tile.inactive_color?.some((value) => value !== null) && (
+                                <tr>
+                                    <td>Inactive color</td>
+                                    <td>
+                                        {selected.tile.inactive_color
+                                            .filter((value): value is number => value !== null)
+                                            .join(", ")}
+                                    </td>
+                                </tr>
+                            )
+                        }
                         <tr>
                             <td>Source</td>
                             <td>{selected.tile.sprite[0]}</td>

@@ -101,7 +101,7 @@ export default function SearchResults({
     useEffect(() => {
         setReadyCount(1);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mode, searchQuery, useRegex, JSON.stringify(filters)]);
+    }, [mode, searchQuery, JSON.stringify(filters)]);
 
     function advanceReady(index: number) {
         setReadyCount((count) => Math.max(count, index + 2));
