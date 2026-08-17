@@ -17,6 +17,11 @@ interface MenuSelectProps<T extends string> {
     options: readonly MenuOption<T>[] | MenuOption<T>[];
     onChange: (value: T) => void;
     triggerValue?: (selectedOption: MenuOption<T>) => ReactNode;
+    trigger?: (props: {
+        isOpen: boolean;
+        toggle: () => void;
+        selectedOption: MenuOption<T>;
+    }) => ReactNode;
     optionIcon?: (option: MenuOption<T>) => ReactNode;
     className?: string;
     anchor?: "t" | "b" | "l" | "r" | "tl" | "tr" | "bl" | "br" | "s" | "e" | "st" | "sb" | "et" | "eb";
@@ -29,6 +34,7 @@ export default function MenuSelect<T extends string>({
     options,
     onChange,
     triggerValue,
+    trigger,
     optionIcon,
     className = "",
     anchor = "st",
@@ -48,16 +54,25 @@ export default function MenuSelect<T extends string>({
     }, []);
 
     const selectedOption = options.find((item) => item.value === value) ?? options[0];
+    const toggleMenu = () => setIsOpen((prev) => !prev);
 
     return (
         <div className="menu-wrapper" ref={wrapperRef}>
-            <button
-                type="button"
-                className={`menu-trigger ${className} ${id} ${isOpen ? "clicked" : ""}`}
-                onClick={() => setIsOpen((prev) => !prev)}
-            >
-                {triggerValue ? triggerValue(selectedOption) : (selectedOption.label ?? selectedOption.title)}
-            </button>
+            {trigger ? (
+                trigger({
+                    isOpen,
+                    toggle: toggleMenu,
+                    selectedOption,
+                })
+            ) : (
+                <button
+                    type="button"
+                    className={`menu-trigger ${className} ${id} ${isOpen ? "clicked" : ""}`}
+                    onClick={toggleMenu}
+                >
+                    {triggerValue ? triggerValue(selectedOption) : (selectedOption.label ?? selectedOption.title)}
+                </button>
+            )}
 
             <div className={`menu anchor-${anchor} ${id}-options ${isOpen ? "visible" : ""}`}>
                 {title && <div className="menu-title">{title}</div>}

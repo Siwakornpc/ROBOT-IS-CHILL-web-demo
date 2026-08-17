@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import SearchResults from "./SearchResultsGrid";
 import { type SelectedSearchResult } from "./SearchResultsGrid";
 import SearchSelect, { type SearchMode } from "./SearchSelect";
-import MenuSelect, { MenuOption } from "@/components/MenuSelect";
+import MenuSelect from "@/components/MenuSelect";
 import stdlib_macros from "./stdlib_macros.js";
 
 console.log(stdlib_macros());
@@ -51,13 +51,14 @@ export function FilterPanel({
 
     return(
         <div className="filter-controls">
-            <p className="text-label">Search</p>
-            <hr />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+                <p className="text-label">Search</p>
             <SearchSelect value={mode} onChange={onModeChange} />
+            </div>
+            <hr />
             {mode === "macro" && (
                 <div className="filter-section">
                     <p className="text-label">Filters</p>
-                    <hr />
                     {activeFilters.map((filterType, index) => (
                         <div key={index} className="filter-item">
                             <span>{filterType}</span>
