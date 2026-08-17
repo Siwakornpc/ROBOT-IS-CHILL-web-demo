@@ -109,6 +109,47 @@ ol {
     height: auto;
 }
 
+ul {
+    list-style: disc;
+    padding-left: 1em;
+    margin: 0.5em;
+    height: auto;
+}
+
+/*
+    discord markdown
+*/
+
+.discord-inline-code {
+    word-wrap: break-word;
+    white-space: break-spaces;
+    overflow-wrap: anywhere;
+
+    outline: 1px solid rgb(var(--md-color-outline-variant));
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin: 0 2px;
+
+    font-size: var(--font-size-code);
+
+    background: rgb(var(--md-color-surface-container));
+}
+.discord-code-block {
+    display: inline-block;
+    word-wrap: break-word;
+    white-space: break-spaces;
+    overflow-wrap: anywhere;
+
+    outline: 1px solid rgb(var(--md-color-outline-variant));
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin: 4px;
+
+    font-size: var(--font-size-code);
+
+    background: rgb(var(--md-color-surface-container));
+}
+
 /*
     scroll bars (webkit)
 */
@@ -1463,9 +1504,7 @@ hr {
 }
 
 .search-details-detailbox {
-    display: flex;
     flex-direction: column;
-    gap: 0.8em;
 
     width: -webkit-fill-available;
     width: -moz-available;
@@ -1478,7 +1517,12 @@ hr {
     background: rgb(var(--md-color-surface));
     outline: 1px solid var(--editor-outline);
 }
-
+.search-details-detailbox p {
+    white-space: pre-wrap;
+}
+.search-details-detailbox p:not(:first-child) {
+    margin-top: 1.2em;
+}
 .search-details-detailbox.macro {
     font-family: var(--font-family-code);
     font-size: var(--font-size-code);

@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { type SelectedSearchResult } from "./SearchResultsGrid";
 import "@/components/highlight/macro-highlight-static.js";
-import { marked } from "marked";
+import { DiscordMarkdown } from "@/components/DiscordMarkdown";
 
 type DetailsProps = {
     selected: SelectedSearchResult;
@@ -102,7 +102,6 @@ export function Details({ selected }: DetailsProps) {
 
     if ("macro" in selected) {
         const isBuiltin = selected.macro.builtin ? "builtin" : "";
-        const descriptionHtml = marked.parse(selected.macro.description.replace("\n", "<br/>"));
 
         return (
             <>
@@ -128,13 +127,12 @@ export function Details({ selected }: DetailsProps) {
                 )}
 
                 <p className="search-details-label">Description</p>
-                <div
-                    className="search-details-detailbox"
-                    id="description" 
-                    dangerouslySetInnerHTML={{
-                        __html: descriptionHtml,
-                    }}
-                />
+
+                <div className="search-details-detailbox" id="description">
+                    <DiscordMarkdown>
+                        {selected.macro.description}
+                    </DiscordMarkdown>
+                </div>
 
                 {!isBuiltin && (
                     <>
