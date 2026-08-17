@@ -1264,7 +1264,6 @@ hr {
 
 .filter-item input[type="text"] {
     width: stretch;
-    padding: 8px 16px;
 }
 
 .filter-item span {

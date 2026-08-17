@@ -62,7 +62,7 @@ export function FilterPanel({
                     {activeFilters.map((filterType, index) => (
                         <div key={index} className="filter-item">
                             <span>{filterType}</span>
-                            <label className="text-field small">
+                            <label className="text-field small has-placeholder">
                                 <input type="text" placeholder="Filter..." required autoComplete="off" />
                             </label>
                             <button
