@@ -50,6 +50,7 @@ export default function Body() {
                             />
                         </label>
                     )}
+                    anchor="t"
                 />
             </div>
         </main>
