@@ -22,6 +22,10 @@ const options = [
 export default function Body() {
     const [value, setValue] = useState("option1");
 
+    const filteredOptions = options.filter((option) =>
+        option.title.toLowerCase().includes(value.toLowerCase())
+    );
+
     return (
         <main style={{ width: "stretch" }}>
             <div className="main-body">
@@ -31,13 +35,20 @@ export default function Body() {
                 <MenuSelect
                     value={value}
                     options={options}
-                    onChange={setValue}
-                    trigger={({ open, selectedOption }) => (
+                    onChange={(newValue) => {
+                        setValue(newValue);
+                        const selected = options.find((o) => o.value === newValue);
+                        if (selected) setValue(selected.title);
+                    }}
+                    trigger={({ open }) => (
                         <input
                             type="text"
                             placeholder="Search options..."
-                            value={selectedOption.title}
-                            onClick={open}
+                            value={value}
+                            onChange={(e) => {
+                                setValue(e.target.value);
+                                open();
+                            }}
                             onFocus={open}
                             className="my-text-input"
                         />
