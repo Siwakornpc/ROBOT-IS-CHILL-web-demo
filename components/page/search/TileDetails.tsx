@@ -18,7 +18,7 @@ export function Details({ selected }: DetailsProps) {
 
         if (!element) return;
 
-        window.updateMacroStaticHighlight(element, selected.macro.value);
+        window.updateMacroStaticHighlight(element, selected.macro.value ? selected.macro.value : "");
     }, [selected]);
 
     function displayMacroName(name: string): string {
@@ -100,9 +100,13 @@ export function Details({ selected }: DetailsProps) {
     }
 
     if ("macro" in selected) {
+        const isBuiltin = selected.macro.builtin ? "builtin" : "";
+
         return (
             <>
-                <p className="search-details-macro-name">
+                <p
+                    className={`search-details-macro-name ${isBuiltin}`}
+                >
                         <span className="macro-brackets">[</span>
                         <span className="macro-name">
                             {displayMacroName(selected.name)}

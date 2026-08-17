@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { type SearchMode } from "./SearchSelect";
+import stdlib_macros from "./stdlib_macros";
 
 const BATCH_SIZE = 32;
 const MAX_IMAGE_RETRIES = 5;
@@ -22,9 +23,10 @@ export type TileRecord = {
 };
 
 export type MacroRecord = {
-    creator: number;
     description: string;
-    value: string;
+    builtin: boolean;
+    creator?: number;
+    value?: string;
 };
 
 export type SelectedTile = {
@@ -39,7 +41,8 @@ export type SelectedMacro = {
 
 export type SelectedSearchResult = SelectedTile | SelectedMacro;
 
-type SearchResults = Record<string, unknown>;
+type SearchEntry = [string, unknown];
+type SearchResults = Record<string, unknown> | SearchEntry[];
 type LoadedResults = {
     endpoint: string;
     data: SearchResults;
@@ -58,10 +61,10 @@ function isTileRecord(value: unknown): value is TileRecord {
 }
 
 function isMacroRecord(value: unknown): value is MacroRecord {
-    return typeof value === "object" && value !== null
-        && "creator" in value
+    return typeof value === "object"
+        && value !== null
         && "description" in value
-        && "value" in value;
+        && "builtin" in value;
 }
 
 function RetryImage({
@@ -212,11 +215,38 @@ export default function SearchResults({
                 }
 
                 const data: SearchResults = await response.json();
-                cachedResults.set(endpointToLoad, data);
-                setLoadedResults({
-                    endpoint: endpointToLoad,
-                    data,
-                });
+
+                if (endpointToLoad === "macros.json") {
+                    const stdMacros = await stdlib_macros();
+
+                    const apiMacroEntries: SearchEntry[] = Object.entries(data).map(
+                        ([name, macro]) => [
+                            name,
+                            {
+                                ...(macro as Record<string, unknown>),
+                                builtin: false,
+                            },
+                        ],
+                    );
+
+                    const combinedMacros: SearchEntry[] = [
+                        ...stdMacros,
+                        ...apiMacroEntries,
+                    ];
+
+                    cachedResults.set(endpointToLoad, combinedMacros);
+
+                    setLoadedResults({
+                        endpoint: endpointToLoad,
+                        data: combinedMacros,
+                    });
+                } else {
+                    cachedResults.set(endpointToLoad, data);
+                    setLoadedResults({
+                        endpoint: endpointToLoad,
+                        data,
+                    });
+                }
             } catch (error: unknown) {
                 if ((error as Error).name !== "AbortError") {
                     console.error(
@@ -231,7 +261,11 @@ export default function SearchResults({
         return () => controller.abort();
     }, [endpoint, isVisible]);
 
-    const allEntries = results ? Object.entries(results) : [];
+    const allEntries: SearchEntry[] = results
+        ? Array.isArray(results)
+            ? results
+            : Object.entries(results)
+        : [];
     const filteredEntries = allEntries.filter(([name, data]) => {
         if (searchQuery) {
             if (useRegex) {
@@ -256,8 +290,12 @@ export default function SearchResults({
         // apply filters
         for (const [filterKey, filterValues] of Object.entries(filters)) {
             if (filterValues.length === 0) continue;
+
             if (filterKey === "creator" && isMacroRecord(data)) {
-                if (!filterValues.includes(data.creator.toString())) {
+                if (
+                    data.creator === undefined
+                    || !filterValues.includes(data.creator.toString())
+                ) {
                     return false;
                 }
             }
@@ -286,58 +324,6 @@ export default function SearchResults({
 
         settledImagesRef.current.add(name);
         setSettledImageCount((count) => count + 1);
-    }
-
-    async function retryFailedImage(name: string, imageBatch: number) {
-        if (imageBatch !== activeBatchRef.current || retryingImagesRef.current.has(name)) {
-            return;
-        }
-
-        retryingImagesRef.current.add(name);
-
-        try {
-            const response = await fetch(`/api/tiles/${encodeURIComponent(name)}`, {
-                method: "HEAD",
-                cache: "no-store",
-            });
-
-            if (response.status === 404 || response.status === 405) {
-                markImageSettled(name, imageBatch);
-                return;
-            }
-
-            const retryCount = imageRetryCountsRef.current.get(name) ?? 0;
-            if (retryCount >= MAX_IMAGE_RETRIES) {
-                markImageSettled(name, imageBatch);
-                return;
-            }
-
-            await new Promise((resolve) => setTimeout(resolve, IMAGE_RETRY_DELAY_MS));
-            if (imageBatch !== activeBatchRef.current) return;
-
-            imageRetryCountsRef.current.set(name, retryCount + 1);
-            setImageRetries((current) => ({
-                ...current,
-                [name]: retryCount + 1,
-            }));
-        } catch {
-            const retryCount = imageRetryCountsRef.current.get(name) ?? 0;
-            if (retryCount >= MAX_IMAGE_RETRIES) {
-                markImageSettled(name, imageBatch);
-                return;
-            }
-
-            await new Promise((resolve) => setTimeout(resolve, IMAGE_RETRY_DELAY_MS));
-            if (imageBatch !== activeBatchRef.current) return;
-
-            imageRetryCountsRef.current.set(name, retryCount + 1);
-            setImageRetries((current) => ({
-                ...current,
-                [name]: retryCount + 1,
-            }));
-        } finally {
-            retryingImagesRef.current.delete(name);
-        }
     }
 
     const loadingMoreRef = useRef(false);
@@ -434,26 +420,32 @@ export default function SearchResults({
             )}
 
             {mode === "macro" && (
-                entries.map(([name, macro]) => (
-                    <button
-                        type="button"
-                        className="kill-styling search-item"
-                        key={name}
-                        onClick={() => {
-                            if (isMacroRecord(macro)) {
-                                onSelect({ name, macro });
-                            }
-                        }}
-                    >
-                        <span className="search-item-macro">
-                            <span className="macro-brackets">[</span>
-                            <span className="macro-name">
-                                {displayMacroName(name)}
+                entries.map(([name, macro]) => {
+                    const isBuiltin = isMacroRecord(macro) && macro.builtin ? "builtin" : "";
+
+                    return (
+                        <button
+                            type="button"
+                            className="kill-styling search-item"
+                            key={name}
+                            onClick={() => {
+                                if (isMacroRecord(macro)) {
+                                    onSelect({ name, macro });
+                                }
+                            }}
+                        >
+                            <span className="search-item-macro">
+                                <span className="macro-brackets">[</span>
+                                <span
+                                    className={`macro-name ${isBuiltin}`}
+                                >
+                                    {displayMacroName(name)}
+                                </span>
+                                <span className="macro-brackets">]</span>
                             </span>
-                            <span className="macro-brackets">]</span>
-                        </span>
-                    </button>
-                ))
+                        </button>
+                    );
+                })
             )}
 
             {hasMore && <div ref={loadMoreRef} />}
