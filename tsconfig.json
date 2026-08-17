@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "components/page/search/stdlib_macros.js"  ],
+, "components/page/search/stdlib_macros.js", "components/markdown/default-markdown.js"  ],
   "exclude": ["node_modules"]
 }

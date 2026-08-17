@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { type SearchMode } from "./SearchSelect";
 
 const BATCH_SIZE = 32;
-const MAX_IMAGE_RETRIES = 3;
-const IMAGE_RETRY_DELAY_MS = 250;
+const MAX_IMAGE_RETRIES = 5;
+const IMAGE_RETRY_DELAY_MS = 200;
 
 const endpoints: Partial<Record<SearchMode, string>> = {
     tile: "tiles.json",
@@ -62,6 +62,74 @@ function isMacroRecord(value: unknown): value is MacroRecord {
         && "creator" in value
         && "description" in value
         && "value" in value;
+}
+
+function RetryImage({
+    name,
+    batch,
+    src,
+    onSettled,
+}: {
+    name: string;
+    batch: number;
+    src: string;
+    onSettled: (name: string, batch: number) => void;
+}) {
+    const [retry, setRetry] = useState(0);
+    const [failed, setFailed] = useState(false);
+
+    useEffect(() => {
+        setRetry(0);
+        setFailed(false);
+    }, [name, batch]);
+
+    useEffect(() => {
+        return () => {
+            // Any pending retry timeout is cancelled by the effect
+            // below because its cleanup runs before the next effect.
+        };
+    }, []);
+
+    function handleLoad() {
+        onSettled(name, batch);
+    }
+
+    function handleError() {
+        if (retry >= MAX_IMAGE_RETRIES) {
+            setFailed(true);
+            onSettled(name, batch);
+            return;
+        }
+
+        const delay = IMAGE_RETRY_DELAY_MS * 2 ** retry;
+
+        const timeout = window.setTimeout(() => {
+            setRetry((current) => current + 1);
+        }, delay);
+
+        // This doesn't actually clean up the timeout yet.
+        // See the version below.
+        void timeout;
+    }
+
+    if (failed) {
+        return (
+            <img
+                className="search-item-tile"
+                src={`${src}`}
+            />
+        );
+    }
+
+    return (
+        <img
+            className="search-item-tile"
+            src={`${src}?retry=${retry}`}
+            alt=""
+            onLoad={handleLoad}
+            onError={handleError}
+        />
+    );
 }
 
 export default function SearchResults({
@@ -229,7 +297,7 @@ export default function SearchResults({
                 cache: "no-store",
             });
 
-            if (response.status === 404) {
+            if (response.status === 404 || response.status === 405) {
                 markImageSettled(name, imageBatch);
                 return;
             }
@@ -338,8 +406,6 @@ export default function SearchResults({
                     const imageBatch = index >= currentBatchStart ? activeBatch : -1;
                     let imageUrl = `https://ric-api.sno.mba/tiles/${encodeURIComponent(name)}.gif`;
 
-                    const retry = imageRetries[name] ?? 0;
-
                     return (
                     <button
                         type="button"
@@ -351,12 +417,11 @@ export default function SearchResults({
                             }
                         }}
                     >
-                        <img
-                            className="search-item-tile"
-                            src={`${imageUrl}?retry=${retry}`}
-                            alt=""
-                            onLoad={() => markImageSettled(name, imageBatch)}
-                            onError={() => retryFailedImage(name, imageBatch)}
+                        <RetryImage
+                            name={name}
+                            batch={imageBatch}
+                            src={imageUrl}
+                            onSettled={markImageSettled}
                         />
                         <span className="search-item-name">{name}</span>
                     </button>

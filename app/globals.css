@@ -1335,7 +1335,9 @@ hr {
 
 .search-details-panel {
     padding: 12px;
-    width: 300px;
+    width: 360px !important;
+    min-width: 360px !important;
+    height: calc(100vh - 56px);
 }
 
 .search-details-name {
@@ -1374,8 +1376,8 @@ hr {
 
     padding: 6px 12px;
     word-wrap: anywhere;
+    white-space: pre-wrap;
 
-    margin-top: 8px;
     border-radius: 8px;
     background: rgb(var(--md-color-surface));
     outline: 1px solid var(--editor-outline);
@@ -1386,7 +1388,7 @@ hr {
 }
 
 .search-details-label {
-    margin-top: 12px;
+    margin: 0;
 }
 
 table {
