@@ -1528,20 +1528,6 @@ hr {
     font-size: var(--font-size-code);
 }
 
-.search-details-detailbox#description * {
-    max-width: stretch;
-    text-wrap: auto;
-}
-.search-details-detailbox#description p {
-    color: var(--variant);
-}
-.search-details-detailbox#description code {
-    display: inline-block;
-    padding: 2px;
-    border-radius: 4px;
-    background: rgb(var(--md-color-surface-container));
-}
-
 .search-details-label {
     margin: 0;
 }
