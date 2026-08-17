@@ -45,7 +45,7 @@ export default function Home() {
                         className="btn ibtn small btn-text search-close-btn"
                         onClick={() => setSelected(null)}
                     >
-                        x
+                        <i className="icon">close</i>
                     </button>
                     <Details selected={selected} />
                 </RightBarSearch>
