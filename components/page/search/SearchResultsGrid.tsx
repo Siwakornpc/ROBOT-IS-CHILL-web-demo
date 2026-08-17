@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { type SearchMode } from "./SearchSelect";
 import stdlib_macros from "./stdlib_macros";
+import JSONbig from "json-bigint";
 
 const BATCH_SIZE = 32;
 
@@ -149,7 +150,10 @@ export default function SearchResults({
                     );
                 }
 
-                const data: SearchResults = await response.json();
+                const json = await response.text();
+                const data: SearchResults = JSONbig({
+                    storeAsString: true,
+                }).parse(json);
 
                 if (endpointToLoad === "macros.json") {
                     const stdMacros = await stdlib_macros();
