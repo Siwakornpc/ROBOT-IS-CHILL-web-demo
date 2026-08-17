@@ -41,7 +41,13 @@ export default function Home() {
             />
             {selected !== null && (
                 <RightBarSearch>
-                    <Details selected={selected!} />
+                    <button
+                        className="btn ibtn small btn-text search-close-btn"
+                        onClick={() => setSelected(null)}
+                    >
+                        x
+                    </button>
+                    <Details selected={selected} />
                 </RightBarSearch>
             )}
         </main>

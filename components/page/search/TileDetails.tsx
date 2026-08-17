@@ -116,10 +116,15 @@ export function Details({ selected }: DetailsProps) {
 
                 <hr />
 
-                <p className="search-details-label">{selected.macro.creator}</p>
+                {selected.macro.creator && (
+                    <p className="search-details-label">{selected.macro.creator}</p>
+                )}
 
                 <p className="search-details-label">Description</p>
                 <div className="search-details-detailbox" id="description">
+                    {selected.macro.builtin && (
+                        <>Built in</>
+                    )}
                     {selected.macro.description}
                 </div>
 

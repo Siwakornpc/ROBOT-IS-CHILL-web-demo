@@ -1326,6 +1326,12 @@ hr {
 .search-menu-btn {
     z-index: 1;
 }
+.search-close-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 1;
+}
 
 /*
     recieve screen (search)
@@ -1396,8 +1402,10 @@ hr {
 */
 
 .search-details-panel {
+    position: relative;
     padding: 12px;
-    width: 300px;
+    width: 420px !important;
+    min-width: 420px !important;
 }
 
 .search-details-name {
@@ -1415,7 +1423,8 @@ hr {
     word-wrap: break-word;
 }
 
-.search-details-macro-name.builtin .macro-name {
+.search-details-macro-name.builtin .macro-name,
+.search-item-macro.builtin .macro-name {
     font-weight: bold;
 }
 
@@ -1426,7 +1435,7 @@ hr {
 
 .search-details-image-wrapper {
     width: 100%;
-    max-width: 192px;
+    max-width: 300px;
     padding: 2em;
     margin: 12px auto;
     border-radius: 16px;

@@ -5,8 +5,6 @@ import { type SearchMode } from "./SearchSelect";
 import stdlib_macros from "./stdlib_macros";
 
 const BATCH_SIZE = 32;
-const MAX_IMAGE_RETRIES = 5;
-const IMAGE_RETRY_DELAY_MS = 200;
 
 const endpoints: Partial<Record<SearchMode, string>> = {
     tile: "tiles.json",
@@ -67,74 +65,6 @@ function isMacroRecord(value: unknown): value is MacroRecord {
         && "builtin" in value;
 }
 
-function RetryImage({
-    name,
-    batch,
-    src,
-    onSettled,
-}: {
-    name: string;
-    batch: number;
-    src: string;
-    onSettled: (name: string, batch: number) => void;
-}) {
-    const [retry, setRetry] = useState(0);
-    const [failed, setFailed] = useState(false);
-
-    useEffect(() => {
-        setRetry(0);
-        setFailed(false);
-    }, [name, batch]);
-
-    useEffect(() => {
-        return () => {
-            // Any pending retry timeout is cancelled by the effect
-            // below because its cleanup runs before the next effect.
-        };
-    }, []);
-
-    function handleLoad() {
-        onSettled(name, batch);
-    }
-
-    function handleError() {
-        if (retry >= MAX_IMAGE_RETRIES) {
-            setFailed(true);
-            onSettled(name, batch);
-            return;
-        }
-
-        const delay = IMAGE_RETRY_DELAY_MS * 2 ** retry;
-
-        const timeout = window.setTimeout(() => {
-            setRetry((current) => current + 1);
-        }, delay);
-
-        // This doesn't actually clean up the timeout yet.
-        // See the version below.
-        void timeout;
-    }
-
-    if (failed) {
-        return (
-            <img
-                className="search-item-tile"
-                src={`${src}`}
-            />
-        );
-    }
-
-    return (
-        <img
-            className="search-item-tile"
-            src={`${src}?retry=${retry}`}
-            alt=""
-            onLoad={handleLoad}
-            onError={handleError}
-        />
-    );
-}
-
 export default function SearchResults({
     mode,
     onSelect,
@@ -160,13 +90,22 @@ export default function SearchResults({
 
     const loadMoreRef = useRef<HTMLDivElement>(null);
     const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
-    const activeBatchRef = useRef(0);
-    const settledImagesRef = useRef(new Set<string>());
-    const retryingImagesRef = useRef(new Set<string>());
-    const imageRetryCountsRef = useRef(new Map<string, number>());
-    const [activeBatch, setActiveBatch] = useState(0);
-    const [settledImageCount, setSettledImageCount] = useState(0);
-    const [imageRetries, setImageRetries] = useState<Record<string, number>>({});
+    const [brokenImages, setBrokenImages] = useState<Set<string>>(new Set());
+
+    // Images load one at a time (rather than all-at-once per batch) to avoid
+    // hammering the API and tripping its rate limit. `readyCount` is how many
+    // tile images are allowed to have a real `src` right now; the next one
+    // is unlocked once the current one settles (loads or errors).
+    const [readyCount, setReadyCount] = useState(1);
+
+    useEffect(() => {
+        setReadyCount(1);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mode, searchQuery, useRegex, JSON.stringify(filters)]);
+
+    function advanceReady(index: number) {
+        setReadyCount((count) => Math.max(count, index + 2));
+    }
 
     useEffect(() => {
         const grid = gridRef.current;
@@ -190,10 +129,6 @@ export default function SearchResults({
 
         const cached = cachedResults.get(endpointToLoad);
         if (cached) {
-            setLoadedResults({
-                endpoint: endpointToLoad,
-                data: cached,
-            });
             return;
         }
 
@@ -307,23 +242,14 @@ export default function SearchResults({
     const entries = filteredEntries.slice(0, visibleCount);
     const totalEntries = filteredEntries.length;
     const hasMore = visibleCount < totalEntries;
-    const currentBatchStart = Math.max(0, visibleCount - BATCH_SIZE);
-    const currentBatchSize = entries.length - currentBatchStart;
-    const canLoadMore = hasMore
-        && currentBatchSize > 0
-        && (
-            mode === "macro"
-            || mode === "filter"
-            || settledImageCount >= currentBatchSize
-        );
 
-    function markImageSettled(name: string, imageBatch: number) {
-        if (imageBatch !== activeBatchRef.current || settledImagesRef.current.has(name)) {
-            return;
-        }
-
-        settledImagesRef.current.add(name);
-        setSettledImageCount((count) => count + 1);
+    function handleImageError(name: string) {
+        setBrokenImages((current) => {
+            if (current.has(name)) return current;
+            const next = new Set(current);
+            next.add(name);
+            return next;
+        });
     }
 
     const loadingMoreRef = useRef(false);
@@ -332,7 +258,7 @@ export default function SearchResults({
         const sentinel = loadMoreRef.current;
         const scrollArea = gridRef.current;
 
-        if (!sentinel || !scrollArea || !canLoadMore) {
+        if (!sentinel || !scrollArea || !hasMore) {
             return;
         }
 
@@ -345,17 +271,7 @@ export default function SearchResults({
                 }
 
                 loadingMoreRef.current = true;
-                activeBatchRef.current += 1;
-                settledImagesRef.current.clear();
-                retryingImagesRef.current.clear();
-                imageRetryCountsRef.current.clear();
-
-                setActiveBatch(activeBatchRef.current);
-                setSettledImageCount(0);
-                setImageRetries({});
                 setVisibleCount((count) => count + BATCH_SIZE);
-
-                observer.disconnect();
             },
             {
                 root: scrollArea,
@@ -368,7 +284,11 @@ export default function SearchResults({
         return () => {
             observer.disconnect();
         };
-    }, [canLoadMore, visibleCount]);
+    }, [hasMore, visibleCount]);
+
+    useEffect(() => {
+        loadingMoreRef.current = false;
+    }, [visibleCount]);
 
     function displayMacroName(name: string): string {
         return Array.from(name)
@@ -393,8 +313,9 @@ export default function SearchResults({
         >
             {mode === "tile" && (
                 entries.map(([name, tile], index) => {
-                    const imageBatch = index >= currentBatchStart ? activeBatch : -1;
-                    let imageUrl = `https://ric-api.sno.mba/tiles/${encodeURIComponent(name)}.gif`;
+                    const imageUrl = `https://ric-api.sno.mba/tiles/${encodeURIComponent(name)}.gif`;
+                    const isBroken = brokenImages.has(name);
+                    const canLoad = index < readyCount;
 
                     return (
                     <button
@@ -407,12 +328,25 @@ export default function SearchResults({
                             }
                         }}
                     >
-                        <RetryImage
-                            name={name}
-                            batch={imageBatch}
-                            src={imageUrl}
-                            onSettled={markImageSettled}
-                        />
+                        {isBroken ? (
+                            <span className="search-item-tile search-item-tile-broken" aria-hidden="true" />
+                        ) : canLoad ? (
+                            <img
+                                className="search-item-tile"
+                                src={imageUrl}
+                                alt=""
+                                aria-hidden="true"
+                                loading="lazy"
+                                decoding="async"
+                                onLoad={() => advanceReady(index)}
+                                onError={() => {
+                                    handleImageError(name);
+                                    advanceReady(index);
+                                }}
+                            />
+                        ) : (
+                            <span className="search-item-tile search-item-tile-pending" aria-hidden="true" />
+                        )}
                         <span className="search-item-name">{name}</span>
                     </button>
                     );
@@ -434,10 +368,10 @@ export default function SearchResults({
                                 }
                             }}
                         >
-                            <span className="search-item-macro">
+                            <span className={`search-item-macro ${isBuiltin}`}>
                                 <span className="macro-brackets">[</span>
                                 <span
-                                    className={`macro-name ${isBuiltin}`}
+                                    className="macro-name"
                                 >
                                     {displayMacroName(name)}
                                 </span>
