@@ -36,19 +36,45 @@ export function FilterPanel({
         ? filterOptions[mode as keyof typeof filterOptions] 
         : [];
 
-    const activeFilterKeys = Object.keys(filters);
+    const getFilterTitle = (filterType: string) => {
+        const match = currentOptions.find((opt) => opt.value === filterType);
+        return match ? match.title : filterType;
+    };
 
     const handleAddFilter = (filterType: string) => {
-        if (!filters[filterType]) {
-            onFiltersChange({ ...filters, [filterType]: [] });
-        }
+        const existingList = filters[filterType] ?? [];
+        onFiltersChange({
+            ...filters,
+            [filterType]: [...existingList, ""],
+        });
     };
 
-    const handleRemoveFilter = (filterKey: string) => {
-        const updated = { ...filters };
-        delete updated[filterKey];
-        onFiltersChange(updated);
+    const handleRemoveFilter = (filterType: string, indexToRemove: number) => {
+        const updatedList = (filters[filterType] ?? []).filter((_, i) => i !== indexToRemove);
+        const nextFilters = { ...filters };
+
+        if (updatedList.length > 0) {
+            nextFilters[filterType] = updatedList;
+        } else {
+            delete nextFilters[filterType];
+        }
+
+        onFiltersChange(nextFilters);
     };
+
+    const handleValueChange = (filterType: string, indexToUpdate: number, newValue: string) => {
+        const updatedList = [...(filters[filterType] ?? [])];
+        updatedList[indexToUpdate] = newValue;
+
+        onFiltersChange({
+            ...filters,
+            [filterType]: updatedList,
+        });
+    };
+
+    const activeItems = Object.entries(filters).flatMap(([type, values]) =>
+        values.map((value, index) => ({ type, value, index }))
+    );
 
     return (
         <div className="filter-controls">
@@ -62,22 +88,34 @@ export function FilterPanel({
             {currentOptions.length > 0 && (
                 <div className="filter-section">
                     <p className="text-label">Filters</p>
-                    {activeFilterKeys.map((filterKey) => (
-                        <div key={filterKey} className="filter-item">
-                            <span>{filterKey}</span>
+
+                    {activeItems.map(({ type, value, index }) => (
+                        <div key={`${type}-${index}`} className="filter-item">
+                            <span>{getFilterTitle(type)}</span>
                             <label className="text-field small has-placeholder">
-                                <input type="text" placeholder="Filter..." />
+                                <input
+                                    type="text"
+                                    placeholder="Filter..."
+                                    value={value}
+                                    onChange={(e) => handleValueChange(type, index, e.target.value)}
+                                    autoComplete="off"
+                                />
                             </label>
-                            <button className="btn ibtn xsmall btn-text" onClick={() => handleRemoveFilter(filterKey)}>
+                            <button
+                                type="button"
+                                className="btn ibtn xsmall btn-text"
+                                onClick={() => handleRemoveFilter(type, index)}
+                            >
                                 <i className="icon">remove</i>
                             </button>
                         </div>
                     ))}
                     
                     <MenuSelect
+                        id={"filter-select"}
                         title="Add Filter"
                         value=""
-                        options={currentOptions.filter(opt => !activeFilterKeys.includes(opt.value))}
+                        options={currentOptions}
                         onChange={handleAddFilter}
                         triggerValue={() => <i className="icon">add</i>}
                         className="btn ibtn small btn-filled"
