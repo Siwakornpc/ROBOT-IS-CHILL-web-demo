@@ -95,6 +95,7 @@ export default function Body({
     filters?: Record<string, string[]>;
 }) {
     const [searchQuery, setSearchQuery] = useState("");
+    const [useRegex, setUseRegex] = useState(false);
 
     return (
         <main style={{ width: "stretch" }}>
@@ -110,12 +111,18 @@ export default function Body({
                         onChange={(e) => setSearchQuery(e.currentTarget.value)}
                     />
                     <label className="btn ibtn small btn-text search-btn">
-                        <input type="checkbox" className="hidden" />
+                        <input 
+                            type="checkbox" 
+                            id="search-regex-btn" 
+                            className="hidden"
+                            checked={useRegex}
+                            onChange={(e) => setUseRegex(e.currentTarget.checked)}
+                        />
                         <span className="icon">regular_expression</span>
                     </label>
                 </div>
                 <hr />
-                <SearchResults key={mode} mode={mode} onSelect={onSelect} searchQuery={searchQuery} filters={filters} />
+                <SearchResults key={mode} mode={mode} onSelect={onSelect} searchQuery={searchQuery} filters={filters} useRegex={useRegex} />
             </div>
         </main>
     );

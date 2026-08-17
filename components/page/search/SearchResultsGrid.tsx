@@ -69,11 +69,13 @@ export default function SearchResults({
     onSelect,
     searchQuery = "",
     filters = {},
+    useRegex = false,
 }: {
     mode: SearchMode;
     onSelect: (selected: SelectedSearchResult) => void;
     searchQuery?: string;
     filters?: Record<string, string[]>;
+    useRegex?: boolean;
 }) {
     const gridRef = useRef<HTMLDivElement>(null);
     const [isVisible, setIsVisible] = useState(false);
@@ -164,19 +166,28 @@ export default function SearchResults({
     const allEntries = results ? Object.entries(results) : [];
     const filteredEntries = allEntries.filter(([name, data]) => {
         if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-
-            if (mode === "macro") {
+            if (useRegex) {
+                // Use regex search
                 try {
-                    const regex = new RegExp(query, "i");
+                    const regex = new RegExp(searchQuery, "i");
                     if (!regex.test(name)) {
                         return false;
                     }
                 } catch (err) {}
             } else {
+                // Use plain text search
+                const query = searchQuery.toLowerCase();
                 const nameMatch = name.toLowerCase().includes(query);
-                if (!nameMatch) {
-                    return false;
+                
+                if (mode === "macro" && isMacroRecord(data)) {
+                    const descriptionMatch = data.description.toLowerCase().includes(query);
+                    if (!nameMatch && !descriptionMatch) {
+                        return false;
+                    }
+                } else {
+                    if (!nameMatch) {
+                        return false;
+                    }
                 }
             }
         }
