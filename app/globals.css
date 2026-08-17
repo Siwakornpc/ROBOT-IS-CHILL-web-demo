@@ -817,7 +817,7 @@ hr {
     color: var(--description);
 }
 
-.execution-mode-select {
+.execution-mode-select.execution-mode-select {
     display: block;
     box-sizing: border-box;
     width: stretch;
