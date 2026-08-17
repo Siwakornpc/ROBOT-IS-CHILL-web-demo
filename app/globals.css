@@ -102,6 +102,13 @@
   src: url(/ricwd-icons.woff2) format('woff2');
 }
 
+ol {
+    list-style: decimal;
+    padding-left: 1em;
+    margin: 0.5em;
+    height: auto;
+}
+
 /*
     scroll bars (webkit)
 */
@@ -1420,13 +1427,20 @@ hr {
     word-wrap: break-word;
     margin-inline-end: 56px;
 }
-.search-details-macro-name {
+
+.search-details-macro {
     text-align: center;
-    font-size: 2em;
     font-family: var(--font-family-code);
-    margin-bottom: 12px;
-    text-shadow: var(--t-elevation-5);
+    margin: 2rem auto;
     word-wrap: break-word;
+}
+.search-details-macro-name {
+    font-size: 2em;
+    text-shadow: var(--t-elevation-5);
+
+}
+.search-details-macro-name-builtin-indicator {
+    color: rgb(var(--md-color-outline));
 }
 
 .search-details-macro-name.builtin .macro-name,
@@ -1449,6 +1463,10 @@ hr {
 }
 
 .search-details-detailbox {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8em;
+
     width: -webkit-fill-available;
     width: -moz-available;
     width: stretch;
@@ -1456,18 +1474,18 @@ hr {
     padding: 6px 12px;
     word-wrap: anywhere;
 
-    margin-top: 8px;
     border-radius: 8px;
     background: rgb(var(--md-color-surface));
     outline: 1px solid var(--editor-outline);
 }
+
 .search-details-detailbox.macro {
     font-family: var(--font-family-code);
     font-size: var(--font-size-code);
 }
 
 .search-details-label {
-    margin-top: 12px;
+    margin: 0;
 }
 
 .search-details-macro-name.builtin ~ .search-details-detailbox.macro,

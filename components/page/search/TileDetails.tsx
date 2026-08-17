@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { type SelectedSearchResult } from "./SearchResultsGrid";
 import "@/components/highlight/macro-highlight-static.js";
+import { marked } from "marked";
 
 type DetailsProps = {
     selected: SelectedSearchResult;
@@ -101,18 +102,24 @@ export function Details({ selected }: DetailsProps) {
 
     if ("macro" in selected) {
         const isBuiltin = selected.macro.builtin ? "builtin" : "";
+        const descriptionHtml = marked.parse(selected.macro.description.replace("\n", "<br/>"));
 
         return (
             <>
-                <p
-                    className={`search-details-macro-name ${isBuiltin}`}
-                >
-                        <span className="macro-brackets">[</span>
-                        <span className="macro-name">
-                            {displayMacroName(selected.name)}
-                        </span>
-                        <span className="macro-brackets">]</span>
-                </p>
+                <div className="search-details-macro">
+                    <p
+                        className={`search-details-macro-name ${isBuiltin}`}
+                    >
+                            <span className="macro-brackets">[</span>
+                            <span className="macro-name">
+                                {displayMacroName(selected.name)}
+                            </span>
+                            <span className="macro-brackets">]</span>
+                    </p>
+                    {isBuiltin && (
+                        <p className="search-details-macro-name-builtin-indicator">Built-in</p>
+                    )}
+                </div>
 
                 <hr />
 
@@ -121,20 +128,25 @@ export function Details({ selected }: DetailsProps) {
                 )}
 
                 <p className="search-details-label">Description</p>
-                <div className="search-details-detailbox" id="description">
-                    {selected.macro.builtin && (
-                        <>Built in</>
-                    )}
-                    {selected.macro.description}
-                </div>
-
-                <p className="search-details-label">Value</p>
                 <div
-                    ref={macroElementRef}
-                    className="search-details-detailbox macro"
-                >
-                    {selected.macro.value}
-                </div>
+                    className="search-details-detailbox"
+                    id="description" 
+                    dangerouslySetInnerHTML={{
+                        __html: descriptionHtml,
+                    }}
+                />
+
+                {!isBuiltin && (
+                    <>
+                        <p className="search-details-label">Value</p>
+                        <div
+                            ref={macroElementRef}
+                            className="search-details-detailbox macro"
+                        >
+                            {selected.macro.value}
+                        </div>
+                    </>
+                )}
             </>
         );
     }
