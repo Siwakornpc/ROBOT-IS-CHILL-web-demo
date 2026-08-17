@@ -12,7 +12,7 @@ export default function Home() {
     const [mode, setMode] = useState<SearchMode>("tile");
     const [selected, setSelected] = useState<SelectedSearchResult | null>(null);
     const [filters, setFilters] = useState<Record<string, string[]>>({});
-    const showRightBar = mode === "tile" && setSelected !== null;
+    const [useRegex, setUseRegex] = useState(false);
 
     function handleModeChange(nextMode: SearchMode) {
         setMode(nextMode);
@@ -27,8 +27,18 @@ export default function Home() {
     return (
         <main className="align-layout">
             <LeftBar />
-            <FilterPanel mode={mode} onModeChange={handleModeChange} filters={filters} onFiltersChange={setFilters} />
-            <Body mode={mode} onSelect={setSelected} filters={filters} />
+            <FilterPanel
+                mode={mode}
+                onModeChange={handleModeChange}
+                filters={filters}
+                onFiltersChange={setFilters}
+            />
+            <Body
+                mode={mode}
+                onSelect={setSelected} filters={filters} 
+                useRegex={useRegex}
+                onRegexChange={setUseRegex}
+            />
             {selected !== null && (
                 <RightBarSearch>
                     <Details selected={selected!} />
