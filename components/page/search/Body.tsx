@@ -52,7 +52,10 @@ export function FilterPanel({
 
     return (
         <div className="filter-controls">
-            <SearchSelect value={mode} onChange={onModeChange} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+                <p className="text-label">Search</p>
+                <SearchSelect value={mode} onChange={onModeChange} />
+            </div>
             <hr />
             
             {currentOptions.length > 0 && (
@@ -74,6 +77,7 @@ export function FilterPanel({
                         options={currentOptions.filter(opt => !activeFilterKeys.includes(opt.value))}
                         onChange={handleAddFilter}
                         triggerValue={() => <i className="icon">add</i>}
+                        className="btn ibtn small btn-filled"
                     />
                 </div>
             )}
