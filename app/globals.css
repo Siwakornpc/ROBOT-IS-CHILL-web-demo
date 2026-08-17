@@ -1470,8 +1470,8 @@ hr {
     margin-top: 12px;
 }
 
-.search-details-macro-name ~ .search-details-detailbox.macro,
-.search-details-macro-name ~ p:has(+ .search-details-detailbox.macro) {
+.search-details-macro-name.builtin ~ .search-details-detailbox.macro,
+.search-details-macro-name.builtin ~ p:has(+ .search-details-detailbox.macro) {
     display: none;
 }
 

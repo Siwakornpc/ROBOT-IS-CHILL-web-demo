@@ -36,7 +36,7 @@ export default function SearchSelect({
             value={value}
             options={options}
             onChange={onChange}
-            triggerValue={() => <span className="btn-label">{value}</span>}
+            triggerValue={(selectedOption) => <span className="btn-label">{selectedOption.title}</span>}
             className="btn small btn-filled"
         />
     );
