@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, ReactNode } from "react";
+import { useEffect, useRef, useState, ReactNode, CSSProperties, FocusEvent, MouseEvent as ReactMouseEvent } from "react";
 
 export interface MenuOption<T extends string = string> {
     value: T;
@@ -24,9 +24,11 @@ interface MenuSelectProps<T extends string> {
         close: () => void;
         setIsOpen: (open: boolean) => void;
         selectedOption: MenuOption<T>;
+        getInputProps: (customProps?: Record<string, any>) => Record<string, any>;
     }) => ReactNode;
     optionIcon?: (option: MenuOption<T>) => ReactNode;
     className?: string;
+    style?: CSSProperties;
     anchor?: "t" | "b" | "l" | "r" | "tl" | "tr" | "bl" | "br" | "s" | "e" | "st" | "sb" | "et" | "eb";
 }
 
@@ -40,6 +42,7 @@ export default function MenuSelect<T extends string>({
     trigger,
     optionIcon,
     className = "",
+    style,
     anchor = "st",
 }: MenuSelectProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
@@ -61,8 +64,37 @@ export default function MenuSelect<T extends string>({
     const openMenu = () => setIsOpen(true);
     const closeMenu = () => setIsOpen(false);
 
+    // open when any child input element receives focus
+    const handleFocusCapture = (e: FocusEvent<HTMLDivElement>) => {
+        const target = e.target as HTMLElement;
+        if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") {
+            setIsOpen(true);
+        }
+    };
+
+    // prevents input clicks from toggling the menu closed
+    const handleClickCapture = (e: ReactMouseEvent<HTMLDivElement>) => {
+        const target = e.target as HTMLElement;
+        if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") {
+            setIsOpen(true);
+        }
+    };
+
+    // optional thing to spread onto custom input triggers
+    const getInputProps = (customProps: Record<string, any> = {}) => ({
+        onFocus: openMenu,
+        onClick: openMenu,
+        ...customProps,
+    });
+
     return (
-        <div className="menu-wrapper" ref={wrapperRef}>
+        <div
+            className="menu-wrapper"
+            ref={wrapperRef}
+            style={style}
+            onFocusCapture={handleFocusCapture}
+            onClickCapture={handleClickCapture}
+        >
             {trigger ? (
                 trigger({
                     isOpen,
@@ -71,6 +103,7 @@ export default function MenuSelect<T extends string>({
                     close: closeMenu,
                     setIsOpen,
                     selectedOption,
+                    getInputProps,
                 })
             ) : (
                 <button
