@@ -108,7 +108,7 @@ export default function Body({
             <div className="main-body">
                 <div className="search">
                     <button className="btn ibtn small btn-text search-menu-btn">
-                        <span className="icon">menu</span>
+                        <i className="icon">menu</i>
                     </button>
                     <input
                         className="searchbar"
@@ -125,7 +125,7 @@ export default function Body({
                                 onRegexChange(e.currentTarget.checked)
                             }
                         />
-                        <span className="icon">regular_expression</span>
+                        <i className="icon">regular_expression</i>
                     </label>
                 </div>
                 <hr />
