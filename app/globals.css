@@ -685,6 +685,16 @@ hr {
     font-size: 20px;
 }
 
+.menu:not(:has(:nth-child(1 of :not(.hidden))))::after {
+    content: "No Available Options";
+    font-size: 14px;
+    line-height: 20px;
+    font-style: italic;
+    padding: 12px;
+    opacity: .38;
+}
+
+
 .menu-wrapper {
     position: relative;
     display: inline-block;
