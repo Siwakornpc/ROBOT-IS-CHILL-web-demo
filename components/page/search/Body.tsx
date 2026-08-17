@@ -56,6 +56,7 @@ export function FilterPanel({
                 <p className="text-label">Search</p>
                 <SearchSelect value={mode} onChange={onModeChange} />
             </div>
+            
             <hr />
             
             {currentOptions.length > 0 && (
@@ -64,8 +65,10 @@ export function FilterPanel({
                     {activeFilterKeys.map((filterKey) => (
                         <div key={filterKey} className="filter-item">
                             <span>{filterKey}</span>
-                            <input type="text" placeholder="Filter..." />
-                            <button onClick={() => handleRemoveFilter(filterKey)}>
+                            <label className="text-field small has-placeholder">
+                                <input type="text" placeholder="Filter..." />
+                            </label>
+                            <button className="btn ibtn xsmall btn-text" onClick={() => handleRemoveFilter(filterKey)}>
                                 <i className="icon">remove</i>
                             </button>
                         </div>
