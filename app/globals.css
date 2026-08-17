@@ -195,6 +195,10 @@ hr {
     border-top: 1px solid var(--editor-outline);
 }
 
+.hidden {
+    display: none !important;
+}
+
 /*
     button styles
 */

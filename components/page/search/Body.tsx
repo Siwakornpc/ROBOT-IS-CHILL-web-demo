@@ -109,9 +109,10 @@ export default function Body({
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.currentTarget.value)}
                     />
-                    {/* <button className="btn ibtn small btn-text search-btn">
-                        <span className="icon">search</span>
-                    </button> */}
+                    <label className="btn ibtn small btn-text search-btn">
+                        <input type="checkbox" className="hidden" />
+                        <span className="icon">regular_expression</span>
+                    </label>
                 </div>
                 <hr />
                 <SearchResults key={mode} mode={mode} onSelect={onSelect} searchQuery={searchQuery} filters={filters} />
