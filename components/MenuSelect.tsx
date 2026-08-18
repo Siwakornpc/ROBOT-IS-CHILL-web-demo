@@ -33,7 +33,23 @@ function MenuItem<T extends string>({
     const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
     const hasChildren = Boolean(item.children && item.children.length > 0);
     const isSelected = item.value === selectedValue;
-    const hasIcon = Boolean(optionIcon || item.icon);
+
+    const rawIcon = optionIcon ? optionIcon(item) : item.icon;
+
+    const renderIcon = () => {
+        if (isSelected) {
+            return <i className="icon menu-option-icon">check</i>;
+        }
+
+        if (rawIcon) {
+            if (typeof rawIcon === "string") {
+                return <i className="icon menu-option-icon">{rawIcon}</i>;
+            }
+            return rawIcon;
+        }
+
+        return null;
+    };
 
     return (
         <div
@@ -54,23 +70,17 @@ function MenuItem<T extends string>({
                 }}
                 className={`menu-option ${isSelected ? "selected" : ""}`}
             >
-                {isSelected ? (
-                    <span className="menu-option-icon icon">check</span>
-                ) : hasIcon ? (
-                    <span className="menu-option-icon icon">
-                        {optionIcon ? optionIcon(item) : item.icon}
-                    </span>
-                ) : null}
+                {renderIcon()}
                 
                 <div>
                     <div className="menu-option-label">{item.label}</div>
                     {item.description && <div className="menu-option-desc">{item.description}</div>}
                 </div>
 
-                {hasChildren && <i className="icon" style={{ marginLeft: "auto" }}>arrow_right</i>}
+                {hasChildren && <i className="icon menu-option-menu-icon">arrow_right</i>}
             </div>
 
-            {/* Render nested children recursively with dynamic anchor class */}
+            {/* Render nested children recursively */}
             {hasChildren && isSubmenuOpen && (
                 <div className={`menu submenu-popout anchor-${submenuAnchor} visible`}>
                     {item.children!.map((child) => (

@@ -776,9 +776,13 @@ hr {
     min-width: 20px;
     text-align: center;
     margin-inline-end: 16px;
+    color: var(--variant);
 }
-.menu-option-icon > .icon {
+.icon.menu-option-icon {
     font-size: 20px;
+}
+.menu-option-menu-icon {
+    margin-left: auto;
 }
 
 .menu:not(:has(:nth-child(1 of :not(.hidden))))::after {
