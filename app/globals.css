@@ -712,7 +712,7 @@ hr {
 [dir="rtl"] .submenu-popout.anchor-st,
 [dir="rtl"] .submenu-popout.anchor-sb {
     right: 100%;
-    margin: -4px 8px;
+    margin: -4px 0;
 }
 
 .menu-wrapper {
@@ -724,7 +724,8 @@ hr {
 .menu-option-wrapper {
     display: flex;
     flex-direction: column;
-    padding-inline: 4px;
+    padding-inline: 8px;
+    margin-inline: -4px;
 }
 
 .menu-option-wrapper:has(.submenu-popout.anchor-l),
