@@ -1590,10 +1590,10 @@ hr {
     font-family: var(--font-family-code);
     margin: 2rem auto;
     word-wrap: break-word;
+    min-height: 3em;
 }
 .search-details-macro-name {
     font-size: 2em;
-
 }
 .search-details-macro-name-builtin-indicator {
     color: rgb(var(--md-color-outline));

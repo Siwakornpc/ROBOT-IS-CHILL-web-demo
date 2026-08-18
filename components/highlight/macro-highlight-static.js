@@ -161,6 +161,11 @@ if (typeof window !== "undefined") {
 
     const tokenHtml = (token) => {
         if (token.type === "bracket") return token.html;
+
+        if (token.text.includes("\n")) {
+            return escapeHtml(token.text).replace(/\n/g, "<br>");
+        }
+
         if (!token.className) return escapeHtml(token.text);
         return span(token.className, token.text, "", -1, 0, token.pos);
     };
