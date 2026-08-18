@@ -256,6 +256,30 @@ hr {
     display: none !important;
 }
 
+@property --fade-top {
+  syntax: '<image>';
+  inherits: false;
+  initial-value: linear-gradient(black 0 0);
+}
+@property --fade-bottom {
+  syntax: '<image>';
+  inherits: false;
+  initial-value: linear-gradient(black 0 0);
+}
+.can-overflow {
+    mask-image: var(--fade-top, linear-gradient(black 0 0)), var(--fade-bottom, linear-gradient(black 0 0));
+    mask-composite: intersect;
+   -webkit-mask-image: var(--fade-top, linear-gradient(black 0 0)), var(--fade-bottom, linear-gradient(black 0 0));
+   -webkit-mask-composite: destination-in;
+   transition: --fade-top 0.3s ease, --fade-bottom 0.3s ease;
+}
+.overflow-top {
+    --fade-top: linear-gradient(to bottom, transparent .5em, black 3em);
+}
+.overflow-bottom {
+    --fade-bottom: linear-gradient(to top, transparent .5em, black 3em);
+}
+
 /*
     button styles
 */
@@ -1544,7 +1568,7 @@ hr {
     filter: var(--f-elevation-5);
 }
 
-.search-item-tile-pending {
+.search-item-tile.pending {
     border-radius: 4px;
     animation: sit-pending 1s ease-in-out infinite;
 }
@@ -1560,8 +1584,8 @@ hr {
     }
 }
 
-
 .search-item-macro {
+    max-height: 6em;
     font-size: 1em;
     word-wrap: anywhere;
     font-family: var(--font-family-code);

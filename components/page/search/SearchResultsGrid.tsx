@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { type SearchMode } from "./SearchSelect";
 import stdlib_macros from "./stdlib_macros";
 import JSONbig from "json-bigint";
+import { applyOverflowFade } from "@/components/OverflowFade";
 
 const BATCH_SIZE = 32;
 
@@ -47,11 +48,11 @@ type LoadedResults = {
     data: SearchResults;
 };
 
-
 const cachedResults = new Map<string, SearchResults>();
 
 function isTileRecord(value: unknown): value is TileRecord {
-    return typeof value === "object" && value !== null
+    return typeof value === "object"
+        && value !== null
         && "active_color" in value
         && "inactive_color" in value
         && "sprite" in value
@@ -246,8 +247,7 @@ export default function SearchResults({
 
             if (filterKey === "creator" && isMacroRecord(data)) {
                 if (
-                    data.creator === undefined
-                    || !filterValues.includes(data.creator.toString())
+                    data.creator === undefined || !filterValues.includes(data.creator.toString())
                 ) {
                     return false;
                 }
@@ -329,7 +329,7 @@ export default function SearchResults({
             className={`search-results ${mode} ascroll-y`}
             data-loaded={Boolean(results)}
         >
-            {mode === "tile" && (
+            {mode === "tile" &&
                 entries.map(([name, tile], index) => {
                     const safeName = String(name ?? "").trim();
                     const imageUrl = `https://ric-api.sno.mba/tiles/${encodeURIComponent(safeName)}.gif`;
@@ -337,42 +337,42 @@ export default function SearchResults({
                     const canLoad = index < readyCount;
 
                     return (
-                    <button
-                        type="button"
-                        className="kill-styling search-item"
-                        key={safeName || `tile-${index}`}
-                        onClick={() => {
-                            if (isTileRecord(tile)) {
-                                onSelect({ name: safeName, tile });
-                            }
-                        }}
-                    >
-                        {isBroken ? (
-                            <span className="search-item-tile search-item-tile-broken" aria-hidden="true" />
-                        ) : canLoad ? (
-                            <img
-                                className="search-item-tile"
-                                src={imageUrl}
-                                alt=""
-                                aria-hidden="true"
-                                loading="lazy"
-                                decoding="async"
-                                onLoad={() => advanceReady(index)}
-                                onError={() => {
-                                    handleImageError(safeName);
-                                    advanceReady(index);
-                                }}
-                            />
-                        ) : (
-                            <span className="search-item-tile search-item-tile-pending" aria-hidden="true" />
-                        )}
-                        <span className="search-item-name">{safeName}</span>
-                    </button>
+                        <button
+                            type="button"
+                            className="kill-styling search-item"
+                            key={safeName || `tile-${index}`}
+                            onClick={() => {
+                                if (isTileRecord(tile)) {
+                                    onSelect({ name: safeName, tile });
+                                }
+                            }}
+                        >
+                            {isBroken ? (
+                                <span className="search-item-tile search-item-tile-broken" aria-hidden="true" />
+                            ) : canLoad ? (
+                                <img
+                                    className="search-item-tile"
+                                    src={imageUrl}
+                                    alt=""
+                                    aria-hidden="true"
+                                    loading="lazy"
+                                    decoding="async"
+                                    onLoad={() => advanceReady(index)}
+                                    onError={() => {
+                                        handleImageError(safeName);
+                                        advanceReady(index);
+                                    }}
+                                />
+                            ) : (
+                                <span className="search-item-tile pending" aria-hidden="true" />
+                            )}
+                            <span className="search-item-name">{safeName}</span>
+                        </button>
                     );
                 })
-            )}
+            }
 
-            {mode === "macro" && (
+            {mode === "macro" &&
                 entries.map(([name, macro], index) => {
                     const safeName = String(name ?? "").trim();
                     const isBuiltin = isMacroRecord(macro) && macro.builtin ? "builtin" : "";
@@ -388,19 +388,17 @@ export default function SearchResults({
                                 }
                             }}
                         >
-                            <span className={`search-item-macro ${isBuiltin}`}>
+                            <span
+                                ref={applyOverflowFade}
+                                className={`search-item-macro ${isBuiltin}`}
+                            >
                                 <span className="macro-brackets">[</span>
-                                <span
-                                    className="macro-name"
-                                >
-                                    {displayMacroName(safeName)}
-                                </span>
+                                <span className="macro-name">{displayMacroName(safeName)}</span>
                                 <span className="macro-brackets">]</span>
                             </span>
                         </button>
                     );
-                })
-            )}
+                })}
 
             {hasMore && <div ref={loadMoreRef} />}
         </div>

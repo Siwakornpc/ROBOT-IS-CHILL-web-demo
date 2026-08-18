@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { type SelectedSearchResult } from "./SearchResultsGrid";
 import "@/components/highlight/macro-highlight-static.js";
 import { DiscordMarkdown } from "@/components/DiscordMarkdown";
+import { applyOverflowFade } from "@/components/OverflowFade";
 
 type DetailsProps = {
     selected: SelectedSearchResult;
@@ -111,7 +112,12 @@ export function Details({ selected }: DetailsProps) {
 
         return (
             <>
-                <div className="search-details-macro ascroll-x" style={{width: "380px"}}>
+                <div
+                    ref={applyOverflowFade}
+                    onScroll={(e) => applyOverflowFade(e.currentTarget)}
+                    className="search-details-macro ascroll-x"
+                    style={{width: "384px"}}
+                >
                     <p
                         className={`search-details-macro-name ${isBuiltin}`}
                     >
