@@ -1465,11 +1465,10 @@ hr {
     width: stretch;
 }
 
-.filter-item span {
+.filter-title {
     text-wrap-mode: nowrap;
-    font-size: 0.875em;
-    line-height: 0.875em;
-    margin-block-end: 6px;
+    font-size: .875em;
+    line-height: 1.5em;
 }
 
 .search {

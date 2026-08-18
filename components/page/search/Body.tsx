@@ -93,7 +93,7 @@ export function FilterPanel({
                     {activeItems.map(({ type, value, index }) => (
                         <div key={`${type}-${index}`} className="filter-item">
                             <div className="filter-item-controls">
-                                <span>{getFilterTitle(type)}</span>
+                                <span className="filter-title">{getFilterTitle(type)}</span>
                                 <label className="text-field small has-placeholder">
                                     <input
                                         type="text"
