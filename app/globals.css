@@ -776,7 +776,7 @@ hr {
 .menu-option-wrapper:active > .menu-option {
     background: var(--surface-pressed);
 }
-.menu-option.selected {
+.menu-option-wrapper > .menu-option.selected {
     border-radius: 12px;
     color: rgb(var(--md-color-on-tertiary-container));
     background: rgb(var(--md-color-tertiary-container));
@@ -815,6 +815,9 @@ hr {
 }
 .menu-option-menu-icon {
     margin-left: auto;
+}
+.menu-option.selected > .icon {
+    color: rgb(var(--md-color-on-tertiary-container));
 }
 
 .menu:not(:has(:nth-child(1 of :not(.hidden))))::after {

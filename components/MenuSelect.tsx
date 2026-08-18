@@ -31,23 +31,31 @@ function MenuItem<T extends string>({
     submenuAnchor = "st",
 }: MenuItemProps<T>) {
     const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
+    const [flipLeft, setFlipLeft] = useState(false);
+    const [flipUp, setFlipUp] = useState(false);
+    const submenuRef = useRef<HTMLDivElement>(null);
+
     const hasChildren = Boolean(item.children && item.children.length > 0);
     const isSelected = item.value === selectedValue;
-
     const rawIcon = optionIcon ? optionIcon(item) : item.icon;
 
-    const renderIcon = () => {
-        if (isSelected) {
-            return <i className="icon menu-option-icon">check</i>;
-        }
+    // Measure viewport collision whenever the submenu opens
+    useEffect(() => {
+        if (isSubmenuOpen && submenuRef.current) {
+            const rect = submenuRef.current.getBoundingClientRect();
+            const padding = 12; // Safety margin from viewport edge
 
+            setFlipLeft(rect.right > window.innerWidth - padding);
+            setFlipUp(rect.bottom > window.innerHeight - padding);
+        }
+    }, [isSubmenuOpen]);
+
+    const renderIcon = () => {
+        if (isSelected) return <i className="icon menu-option-icon">check</i>;
         if (rawIcon) {
-            if (typeof rawIcon === "string") {
-                return <i className="icon menu-option-icon">{rawIcon}</i>;
-            }
+            if (typeof rawIcon === "string") return <i className="icon menu-option-icon">{rawIcon}</i>;
             return rawIcon;
         }
-
         return null;
     };
 
@@ -56,7 +64,13 @@ function MenuItem<T extends string>({
             className="menu-option-wrapper"
             style={{ position: "relative" }}
             onMouseEnter={() => hasChildren && setIsSubmenuOpen(true)}
-            onMouseLeave={() => hasChildren && setIsSubmenuOpen(false)}
+            onMouseLeave={() => {
+                if (hasChildren) {
+                    setIsSubmenuOpen(false);
+                    setFlipLeft(false);
+                    setFlipUp(false);
+                }
+            }}
         >
             <div
                 onMouseDown={(e) => e.preventDefault()}
@@ -80,9 +94,20 @@ function MenuItem<T extends string>({
                 {hasChildren && <i className="icon menu-option-menu-icon">arrow_right</i>}
             </div>
 
-            {/* Render nested children recursively */}
             {hasChildren && isSubmenuOpen && (
-                <div className={`menu submenu-popout anchor-${submenuAnchor} visible`}>
+                <div
+                    ref={submenuRef}
+                    className={`menu submenu-popout anchor-${submenuAnchor} visible`}
+                    style={{
+                        position: "absolute",
+                        ...(flipLeft
+                            ? { right: "100%", left: "auto" }
+                            : { left: "100%", right: "auto" }),
+                        ...(flipUp
+                            ? { bottom: 0, top: "auto" }
+                            : { top: 0, bottom: "auto" }),
+                    }}
+                >
                     {item.children!.map((child) => (
                         <MenuItem
                             key={child.value}
