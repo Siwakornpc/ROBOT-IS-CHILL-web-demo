@@ -37,8 +37,6 @@ export function Details({ selected }: DetailsProps) {
             .join("");
     }
 
-    console.log("macro" in selected ? selected.macro : "");
-
     if ("tile" in selected) {
         return (
             <>

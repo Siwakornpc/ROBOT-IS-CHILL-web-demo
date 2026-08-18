@@ -18,7 +18,12 @@ export default async function stdlib_macros() {
     const stdMacros = [];
 
     for (const entry of get_stdlib_macro_names()) {
-        const [name, ...descriptionLines] = entry.split(/\r?\n/);
+        const [rawName, ...descriptionLines] = entry.split(/\r?\n/);
+        const name = rawName?.trim();
+
+        if (!name) {
+            continue;
+        }
 
         const descriptionLinesNID = descriptionLines.map(
             line => line.trim()

@@ -40,6 +40,12 @@ if (typeof window !== "undefined") {
 
         return { validPairs, topLevel };
     };
+    
+    const specialTokens = [
+        { regex: /^\$\d+/, className: "macro-custom-argument" },
+        { regex: /^\$!/, className: "macro-custom-executor-mode" },
+        { regex: /^\$#/, className: "macro-custom-argument-count" },
+    ];
 
     // Builds the raw token list (same tokens macroHighlighter used to build
     // inline). Kept separate so both macroHighlighter (joined string) and
@@ -119,14 +125,34 @@ if (typeof window !== "undefined") {
             }
             else if (stateStack.length) {
                 const current = bracketStack.at(-1);
-                appendText(
-                    ch,
-                    current.empty ? "macro-empty" : (stateStack.at(-1) === "name" ? "macro-name" : "macro-value"),
-                    i,
-                );
+                const isValueState = stateStack.at(-1) === "value";
+                const special = isValueState
+                    ? specialTokens.find(({ regex }) => regex.test(text.slice(i)))
+                    : null;
+
+                if (special) {
+                    const value = text.slice(i).match(special.regex)[0];
+                    appendText(value, special.className, i);
+                    i += value.length - 1;
+                }
+                else {
+                    appendText(
+                        ch,
+                        current.empty ? "macro-empty" : (stateStack.at(-1) === "name" ? "macro-name" : "macro-value"),
+                        i,
+                    );
+                }
             }
             else {
-                appendText(ch, "", i);
+                const special = specialTokens.find(({ regex }) => regex.test(text.slice(i)));
+                if (special) {
+                    const value = text.slice(i).match(special.regex)[0];
+
+                    appendText(value, special.className, i);
+                    i += value.length - 1;
+                } else {
+                    appendText(ch, "", i);
+                }
             }
         }
 

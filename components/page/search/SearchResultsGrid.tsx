@@ -158,20 +158,28 @@ export default function SearchResults({
                 if (endpointToLoad === "macros.json") {
                     const stdMacros = await stdlib_macros();
 
-                    const apiMacroEntries: SearchEntry[] = Object.entries(data).map(
-                        ([name, macro]) => [
-                            name,
+                    const apiMacroEntries: SearchEntry[] = Object.entries(data)
+                        .map(([name, macro]): SearchEntry => [
+                            name.trim(),
                             {
                                 ...(macro as Record<string, unknown>),
                                 builtin: false,
                             },
-                        ],
-                    );
+                        ])
+                        .filter(([name]) => Boolean(name));
 
-                    const combinedMacros: SearchEntry[] = [
-                        ...stdMacros,
-                        ...apiMacroEntries,
-                    ];
+                    const mergedMacroMap = new Map<string, SearchEntry>();
+
+                    for (const entry of [...stdMacros, ...apiMacroEntries]) {
+                        const [name, macro] = entry;
+                        const normalizedName = String(name ?? "").trim();
+
+                        if (!normalizedName) continue;
+
+                        mergedMacroMap.set(normalizedName, [normalizedName, macro]);
+                    }
+
+                    const combinedMacros: SearchEntry[] = [...mergedMacroMap.values()];
 
                     cachedResults.set(endpointToLoad, combinedMacros);
 
@@ -206,12 +214,18 @@ export default function SearchResults({
             : Object.entries(results)
         : [];
     const filteredEntries = allEntries.filter(([name, data]) => {
+        const normalizedName = String(name ?? "").trim();
+
+        if (!normalizedName) {
+            return false;
+        }
+
         if (searchQuery) {
             if (useRegex) {
                 // Use regex search
                 try {
                     const regex = new RegExp(searchQuery, "i");
-                    if (!regex.test(name)) {
+                    if (!regex.test(normalizedName)) {
                         return false;
                     }
                 } catch {
@@ -220,7 +234,7 @@ export default function SearchResults({
             } else {
                 const query = searchQuery.toLowerCase();
 
-                if (!name.toLowerCase().includes(query)) {
+                if (!normalizedName.toLowerCase().includes(query)) {
                     return false;
                 }
             }
@@ -317,18 +331,19 @@ export default function SearchResults({
         >
             {mode === "tile" && (
                 entries.map(([name, tile], index) => {
-                    const imageUrl = `https://ric-api.sno.mba/tiles/${encodeURIComponent(name)}.gif`;
-                    const isBroken = brokenImages.has(name);
+                    const safeName = String(name ?? "").trim();
+                    const imageUrl = `https://ric-api.sno.mba/tiles/${encodeURIComponent(safeName)}.gif`;
+                    const isBroken = brokenImages.has(safeName);
                     const canLoad = index < readyCount;
 
                     return (
                     <button
                         type="button"
                         className="kill-styling search-item"
-                        key={name}
+                        key={safeName || `tile-${index}`}
                         onClick={() => {
                             if (isTileRecord(tile)) {
-                                onSelect({ name, tile });
+                                onSelect({ name: safeName, tile });
                             }
                         }}
                     >
@@ -344,31 +359,32 @@ export default function SearchResults({
                                 decoding="async"
                                 onLoad={() => advanceReady(index)}
                                 onError={() => {
-                                    handleImageError(name);
+                                    handleImageError(safeName);
                                     advanceReady(index);
                                 }}
                             />
                         ) : (
                             <span className="search-item-tile search-item-tile-pending" aria-hidden="true" />
                         )}
-                        <span className="search-item-name">{name}</span>
+                        <span className="search-item-name">{safeName}</span>
                     </button>
                     );
                 })
             )}
 
             {mode === "macro" && (
-                entries.map(([name, macro]) => {
+                entries.map(([name, macro], index) => {
+                    const safeName = String(name ?? "").trim();
                     const isBuiltin = isMacroRecord(macro) && macro.builtin ? "builtin" : "";
 
                     return (
                         <button
                             type="button"
                             className="kill-styling search-item"
-                            key={name}
+                            key={safeName || `macro-${index}`}
                             onClick={() => {
                                 if (isMacroRecord(macro)) {
-                                    onSelect({ name, macro });
+                                    onSelect({ name: safeName, macro });
                                 }
                             }}
                         >
@@ -377,7 +393,7 @@ export default function SearchResults({
                                 <span
                                     className="macro-name"
                                 >
-                                    {displayMacroName(name)}
+                                    {displayMacroName(safeName)}
                                 </span>
                                 <span className="macro-brackets">]</span>
                             </span>

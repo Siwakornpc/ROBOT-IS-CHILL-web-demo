@@ -24,6 +24,7 @@ function renderChildren(
 }
 
 function renderNode(node: DiscordNode, key: string): ReactNode {
+    console.log(node.type);
     switch (node.type) {
         /*
          * Plain text
@@ -98,6 +99,25 @@ function renderNode(node: DiscordNode, key: string): ReactNode {
                 <span
                     key={key}
                     className="discord-spoiler"
+                    role="button"
+                    tabIndex={0}
+                >
+                    {isChildrenNode(node)
+                        ? renderChildren(node.content, key)
+                        : null}
+                </span>
+            );
+
+        /*
+         * Subtext: -# text
+         *
+         * CSS controls the visual appearance.
+         */
+        case "subtext":
+            return (
+                <span
+                    key={key}
+                    className="discord-subtext"
                     role="button"
                     tabIndex={0}
                 >

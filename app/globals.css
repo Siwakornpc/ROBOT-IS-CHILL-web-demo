@@ -26,6 +26,10 @@
     --macro-value-escape: rgb(var(--md-color-syntax-escaped));
     --macro-empty: rgb(var(--md-color-outline));
 
+    --macro-custom-argument: rgb(var(--md-color-tertiary));
+    --macro-custom-executor-mode: rgb(var(--md-color-on-primary-container));
+    --macro-custom-argument-count: rgb(var(--md-color-on-tertiary));
+
     --editor-body: rgb(var(--md-color-surface-container));
     --editor-outline: rgb(var(--md-color-outline-variant));
     --editor-outline-selected: rgb(var(--md-color-primary));
@@ -125,7 +129,7 @@ ul {
     white-space: break-spaces;
     overflow-wrap: anywhere;
 
-    outline: 1px solid rgb(var(--md-color-outline-variant));
+    border: 1px solid rgb(var(--md-color-outline-variant));
     padding: 1px 6px;
     border-radius: 4px;
     margin: 0 2px;
@@ -148,6 +152,10 @@ ul {
     font-size: var(--font-size-code);
 
     background: rgb(var(--md-color-surface-container));
+}
+.discord-subtext {
+    color: rgb(var(--md-color-outline));
+    font-size: 0.825em;
 }
 
 /*
@@ -1262,6 +1270,22 @@ hr {
     background: rgb(var(--md-color-tertiary-container), .32);
     outline: 1px solid rgb(var(--md-color-on-tertiary-container), .32);
 }
+
+.macro-custom-argument,
+.macro-custom-executor-mode,
+.macro-custom-argument-count {
+    font-weight: bold;
+}
+.macro-custom-argument {
+    color: var(--macro-custom-argument);
+}
+.macro-custom-executor-mode {
+    color: var(--macro-custom-executor-mode);
+}
+.macro-custom-argument-count {
+    color: var(--macro-custom-argument-count);
+}
+
 
 /* bracket layers (only brackets) */
 
