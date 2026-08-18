@@ -1568,7 +1568,6 @@ hr {
 }
 .search-details-macro-name {
     font-size: 2em;
-    text-shadow: var(--t-elevation-5);
 
 }
 .search-details-macro-name-builtin-indicator {
