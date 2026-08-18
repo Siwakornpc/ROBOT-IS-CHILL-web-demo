@@ -700,7 +700,7 @@ hr {
 [dir="rtl"] .submenu-popout.anchor-et,
 [dir="rtl"] .submenu-popout.anchor-eb {
     left: 100%;
-    margin: 0 8px;
+    margin: -4px 8px;
 }
 .submenu-popout.anchor-r,
 .submenu-popout.anchor-tr,
@@ -712,7 +712,37 @@ hr {
 [dir="rtl"] .submenu-popout.anchor-st,
 [dir="rtl"] .submenu-popout.anchor-sb {
     right: 100%;
-    margin: 0 8px;
+    margin: -4px 8px;
+}
+
+.menu-wrapper {
+    position: relative;
+    display: inline-block;
+    width: fit-content;
+}
+
+.menu-option-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-option-wrapper:has(.submenu-popout.anchor-l),
+.menu-option-wrapper:has(.submenu-popout.anchor-r),
+.menu-option-wrapper:has(.submenu-popout.anchor-s),
+.menu-option-wrapper:has(.submenu-popout.anchor-e) {
+    justify-content: center;
+}
+.menu-option-wrapper:has(.submenu-popout.anchor-tl),
+.menu-option-wrapper:has(.submenu-popout.anchor-tr),
+.menu-option-wrapper:has(.submenu-popout.anchor-st),
+.menu-option-wrapper:has(.submenu-popout.anchor-et) {
+    justify-content: flex-start;
+}
+.menu-option-wrapper:has(.submenu-popout.anchor-bl),
+.menu-option-wrapper:has(.submenu-popout.anchor-br),
+.menu-option-wrapper:has(.submenu-popout.anchor-sb),
+.menu-option-wrapper:has(.submenu-popout.anchor-eb) {
+    justify-content: flex-end;
 }
 
 .menu-title {
@@ -792,13 +822,6 @@ hr {
     font-style: italic;
     padding: 12px;
     opacity: .38;
-}
-
-
-.menu-wrapper {
-    position: relative;
-    display: inline-block;
-    width: fit-content;
 }
 
 .text-field + .menu {

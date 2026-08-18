@@ -144,6 +144,8 @@ export default function Body() {
                     value={recurSelected}
                     options={sampleOptions}
                     onChange={handleSelect}
+                    className="btn medium btn-filled"
+                    anchor="tl"
                 />
             </div>
         </main>
