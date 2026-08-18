@@ -135,29 +135,32 @@ export default function Body({
     useRegex,
     onRegexChange,
     onToggleFilter,
-    isFilterVisible,
+    showMenu,
 }: {
     mode: SearchMode;
     onSelect: (selected: SelectedSearchResult) => void;
     filters?: Record<string, string[]>;
     useRegex: boolean;
     onRegexChange: (value: boolean) => void;
-    onToggleFilter: () => void;
-    isFilterVisible: boolean;
+    onToggleFilter: (value: boolean) => void;
+    showMenu: boolean;
 }) {
     const [searchQuery, setSearchQuery] = useState("");
     return (
         <main style={{ width: "stretch" }}>
             <div className="main-body">
                 <div className="search">
-                    <button
-                        className={`btn ibtn small btn-text search-menu-btn ${
-                            isFilterVisible ? "selected" : ""
-                        }`}
-                        onClick={onToggleFilter}
-                    >
+                    <label className="btn ibtn small btn-text search-menu-btn">
+                        <input
+                            type="checkbox"
+                            className="hidden"
+                            checked={useRegex}
+                            onChange={(e) =>
+                                onToggleFilter(e.currentTarget.checked)
+                            }
+                        />
                         <i className="icon">menu</i>
-                    </button>
+                    </label>
                     <input
                         className="searchbar"
                         placeholder="search for something..."

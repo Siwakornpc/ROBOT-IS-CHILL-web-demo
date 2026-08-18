@@ -12,9 +12,8 @@ export default function Home() {
     const [mode, setMode] = useState<SearchMode>("tile");
     const [selected, setSelected] = useState<SelectedSearchResult | null>(null);
     const [filters, setFilters] = useState<Record<string, string[]>>({});
+    const [showMenu, setShowMenu] = useState(false);
     const [useRegex, setUseRegex] = useState(false);
-
-    const [isFilterVisible, setIsFilterVisible] = useState(false);
 
     const [modeFilters, setModeFilters] = useState<Record<SearchMode, Record<string, string[]>>>({
         tile: {},
@@ -29,7 +28,7 @@ export default function Home() {
     return (
         <main className="align-layout">
             <LeftBar />
-            {isFilterVisible && (
+            {showMenu && (
                 <FilterPanel
                     mode={mode}
                     onModeChange={setMode}
@@ -49,9 +48,9 @@ export default function Home() {
                 useRegex={useRegex}
                 onRegexChange={setUseRegex}
                 onToggleFilter={() =>
-                    setIsFilterVisible((prev) => !prev)
+                    setShowMenu((prev) => !prev)
                 }
-                isFilterVisible={isFilterVisible}
+                showMenu={showMenu}
             />
             {selected !== null && (
                 <RightBarSearch>
