@@ -1258,7 +1258,8 @@ hr {
     white-space: break-spaces;
     overflow-wrap: anywhere;
 }
-#render-output.error {
+#render-output.error,
+.status-value.error {
     color: var(--error);
 }
 #render-output.complete {
