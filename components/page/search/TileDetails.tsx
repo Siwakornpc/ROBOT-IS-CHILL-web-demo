@@ -113,8 +113,7 @@ export function Details({ selected }: DetailsProps) {
         return (
             <>
                 <div
-                    ref={applyOverflowFade}
-                    onScroll={(e) => applyOverflowFade(e.currentTarget)}
+                    ref={(el) => applyOverflowFade(el, "y")}
                     className="search-details-macro ascroll-x"
                     style={{width: "384px"}}
                 >

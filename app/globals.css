@@ -266,8 +266,18 @@ hr {
   inherits: false;
   initial-value: 0px;
 }
+@property --fade-left {
+  syntax: '<length-percentage>';
+  inherits: false;
+  initial-value: 0px;
+}
+@property --fade-right {
+  syntax: '<length-percentage>';
+  inherits: false;
+  initial-value: 0px;
+}
 .can-overflow {
-    mask-image: 
+    mask-image:
         linear-gradient(
             to bottom,
             transparent calc(var(--fade-top) / 6), 
@@ -277,9 +287,23 @@ hr {
             to top,
             transparent calc(var(--fade-bottom) / 6), 
             black var(--fade-bottom)
-        );
+        ),
+        linear-gradient(
+            to right,
+            transparent calc(var(--fade-left) / 6), 
+            black var(--fade-left)
+        ),
+        linear-gradient(
+            to left,
+            transparent calc(var(--fade-right) / 6), 
+            black var(--fade-right)
+        ),;
     mask-composite: intersect;
-    transition: --fade-top 200ms var(--fade-top-easing, cubic-bezier(0.3, 0, 1, 1)), --fade-bottom 200ms var(--fade-bottom-easing, cubic-bezier(0.3, 0, 1, 1));
+    transition:
+        --fade-top 200ms var(--fade-top-easing, cubic-bezier(0.3, 0, 1, 1)),
+        --fade-bottom 200ms var(--fade-bottom-easing, cubic-bezier(0.3, 0, 1, 1)),
+        --fade-left 200ms var(--fade-left-easing, cubic-bezier(0.3, 0, 1, 1)),
+        --fade-right 200ms var(--fade-right-easing, cubic-bezier(0.3, 0, 1, 1));
 }
 .overflow-top {
     --fade-top: 3em;
@@ -288,6 +312,14 @@ hr {
 .overflow-bottom {
     --fade-bottom: 3em;
     --fade-bottom-easing: cubic-bezier(0, 0, 0, 1);
+}
+.overflow-left {
+    --fade-left: 3em;
+    --fade-left-easing: cubic-bezier(0, 0, 0, 1);
+}
+.overflow-right {
+    --fade-right: 3em;
+    --fade-right-easing: cubic-bezier(0, 0, 0, 1);
 }
 
 /*

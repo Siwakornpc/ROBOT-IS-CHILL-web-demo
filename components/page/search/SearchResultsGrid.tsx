@@ -325,7 +325,10 @@ export default function SearchResults({
 
     return (
         <div
-            ref={gridRef}
+            ref={(el) => {
+                gridRef.current = el;
+                applyOverflowFade(el, "y");
+            }}
             className={`search-results ${mode} ascroll-y`}
             data-loaded={Boolean(results)}
         >
@@ -391,7 +394,7 @@ export default function SearchResults({
                             }}
                         >
                             <span
-                                ref={applyOverflowFade}
+                                ref={(el) => applyOverflowFade(el, "y")}
                                 className={`search-item-macro ${isBuiltin}`}
                             >
                                 <span className="macro-brackets">[</span>
