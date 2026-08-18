@@ -648,7 +648,7 @@ hr {
     position: absolute;
     pointer-events: none;
     width: 230px;
-    padding: 4px;
+    padding-block: 4px;
     border-radius: 16px;
     background: rgb(var(--md-color-surface-container-low));
     box-shadow: var(--elevation-3);
@@ -724,6 +724,7 @@ hr {
 .menu-option-wrapper {
     display: flex;
     flex-direction: column;
+    padding-inline: 4px;
 }
 
 .menu-option-wrapper:has(.submenu-popout.anchor-l),
@@ -767,11 +768,11 @@ hr {
     padding: 12px;
     border-radius: 4px;
 }
-.menu-option:hover {
+.menu-option-wrapper:hover > .menu-option {
     cursor: pointer;
     background: var(--surface-hovered);
 }
-.menu-option:active {
+.menu-option-wrapper:active > .menu-option {
     background: var(--surface-pressed);
 }
 .menu-option.selected {
@@ -779,11 +780,11 @@ hr {
     color: rgb(var(--md-color-on-tertiary-container));
     background: rgb(var(--md-color-tertiary-container));
 }
-.menu-option:first-child {
+.menu-option-wrapper:first-child > .menu-option {
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
 }
-.menu-option:last-child {
+.menu-option-wrapper:last-child > .menu-option {
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
 }

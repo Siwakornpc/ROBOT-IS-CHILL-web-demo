@@ -145,7 +145,7 @@ export default function Body() {
                     options={sampleOptions}
                     onChange={handleSelect}
                     className="btn medium btn-filled"
-                    anchor="tl"
+                    anchor="l"
                 />
             </div>
         </main>
