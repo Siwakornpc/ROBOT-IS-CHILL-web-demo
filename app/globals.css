@@ -257,27 +257,35 @@ hr {
 }
 
 @property --fade-top {
-  syntax: '<image>';
+  syntax: '<length-percentage>';
   inherits: false;
-  initial-value: linear-gradient(black 0 0);
+  initial-value: 0px;
 }
 @property --fade-bottom {
-  syntax: '<image>';
+  syntax: '<length-percentage>';
   inherits: false;
-  initial-value: linear-gradient(black 0 0);
+  initial-value: 0px;
 }
 .can-overflow {
-    mask-image: var(--fade-top, linear-gradient(black 0 0)), var(--fade-bottom, linear-gradient(black 0 0));
+    mask-image: 
+        linear-gradient(
+            to bottom,
+            transparent calc(var(--fade-top) / 6), 
+            black var(--fade-top)
+        ),
+        linear-gradient(
+            to top,
+            transparent calc(var(--fade-bottom) / 6), 
+            black var(--fade-bottom)
+        );
     mask-composite: intersect;
-   -webkit-mask-image: var(--fade-top, linear-gradient(black 0 0)), var(--fade-bottom, linear-gradient(black 0 0));
-   -webkit-mask-composite: destination-in;
-   transition: --fade-top 0.3s ease, --fade-bottom 0.3s ease;
+    transition: --fade-top 0.3s ease, --fade-bottom 0.3s ease;
 }
 .overflow-top {
-    --fade-top: linear-gradient(to bottom, transparent .5em, black 3em);
+    --fade-top: 3em;
 }
 .overflow-bottom {
-    --fade-bottom: linear-gradient(to top, transparent .5em, black 3em);
+    --fade-bottom: 3em;
 }
 
 /*
