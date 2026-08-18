@@ -91,8 +91,8 @@ export function FilterPanel({
 
                     {activeItems.map(({ type, value, index }) => (
                         <div key={`${type}-${index}`} className="filter-item">
-                            <span>{getFilterTitle(type)}</span>
                             <div className="filter-item-controls">
+                                <span>{getFilterTitle(type)}</span>
                                 <label className="text-field small has-placeholder">
                                     <input
                                         type="text"
@@ -102,14 +102,14 @@ export function FilterPanel({
                                         autoComplete="off"
                                     />
                                 </label>
-                                <button
-                                    type="button"
-                                    className="btn ibtn xsmall btn-text"
-                                    onClick={() => handleRemoveFilter(type, index)}
-                                >
-                                    <i className="icon">remove</i>
-                                </button>
                             </div>
+                            <button
+                                type="button"
+                                className="btn ibtn xsmall btn-text"
+                                onClick={() => handleRemoveFilter(type, index)}
+                            >
+                                <i className="icon">remove</i>
+                            </button>
                         </div>
                     ))}
                     

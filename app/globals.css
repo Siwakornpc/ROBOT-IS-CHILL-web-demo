@@ -596,19 +596,19 @@ hr {
     width: 100%;
     padding: 24px 16px 8px 16px;
     border-radius: 4px 4px 0 0;
-    background: rgb(var(--md-color-surface-container-low));
+    background: rgb(var(--md-color-surface-container-highest));
     box-shadow: inset 0 -2px 0 -1px rgb(var(--md-color-on-surface-variant));
     cursor: text;
     transition: box-shadow 200ms ease;
 }
+.text-field:has(> input:focus) {
+    box-shadow: inset 0 -4px 0 -1px rgb(var(--md-color-primary));
+}
 .text-field.small {
     padding: 6px 12px;
 }
-.text-field.small .text-field-label {
-    display: none;
-}
 
-.text-field > input {
+.text-field > input[type="text"] {
     display: block;
     width: 100%;
     font-size: 16px;
@@ -617,9 +617,7 @@ hr {
     border: none;
     outline: none;
 }
-.text-field:has(> input:focus) {
-    box-shadow: inset 0 -4px 0 -1px rgb(var(--md-color-primary));
-}
+
 .text-field-label {
     display: block;
     position: relative;
@@ -635,6 +633,9 @@ hr {
     font-size: 16px;
     line-height: 24px;
     margin: -12px 0;
+}
+.text-field.small .text-field-label {
+    display: none;
 }
 
 /*
@@ -654,6 +655,7 @@ hr {
     box-shadow: var(--elevation-3);
     transform: scale(.95);
     opacity: 0;
+    z-index: 1;
     transition: all .2s;
 }
 .menu.menu.visible {
@@ -801,22 +803,22 @@ hr {
     color: var(--description);
 }
 
-.menu-option-icon {
+.menu-option > .icon {
     display: flex;
     align-items: center;
-    min-width: 20px;
     text-align: center;
-    margin-inline-end: 16px;
-    color: var(--variant);
-}
-.icon.menu-option-icon {
+    min-width: 20px;
     font-size: 20px;
-}
-.menu-option-menu-icon {
-    margin-left: auto;
+    color: var(--variant);
 }
 .menu-option.selected > .icon {
     color: rgb(var(--md-color-on-tertiary-container));
+}
+.menu-option-icon {
+    margin-inline-end: 16px;
+}
+.menu-option-menu-icon {
+    margin-inline-start: auto;
 }
 
 .menu:not(:has(:nth-child(1 of :not(.hidden))))::after {
@@ -1387,14 +1389,16 @@ hr {
 
 .filter-item {
     display: flex;
-    flex-direction: column;
-    padding: 10px;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
     border-radius: 8px;
     background: rgb(var(--md-color-surface-container-lowest));
 }
 
 .filter-item-controls {
     display: flex;
+    flex-direction: column;
     gap: 8px;
 }
 
