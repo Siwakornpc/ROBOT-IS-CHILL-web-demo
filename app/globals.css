@@ -1585,6 +1585,7 @@ hr {
     grid-template-areas: "stack";
     align-items: center;
     justify-items: center;
+    filter: none;
 }
 .search-item-tile-broken > * {
     grid-area: stack;
