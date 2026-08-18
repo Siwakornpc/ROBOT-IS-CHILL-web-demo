@@ -1593,6 +1593,7 @@ hr {
     height: inherit;
     mask-size: contain;
     mask-repeat: no-repeat;
+    opacity: .38;
 }
 .search-item-tile-broken > :first-child {
     mask-image: url("@/public/error0.png");
@@ -1601,6 +1602,15 @@ hr {
 .search-item-tile-broken > :nth-child(2) {
     mask-image: url("@/public/error1.png");
     background: rgb(var(--md-color-outline));
+}
+.search-item-tile-broken::after {
+    content: "not found";
+    grid-area: stack;
+    position: absolute;
+    color: var(--error);
+    font-family: var(--font-family-code);
+    font-size: 12px;
+    font-weight: bold;
 }
 
 @keyframes sit-pending {
