@@ -14,12 +14,7 @@ export default function Home() {
     const [filters, setFilters] = useState<Record<string, string[]>>({});
     const [useRegex, setUseRegex] = useState(false);
 
-    function handleModeChange(nextMode: SearchMode) {
-        setMode(nextMode);
-        if (nextMode !== "tile") {
-            setSelected(null);
-        }
-    }
+    const [isFilterVisible, setIsFilterVisible] = useState(false);
 
     const [modeFilters, setModeFilters] = useState<Record<SearchMode, Record<string, string[]>>>({
         tile: {},
@@ -34,22 +29,29 @@ export default function Home() {
     return (
         <main className="align-layout">
             <LeftBar />
-            <FilterPanel
-                mode={mode}
-                onModeChange={setMode}
-                filters={modeFilters[mode] ?? {}}
-                onFiltersChange={(updatedFilters) => {
-                    setModeFilters((prev) => ({
-                        ...prev,
-                        [mode]: updatedFilters,
-                    }));
-                }}
-            />
+            {isFilterVisible && (
+                <FilterPanel
+                    mode={mode}
+                    onModeChange={setMode}
+                    filters={modeFilters[mode] ?? {}}
+                    onFiltersChange={(updatedFilters) => {
+                        setModeFilters((prev) => ({
+                            ...prev,
+                            [mode]: updatedFilters,
+                        }));
+                    }}
+                />
+            )}
             <Body
                 mode={mode}
-                onSelect={setSelected} filters={filters} 
+                onSelect={setSelected}
+                filters={filters} 
                 useRegex={useRegex}
                 onRegexChange={setUseRegex}
+                onToggleFilter={() =>
+                    setIsFilterVisible((prev) => !prev)
+                }
+                isFilterVisible={isFilterVisible}
             />
             {selected !== null && (
                 <RightBarSearch>

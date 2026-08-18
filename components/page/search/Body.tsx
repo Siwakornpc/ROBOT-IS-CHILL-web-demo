@@ -92,22 +92,24 @@ export function FilterPanel({
                     {activeItems.map(({ type, value, index }) => (
                         <div key={`${type}-${index}`} className="filter-item">
                             <span>{getFilterTitle(type)}</span>
-                            <label className="text-field small has-placeholder">
-                                <input
-                                    type="text"
-                                    placeholder="Filter..."
-                                    value={value}
-                                    onChange={(e) => handleValueChange(type, index, e.target.value)}
-                                    autoComplete="off"
-                                />
-                            </label>
-                            <button
-                                type="button"
-                                className="btn ibtn xsmall btn-text"
-                                onClick={() => handleRemoveFilter(type, index)}
-                            >
-                                <i className="icon">remove</i>
-                            </button>
+                            <div className="filter-item-controls">
+                                <label className="text-field small has-placeholder">
+                                    <input
+                                        type="text"
+                                        placeholder="Filter..."
+                                        value={value}
+                                        onChange={(e) => handleValueChange(type, index, e.target.value)}
+                                        autoComplete="off"
+                                    />
+                                </label>
+                                <button
+                                    type="button"
+                                    className="btn ibtn xsmall btn-text"
+                                    onClick={() => handleRemoveFilter(type, index)}
+                                >
+                                    <i className="icon">remove</i>
+                                </button>
+                            </div>
                         </div>
                     ))}
                     
@@ -132,20 +134,28 @@ export default function Body({
     filters = {},
     useRegex,
     onRegexChange,
+    onToggleFilter,
+    isFilterVisible,
 }: {
     mode: SearchMode;
     onSelect: (selected: SelectedSearchResult) => void;
     filters?: Record<string, string[]>;
     useRegex: boolean;
     onRegexChange: (value: boolean) => void;
+    onToggleFilter: () => void;
+    isFilterVisible: boolean;
 }) {
     const [searchQuery, setSearchQuery] = useState("");
-
     return (
         <main style={{ width: "stretch" }}>
             <div className="main-body">
                 <div className="search">
-                    <button className="btn ibtn small btn-text search-menu-btn">
+                    <button
+                        className={`btn ibtn small btn-text search-menu-btn ${
+                            isFilterVisible ? "selected" : ""
+                        }`}
+                        onClick={onToggleFilter}
+                    >
                         <i className="icon">menu</i>
                     </button>
                     <input

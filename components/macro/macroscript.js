@@ -4,22 +4,35 @@ import { flags, variants } from "../highlight/render-highlight";
 const EXECUTION_DELAY_MS = 800;
 
 export async function initMacro() {
-    const { 
-        default: init, 
-        evaluate, 
-        get_stdlib_macro_names, 
-        initialize_executor, 
-        cancel_running_macro 
-    } = await eval('import("https://robot-is-chill.github.io/macrosia/pkg/glue.js")');
+    const dynamicImport = new Function(
+        "url",
+        "return import(url)"
+    );
 
-    if (!RegExp.escape) {
-        RegExp.escape = str => str.replace(/[\\^$.*+?()[\]{}|\-]/g, "\\$&");
-    }
+    const mod = await dynamicImport(
+        "https://robot-is-chill.github.io/macrosia/pkg/glue.js"
+    );
 
-    const editor = await window.editorReady;
+    const response = await fetch(
+        "https://robot-is-chill.github.io/macrosia/pkg/glue_bg.wasm"
+    );
+
+    const bytes = await response.arrayBuffer();
+    const module = await WebAssembly.compile(bytes);
+
+    console.log(WebAssembly.Module.exports(module));
+    console.log(WebAssembly.Module.imports(module));
+
+    const {
+        default: init,
+        evaluate,
+        get_stdlib_macro_names,
+        initialize_executor,
+        cancel_running_macro,
+    } = mod;
+
     const editorArea = document.getElementById("editor-area");
     const output = document.getElementById("render-output");
-    const outputSc = document.querySelector(".render-screen");
     const button = document.getElementById("stop");
     const statusTime = document.getElementById("status-time");
     const statusSteps = document.getElementById("status-steps");
@@ -36,14 +49,17 @@ export async function initMacro() {
     /*
         Load database macros from API
     */
+    let dbMacros = {};
 
     try {
         const res = await fetch("https://ric-api.sno.mba/macros.json", {
             mode: "cors"
         });
 
-        const dbMacros = await res.json();
-        initialize_executor(dbMacros);
+        const dbMacrosf = await res.json();
+        initialize_executor(dbMacrosf);
+
+        dbMacros = dbMacrosf;
 
         output.textContent = "Fetching...";
 
@@ -55,6 +71,7 @@ export async function initMacro() {
     }
     catch (err) {
         initialize_executor({});
+        dbMacros = {};
 
         output.textContent =
     `Failed to get macros from the RIC database!
@@ -81,21 +98,18 @@ ${err}`;
         stdMacros[name] = lines.join("\n");
     }
 
-    const data = await fetch("https://ric-api.sno.mba/macros.json")
-    .then(res => res.json());
-
     const flagsData = flags;
     const variantsData = variants;
 
     output.classList.add("complete");
     output.textContent =
-    `Loaded ${Object.keys(stdMacros).length + Object.keys(data).length} macros, ${flagsData.length} flags, ${Object.keys(variantsData).length} varaints.
+    `Loaded ${Object.keys(stdMacros).length + Object.keys(dbMacros).length} macros, ${flagsData.length} flags, ${Object.keys(variantsData).length} varaints.
 
 [Built-in macros]:
 ${Object.keys(stdMacros).length} macros.
 
 [Custom macros]:
-${Object.keys(data).length} macros.`;
+${Object.keys(dbMacros).length} macros.`;
     /*
         Auto execution (good bye big and intimidating run button, you will be MISSED...)
     */
@@ -113,46 +127,41 @@ ${Object.keys(data).length} macros.`;
             running = false;
         }
 
-        const mode = window.executionMode ?? "=m";
-        const isMacroExecution = mode === "=m";
-
-        if (isMacroExecution) {
-            output.textContent = "Waiting for pause...";
-            output.classList.remove("complete");
-            output.classList.remove("error");
-        }
+        output.textContent = "Waiting for pause...";
+        output.classList.remove("complete");
+        output.classList.remove("error");
 
         delayTimer = setTimeout(async () => {
             running = true; 
 
-            if (isMacroExecution) {
-                output.textContent = "Evaluating...";
-            }
+            output.textContent = "Evaluating...";
 
             try {
                 const start = performance.now();
-                const result = await evaluate(`${editor.value}`);
+                const result = await evaluate(`${editorArea.textContent}`);
                 const executionTime = (performance.now() - start).toFixed(3);
+
+                const steps = await evaluate(`[/${editorArea.textContent}]<--[add/[step]/-2]`);
 
                 if (statusTime) {
                     statusTime.textContent = `${executionTime}ms`;
                 }
 
-                if (isMacroExecution) {
-                    output.classList.remove("error");
-
-                    if (result.includes("[MACRO ERROR]")) {
-                        output.classList.add("error");
-                    }
-
-                    output.textContent = result;
+                if (statusSteps) {
+                    statusSteps.textContent = steps.replace(/.*(\d+)$/, "$1");
                 }
+
+                output.classList.remove("error");
+
+                if (result.includes("[MACRO ERROR]")) {
+                    output.classList.add("error");
+                }
+
+                output.textContent = result;
             }
             catch (err) {
-                if (isMacroExecution) {
-                    output.classList.add("error");
-                    output.textContent = `[JAVASCRIPT ERROR]\n${err}`;
-                }
+                output.classList.add("error");
+                output.textContent = `[JAVASCRIPT ERROR]\n${err}`;
             }
             finally {
                 running = false;
