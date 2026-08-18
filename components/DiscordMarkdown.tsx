@@ -115,7 +115,7 @@ function renderNode(node: DiscordNode, key: string): ReactNode {
          */
         case "subtext":
             return (
-                <span
+                <p
                     key={key}
                     className="discord-subtext"
                     role="button"
@@ -124,7 +124,7 @@ function renderNode(node: DiscordNode, key: string): ReactNode {
                     {isChildrenNode(node)
                         ? renderChildren(node.content, key)
                         : null}
-                </span>
+                </p>
             );
 
         /*

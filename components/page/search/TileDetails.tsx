@@ -111,7 +111,7 @@ export function Details({ selected }: DetailsProps) {
 
         return (
             <>
-                <div className="search-details-macro">
+                <div className="search-details-macro ascroll-x" style={{width: "380px"}}>
                     <p
                         className={`search-details-macro-name ${isBuiltin}`}
                     >

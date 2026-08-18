@@ -156,6 +156,7 @@ ul {
 .discord-subtext {
     color: rgb(var(--md-color-outline));
     font-size: 0.825em;
+    margin: 0.6em 0 !important;
 }
 
 /*
