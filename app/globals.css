@@ -1658,9 +1658,10 @@ hr {
 
 .search-item-macro {
     max-height: 6em;
-    font-size: 1em;
-    word-wrap: anywhere;
     font-family: var(--font-family-code);
+    font-size: 1em;
+    text-align: center;
+    word-wrap: anywhere;
 }
 
 /*
