@@ -348,7 +348,9 @@ export default function SearchResults({
                             }}
                         >
                             {isBroken ? (
-                                <span className="search-item-tile search-item-tile-broken" aria-hidden="true" />
+                                <div className="search-item-tile search-item-tile-broken">
+                                    <div></div><div></div>
+                                </div>
                             ) : canLoad ? (
                                 <img
                                     className="search-item-tile"

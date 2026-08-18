@@ -1576,10 +1576,28 @@ hr {
     image-rendering: pixelated;
     filter: var(--f-elevation-5);
 }
-
 .search-item-tile.pending {
     border-radius: 4px;
     animation: sit-pending 1s ease-in-out infinite;
+}
+.search-item-tile-broken {
+    display: grid;
+    grid-template-areas: "stack";
+    align-items: center;
+    justify-items: center;
+}
+.search-item-tile-broken > * {
+    grid-area: "stack";
+    width: inherit;
+    height: inherit;
+}
+.search-item-tile-broken > :first-child {
+    mask-image: url("@/public/error0.png");
+    background: rgb(var(--md-color-outline));
+}
+.search-item-tile-broken > :nth-child(2) {
+    mask-image: url("@/public/error1.png");
+    background: rgb(var(--md-color-surface-container-highest));
 }
 
 @keyframes sit-pending {
