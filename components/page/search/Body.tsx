@@ -154,7 +154,7 @@ export default function Body({
                         <input
                             type="checkbox"
                             className="hidden"
-                            checked={useRegex}
+                            checked={showMenu}
                             onChange={(e) =>
                                 onToggleFilter(e.currentTarget.checked)
                             }
