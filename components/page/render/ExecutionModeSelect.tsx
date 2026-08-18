@@ -6,11 +6,11 @@ import MenuSelect, { MenuOption } from "@/components/MenuSelect";
 const options = [
     {
         value: "=t",
-        title: "Render Tiles",
+        label: "Render Tiles",
     },
     {
         value: "=r",
-        title: "Render Texts",
+        label: "Render Texts",
     },
 ] as const;
 

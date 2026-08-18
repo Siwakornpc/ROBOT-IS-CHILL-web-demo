@@ -2,12 +2,92 @@
 
 import { useEffect, useRef, useState, ReactNode, CSSProperties, FocusEvent, MouseEvent as ReactMouseEvent } from "react";
 
+export type MenuAnchor = "t" | "b" | "l" | "r" | "tl" | "tr" | "bl" | "br" | "s" | "e" | "st" | "sb" | "et" | "eb";
+
 export interface MenuOption<T extends string = string> {
     value: T;
-    title: string;
+    label: string;
     description?: string;
-    label?: string;
     icon?: ReactNode;
+    children?: MenuOption<T>[];
+}
+
+interface MenuItemProps<T extends string> {
+    item: MenuOption<T>;
+    selectedValue: T;
+    onChange: (value: T) => void;
+    onCloseAll: () => void;
+    optionIcon?: (option: MenuOption<T>) => ReactNode;
+    submenuAnchor?: MenuAnchor;
+}
+
+// recursive component for rendering individual menu items and their submenus
+function MenuItem<T extends string>({
+    item,
+    selectedValue,
+    onChange,
+    onCloseAll,
+    optionIcon,
+    submenuAnchor = "st",
+}: MenuItemProps<T>) {
+    const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
+    const hasChildren = Boolean(item.children && item.children.length > 0);
+    const isSelected = item.value === selectedValue;
+    const hasIcon = Boolean(optionIcon || item.icon);
+
+    return (
+        <div
+            className="menu-option-wrapper"
+            style={{ position: "relative" }}
+            onMouseEnter={() => hasChildren && setIsSubmenuOpen(true)}
+            onMouseLeave={() => hasChildren && setIsSubmenuOpen(false)}
+        >
+            <div
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => {
+                    if (hasChildren) {
+                        setIsSubmenuOpen((prev) => !prev);
+                    } else {
+                        onChange(item.value);
+                        onCloseAll();
+                    }
+                }}
+                className={`menu-option ${isSelected ? "selected" : ""}`}
+            >
+                {isSelected ? (
+                    <span className="menu-option-icon icon">check</span>
+                ) : hasIcon ? (
+                    <span className="menu-option-icon icon">
+                        {optionIcon ? optionIcon(item) : item.icon}
+                    </span>
+                ) : null}
+                
+                <div>
+                    <div className="menu-option-label">{item.label}</div>
+                    {item.description && <div className="menu-option-desc">{item.description}</div>}
+                </div>
+
+                {hasChildren && <i className="icon" style={{ marginLeft: "auto" }}>arrow_right</i>}
+            </div>
+
+            {/* Render nested children recursively with dynamic anchor class */}
+            {hasChildren && isSubmenuOpen && (
+                <div className={`menu submenu-popout anchor-${submenuAnchor} visible`}>
+                    {item.children!.map((child) => (
+                        <MenuItem
+                            key={child.value}
+                            item={child}
+                            selectedValue={selectedValue}
+                            onChange={onChange}
+                            onCloseAll={onCloseAll}
+                            optionIcon={optionIcon}
+                            submenuAnchor={submenuAnchor}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
 }
 
 interface MenuSelectProps<T extends string> {
@@ -29,7 +109,8 @@ interface MenuSelectProps<T extends string> {
     optionIcon?: (option: MenuOption<T>) => ReactNode;
     className?: string;
     style?: CSSProperties;
-    anchor?: "t" | "b" | "l" | "r" | "tl" | "tr" | "bl" | "br" | "s" | "e" | "st" | "sb" | "et" | "eb";
+    anchor?: MenuAnchor;
+    submenuAnchor?: MenuAnchor;
 }
 
 export default function MenuSelect<T extends string>({
@@ -44,6 +125,7 @@ export default function MenuSelect<T extends string>({
     className = "",
     style,
     anchor = "st",
+    submenuAnchor = "st",
 }: MenuSelectProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
@@ -72,7 +154,7 @@ export default function MenuSelect<T extends string>({
         }
     };
 
-    // prevents input clicks from toggling the menu closed
+    // prevents input clicks from toggling the menu closed for text input menus
     const handleClickCapture = (e: ReactMouseEvent<HTMLDivElement>) => {
         const target = e.target as HTMLElement;
         if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") {
@@ -111,42 +193,23 @@ export default function MenuSelect<T extends string>({
                     className={`menu-trigger ${className} ${id} ${isOpen ? "clicked" : ""}`}
                     onClick={toggleMenu}
                 >
-                    {triggerValue ? triggerValue(selectedOption) : (selectedOption.label ?? selectedOption.title)}
+                    {triggerValue ? triggerValue(selectedOption) : selectedOption.label}
                 </button>
             )}
 
             <div className={`menu anchor-${anchor} ${id}-options ${isOpen ? "visible" : ""}`}>
                 {title && <div className="menu-title">{title}</div>}
-                {options.map((item) => {
-                    const hasIcon = Boolean(optionIcon || item.icon);
-                    const isSelected = item.value === value;
-
-                    return (
-                        <div
-                            key={item.value}
-                            onMouseDown={(e) => e.preventDefault()}
-                            onClick={() => {
-                                onChange(item.value);
-                                setIsOpen(false);
-                            }}
-                            className={`menu-option ${isSelected ? "selected" : ""}`}
-                        >
-                            {isSelected ? (
-                                <span className="menu-option-icon icon">
-                                    check
-                                </span>
-                            ) : hasIcon ? (
-                                <span className="menu-option-icon icon">
-                                    {optionIcon ? optionIcon(item) : item.icon}
-                                </span>
-                            ) : null}
-                            <div>
-                                <div className="menu-option-label">{item.title}</div>
-                                {item.description && <div className="menu-option-desc">{item.description}</div>}
-                            </div>
-                        </div>
-                    );
-                })}
+                {options.map((item) => (
+                    <MenuItem
+                        key={item.value}
+                        item={item}
+                        selectedValue={value}
+                        onChange={onChange}
+                        onCloseAll={() => setIsOpen(false)}
+                        optionIcon={optionIcon}
+                        submenuAnchor={submenuAnchor}
+                    />
+                ))}
             </div>
         </div>
     );

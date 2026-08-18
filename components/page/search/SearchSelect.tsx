@@ -5,19 +5,19 @@ import MenuSelect from "@/components/MenuSelect";
 const options = [
     {
         value: "tile",
-        title: "Tiles",
+        label: "Tiles",
     },
     {
         value: "macro",
-        title: "Macros",
+        label: "Macros",
     },
     {
         value: "filter",
-        title: "Filters",
+        label: "Filters",
     },
     {
         value: "overlay",
-        title: "Overlays",
+        label: "Overlays",
     },
 ] as const;
 
@@ -36,7 +36,7 @@ export default function SearchSelect({
             value={value}
             options={options}
             onChange={onChange}
-            triggerValue={(selectedOption) => <span className="btn-label">{selectedOption.title}</span>}
+            triggerValue={(selectedOption) => <span className="btn-label">{selectedOption.label}</span>}
             className="btn small btn-filled"
         />
     );

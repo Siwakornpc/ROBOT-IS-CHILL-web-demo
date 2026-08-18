@@ -2,22 +2,101 @@
 
 import { useState } from "react";
 import { EditorScreen } from "@/components/editor/EditorScreen";
-import MenuSelect from "@/components/MenuSelect";
+import MenuSelect, { MenuOption } from "@/components/MenuSelect";
 
 const options = [
-    { value: "option1", title: "Option 1" },
-    { value: "option2", title: "Option 2" },
-    { value: "option3", title: "Option 3" },
+    { value: "option1", label: "Option 1" },
+    { value: "option2", label: "Option 2" },
+    { value: "option3", label: "Option 3" },
 ];
 
+const sampleOptions: MenuOption[] = [
+    {
+        value: "file",
+        label: "File",
+        icon: "folder",
+        children: [
+            {
+                value: "new",
+                label: "New",
+                icon: "add",
+                children: [
+                    { value: "new_file", label: "Text File", icon: "description" },
+                    { value: "new_project", label: "Project Folder", icon: "create_new_folder" },
+                ],
+            },
+            { value: "save", label: "Save", icon: "save", description: "Save current progress" },
+            { value: "export", label: "Export As...", icon: "download" },
+        ],
+    },
+    {
+        value: "edit",
+        label: "Edit",
+        icon: "edit",
+        children: [
+            { value: "undo", label: "Undo", icon: "undo" },
+            { value: "redo", label: "Redo", icon: "redo" },
+            {
+                value: "preferences",
+                label: "Preferences",
+                icon: "settings",
+                children: [
+                    { value: "pref_theme", label: "Theme Options", icon: "palette" },
+                    { value: "pref_keys", label: "Keyboard Shortcuts", icon: "keyboard" },
+                ],
+            },
+        ],
+    },
+    {
+        value: "view",
+        label: "View Mode",
+        icon: "visibility",
+        description: "Change interface layout",
+    },
+];
+
+function findOptionWithAncestors(
+    options: MenuOption[],
+    targetValue: string,
+    parents: MenuOption[] = []
+): { option: MenuOption; path: MenuOption[] } | null {
+    for (const item of options) {
+        if (item.value === targetValue) {
+            return { option: item, path: parents };
+        }
+        if (item.children && item.children.length > 0) {
+            const found = findOptionWithAncestors(item.children, targetValue, [...parents, item]);
+            if (found) return found;
+        }
+    }
+    return null;
+}
+
 export default function Body() {
-    const [selected, setSelected] = useState("option1");
+    const [textFieldSelected, setTextFieldSelected] = useState("option1");
+    const [recurSelected, setRecurSelected] = useState("new_file");
     const [searchQuery, setSearchQuery] = useState("");
 
     // Filter using searchQuery instead of selected value
     const filteredOptions = options.filter((option) =>
-        option.title.toLowerCase().includes(searchQuery.toLowerCase())
+        option.label.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+
+    const handleSelect = (newValue: string) => {
+        setTextFieldSelected(newValue);
+
+        const result = findOptionWithAncestors(sampleOptions, newValue);
+        if (result) {
+            const pathLabels = result.path.map((parent) => parent.label);
+            
+            console.log("--- Menu Selection ---");
+            console.log("Selected Value:", newValue);
+            console.log("Selected Item:", result.option);
+            console.log("Ancestor Path:", pathLabels);
+            console.log("Full Hierarchy:", [...pathLabels, result.option.label].join(" > "));
+        }
+    };
 
     return (
         <main style={{ width: "stretch" }}>
@@ -26,12 +105,12 @@ export default function Body() {
                 <hr />
                 <EditorScreen />
                 <MenuSelect
-                    value={selected}
+                    value={textFieldSelected}
                     options={filteredOptions}
                     onChange={(newValue) => {
-                        setSelected(newValue);
+                        setTextFieldSelected(newValue);
                         const matched = options.find((opt) => opt.value === newValue);
-                        if (matched) setSearchQuery(matched.title);
+                        if (matched) setSearchQuery(matched.label);
                     }}
                     trigger={({ getInputProps }) => (
                         <label className="text-field">
@@ -51,6 +130,20 @@ export default function Body() {
                         </label>
                     )}
                     anchor="t"
+                />
+
+                <hr />
+
+                <div>
+                    <strong>Active Selection:</strong> <code>{recurSelected}</code>
+                </div>
+
+                <MenuSelect
+                    id="test-recursive-menu"
+                    title="Action Menu"
+                    value={recurSelected}
+                    options={sampleOptions}
+                    onChange={handleSelect}
                 />
             </div>
         </main>

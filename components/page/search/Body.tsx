@@ -20,15 +20,15 @@ export function FilterPanel({
 }) {
     const filterOptions = {
         tile: [
-            { value: "source", title: "Source" },
-            { value: "color", title: "Active Color" },
-            { value: "iacolor", title: "Inactive Color" },
-            { value: "tiling", title: "Tiling" },
-            { value: "tags", title: "Tags" },
+            { value: "source", label: "Source" },
+            { value: "color", label: "Active Color" },
+            { value: "iacolor", label: "Inactive Color" },
+            { value: "tiling", label: "Tiling" },
+            { value: "tags", label: "Tags" },
         ],
         macro: [
-            { value: "creator", title: "Creator ID" },
-            { value: "desc", title: "Description" },
+            { value: "creator", label: "Creator ID" },
+            { value: "desc", label: "Description" },
         ],
     } as const;
 
@@ -38,7 +38,7 @@ export function FilterPanel({
 
     const getFilterTitle = (filterType: string) => {
         const match = currentOptions.find((opt) => opt.value === filterType);
-        return match ? match.title : filterType;
+        return match ? match.label : filterType;
     };
 
     const handleAddFilter = (filterType: string) => {
