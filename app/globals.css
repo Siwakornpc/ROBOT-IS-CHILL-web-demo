@@ -700,7 +700,7 @@ hr {
 [dir="rtl"] .submenu-popout.anchor-et,
 [dir="rtl"] .submenu-popout.anchor-eb {
     left: 100%;
-    margin: -4px 8px;
+    margin: -4px 0;
 }
 .submenu-popout.anchor-r,
 .submenu-popout.anchor-tr,
