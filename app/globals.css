@@ -690,6 +690,30 @@ hr {
     margin-inline: 4px;
     transform: translateX(4px) scale(.95);
 }
+.submenu-popout.anchor-l,
+.submenu-popout.anchor-tl,
+.submenu-popout.anchor-bl,
+.submenu-popout.anchor-s,
+.submenu-popout.anchor-st,
+.submenu-popout.anchor-sb,
+[dir="rtl"] .submenu-popout.anchor-e,
+[dir="rtl"] .submenu-popout.anchor-et,
+[dir="rtl"] .submenu-popout.anchor-eb {
+    left: 100%;
+    margin: 0 8px;
+}
+.submenu-popout.anchor-r,
+.submenu-popout.anchor-tr,
+.submenu-popout.anchor-br,
+.submenu-popout.anchor-e,
+.submenu-popout.anchor-et,
+.submenu-popout.anchor-eb,
+[dir="rtl"] .submenu-popout.anchor-s,
+[dir="rtl"] .submenu-popout.anchor-st,
+[dir="rtl"] .submenu-popout.anchor-sb {
+    right: 100%;
+    margin: 0 8px;
+}
 
 .menu-title {
     -webkit-user-select: none;
