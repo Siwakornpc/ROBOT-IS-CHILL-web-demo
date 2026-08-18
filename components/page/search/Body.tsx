@@ -29,6 +29,7 @@ export function FilterPanel({
         macro: [
             { value: "creator", label: "Creator ID" },
             { value: "desc", label: "Description" },
+            { value: "builtin", label: "Builtin" },
         ],
     } as const;
 
