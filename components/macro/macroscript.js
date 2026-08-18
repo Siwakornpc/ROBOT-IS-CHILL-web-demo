@@ -148,7 +148,13 @@ ${Object.keys(dbMacros).length} macros.`;
                 }
 
                 if (statusSteps) {
-                    statusSteps.textContent = steps.replace(/.*(\d+)$/, "$1");
+                    if (steps.includes("[MACRO ERROR]")) {
+                        statusSteps.classList.add("error");
+                        statusSteps.textContent = "Error"
+                    } else {
+                        statusSteps.classList.remove("error");
+                        statusSteps.textContent = steps.replace(/.*(\d+)$/, "$1");
+                    }
                 }
 
                 output.classList.remove("error");
