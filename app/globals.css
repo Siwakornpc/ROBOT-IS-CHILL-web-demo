@@ -1590,14 +1590,16 @@ hr {
     grid-area: stack;
     width: inherit;
     height: inherit;
+    mask-size: contain;
+    mask-repeat: no-repeat;
 }
 .search-item-tile-broken > :first-child {
     mask-image: url("@/public/error0.png");
-    background: rgb(var(--md-color-outline));
+    background: rgb(var(--md-color-outline-variant));
 }
 .search-item-tile-broken > :nth-child(2) {
     mask-image: url("@/public/error1.png");
-    background: rgb(var(--md-color-surface-container-highest));
+    background: rgb(var(--md-color-outline));
 }
 
 @keyframes sit-pending {
