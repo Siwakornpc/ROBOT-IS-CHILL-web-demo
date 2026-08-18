@@ -655,7 +655,6 @@ hr {
     transform: scale(.95);
     opacity: 0;
     transition: all .2s;
-    z-index: 9999;
 }
 .menu.menu.visible {
     opacity: 1;
