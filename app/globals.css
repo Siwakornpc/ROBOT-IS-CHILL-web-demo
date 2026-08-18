@@ -1587,7 +1587,7 @@ hr {
     justify-items: center;
 }
 .search-item-tile-broken > * {
-    grid-area: "stack";
+    grid-area: stack;
     width: inherit;
     height: inherit;
 }
