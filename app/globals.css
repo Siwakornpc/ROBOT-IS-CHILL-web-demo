@@ -694,10 +694,14 @@ hr {
 .menu-title {
     -webkit-user-select: none;
     user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 32px;
     font-size: 14px;
     font-weight: 600;
     line-height: 20px;
-    padding: 8px 16px 0;
+    padding: 4px 12px 0;
     color: rgb(var(--md-color-on-surface-variant));
 }
 .menu-option {
@@ -730,6 +734,18 @@ hr {
     border-bottom-right-radius: 12px;
 }
 
+.menu-option-label {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+}
+
+.menu-option-desc {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--description);
+}
+
 .menu-option-icon {
     display: flex;
     align-items: center;
@@ -760,6 +776,30 @@ hr {
 .text-field + .menu {
     width: 100%;
     margin: 0;
+}
+
+.execution-mode-select.execution-mode-select {
+    display: block;
+    box-sizing: border-box;
+    width: stretch;
+    min-width: 64px;
+    height: 32px;
+    padding-inline: 8px;
+    border-radius: 8px;
+    background: var(--editor-body);
+    border: 1px solid var(--editor-outline);
+    font-family: var(--font-family-code);
+    font-size: var(--font-size-code);
+    transition: .2s ease;
+    font-weight: bold;
+}
+.execution-mode-select.clicked {
+    background: var(--editor-current-line);
+    transition: 0s ease;
+}
+.execution-mode-select-options .menu-option:not(.selected) .menu-option-icon {
+    font-family: var(--font-family-code);
+    font-size: var(--font-size-code);
 }
 
 /*
@@ -859,42 +899,6 @@ hr {
 [dir="rtl"] .anchor-eb {
     transform-origin: left bottom;
     bottom: 100%;
-}
-
-.menu-option-label {
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 20px;
-}
-
-.menu-option-desc {
-    font-size: 12px;
-    line-height: 16px;
-    color: var(--description);
-}
-
-.execution-mode-select.execution-mode-select {
-    display: block;
-    box-sizing: border-box;
-    width: stretch;
-    min-width: 64px;
-    height: 32px;
-    padding-inline: 8px;
-    border-radius: 8px;
-    background: var(--editor-body);
-    border: 1px solid var(--editor-outline);
-    font-family: var(--font-family-code);
-    font-size: var(--font-size-code);
-    transition: .2s ease;
-    font-weight: bold;
-}
-.execution-mode-select.clicked {
-    background: var(--editor-current-line);
-    transition: 0s ease;
-}
-.execution-mode-select-options .menu-option:not(.selected) .menu-option-icon {
-    font-family: var(--font-family-code);
-    font-size: var(--font-size-code);
 }
 
 /*
@@ -1258,7 +1262,8 @@ hr {
     white-space: break-spaces;
     overflow-wrap: anywhere;
 }
-#render-output.error {
+#render-output.error,
+.status-value.error {
     color: var(--error);
 }
 #render-output.complete {
