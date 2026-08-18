@@ -297,7 +297,7 @@ hr {
             to left,
             transparent calc(var(--fade-right) / 6), 
             black var(--fade-right)
-        ),;
+        );
     mask-composite: intersect;
     transition:
         --fade-top 200ms var(--fade-top-easing, cubic-bezier(0.3, 0, 1, 1)),
