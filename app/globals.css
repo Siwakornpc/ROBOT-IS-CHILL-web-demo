@@ -279,13 +279,15 @@ hr {
             black var(--fade-bottom)
         );
     mask-composite: intersect;
-    transition: --fade-top 0.3s ease, --fade-bottom 0.3s ease;
+    transition: --fade-top 200ms var(--fade-top-easing, cubic-bezier(0.3, 0, 1, 1)), --fade-bottom 200ms var(--fade-bottom-easing, cubic-bezier(0.3, 0, 1, 1));
 }
 .overflow-top {
     --fade-top: 3em;
+    --fade-top-easing: cubic-bezier(0, 0, 0, 1);
 }
 .overflow-bottom {
     --fade-bottom: 3em;
+    --fade-bottom-easing: cubic-bezier(0, 0, 0, 1);
 }
 
 /*
