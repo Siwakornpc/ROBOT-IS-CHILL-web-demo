@@ -5,41 +5,12 @@ import { type SearchMode } from "@/components/page/search/SearchSelect";
 import { type SelectedSearchResult } from "@/components/page/search/SearchResultsGrid";
 import { LeftBar, RightBarSearch } from "@/components/page/SideBars";
 import { Details } from "@/components/page/search/TileDetails";
+import {
+    readSearchUrlState,
+    writeSearchUrlState,
+} from "@/components/url_state/searchUrlState";
 import { useState, useEffect } from "react";
 import { nav_btn_select } from "@/components/nav_select";
-
-const modeHashes: Record<SearchMode, string> = {
-    tiles: "tiles",
-    macros: "macros",
-    variants: "variants",
-    filters: "filters",
-    overlays: "overlays",
-};
-
-const hashModes: Record<string, SearchMode> = Object.fromEntries(
-    Object.entries(modeHashes).map(([mode, hash]) => [hash, mode]),
-) as Record<string, SearchMode>;
-
-function readUrlState() {
-    if (typeof window === "undefined") {
-        return {
-            mode: "tile" as SearchMode,
-            searchQuery: "",
-            useRegex: false,
-            detailsName: null as string | null,
-        };
-    }
-
-    const [hashName, hashQuery = ""] = window.location.hash.slice(1).split("?", 2);
-    const hashParams = new URLSearchParams(hashQuery);
-    const legacySearchParams = new URLSearchParams(window.location.search);
-    return {
-        mode: hashModes[hashName.toLowerCase()] ?? "tile",
-        searchQuery: hashParams.get("query") ?? "",
-        useRegex: hashParams.get("regex")?.toLowerCase() === "true",
-        detailsName: hashParams.get("details") ?? legacySearchParams.get("details"),
-    };
-}
 
 export default function Home() {
     const [mode, setMode] = useState<SearchMode>("tiles");
@@ -47,6 +18,8 @@ export default function Home() {
     const [useRegex, setUseRegex] = useState(false);
     const [selected, setSelected] = useState<SelectedSearchResult | null>(null);
     const [detailsName, setDetailsName] = useState<string | null>(null);
+    const [isin, setIsin] = useState<string | null>(null);
+    const [value, setValue] = useState<string | null>(null);
     const [showMenu, setShowMenu] = useState(false);
     const [modeFilters, setModeFilters] = useState<Record<SearchMode, Record<string, string[]>>>({
         tiles: {},
@@ -60,11 +33,13 @@ export default function Home() {
         nav_btn_select("Search");
 
         const syncUrlState = () => {
-            const nextState = readUrlState();
+            const nextState = readSearchUrlState();
             setMode(nextState.mode);
-            setSearchQuery(nextState.searchQuery);
-            setUseRegex(nextState.useRegex);
-            setDetailsName(nextState.detailsName);
+            setSearchQuery(nextState.query);
+            setUseRegex(nextState.regex);
+            setDetailsName(nextState.details);
+            setIsin(nextState.isin);
+            setValue(nextState.value);
             setSelected(null);
         };
 
@@ -83,21 +58,14 @@ export default function Home() {
         nextUseRegex: boolean,
         nextDetailsName: string | null,
     ) => {
-        const url = new URL(window.location.href);
-        const hashParams = new URLSearchParams();
-        if (nextSearchQuery) {
-            hashParams.set("query", nextSearchQuery);
-        }
-        if (nextUseRegex) {
-            hashParams.set("regex", "true");
-        }
-        if (nextDetailsName !== null) {
-            hashParams.set("details", nextDetailsName);
-        }
-        url.hash = `${modeHashes[nextMode]}${hashParams.toString() ? `?${hashParams}` : ""}`;
-        url.searchParams.delete("details");
-
-        window.history.replaceState(null, "", url);
+        writeSearchUrlState({
+            mode: nextMode,
+            query: nextSearchQuery,
+            regex: nextUseRegex,
+            details: nextDetailsName,
+            isin,
+            value,
+        });
     };
 
     const handleModeChange = (nextMode: SearchMode) => {
