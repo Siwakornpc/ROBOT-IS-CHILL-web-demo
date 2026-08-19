@@ -70,12 +70,14 @@ function isMacroRecord(value: unknown): value is MacroRecord {
 export default function SearchResults({
     mode,
     onSelect,
+    detailsName = null,
     searchQuery = "",
     filters = {},
     useRegex = false,
 }: {
     mode: SearchMode;
     onSelect: (selected: SelectedSearchResult) => void;
+    detailsName?: string | null;
     searchQuery?: string;
     filters?: Record<string, string[]>;
     useRegex?: boolean;
@@ -93,6 +95,7 @@ export default function SearchResults({
     const loadMoreRef = useRef<HTMLDivElement>(null);
     const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
     const [brokenImages, setBrokenImages] = useState<Set<string>>(new Set());
+    const restoredDetailsRef = useRef<string | null>(null);
 
     // Images load one at a time (rather than all-at-once per batch) to avoid
     // hammering the API and tripping its rate limit. `readyCount` is how many
@@ -252,6 +255,34 @@ export default function SearchResults({
 
         return true;
     });
+
+    useEffect(() => {
+        if (!detailsName || (mode !== "tile" && mode !== "macro")) {
+            restoredDetailsRef.current = null;
+            return;
+        }
+
+        const detailsKey = `${mode}:${detailsName}`;
+        if (restoredDetailsRef.current === detailsKey) {
+            return;
+        }
+
+        const matchingEntry = allEntries.find(([name]) => String(name ?? "").trim() === detailsName);
+        if (!matchingEntry) {
+            return;
+        }
+
+        const [name, data] = matchingEntry;
+        const safeName = String(name ?? "").trim();
+        if (mode === "tile" && isTileRecord(data)) {
+            onSelect({ name: safeName, tile: data });
+            restoredDetailsRef.current = detailsKey;
+        } else if (mode === "macro" && isMacroRecord(data)) {
+            onSelect({ name: safeName, macro: data });
+            restoredDetailsRef.current = detailsKey;
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [detailsName, mode, results]);
 
     const entries = filteredEntries.slice(0, visibleCount);
     const totalEntries = filteredEntries.length;

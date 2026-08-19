@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import SearchResults from "./SearchResultsGrid";
 import { type SelectedSearchResult } from "./SearchResultsGrid";
 import SearchSelect, { type SearchMode } from "./SearchSelect";
@@ -135,6 +134,9 @@ export function FilterPanel({
 export default function Body({
     mode,
     onSelect,
+    detailsName,
+    searchQuery,
+    onSearchQueryChange,
     filters = {},
     useRegex,
     onRegexChange,
@@ -143,13 +145,15 @@ export default function Body({
 }: {
     mode: SearchMode;
     onSelect: (selected: SelectedSearchResult) => void;
+    detailsName: string | null;
+    searchQuery: string;
+    onSearchQueryChange: (value: string) => void;
     filters?: Record<string, string[]>;
     useRegex: boolean;
     onRegexChange: (value: boolean) => void;
     onToggleFilter: (value: boolean) => void;
     showMenu: boolean;
 }) {
-    const [searchQuery, setSearchQuery] = useState("");
     return (
         <main style={{ width: "stretch" }}>
             <div className="main-body">
@@ -169,7 +173,7 @@ export default function Body({
                         className="searchbar"
                         placeholder="search for something..."
                         value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.currentTarget.value)}
+                        onChange={(e) => onSearchQueryChange(e.currentTarget.value)}
                     />
                     <label className="btn ibtn small btn-text search-btn">
                         <input
@@ -188,6 +192,7 @@ export default function Body({
                     key={mode}
                     mode={mode}
                     onSelect={onSelect}
+                    detailsName={detailsName}
                     searchQuery={searchQuery}
                     filters={filters}
                     useRegex={useRegex}
