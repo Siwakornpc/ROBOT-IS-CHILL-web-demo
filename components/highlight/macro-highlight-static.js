@@ -42,7 +42,7 @@ if (typeof window !== "undefined") {
     };
     
     const specialTokens = [
-        { regex: /^\$\d+/, className: "macro-custom-argument" },
+        { regex: /^\$-?\d+/, className: "macro-custom-argument" },
         { regex: /^\$!/, className: "macro-custom-executor-mode" },
         { regex: /^\$#/, className: "macro-custom-argument-count" },
     ];

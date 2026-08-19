@@ -27,8 +27,8 @@
     --macro-empty: rgb(var(--md-color-outline));
 
     --macro-custom-argument: rgb(var(--md-color-tertiary));
-    --macro-custom-executor-mode: rgb(var(--md-color-on-primary-container));
-    --macro-custom-argument-count: rgb(var(--md-color-on-tertiary));
+    --macro-custom-executor-mode: rgb(var(--md-color-primary));
+    --macro-custom-argument-count: rgb(var(--md-color-on-tertiary-container));
 
     --editor-body: rgb(var(--md-color-surface-container));
     --editor-outline: rgb(var(--md-color-outline-variant));
@@ -1669,6 +1669,8 @@ hr {
 */
 
 .search-details-panel {
+    display: block;
+
     position: relative;
     padding: 12px;
     width: 420px !important;
@@ -1691,6 +1693,7 @@ hr {
 }
 .search-details-macro-name {
     font-size: 2em;
+    max-height: 6em;
 }
 .search-details-macro-name-builtin-indicator {
     color: rgb(var(--md-color-outline));
@@ -1713,6 +1716,13 @@ hr {
     margin: 12px auto;
     border-radius: 16px;
     border: 1px solid var(--editor-outline);
+}
+
+.search-details-contents-flexbox {
+    padding-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .search-details-detailbox {

@@ -114,8 +114,7 @@ export function Details({ selected }: DetailsProps) {
             <>
                 <div
                     ref={(el) => applyOverflowFade(el, "y")}
-                    className="search-details-macro ascroll-x"
-                    style={{width: "384px"}}
+                    className="search-details-macro ascroll-y"
                 >
                     <p
                         className={`search-details-macro-name ${isBuiltin}`}
@@ -131,31 +130,33 @@ export function Details({ selected }: DetailsProps) {
                     )}
                 </div>
 
-                <hr />
+                <div className="search-details-contents-flexbox">
+                    <hr />
 
-                {selected.macro.creator && (
-                    <p className="search-details-label">{selected.macro.creator}</p>
-                )}
+                    {selected.macro.creator && (
+                        <p className="search-details-label">{selected.macro.creator}</p>
+                    )}
 
-                <p className="search-details-label">Description</p>
+                    <p className="search-details-label">Description</p>
 
-                <div className="search-details-detailbox" id="description">
-                    <DiscordMarkdown>
-                        {selected.macro.description}
-                    </DiscordMarkdown>
+                    <div className="search-details-detailbox" id="description">
+                        <DiscordMarkdown>
+                            {selected.macro.description}
+                        </DiscordMarkdown>
+                    </div>
+
+                    {!isBuiltin && (
+                        <>
+                            <p className="search-details-label">Value</p>
+                            <div
+                                ref={macroElementRef}
+                                className="search-details-detailbox macro"
+                            >
+                                {selected.macro.value}
+                            </div>
+                        </>
+                    )}
                 </div>
-
-                {!isBuiltin && (
-                    <>
-                        <p className="search-details-label">Value</p>
-                        <div
-                            ref={macroElementRef}
-                            className="search-details-detailbox macro"
-                        >
-                            {selected.macro.value}
-                        </div>
-                    </>
-                )}
             </>
         );
     }
