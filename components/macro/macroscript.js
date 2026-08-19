@@ -153,7 +153,7 @@ ${Object.keys(dbMacros).length} macros.`;
                         statusSteps.textContent = "Error"
                     } else {
                         statusSteps.classList.remove("error");
-                        statusSteps.textContent = steps.replace(/.*(\d+)$/, "$1");
+                        statusSteps.textContent = steps.replace(/<--(\d+)$/, "$1");
                     }
                 }
 

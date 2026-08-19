@@ -5,6 +5,7 @@ import { type SearchMode } from "./SearchSelect";
 import stdlib_macros from "./stdlib_macros";
 import JSONbig from "json-bigint";
 import { applyOverflowFade } from "@/components/OverflowFade";
+import { name } from "next/dist/server/ci-info";
 
 const BATCH_SIZE = 32;
 
@@ -98,18 +99,15 @@ export default function SearchResults({
     const restoredDetailsRef = useRef<string | null>(null);
 
     // Images load one at a time (rather than all-at-once per batch) to avoid
-    // hammering the API and tripping its rate limit. `readyCount` is how many
-    // tile images are allowed to have a real `src` right now; the next one
-    // is unlocked once the current one settles (loads or errors).
-    const [readyCount, setReadyCount] = useState(1);
+    // hammering the API and tripping its rate limit. Keep settled names so
+    // filtering does not replace already-loaded images with placeholders.
+    const [settledImages, setSettledImages] = useState<Set<string>>(new Set());
 
-    useEffect(() => {
-        setReadyCount(1);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mode, searchQuery, JSON.stringify(filters)]);
-
-    function advanceReady(index: number) {
-        setReadyCount((count) => Math.max(count, index + 2));
+    function settleImage(name: string) {
+        setSettledImages((settled) => {
+            if (settled.has(name)) return settled;
+            return new Set(settled).add(name);
+        });
     }
 
     useEffect(() => {
@@ -285,6 +283,9 @@ export default function SearchResults({
     }, [detailsName, mode, results]);
 
     const entries = filteredEntries.slice(0, visibleCount);
+    const nextImageName = entries
+        .map(([name]) => String(name ?? "").trim())
+        .find((name) => name && !settledImages.has(name));
     const totalEntries = filteredEntries.length;
     const hasMore = visibleCount < totalEntries;
 
@@ -364,7 +365,7 @@ export default function SearchResults({
                     const safeName = String(name ?? "").trim();
                     const imageUrl = `https://ric-api.sno.mba/tiles/${encodeURIComponent(safeName)}.gif`;
                     const isBroken = brokenImages.has(safeName);
-                    const canLoad = index < readyCount;
+                    const canLoad = settledImages.has(safeName) || safeName === nextImageName;
 
                     return (
                         <button
@@ -389,10 +390,10 @@ export default function SearchResults({
                                     aria-hidden="true"
                                     loading="lazy"
                                     decoding="async"
-                                    onLoad={() => advanceReady(index)}
+                                    onLoad={() => settleImage(safeName)}
                                     onError={() => {
                                         handleImageError(safeName);
-                                        advanceReady(index);
+                                        settleImage(safeName);
                                     }}
                                 />
                             ) : (
@@ -430,7 +431,8 @@ export default function SearchResults({
                             </span>
                         </button>
                     );
-                })}
+                })
+            }
 
             {hasMore && <div ref={loadMoreRef} />}
         </div>
