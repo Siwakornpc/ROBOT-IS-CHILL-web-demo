@@ -4,15 +4,19 @@ import MenuSelect from "@/components/MenuSelect";
 
 const options = [
     {
-        value: "tile",
+        value: "tiles",
         label: "Tiles",
     },
     {
-        value: "macro",
+        value: "macros",
         label: "Macros",
     },
     {
-        value: "filter",
+        value: "variants",
+        label: "Variants",
+    },
+    {
+        value: "filters",
         label: "Filters",
     },
     {

@@ -9,9 +9,10 @@ import { useState, useEffect } from "react";
 import { nav_btn_select } from "@/components/nav_select";
 
 const modeHashes: Record<SearchMode, string> = {
-    tile: "tiles",
-    macro: "macros",
-    filter: "filters",
+    tiles: "tiles",
+    macros: "macros",
+    variants: "variants",
+    filters: "filters",
     overlays: "overlays",
 };
 
@@ -41,16 +42,17 @@ function readUrlState() {
 }
 
 export default function Home() {
-    const [mode, setMode] = useState<SearchMode>("tile");
+    const [mode, setMode] = useState<SearchMode>("tiles");
     const [searchQuery, setSearchQuery] = useState("");
     const [useRegex, setUseRegex] = useState(false);
     const [selected, setSelected] = useState<SelectedSearchResult | null>(null);
     const [detailsName, setDetailsName] = useState<string | null>(null);
     const [showMenu, setShowMenu] = useState(false);
     const [modeFilters, setModeFilters] = useState<Record<SearchMode, Record<string, string[]>>>({
-        tile: {},
-        macro: {},
-        filter: {},
+        tiles: {},
+        macros: {},
+        variants: {},
+        filters: {},
         overlays: {},
     });
 

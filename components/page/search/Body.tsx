@@ -15,20 +15,26 @@ export function FilterPanel({
     onFiltersChange: (filters: Record<string, string[]>) => void;
 }) {
     const filterOptions = {
-        tile: [
+        tiles: [
             { value: "source", label: "Source" },
             { value: "color", label: "Active Color" },
             { value: "iacolor", label: "Inactive Color" },
             { value: "tiling", label: "Tiling" },
             { value: "tags", label: "Tags" },
         ],
-        macro: [
+        macros: [
             { value: "creator", label: "Creator ID" },
             { value: "desc", label: "Description" },
             { value: "builtin", label: "Builtin" },
         ],
-        filter: [
-
+        variants: [
+            { value: "desc", label: "Description" },
+            { value: "type", label: "Type" },
+            { value: "anim", label: "Animatable" },
+        ],
+        filters: [
+            { value: "mode", label: "Mode" },
+            { value: "date", label: "Upload Date" },
         ],
         overlays: [
 

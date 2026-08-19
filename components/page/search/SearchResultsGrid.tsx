@@ -9,9 +9,9 @@ import { applyOverflowFade } from "@/components/OverflowFade";
 const BATCH_SIZE = 32;
 
 const endpoints: Partial<Record<SearchMode, string>> = {
-    tile: "tiles.json",
-    macro: "macros.json",
-    filter: "filters.json",
+    tiles: "tiles.json",
+    macros: "macros.json",
+    filters: "filters.json",
 } as const;
 
 export type TileRecord = {
@@ -21,22 +21,29 @@ export type TileRecord = {
     tags: string[];
     tiling: string;
 };
-
 export type MacroRecord = {
     description: string;
     builtin: boolean;
     creator?: number;
     value?: string;
 };
+export type FilterRecord = {
+    absolute: boolean;
+    author: string;
+    time: number;
+};
 
 export type SelectedTile = {
     name: string;
     tile: TileRecord;
 };
-
 export type SelectedMacro = {
     name: string;
     macro: MacroRecord;
+};
+export type SelectedFilter = {
+    name: string;
+    filter: FilterRecord;
 };
 
 export type SelectedSearchResult = SelectedTile | SelectedMacro;
@@ -59,12 +66,17 @@ function isTileRecord(value: unknown): value is TileRecord {
         && "tags" in value
         && "tiling" in value;
 }
-
 function isMacroRecord(value: unknown): value is MacroRecord {
     return typeof value === "object"
         && value !== null
         && "description" in value
         && "builtin" in value;
+}
+function isFilterRecord(value: unknown): value is FilterRecord {
+    return typeof value === "object"
+        && value !== null
+        && "mode" in value
+        && "date" in value;
 }
 
 export default function SearchResults({
@@ -257,7 +269,7 @@ export default function SearchResults({
     });
 
     useEffect(() => {
-        if (!detailsName || (mode !== "tile" && mode !== "macro")) {
+        if (!detailsName || (mode !== "tiles" && mode !== "macros")) {
             restoredDetailsRef.current = null;
             return;
         }
@@ -274,10 +286,10 @@ export default function SearchResults({
 
         const [name, data] = matchingEntry;
         const safeName = String(name ?? "").trim();
-        if (mode === "tile" && isTileRecord(data)) {
+        if (mode === "tiles" && isTileRecord(data)) {
             onSelect({ name: safeName, tile: data });
             restoredDetailsRef.current = detailsKey;
-        } else if (mode === "macro" && isMacroRecord(data)) {
+        } else if (mode === "macros" && isMacroRecord(data)) {
             onSelect({ name: safeName, macro: data });
             restoredDetailsRef.current = detailsKey;
         }
@@ -359,7 +371,7 @@ export default function SearchResults({
             className={`search-results ${mode} ascroll-y`}
             data-loaded={Boolean(results)}
         >
-            {mode === "tile" &&
+            {mode === "tiles" &&
                 entries.map(([name, tile], index) => {
                     const safeName = String(name ?? "").trim();
                     const imageUrl = `https://ric-api.sno.mba/tiles/${encodeURIComponent(safeName)}.gif`;
@@ -404,7 +416,7 @@ export default function SearchResults({
                 })
             }
 
-            {mode === "macro" &&
+            {mode === "macros" &&
                 entries.map(([name, macro], index) => {
                     const safeName = String(name ?? "").trim();
                     const isBuiltin = isMacroRecord(macro) && macro.builtin ? "builtin" : "";
