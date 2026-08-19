@@ -767,26 +767,26 @@ hr {
 }
 .submenu-popout.anchor-l,
 .submenu-popout.anchor-tl,
-.submenu-popout.anchor-bl,
-.submenu-popout.anchor-s,
-.submenu-popout.anchor-st,
-.submenu-popout.anchor-sb,
-[dir=rtl] .submenu-popout.anchor-e,
-[dir=rtl] .submenu-popout.anchor-et,
-[dir=rtl] .submenu-popout.anchor-eb {
+.submenu-popout.anchor-bl {
     left: 100%;
     margin: -4px 0;
 }
 .submenu-popout.anchor-r,
 .submenu-popout.anchor-tr,
-.submenu-popout.anchor-br,
+.submenu-popout.anchor-br {
+    right: 100%;
+    margin: -4px 0;
+}
+.submenu-popout.anchor-s,
+.submenu-popout.anchor-st,
+.submenu-popout.anchor-sb {
+    inset-inline-start: 100%;
+    margin: -4px 0;
+}
 .submenu-popout.anchor-e,
 .submenu-popout.anchor-et,
-.submenu-popout.anchor-eb,
-[dir=rtl] .submenu-popout.anchor-s,
-[dir=rtl] .submenu-popout.anchor-st,
-[dir=rtl] .submenu-popout.anchor-sb {
-    right: 100%;
+.submenu-popout.anchor-eb {
+    inset-inline-end: 100%;
     margin: -4px 0;
 }
 
@@ -803,22 +803,28 @@ hr {
     margin-inline: -4px;
 }
 
-.menu-option-wrapper:has(.submenu-popout.anchor-l),
-.menu-option-wrapper:has(.submenu-popout.anchor-r),
-.menu-option-wrapper:has(.submenu-popout.anchor-s),
-.menu-option-wrapper:has(.submenu-popout.anchor-e) {
+.menu-option-wrapper:has(:is(
+    .submenu-popout.anchor-l,
+    .submenu-popout.anchor-r,
+    .submenu-popout.anchor-s,
+    .submenu-popout.anchor-e
+)) {
     justify-content: center;
 }
-.menu-option-wrapper:has(.submenu-popout.anchor-tl),
-.menu-option-wrapper:has(.submenu-popout.anchor-tr),
-.menu-option-wrapper:has(.submenu-popout.anchor-st),
-.menu-option-wrapper:has(.submenu-popout.anchor-et) {
+.menu-option-wrapper:has(:is(
+    .submenu-popout.anchor-tl,
+    .submenu-popout.anchor-tr,
+    .submenu-popout.anchor-st,
+    .submenu-popout.anchor-et
+)) {
     justify-content: flex-start;
 }
-.menu-option-wrapper:has(.submenu-popout.anchor-bl),
-.menu-option-wrapper:has(.submenu-popout.anchor-br),
-.menu-option-wrapper:has(.submenu-popout.anchor-sb),
-.menu-option-wrapper:has(.submenu-popout.anchor-eb) {
+.menu-option-wrapper:has(:is(
+    .submenu-popout.anchor-bl,
+    .submenu-popout.anchor-br,
+    .submenu-popout.anchor-sb,
+    .submenu-popout.anchor-eb
+)) {
     justify-content: flex-end;
 }
 
@@ -966,9 +972,7 @@ hr {
 .anchor-s,
 .anchor-st,
 .anchor-sb,
-[dir=rtl] .anchor-e,
-[dir=rtl] .anchor-et,
-[dir=rtl] .anchor-eb {
+[dir=rtl] :is(.anchor-e, .anchor-et, .anchor-eb) {
     --anchor-x: 0;
 }
 .anchor-r,
@@ -977,9 +981,7 @@ hr {
 .anchor-e,
 .anchor-et,
 .anchor-eb,
-[dir=rtl] .anchor-s,
-[dir=rtl] .anchor-st,
-[dir=rtl] .anchor-sb {
+[dir=rtl] :is(.anchor-s, .anchor-st, .anchor-sb) {
     --anchor-x: 100%;
 }
 .anchor-t,
