@@ -12,6 +12,7 @@ type RendererDeps = {
     gutterWrap: HTMLElement;
     scrollEl: HTMLElement;
     state: EditorState;
+    onCodeChange?: (code: string) => void;
 };
 
 function escapeHtml(text: string) {
@@ -45,12 +46,28 @@ function highlightLines(win: WindowWithEditor, lines: string[], value: string) {
 }
 
 export function createRenderer(deps: RendererDeps) {
-    const { win, editorArea, gutterEl, gutterWrap, scrollEl, state } = deps;
+    const {
+        win,
+        editorArea,
+        gutterEl,
+        gutterWrap,
+        scrollEl,
+        state,
+        onCodeChange,
+    } = deps;
+
+    let lastNotifiedValue = state.value;
 
     function render(start: number, end = start) {
         const gen = ++state.renderGen;
 
         const lines = state.value.split("\n");
+
+        if (state.value !== lastNotifiedValue) {
+            lastNotifiedValue = state.value;
+            onCodeChange?.(state.value);
+        }
+
         const highlightedLines = highlightLines(win, lines, state.value);
 
         editorArea.innerHTML = highlightedLines

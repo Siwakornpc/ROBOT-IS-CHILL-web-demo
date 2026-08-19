@@ -31,6 +31,7 @@ export async function initMacro() {
         cancel_running_macro,
     } = mod;
 
+    const editor = await window.editorReady;
     const editorArea = document.getElementById("editor-area");
     const output = document.getElementById("render-output");
     const button = document.getElementById("stop");
@@ -138,10 +139,10 @@ ${Object.keys(dbMacros).length} macros.`;
 
             try {
                 const start = performance.now();
-                const result = await evaluate(`${editorArea.textContent}`);
+                const result = await evaluate(`${editor.value}`);
                 const executionTime = (performance.now() - start).toFixed(3);
 
-                const steps = await evaluate(`[/${editorArea.textContent}]<--[add/[step]/-2]`);
+                const steps = await evaluate(`[/${editor.value}]<--[add/[step]/-2]`);
 
                 if (statusTime) {
                     statusTime.textContent = `${executionTime}ms`;
