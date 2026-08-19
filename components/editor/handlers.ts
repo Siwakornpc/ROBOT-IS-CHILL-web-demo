@@ -29,10 +29,11 @@ type KeydownDeps = {
     render: (start: number, end?: number) => void;
     undo: () => void;
     redo: () => void;
+    onCodeChange?: (code: string) => void;
 };
 
 export function createKeydownHandler(deps: KeydownDeps) {
-    const { editorArea, state, saveState, render, undo, redo } = deps;
+    const { editorArea, state, saveState, render, undo, redo, onCodeChange } = deps;
 
     return function handleKeydown(e: KeyboardEvent) {
         if (
@@ -57,6 +58,7 @@ export function createKeydownHandler(deps: KeydownDeps) {
                     if (!m) return;
 
                     state.value = state.value.slice(0, start - m[0].length) + state.value.slice(start);
+                    onCodeChange?.(state.value);
                     const pos = start - m[0].length;
                     saveState(pos, pos);
                     render(pos, pos);
@@ -64,6 +66,7 @@ export function createKeydownHandler(deps: KeydownDeps) {
                 }
 
                 state.value = state.value.slice(0, start) + indent + state.value.slice(end);
+                onCodeChange?.(state.value);
                 saveState(start + indent.length, start + indent.length);
                 render(start + indent.length, start + indent.length);
                 return;
@@ -92,6 +95,7 @@ export function createKeydownHandler(deps: KeydownDeps) {
             });
 
             state.value = state.value.slice(0, lineStart) + newLines.join("\n") + state.value.slice(lineEnd);
+            onCodeChange?.(state.value);
 
             const newStart = Math.max(lineStart, start + firstLineDelta);
             const newEnd = end + totalDelta;

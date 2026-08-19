@@ -9,6 +9,7 @@ type BeforeInputDeps = {
     render: (start: number, end?: number) => void;
     undo: () => void;
     redo: () => void;
+    onCodeChange?: (code: string) => void;
 };
 
 let isLeftBracketPressed = false;
@@ -20,7 +21,7 @@ export function clearLeftBracketStatesFromKeyDirections() {
 }
 
 export function createBeforeInputHandler(deps: BeforeInputDeps) {
-    const { editorArea, state, saveState, render, undo, redo } = deps;
+    const { editorArea, state, saveState, render, undo, redo, onCodeChange } = deps;
 
     return function handleBeforeInput(e: InputEvent) {
         e.preventDefault();
@@ -181,6 +182,7 @@ export function createBeforeInputHandler(deps: BeforeInputDeps) {
         }
 
         state.value = newValue;
+        onCodeChange?.(newValue);
         saveState(newStart, newEnd);
         render(newStart, newEnd);
         editorArea.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: e.inputType, data: e.data }));

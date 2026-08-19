@@ -5,10 +5,7 @@ import { type SearchMode } from "@/components/page/search/SearchSelect";
 import { type SelectedSearchResult } from "@/components/page/search/SearchResultsGrid";
 import { LeftBar, RightBarSearch } from "@/components/page/SideBars";
 import { Details } from "@/components/page/search/TileDetails";
-import {
-    readSearchUrlState,
-    writeSearchUrlState,
-} from "@/components/url_state/searchUrlState";
+import { readSearchUrlState, writeSearchUrlState, } from "@/components/url_state/searchUrlState";
 import { useState, useEffect } from "react";
 import { nav_btn_select } from "@/components/nav_select";
 
@@ -18,8 +15,7 @@ export default function Home() {
     const [useRegex, setUseRegex] = useState(false);
     const [selected, setSelected] = useState<SelectedSearchResult | null>(null);
     const [detailsName, setDetailsName] = useState<string | null>(null);
-    const [isin, setIsin] = useState<string | null>(null);
-    const [value, setValue] = useState<string | null>(null);
+    const [code, setCode] = useState<string | null>(null);
     const [showMenu, setShowMenu] = useState(false);
     const [modeFilters, setModeFilters] = useState<Record<SearchMode, Record<string, string[]>>>({
         tiles: {},
@@ -38,8 +34,7 @@ export default function Home() {
             setSearchQuery(nextState.query);
             setUseRegex(nextState.regex);
             setDetailsName(nextState.details);
-            setIsin(nextState.isin);
-            setValue(nextState.value);
+            setCode(nextState.code);
             setSelected(null);
         };
 
@@ -63,8 +58,7 @@ export default function Home() {
             query: nextSearchQuery,
             regex: nextUseRegex,
             details: nextDetailsName,
-            isin,
-            value,
+            code,
         });
     };
 

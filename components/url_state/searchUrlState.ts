@@ -5,8 +5,7 @@ export type SearchUrlState = {
     query: string;
     regex: boolean;
     details: string | null;
-    isin: string | null;
-    value: string | null;
+    code: string | null;
 };
 
 const modeHashes: Record<SearchMode, string> = {
@@ -28,8 +27,7 @@ export function readSearchUrlState(): SearchUrlState {
             query: "",
             regex: false,
             details: null,
-            isin: null,
-            value: null,
+            code: null,
         };
     }
 
@@ -42,8 +40,7 @@ export function readSearchUrlState(): SearchUrlState {
         query: hashParams.get("query") ?? "",
         regex: hashParams.get("regex")?.toLowerCase() === "true",
         details: hashParams.get("details") ?? legacySearchParams.get("details"),
-        isin: hashParams.get("isin") ?? legacySearchParams.get("isin"),
-        value: hashParams.get("value") ?? legacySearchParams.get("value"),
+        code: hashParams.get("code") ?? legacySearchParams.get("code"),
     };
 }
 
@@ -54,13 +51,17 @@ export function writeSearchUrlState(state: SearchUrlState) {
     if (state.query) hashParams.set("query", state.query);
     if (state.regex) hashParams.set("regex", "true");
     if (state.details !== null) hashParams.set("details", state.details);
-    if (state.isin !== null) hashParams.set("isin", state.isin);
-    if (state.value !== null) hashParams.set("value", state.value);
+    if (state.code !== null) hashParams.set("code", state.code);
 
-    url.hash = `${modeHashes[state.mode]}${hashParams.toString() ? `?${hashParams}` : ""}`;
+    url.hash = state.mode
+        ? `${modeHashes[state.mode]}${hashParams.toString()
+            ? `?${hashParams}`
+            : ""}`
+        : `${hashParams.toString()
+            ? `?${hashParams}`
+            : ""}`;
     url.searchParams.delete("details");
-    url.searchParams.delete("isin");
-    url.searchParams.delete("value");
+    url.searchParams.delete("code");
 
     window.history.replaceState(null, "", url);
 }

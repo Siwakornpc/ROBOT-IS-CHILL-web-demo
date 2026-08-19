@@ -2,7 +2,8 @@ import type { EditorState } from "./types";
 
 export function createHistoryManager(
     state: EditorState,
-    render: (start: number, end: number) => void
+    render: (start: number, end: number) => void,
+    onCodeChange?: (code: string) => void
 ) {
     function saveState(start: number, end: number) {
         const entry = { value: state.value, start, end };
@@ -22,6 +23,7 @@ export function createHistoryManager(
         state.historyIndex--;
         const entry = state.history[state.historyIndex];
         state.value = entry.value;
+        onCodeChange?.(state.value);
         render(entry.start, entry.end);
     }
 
@@ -30,6 +32,7 @@ export function createHistoryManager(
         state.historyIndex++;
         const entry = state.history[state.historyIndex];
         state.value = entry.value;
+        onCodeChange?.(state.value);
         render(entry.start, entry.end);
     }
 

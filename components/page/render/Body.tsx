@@ -6,7 +6,7 @@ import MacroInitializer from "@/components/macro/MacroInitializer";
 import { RenderScreen } from "@/components/render-screen/render/RenderScreen";
 import { StatusBar } from "../../editor/statsbar/render/StatusBar";
 
-export default function Body() {
+export default function Body({ onCodeChange }: { onCodeChange?: (code: string) => void }) {
     return (
         <main style={{ width: "stretch" }}>
             <div className="main-body">
@@ -17,7 +17,7 @@ export default function Body() {
                     <StatusBar />
                 </div>
                 <hr />
-                <EditorScreen />
+                <EditorScreen onCodeChange={onCodeChange} />
                 
                 <MacroInitializer />
 

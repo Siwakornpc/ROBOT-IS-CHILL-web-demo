@@ -7,7 +7,7 @@ import "@/components/highlight/combined-highlight.js";
 import { useEditorEngine } from "./useEditorEngine";
 import "./editorReady";
 
-export function EditorScreen() {
+export function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) => void }) {
     const editorAreaRef = useRef<HTMLDivElement | null>(null);
     const gutterElRef = useRef<HTMLDivElement | null>(null);
     const gutterWrapRef = useRef<HTMLDivElement | null>(null);
@@ -18,6 +18,7 @@ export function EditorScreen() {
         gutterElRef,
         gutterWrapRef,
         scrollElRef,
+        onCodeChange,
     });
 
     return (

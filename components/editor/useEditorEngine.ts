@@ -16,6 +16,7 @@ type EditorRefs = {
     gutterElRef: RefObject<HTMLDivElement | null>;
     gutterWrapRef: RefObject<HTMLDivElement | null>;
     scrollElRef: RefObject<HTMLDivElement | null>;
+    onCodeChange?: (code: string) => void;
 };
 
 export function useEditorEngine({
@@ -23,6 +24,7 @@ export function useEditorEngine({
     gutterElRef,
     gutterWrapRef,
     scrollElRef,
+    onCodeChange,
 }: EditorRefs) {
     useEffect(() => {
         const editorArea = editorAreaRef.current;
@@ -53,10 +55,18 @@ export function useEditorEngine({
             state,
         });
 
-        const { saveState, undo, redo } = createHistoryManager(state, render);
+        const { saveState, undo, redo } = createHistoryManager(state, render, onCodeChange);
 
-        const handleBeforeInput = createBeforeInputHandler({ editorArea, state, saveState, render, undo, redo });
-        const handleKeydown = createKeydownHandler({ editorArea, state, saveState, render, undo, redo });
+        const handleBeforeInput = createBeforeInputHandler({
+            editorArea,
+            state,
+            saveState,
+            render,
+            undo,
+            redo,
+            onCodeChange,
+        });
+        const handleKeydown = createKeydownHandler({ editorArea, state, saveState, render, undo, redo, onCodeChange });
         const handleSelectionChange = createSelectionChangeHandler({ win, editorArea, gutterEl, state });
         const handleClick = createEditorClickHandler(editorArea);
 
@@ -76,6 +86,7 @@ export function useEditorEngine({
             },
             set value(v) {
                 state.value = String(v ?? "");
+                onCodeChange?.(state.value);
                 saveState(0, 0);
                 render(0, 0);
             },
