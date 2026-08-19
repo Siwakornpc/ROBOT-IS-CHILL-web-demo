@@ -16,7 +16,7 @@ const options = [
         label: "Filters",
     },
     {
-        value: "overlay",
+        value: "overlays",
         label: "Overlays",
     },
 ] as const;

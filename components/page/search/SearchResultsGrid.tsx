@@ -169,18 +169,14 @@ export default function SearchResults({
                         ])
                         .filter(([name]) => Boolean(name));
 
-                    const mergedMacroMap = new Map<string, SearchEntry>();
+                    const stdMacroNames = new Set(
+                        stdMacros.map(([name]) => String(name ?? "").trim()),
+                    );
 
-                    for (const entry of [...stdMacros, ...apiMacroEntries]) {
-                        const [name, macro] = entry;
-                        const normalizedName = String(name ?? "").trim();
-
-                        if (!normalizedName) continue;
-
-                        mergedMacroMap.set(normalizedName, [normalizedName, macro]);
-                    }
-
-                    const combinedMacros: SearchEntry[] = [...mergedMacroMap.values()];
+                    const combinedMacros: SearchEntry[] = [
+                        ...stdMacros,
+                        ...apiMacroEntries.filter(([name]) => !stdMacroNames.has(name)),
+                    ];
 
                     cachedResults.set(endpointToLoad, combinedMacros);
 

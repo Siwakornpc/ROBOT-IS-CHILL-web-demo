@@ -11,7 +11,6 @@ import { nav_btn_select } from "@/components/nav_select";
 export default function Home() {
     const [mode, setMode] = useState<SearchMode>("tile");
     const [selected, setSelected] = useState<SelectedSearchResult | null>(null);
-    const [filters, setFilters] = useState<Record<string, string[]>>({});
     const [showMenu, setShowMenu] = useState(false);
     const [useRegex, setUseRegex] = useState(false);
 
@@ -19,7 +18,7 @@ export default function Home() {
         tile: {},
         macro: {},
         filter: {},
-        overlay: {},
+        overlays: {},
     });
 
     useEffect(() => {
@@ -44,7 +43,7 @@ export default function Home() {
             <Body
                 mode={mode}
                 onSelect={setSelected}
-                filters={filters} 
+                filters={modeFilters[mode] ?? {}} 
                 useRegex={useRegex}
                 onRegexChange={setUseRegex}
                 onToggleFilter={() =>

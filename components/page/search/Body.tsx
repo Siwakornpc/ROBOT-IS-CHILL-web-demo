@@ -3,9 +3,6 @@ import SearchResults from "./SearchResultsGrid";
 import { type SelectedSearchResult } from "./SearchResultsGrid";
 import SearchSelect, { type SearchMode } from "./SearchSelect";
 import MenuSelect from "@/components/MenuSelect";
-import stdlib_macros from "./stdlib_macros.js";
-
-console.log(stdlib_macros());
 
 export function FilterPanel({
     mode,
@@ -31,6 +28,12 @@ export function FilterPanel({
             { value: "desc", label: "Description" },
             { value: "builtin", label: "Builtin" },
         ],
+        filter: [
+
+        ],
+        overlays: [
+
+        ]
     } as const;
 
     const currentOptions = mode in filterOptions 
