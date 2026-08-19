@@ -23,7 +23,7 @@ export function FilterPanel({
             { value: "tags", label: "Tags" },
         ],
         macros: [
-            { value: "creator", label: "Creator ID" },
+            { value: "creator", label: "Creator" },
             { value: "desc", label: "Description" },
             { value: "builtin", label: "Builtin" },
         ],
@@ -33,6 +33,7 @@ export function FilterPanel({
             { value: "anim", label: "Animatable" },
         ],
         filters: [
+            { value: "creator", label: "Creator" },
             { value: "mode", label: "Mode" },
             { value: "date", label: "Upload Date" },
         ],
