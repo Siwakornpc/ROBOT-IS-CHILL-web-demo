@@ -40,7 +40,7 @@ export default function SearchSelect({
             value={value}
             options={options}
             onChange={onChange}
-            triggerValue={(selectedOption) => <span className="btn-label">{selectedOption.label}</span>}
+            triggerValue={(selectedOption) => <span>{selectedOption.label}</span>}
             className="btn small btn-filled"
             anchor="et"
             style={{ zIndex: "1" }}

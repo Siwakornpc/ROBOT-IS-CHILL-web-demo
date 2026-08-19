@@ -77,14 +77,17 @@ export default function Body() {
     const [recurSelected, setRecurSelected] = useState("new_file");
     const [searchQuery, setSearchQuery] = useState("");
 
+    // Look up the active option label based on current selection
+    const activeSelection = findOptionWithAncestors(sampleOptions, recurSelected);
+    const activeLabel = activeSelection?.option.label ?? recurSelected;
+
     // Filter using searchQuery instead of selected value
     const filteredOptions = options.filter((option) =>
         option.label.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-
     const handleSelect = (newValue: string) => {
-        setTextFieldSelected(newValue);
+        setRecurSelected(newValue);
 
         const result = findOptionWithAncestors(sampleOptions, newValue);
         if (result) {
@@ -135,14 +138,14 @@ export default function Body() {
                 <hr />
 
                 <div>
-                    <strong>Active Selection:</strong> <code>{recurSelected}</code>
+                    <strong>Active Selection:</strong> <code>{activeLabel}</code>
                 </div>
 
                 <MenuSelect
                     id="test-recursive-menu"
                     title="Action Menu"
                     value={recurSelected}
-                    triggerValue={() => <span className="btn-label">{recurSelected}</span>}
+                    triggerValue={() => <span>{activeLabel}</span>}
                     options={sampleOptions}
                     onChange={handleSelect}
                     className="btn medium btn-filled"
