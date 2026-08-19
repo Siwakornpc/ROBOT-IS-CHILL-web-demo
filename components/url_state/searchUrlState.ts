@@ -8,6 +8,10 @@ export type SearchUrlState = {
     code: string | null;
 };
 
+export type WriteSearchUrlState = Omit<SearchUrlState, "mode"> & {
+    mode?: SearchMode | null;
+};
+
 const modeHashes: Record<SearchMode, string> = {
     tiles: "tiles",
     macros: "macros",
@@ -33,35 +37,39 @@ export function readSearchUrlState(): SearchUrlState {
 
     const [hashName, hashQuery = ""] = window.location.hash.slice(1).split("?", 2);
     const hashParams = new URLSearchParams(hashQuery);
-    const legacySearchParams = new URLSearchParams(window.location.search);
+    const searchParams = new URLSearchParams(window.location.search);
 
     return {
         mode: hashModes[hashName.toLowerCase()] ?? "tiles",
         query: hashParams.get("query") ?? "",
         regex: hashParams.get("regex")?.toLowerCase() === "true",
-        details: hashParams.get("details") ?? legacySearchParams.get("details"),
-        code: hashParams.get("code") ?? legacySearchParams.get("code"),
+        details: hashParams.get("details") ?? searchParams.get("details"),
+        code: searchParams.get("code") ?? hashParams.get("code"),
     };
 }
 
-export function writeSearchUrlState(state: SearchUrlState) {
+export function writeSearchUrlState(state: WriteSearchUrlState) {
     const url = new URL(window.location.href);
     const hashParams = new URLSearchParams();
 
     if (state.query) hashParams.set("query", state.query);
     if (state.regex) hashParams.set("regex", "true");
     if (state.details !== null) hashParams.set("details", state.details);
-    if (state.code !== null) hashParams.set("code", state.code);
 
-    url.hash = state.mode
-        ? `${modeHashes[state.mode]}${hashParams.toString()
-            ? `?${hashParams}`
-            : ""}`
-        : `${hashParams.toString()
-            ? `?${hashParams}`
-            : ""}`;
+    const paramString = hashParams.toString();
+    const modeSegment = state.mode ? modeHashes[state.mode] : "";
+
+    url.hash = modeSegment || paramString
+        ? `${modeSegment}${paramString ? `?${paramString}` : ""}`
+        : "";
+
     url.searchParams.delete("details");
-    url.searchParams.delete("code");
+
+    if (state.code !== null) {
+        url.searchParams.set("code", state.code);
+    } else {
+        url.searchParams.delete("code");
+    }
 
     window.history.replaceState(null, "", url);
 }

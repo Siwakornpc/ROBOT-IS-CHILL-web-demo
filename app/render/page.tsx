@@ -8,14 +8,9 @@ import { readSearchUrlState, writeSearchUrlState } from "@/components/url_state/
 
 export default function Home() {
     const [code, setCode] = useState<string | null>(null);
-    const [hasInitialHash, setHasInitialHash] = useState<boolean>(false);
 
     useEffect(() => {
         nav_btn_select("Render");
-        
-        // Check if URL had a hash initially
-        const initialHash = window.location.hash;
-        setHasInitialHash(!!initialHash);
 
         const syncUrlState = () => {
             const nextState = readSearchUrlState();
@@ -49,7 +44,6 @@ export default function Home() {
     const handleCodeChange = (newCode: string) => {
         setCode(newCode);
         writeSearchUrlState({
-            mode: hasInitialHash ? "tiles" : "tiles",
             query: "",
             regex: false,
             details: null,
