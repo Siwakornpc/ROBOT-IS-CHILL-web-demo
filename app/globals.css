@@ -1572,10 +1572,10 @@ hr {
     justify-items: center;
 }
 
-.search-results.tile {
+.search-results.tiles {
     grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
 }
-.search-results.macro {
+.search-results.macros {
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
