@@ -755,13 +755,13 @@ hr {
 }
 .menu.anchor-l,
 .menu.anchor-s,
-[dir="rtl"] .menu.anchor-e {
+[dir=rtl] .menu.anchor-e {
     margin-inline: 4px;
     transform: translateX(-4px) scale(.95);
 }
 .menu.anchor-r,
 .menu.anchor-e,
-[dir="rtl"] .menu.anchor-s {
+[dir=rtl] .menu.anchor-s {
     margin-inline: 4px;
     transform: translateX(4px) scale(.95);
 }
@@ -771,9 +771,9 @@ hr {
 .submenu-popout.anchor-s,
 .submenu-popout.anchor-st,
 .submenu-popout.anchor-sb,
-[dir="rtl"] .submenu-popout.anchor-e,
-[dir="rtl"] .submenu-popout.anchor-et,
-[dir="rtl"] .submenu-popout.anchor-eb {
+[dir=rtl] .submenu-popout.anchor-e,
+[dir=rtl] .submenu-popout.anchor-et,
+[dir=rtl] .submenu-popout.anchor-eb {
     left: 100%;
     margin: -4px 0;
 }
@@ -783,9 +783,9 @@ hr {
 .submenu-popout.anchor-e,
 .submenu-popout.anchor-et,
 .submenu-popout.anchor-eb,
-[dir="rtl"] .submenu-popout.anchor-s,
-[dir="rtl"] .submenu-popout.anchor-st,
-[dir="rtl"] .submenu-popout.anchor-sb {
+[dir=rtl] .submenu-popout.anchor-s,
+[dir=rtl] .submenu-popout.anchor-st,
+[dir=rtl] .submenu-popout.anchor-sb {
     right: 100%;
     margin: -4px 0;
 }
@@ -944,92 +944,57 @@ hr {
     c: center
 */
 
-.anchor-t {
-    transform-origin: top;
-    justify-self: center;
+[class*="anchor-"] {
+    transform-origin: var(--anchor-x, 50%), var(--anchor-y, 50%);
 }
-.anchor-b {
-    transform-origin: bottom;
-    bottom: 100%;
-    justify-self: center;
+
+.anchor-b { bottom: 100%; }
+.anchor-l { left: 100%; }
+.anchor-r { right: 100%; }
+.anchor-s { inset-inline-start: 100%; }
+.anchor-e { inset-inline-end: 100%; }
+.anchor-tl, .anchor-bl { left: 0; }
+.anchor-tr, .anchor-br { right: 0; }
+.anchor-et, .anchor-eb { inset-inline-end: 0; }
+.anchor-bl, .anchor-br, .anchor-sb, .anchor-eb { bottom: 100%; }
+.anchor-t, .anchor-b { justify-self: center; }
+.anchor-l, .anchor-r, .anchor-s, .anchor-e { align-self: center; }
+
+.anchor-l,
+.anchor-tl,
+.anchor-bl,
+.anchor-s,
+.anchor-st,
+.anchor-sb,
+[dir=rtl] .anchor-e,
+[dir=rtl] .anchor-et,
+[dir=rtl] .anchor-eb {
+    --anchor-x: 0;
 }
-.anchor-l {
-    transform-origin: left;
-    left: 100%;
-    align-self: center;
+.anchor-r,
+.anchor-tr,
+.anchor-br,
+.anchor-e,
+.anchor-et,
+.anchor-eb,
+[dir=rtl] .anchor-s,
+[dir=rtl] .anchor-st,
+[dir=rtl] .anchor-sb {
+    --anchor-x: 100%;
 }
-.anchor-r {
-    transform-origin: right;
-    right: 100%;
-    align-self: center;
-}
-.anchor-tl {
-    transform-origin: top left;
-}
-.anchor-tr {
-    transform-origin: top right;
-    right: 0;
-}
-.anchor-bl {
-    transform-origin: bottom left;
-    bottom: 100%;
-}
-.anchor-br {
-    transform-origin: bottom right;
-    bottom: 100%;
-    right: 0;
-}
-.anchor-s {
-    transform-origin: left;
-    left: 100%;
-    align-self: center;
-}
-.anchor-e {
-    transform-origin: right;
-    right: 100%;
-    align-self: center;
-}
-.anchor-st {
-    transform-origin: left top;
-}
+.anchor-t,
+.anchor-tl,
+.anchor-tr,
+.anchor-st,
 .anchor-et {
-    transform-origin: right top;
-    right: 0;
+    --anchor-y: 0;
 }
-.anchor-sb {
-    transform-origin: left bottom;
-    bottom: 100%;
-}
+.anchor-b,
+.anchor-bl,
+.anchor-br,
+.anchor-sb,
 .anchor-eb {
-    transform-origin: right bottom;
-    bottom: 100%;
-    right: 0;
-}
-[dir="rtl"] .anchor-s {
-    transform-origin: right;
-    right: 100%;
-    align-self: center;
-}
-[dir="rtl"] .anchor-e {
-    transform-origin: left;
-    left: 100%;
-    align-self: center;
-}
-[dir="rtl"] .anchor-st {
-    transform-origin: right top;
-    right: 0;
-}
-[dir="rtl"] .anchor-sb {
-    transform-origin: right bottom;
-    bottom: 100%;
-    right: 0;
-}
-[dir="rtl"] .anchor-et {
-    transform-origin: left top;
-}
-[dir="rtl"] .anchor-eb {
-    transform-origin: left bottom;
-    bottom: 100%;
+    --anchor-y: 100%;
 }
 
 /*

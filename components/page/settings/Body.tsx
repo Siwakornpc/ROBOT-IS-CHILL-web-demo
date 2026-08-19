@@ -142,10 +142,11 @@ export default function Body() {
                     id="test-recursive-menu"
                     title="Action Menu"
                     value={recurSelected}
+                    triggerValue={() => <span className="btn-label">{recurSelected}</span>}
                     options={sampleOptions}
                     onChange={handleSelect}
                     className="btn medium btn-filled"
-                    anchor="l"
+                    anchor="s"
                 />
             </div>
         </main>
