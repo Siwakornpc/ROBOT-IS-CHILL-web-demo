@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, ReactNode, CSSProperties, FocusEvent, MouseEvent as ReactMouseEvent } from "react";
+import { useEffect, useRef, useState, ReactNode, CSSProperties, FocusEvent, MouseEvent as ReactMouseEvent, cloneElement } from "react";
 
 export type MenuAnchor = "t" | "b" | "l" | "r" | "tl" | "tr" | "bl" | "br" | "s" | "e" | "st" | "sb" | "et" | "eb";
 
@@ -54,7 +54,9 @@ function MenuItem<T extends string>({
         if (isSelected) return <i className="icon menu-option-icon">check</i>;
         if (rawIcon) {
             if (typeof rawIcon === "string") return <i className="icon menu-option-icon">{rawIcon}</i>;
-            return rawIcon;
+            return cloneElement(rawIcon as any, {
+                className: `${(rawIcon as any).props?.className || ''} menu-option-icon`.trim()
+            });
         }
         return null;
     };

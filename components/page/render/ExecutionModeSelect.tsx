@@ -25,9 +25,9 @@ export default function Executionoptionselect() {
     }, [mode]);
 
     const renderBadge = (item: MenuOption<ExecutionMode>) => (
-        <>
+        <span>
             =<span className="emph">{item.value.slice(1)}</span>
-        </>
+        </span>
     );
 
     return (
