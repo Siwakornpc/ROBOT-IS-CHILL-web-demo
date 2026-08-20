@@ -94,8 +94,8 @@
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--body);
+  --color-foreground: var(--normal);
   --font-sans: var(--font-family-sans);
   --font-mono: var(--font-family-code);
 }

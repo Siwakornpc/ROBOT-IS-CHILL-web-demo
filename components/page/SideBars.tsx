@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 function navigateWithCode(event: React.MouseEvent<HTMLAnchorElement>, path: string) {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
         return;
@@ -19,38 +21,38 @@ function navigateWithCode(event: React.MouseEvent<HTMLAnchorElement>, path: stri
 export function LeftBar() {
     return (
         <div className="sb-left">
-            <a
+            <Link
                 href="../macrosia"
                 className="nav-btn"
                 aria-label="Macrosia"
                 onClick={(e) => navigateWithCode(e, "/macrosia")}
             >
                 <i className="icon custom">macrosia</i>
-            </a>
-            <a
+            </Link>
+            <Link
                 href="../render"
                 className="nav-btn"
                 aria-label="Render"
                 onClick={(e) => navigateWithCode(e, "/render")}
             >
                 <i className="icon custom">render</i>
-            </a>
-            <a
+            </Link>
+            <Link
                 href="../search"
                 className="nav-btn"
                 aria-label="Search"
                 onClick={(e) => navigateWithCode(e, "/search")}
             >
                 <i className="icon">search</i>
-            </a>
-            <a
+            </Link>
+            <Link
                 href="../settings"
                 className="nav-btn"
                 aria-label="Settings"
                 onClick={(e) => navigateWithCode(e, "/settings")}
             >
                 <i className="icon">settings</i>
-            </a>
+            </Link>
         </div>
     );
 }
