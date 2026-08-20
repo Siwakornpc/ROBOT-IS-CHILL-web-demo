@@ -10,10 +10,10 @@ const TILINGS = {
         [24, 25, 26, 27],
     ],
     character: [
-        [31,  0,  1,  2,  3],
-        [ 7,  8,  9, 10, 11],
-        [15, 16, 17, 18, 19],
-        [23, 24, 25, 26, 27],
+        [ 0,  1,  2,  3, 31],
+        [ 8,  9, 10, 11,  7],
+        [16, 17, 18, 19, 15],
+        [24, 25, 26, 27, 23],
     ],
     tiling: [
         [ 0,  1,  5,  4],
@@ -33,25 +33,25 @@ type TilingName = keyof typeof TILINGS;
 
 export function mapTiling(name: string, tiling: string) {
     const mapped = TILINGS[tiling as TilingName] ?? TILINGS.none;
-    const imageMap: string[][] = [];
+    const imageMap: string[][][] = [];
     const encodedName = encodeURIComponent(name);
 
     if (Array.isArray(mapped[0])) {
         const groups = mapped as readonly (readonly (number | string)[])[];
 
         for (const group of groups) {
-            const row: string[] = [];
+            const row: string[][] = [];
             for (const map of group) {
-                row.push(`https://ric-api.sno.mba/tiles/${encodedName}.gif${map !== 0 && map !== "" ? `?frame=${map}` : ""}`);
+                row.push([`${map}`, `https://ric-api.sno.mba/tiles/${encodedName}.gif${map !== 0 && map !== "" ? `?frame=${map}` : ""}`]);
             }
             imageMap.push(row);
         }
     } else {
         const maps = mapped as readonly (number | string)[];
-        const row: string[] = [];
+        const row: string[][] = [];
 
         for (const map of maps) {
-            row.push(`https://ric-api.sno.mba/tiles/${encodedName}.gif${map !== 0 && map !== "" ? `?frame=${map}` : ""}`);
+            row.push([`${map}`, `https://ric-api.sno.mba/tiles/${encodedName}.gif${map !== 0 && map !== "" ? `?frame=${map}` : ""}`]);
         }
         imageMap.push(row);
     }

@@ -86,8 +86,8 @@ export function Details({ selected }: DetailsProps) {
                                                 <img
                                                     key={imgIndex}
                                                     alt={`${selected.name} frame ${groupIndex}-${imgIndex}`}
-                                                    className=""
-                                                    src={src}
+                                                    data-frame-index={src[0]}
+                                                    src={src[1]}
                                                 />
                                             ))}
                                         </div>
