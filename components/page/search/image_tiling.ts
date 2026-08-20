@@ -22,7 +22,7 @@ const TILINGS = {
         [ 2,  3,  7,  6],
     ],
     diagonal_tiling: [
-        [ 0,  1,  5,  4, 23, 36, 27, 19, 25, 40, 43, ""],
+        [ 0,  1,  5,  4, 23, 36, 27, 19, 25, 40, 43],
         [ 8,  9, 13, 12, 35, 44, 45, 28, 34, 42, 26, 39],
         [10, 11, 15, 14, 18, 41, 33, 22, 38, 46, 31, 30],
         [ 2,  3,  7,  6, 29, 17, 21, 37, 16, 24, 20, 32],
@@ -33,28 +33,29 @@ type TilingName = keyof typeof TILINGS;
 
 export function mapTiling(name: string, tiling: string) {
     const mapped = TILINGS[tiling as TilingName] ?? TILINGS.none;
-    const imageMap: string[][][] = [];
-    const encodedName = encodeURIComponent(name);
+    const imageMap: string[] = [];
+    const indexMap: number[] = [];
 
     if (Array.isArray(mapped[0])) {
-        const groups = mapped as readonly (readonly (number | string)[])[];
+        const groups = mapped as readonly (readonly number[])[];
 
         for (const group of groups) {
-            const row: string[][] = [];
             for (const map of group) {
-                row.push([`${map}`, `https://ric-api.sno.mba/tiles/${encodedName}.gif${map !== 0 && map !== "" ? `?frame=${map}` : ""}`]);
+                imageMap.push(`https://ric-api.sno.mba/tiles/${name !== null ? name : "empty"}.gif${map !== 0 ? `?frame=${map}` : ""}`);
+                indexMap.push(map);
             }
-            imageMap.push(row);
         }
     } else {
-        const maps = mapped as readonly (number | string)[];
-        const row: string[][] = [];
+        const maps = mapped as readonly number[];
 
         for (const map of maps) {
-            row.push([`${map}`, `https://ric-api.sno.mba/tiles/${encodedName}.gif${map !== 0 && map !== "" ? `?frame=${map}` : ""}`]);
+            imageMap.push(`https://ric-api.sno.mba/tiles/${name !== null ? name : "empty"}.gif${map !== 0 ? `?frame=${map}` : ""}`);
+            indexMap.push(map);
         }
-        imageMap.push(row);
     }
 
-    return imageMap;
+    return {
+        imageMap,
+        indexMap,
+    };
 }
