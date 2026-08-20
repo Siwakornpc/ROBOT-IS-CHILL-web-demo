@@ -1,7 +1,15 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  /* config options here */
+/** @type {import('next').Config} */
+const nextConfig = {
+    async rewrites() {
+        return [
+            {
+              source: '/api/external-data/:path*',
+              destination: 'https://blocked-domain.com*', // The URL throwing CORB
+            },
+        ];
+    },
 };
 
 export default nextConfig;

@@ -1673,10 +1673,31 @@ hr {
     height: 100%;
 }
 
+.search-details-image-asize {
+    max-width: calc(8 * 24px);
+    max-height: calc(8 * 24px);
+    margin: 2em auto;
+}
+
+.search-details-image-tiled {
+    align-items: center;
+    margin: 2em auto;
+}
+.search-details-image-tiled .tiled-row {
+    display: flex;
+    width: fit-content;
+    margin: 0 2em;
+    filter: var(--f-elevation-5);
+}
+.search-details-image-tiled .tiled-row img {
+    min-width: 48px;
+    width: 48px;
+    image-rendering: pixelated;
+}
+
 .search-details-image-wrapper {
     width: 100%;
-    max-width: 300px;
-    padding: 2em;
+    max-width: 400px;
     margin: 12px auto;
     border-radius: 16px;
     border: 1px solid var(--editor-outline);

@@ -10,10 +10,10 @@ const TILINGS = {
         [24, 25, 26, 27],
     ],
     character: [
-        [ 0,  1,  2,  3,  7],
-        [ 8,  9, 10, 11, 15],
-        [16, 17, 18, 19, 23],
-        [24, 25, 26, 27, 31],
+        [31,  0,  1,  2,  3],
+        [ 7,  8,  9, 10, 11],
+        [15, 16, 17, 18, 19],
+        [23, 24, 25, 26, 27],
     ],
     tiling: [
         [ 0,  1,  5,  4],
@@ -31,24 +31,29 @@ const TILINGS = {
 
 type TilingName = keyof typeof TILINGS;
 
-export function mapTiling(name: string, tiling: TilingName) {
-    const mapped = TILINGS[tiling];
-    const imageMap: string[] = [];
+export function mapTiling(name: string, tiling: string) {
+    const mapped = TILINGS[tiling as TilingName] ?? TILINGS.none;
+    const imageMap: string[][] = [];
+    const encodedName = encodeURIComponent(name);
 
     if (Array.isArray(mapped[0])) {
-        const groups = mapped as readonly (readonly number[])[];
+        const groups = mapped as readonly (readonly (number | string)[])[];
 
         for (const group of groups) {
+            const row: string[] = [];
             for (const map of group) {
-                imageMap.push(`https://ric-api.sno.mba/tiles/${name}.gif${map !== 0 ? `?frame=${map}` : ""}`);
+                row.push(`https://ric-api.sno.mba/tiles/${encodedName}.gif${map !== 0 && map !== "" ? `?frame=${map}` : ""}`);
             }
+            imageMap.push(row);
         }
     } else {
-        const maps = mapped as readonly number[];
+        const maps = mapped as readonly (number | string)[];
+        const row: string[] = [];
 
         for (const map of maps) {
-            imageMap.push(`https://ric-api.sno.mba/tiles/${name}.gif${map !== 0 ? `?frame=${map}` : ""}`);
+            row.push(`https://ric-api.sno.mba/tiles/${encodedName}.gif${map !== 0 && map !== "" ? `?frame=${map}` : ""}`);
         }
+        imageMap.push(row);
     }
 
     return imageMap;

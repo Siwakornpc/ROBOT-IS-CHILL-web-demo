@@ -42,19 +42,61 @@ export function Details({ selected }: DetailsProps) {
     // mapTiling
 
     if ("tile" in selected) {
+        const tiled = mapTiling(selected.name, selected.tile.tiling);
+
         return (
             <>
                 <p className="text-label search-details-name">
                     {selected.name}
                 </p>
 
-                <div className="search-details-image-wrapper">
-                    <img
-                        alt={selected.name}
-                        className="search-details-image"
-                        src={`https://ric-api.sno.mba/tiles/${encodeURIComponent(selected.name)}.gif`}
-                    />
-                </div>
+                {selected.tile.tiling === "none"
+                    ?
+                    <div className="search-details-image-wrapper">
+                        <div className="search-details-image-asize">
+                            <img
+                                alt={selected.name}
+                                className="search-details-image"
+                                src={`https://ric-api.sno.mba/tiles/${encodeURIComponent(selected.name)}.gif`}
+                            />
+                        </div>
+                    </div>
+                    :
+                    <>
+                        <div className="search-details-tabs">
+                            <div className="search-details-tabs-button">
+                                
+                            </div>
+                            <div className="search-details-tabs-button">
+                                
+                            </div>
+                        </div>
+                        <div
+                            ref={(el) => applyOverflowFade(el, "x")}
+                            className="search-details-image-wrapper ascroll-x"
+                        >
+                            <div className="search-details-image-tiled">
+                                {
+                                    (tiled).map((group, groupIndex) => (
+                                        <div
+                                            className="tiled-row"
+                                            key={groupIndex}
+                                        >
+                                            {group.map((src, imgIndex) => (
+                                                <img
+                                                    key={imgIndex}
+                                                    alt={`${selected.name} frame ${groupIndex}-${imgIndex}`}
+                                                    className=""
+                                                    src={src}
+                                                />
+                                            ))}
+                                        </div>
+                                    ))
+                                }
+                            </div>
+                        </div>
+                    </>
+                }
 
                 <hr />
 
