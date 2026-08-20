@@ -23,7 +23,7 @@ export function LeftBar() {
         <div className="sb-left">
             <Link
                 href="../macrosia"
-                className="nav-btn"
+                className="nav-btn has-tooltip"
                 aria-label="Macrosia"
                 onClick={(e) => navigateWithCode(e, "/macrosia")}
             >
@@ -31,7 +31,7 @@ export function LeftBar() {
             </Link>
             <Link
                 href="../render"
-                className="nav-btn"
+                className="nav-btn has-tooltip"
                 aria-label="Render"
                 onClick={(e) => navigateWithCode(e, "/render")}
             >
@@ -39,7 +39,7 @@ export function LeftBar() {
             </Link>
             <Link
                 href="../search"
-                className="nav-btn"
+                className="nav-btn has-tooltip"
                 aria-label="Search"
                 onClick={(e) => navigateWithCode(e, "/search")}
             >
@@ -47,7 +47,7 @@ export function LeftBar() {
             </Link>
             <Link
                 href="../settings"
-                className="nav-btn"
+                className="nav-btn has-tooltip"
                 aria-label="Settings"
                 onClick={(e) => navigateWithCode(e, "/settings")}
             >
