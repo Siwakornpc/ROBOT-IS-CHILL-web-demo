@@ -21,11 +21,12 @@ export function Details({ selected }: DetailsProps) {
         setTilingFrame(0);
 
         const tiled = mapTiling(selected.name, selected.tile.tiling);
+        const imageMap = tiled.imageMap.flat();
 
-        if (tiled.imageMap.length <= 1) return;
+        if (imageMap.length <= 1) return;
 
         const interval = setInterval(() => {
-            setTilingFrame((frame) => (frame + 1) % tiled.imageMap.length);
+            setTilingFrame((frame) => (frame + 1) % imageMap.length);
         }, 1200);
 
         return () => clearInterval(interval);
@@ -55,13 +56,16 @@ export function Details({ selected }: DetailsProps) {
             })
             .join("");
     }
-    
-    // mapTiling
+
+    // Details for Tiles
 
     if ("tile" in selected) {
         const tiled = mapTiling(selected.name, selected.tile.tiling);
-        const currentFrame = tiled.imageMap[tilingFrame];
-        const currentIndex = tiled.indexMap[tilingFrame];
+        const imageMap = tiled.imageMap.flat();
+        const indexMap = tiled.indexMap.flat();
+
+        const currentFrame = imageMap[tilingFrame];
+        const currentIndex = indexMap[tilingFrame];
 
         return (
             <>
@@ -69,19 +73,39 @@ export function Details({ selected }: DetailsProps) {
                     {selected.name}
                 </p>
 
-                
-                <div className="search-details-image-wrapper">
-                    <div
-                        className="search-details-image-asize"
-                        data-frame={currentIndex}
-                    >
-                        <img
-                            alt={selected.name}
-                            className="search-details-image"
-                            src={currentFrame}
-                        />
+                {selected.tile.tiling.includes("tiling")
+                    ?
+                    <>
+                        <div className="search-details-image-wrapper">
+                            <div
+                                className="search-details-image-asize"
+                                data-frame={currentIndex}
+                            >
+                                <img
+                                    alt={selected.name}
+                                    className="search-details-image"
+                                    src={currentFrame}
+                                />
+                            </div>
+                        </div>
+                        <div>
+
+                        </div>
+                    </>
+                    :
+                    <div className="search-details-image-wrapper">
+                        <div
+                            className="search-details-image-asize"
+                            data-frame={currentIndex}
+                        >
+                            <img
+                                alt={selected.name}
+                                className="search-details-image"
+                                src={currentFrame}
+                            />
+                        </div>
                     </div>
-                </div>
+                }
 
                 <hr />
 
@@ -136,6 +160,8 @@ export function Details({ selected }: DetailsProps) {
             </>
         );
     }
+
+    // Details for Macros
 
     if ("macro" in selected) {
         const isBuiltin = selected.macro.builtin ? "builtin" : "";
