@@ -47,6 +47,9 @@ function MenuItem<T extends string>({
 
             setFlipLeft(rect.right > window.innerWidth - padding);
             setFlipUp(rect.bottom > window.innerHeight - padding);
+        } else {
+            setFlipLeft(false);
+            setFlipUp(false);
         }
     }, [isSubmenuOpen]);
 
@@ -69,8 +72,6 @@ function MenuItem<T extends string>({
             onMouseLeave={() => {
                 if (hasChildren) {
                     setIsSubmenuOpen(false);
-                    setFlipLeft(false);
-                    setFlipUp(false);
                 }
             }}
         >
@@ -165,7 +166,25 @@ export default function MenuSelect<T extends string>({
     submenuAnchor = "st",
 }: MenuSelectProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
+    const [flipLeft, setFlipLeft] = useState(false);
+    const [flipUp, setFlipUp] = useState(false);
+
     const wrapperRef = useRef<HTMLDivElement>(null);
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    // Measure viewport collision for the top-level menu
+    useEffect(() => {
+        if (isOpen && menuRef.current) {
+            const rect = menuRef.current.getBoundingClientRect();
+            const padding = 12; // Safety margin from viewport edge
+
+            setFlipLeft(rect.right > window.innerWidth - padding);
+            setFlipUp(rect.bottom > window.innerHeight - padding);
+        } else {
+            setFlipLeft(false);
+            setFlipUp(false);
+        }
+    }, [isOpen]);
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -227,14 +246,21 @@ export default function MenuSelect<T extends string>({
             ) : (
                 <button
                     type="button"
-                    className={`menu-trigger ${className} ${id} ${isOpen ? "clicked" : ""}`}
+                    className={`menu-trigger ${className} ${id || ""} ${isOpen ? "clicked" : ""}`}
                     onClick={toggleMenu}
                 >
                     {triggerValue ? triggerValue(selectedOption) : selectedOption.label}
                 </button>
             )}
 
-            <div className={`menu anchor-${anchor} ${id}-options ${isOpen ? "visible" : ""}`}>
+            <div
+                ref={menuRef}
+                className={`menu anchor-${anchor} ${id ? `${id}-options` : ""} ${isOpen ? "visible" : ""}`}
+                style={{
+                    ...(flipLeft ? { right: 0, left: "auto" } : {}),
+                    ...(flipUp ? { bottom: "100%", top: "auto" } : {}),
+                }}
+            >
                 {title && <div className="menu-title">{title}</div>}
                 {options.map((item) => (
                     <MenuItem
