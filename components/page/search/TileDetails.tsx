@@ -94,7 +94,7 @@ export function Details({ selected }: DetailsProps) {
                             <td>
                                 {selected.tile.tags.length
                                     ? selected.tile.tags.join(", ")
-                                    : "None"}
+                                    : "none"}
                             </td>
                         </tr>
                         <tr>
