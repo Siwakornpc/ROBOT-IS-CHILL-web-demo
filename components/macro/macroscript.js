@@ -2,6 +2,7 @@ import { flags, variants } from "../highlight/render-highlight";
 
 // Delay (ms) between clicking Run and actually invoking the macro engine.
 const EXECUTION_DELAY_MS = 800;
+let hasCodeInEditor = true;
 
 export async function initMacro() {
     const dynamicImport = new Function(
@@ -37,6 +38,10 @@ export async function initMacro() {
     const button = document.getElementById("stop");
     const statusTime = document.getElementById("status-time");
     const statusSteps = document.getElementById("status-steps");
+
+    if (!editor.value) {
+        hasCodeInEditor = false;
+    }
 
     let running = false;
     let delaying = false;
@@ -188,4 +193,8 @@ ${Object.keys(dbMacros).length} macros.`;
         )
         macroRunner();
     });
+
+    if (hasCodeInEditor) {
+        macroRunner();
+    }
 }
