@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { type SelectedSearchResult } from "./SearchResultsGrid";
 import "@/components/highlight/macro-highlight-static.js";
 import { DiscordMarkdown } from "@/components/DiscordMarkdown";
@@ -13,6 +13,23 @@ type DetailsProps = {
 
 export function Details({ selected }: DetailsProps) {
     const macroElementRef = useRef<HTMLDivElement>(null);
+    const [tilingFrame, setTilingFrame] = useState(0);
+
+    useEffect(() => {
+        if (!("tile" in selected)) return;
+
+        setTilingFrame(0);
+
+        const tiled = mapTiling(selected.name, selected.tile.tiling);
+
+        if (tiled.imageMap.length <= 1) return;
+
+        const interval = setInterval(() => {
+            setTilingFrame((frame) => (frame + 1) % tiled.imageMap.length);
+        }, 1200);
+
+        return () => clearInterval(interval);
+    }, [selected]);
 
     useEffect(() => {
         if (!("macro" in selected)) return;
@@ -43,6 +60,8 @@ export function Details({ selected }: DetailsProps) {
 
     if ("tile" in selected) {
         const tiled = mapTiling(selected.name, selected.tile.tiling);
+        const currentFrame = tiled.imageMap[tilingFrame];
+        const currentIndex = tiled.indexMap[tilingFrame];
 
         return (
             <>
@@ -50,53 +69,19 @@ export function Details({ selected }: DetailsProps) {
                     {selected.name}
                 </p>
 
-                {selected.tile.tiling === "none"
-                    ?
-                    <div className="search-details-image-wrapper">
-                        <div className="search-details-image-asize">
-                            <img
-                                alt={selected.name}
-                                className="search-details-image"
-                                src={`https://ric-api.sno.mba/tiles/${encodeURIComponent(selected.name)}.gif`}
-                            />
-                        </div>
+                
+                <div className="search-details-image-wrapper">
+                    <div
+                        className="search-details-image-asize"
+                        data-frame={currentIndex}
+                    >
+                        <img
+                            alt={selected.name}
+                            className="search-details-image"
+                            src={currentFrame}
+                        />
                     </div>
-                    :
-                    <>
-                        <div className="search-details-tabs">
-                            <div className="search-details-tabs-button">
-                                
-                            </div>
-                            <div className="search-details-tabs-button">
-                                
-                            </div>
-                        </div>
-                        <div
-                            ref={(el) => applyOverflowFade(el, "x")}
-                            className="search-details-image-wrapper ascroll-x"
-                        >
-                            <div className="search-details-image-tiled">
-                                {
-                                    (tiled).map((group, groupIndex) => (
-                                        <div
-                                            className="tiled-row"
-                                            key={groupIndex}
-                                        >
-                                            {group.map((src, imgIndex) => (
-                                                <img
-                                                    key={imgIndex}
-                                                    alt={`${selected.name} frame ${groupIndex}-${imgIndex}`}
-                                                    data-frame-index={src[0]}
-                                                    src={src[1]}
-                                                />
-                                            ))}
-                                        </div>
-                                    ))
-                                }
-                            </div>
-                        </div>
-                    </>
-                }
+                </div>
 
                 <hr />
 
