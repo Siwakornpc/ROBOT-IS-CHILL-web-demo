@@ -844,6 +844,7 @@ hr {
 .menu-option {
     display: flex;
     align-items: center;
+    gap: 8px;
     -webkit-user-select: none;
     user-select: none;
     height: 44px;
@@ -893,9 +894,6 @@ hr {
 }
 .menu-option.selected > .icon {
     color: rgb(var(--md-color-on-tertiary-container));
-}
-.menu-option-icon {
-    margin-inline-end: 16px;
 }
 .menu-option-menu-icon {
     margin-inline-start: auto;
