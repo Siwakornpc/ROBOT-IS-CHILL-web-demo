@@ -1768,6 +1768,13 @@ th, td {
     word-wrap: anywhere;
 }
 
+th:not(:first-child) {
+    border-left: 1px solid rgb(var(--md-color-outline));
+}
+td:not(:first-child) {
+    border-left: 1px solid var(--editor-outline);
+}
+
 th {
     background: rgb(var(--md-color-surface-container-highest));
 }
