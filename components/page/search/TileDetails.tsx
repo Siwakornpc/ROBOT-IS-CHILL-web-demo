@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { type SelectedSearchResult } from "./SearchResultsGrid";
-import "@/components/highlight/macro-highlight-static.js";
+import { updateMacroStaticHighlight } from "@/components/highlight/macro-highlight-static.js";
 import { DiscordMarkdown } from "@/components/DiscordMarkdown";
 import { applyOverflowFade } from "@/components/OverflowFade";
 import { mapTiling } from "@/components/page/search/image_tiling";
@@ -39,7 +39,7 @@ export function Details({ selected }: DetailsProps) {
 
         if (!element) return;
 
-        window.updateMacroStaticHighlight(element, selected.macro.value ? selected.macro.value : "");
+        updateMacroStaticHighlight(element, selected.macro.value ? selected.macro.value : "");
     }, [selected]);
 
     function displayMacroName(name: string): string {

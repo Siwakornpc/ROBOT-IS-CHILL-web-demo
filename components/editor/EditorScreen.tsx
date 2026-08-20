@@ -1,9 +1,6 @@
 "use client";
 
 import { useRef } from "react";
-import "@/components/highlight/macro-highlight.js";
-import "@/components/highlight/render-highlight.js";
-import "@/components/highlight/combined-highlight.js";
 import { useEditorEngine } from "./useEditorEngine";
 import "./editorReady";
 

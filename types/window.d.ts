@@ -4,12 +4,3 @@ interface Window {
 }
 
 export {};
-
-declare global {
-    interface Window {
-        updateMacroStaticHighlight: (
-            element: HTMLElement,
-            value: string
-        ) => void;
-    }
-}

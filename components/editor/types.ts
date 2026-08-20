@@ -12,10 +12,6 @@ export type EditorApi = {
 export type WindowWithEditor = Window & typeof globalThis & {
     editorReady?: Promise<EditorApi>;
     executionMode?: string;
-    macroHighlighter?: (value: string) => string;
-    renderHighlighter?: (value: string) => string;
-    combinedHighlighter?: (value: string) => string;
-    updateHighlightState?: (editorArea: HTMLElement, start: number, end: number) => void;
 };
 
 /*

@@ -159,7 +159,3 @@ export function highlightText(
 
 export const renderHighlighter = (text) =>
     highlightText(text, variants, flags);
-
-if (typeof window !== "undefined") {
-    window.renderHighlighter = renderHighlighter;
-}

@@ -15,34 +15,33 @@
 //      macroHighlightSegments(), which tokenizes the *whole* original text
 //      once (so data-pos/data-bid stay correct/globally unique) and hands
 //      back {start, end, html} pieces we can filter by range.
-//
-// Depends on macro-highlight.js and render-highlight.js being loaded first.
 
-if (typeof window !== "undefined") {
-    window.combinedHighlighter = (text) => {
-        const brackets = window.findTopLevelBrackets(text);
-        const segments = window.macroHighlightSegments(text);
+import { findTopLevelBrackets, macroHighlightSegments } from "./macro-highlight.js";
+import { renderHighlighter } from "./render-highlight.js";
 
-        let result = "";
-        let cursor = 0;
+export const combinedHighlighter = (text) => {
+    const brackets = findTopLevelBrackets(text);
+    const segments = macroHighlightSegments(text);
 
-        for (const [start, end] of brackets) {
-            if (start > cursor) {
-                result += window.renderHighlighter(text.slice(cursor, start));
-            }
+    let result = "";
+    let cursor = 0;
 
-            result += segments
-                .filter((seg) => seg.start >= start && seg.end <= end + 1)
-                .map((seg) => seg.html)
-                .join("");
-
-            cursor = end + 1;
+    for (const [start, end] of brackets) {
+        if (start > cursor) {
+            result += renderHighlighter(text.slice(cursor, start));
         }
 
-        if (cursor < text.length) {
-            result += window.renderHighlighter(text.slice(cursor));
-        }
+        result += segments
+            .filter((seg) => seg.start >= start && seg.end <= end + 1)
+            .map((seg) => seg.html)
+            .join("");
 
-        return result;
-    };
-}
+        cursor = end + 1;
+    }
+
+    if (cursor < text.length) {
+        result += renderHighlighter(text.slice(cursor));
+    }
+
+    return result;
+};
