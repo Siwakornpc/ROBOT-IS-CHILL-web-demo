@@ -25,5 +25,5 @@ And most of all:
 With a docs on how to create your own plugin.
 
 ## Credits:
-- @Siwakornpc: Creator of this repository | Manages: Next-App and others.
-- @24gnn: Manages: Material Design 3, Themes and Styling.
+- [@Siwakornpc](https://github.com/Siwakornpc): Creator of this repository | Manages: Next-App and others.
+- [@24gnn](https://github.com/htest-311429731023102): Manages: Material Design 3, Themes, Styling and others.
