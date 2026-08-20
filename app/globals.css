@@ -938,6 +938,36 @@ hr {
 }
 
 /*
+    tooltips ::after
+*/
+
+.has-tooltip::after {
+    content: attr(data-frame-index);
+    letter-spacing: .4px;
+    white-space: nowrap;
+    text-transform: capitalize;
+    color: rgb(var(--md-color-inverse-on-surface));
+    background: rgb(var(--md-color-inverse-surface));
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: .8em;
+    line-height: 16px;
+    transition: opacity .2s,transform .2s;
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    transform: translateY(-50%) scale(.8);
+}
+.has-tooltip:hover::after {
+    opacity: 1;
+    transition: opacity .1s .2s,transform .2s;
+    transform: translateY(-50%) scale(1) translate(8px);
+}
+
+/*
     anchor points
     t: top
     b: bottom
@@ -1104,30 +1134,6 @@ hr {
 .nav-btn::after {
     content: attr(aria-label, "ERROR");
     position: absolute;
-    left: 60px;
-    top: 50%;
-    transform: translateY(-50%) scale(.8) translateX(-6px);
-
-    font-size: .8em;
-    line-height: 16px;
-    letter-spacing: .4px;
-    white-space: nowrap;
-    padding: 4px 8px;
-    border-radius: 4px;
-    text-transform: capitalize;
-
-    color: rgb(var(--md-color-inverse-on-surface));
-    background: rgb(var(--md-color-inverse-surface));
-
-    opacity: 0;
-    pointer-events: none;
-    z-index: 10000;
-    transition: opacity .2s ease, transform .2s ease;
-}
-.nav-btn:hover::after {
-    opacity: 1;
-    transform: translateY(-50%) scale(1) translateX(6px);
-    transition: .1s opacity .2s ease, transform .2s ease;
 }
 
 /*
