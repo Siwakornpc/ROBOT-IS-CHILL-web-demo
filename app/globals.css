@@ -949,7 +949,7 @@ hr {
 */
 
 [class*="anchor-"] {
-    transform-origin: var(--anchor-x, 50%), var(--anchor-y, 50%);
+    transform-origin: calc(var(--anchor-x, 50) * 1%), calc(var(--anchor-y, 50) * 1%);
 }
 
 .anchor-b { bottom: 100%; }
@@ -980,7 +980,7 @@ hr {
 .anchor-et,
 .anchor-eb,
 [dir=rtl] :is(.anchor-s, .anchor-st, .anchor-sb) {
-    --anchor-x: 100%;
+    --anchor-x: 100;
 }
 .anchor-t,
 .anchor-tl,
@@ -994,7 +994,7 @@ hr {
 .anchor-br,
 .anchor-sb,
 .anchor-eb {
-    --anchor-y: 100%;
+    --anchor-y: 100;
 }
 
 /*
