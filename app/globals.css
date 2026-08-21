@@ -1736,9 +1736,12 @@ hr {
 }
 
 .search-details-image-asize-tiled {
+    display: flex;
+    align-items: center;
     padding: 2em;
     height: stretch;
     width: max-content;
+    margin: 0 auto;
 }
 
 .search-details-image-row {
