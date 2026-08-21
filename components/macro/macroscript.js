@@ -14,16 +14,6 @@ export async function initMacro() {
         "https://robot-is-chill.github.io/macrosia/pkg/glue.js"
     );
 
-    const response = await fetch(
-        "https://robot-is-chill.github.io/macrosia/pkg/glue_bg.wasm"
-    );
-
-    const bytes = await response.arrayBuffer();
-    const module = await WebAssembly.compile(bytes);
-
-    console.log(WebAssembly.Module.exports(module));
-    console.log(WebAssembly.Module.imports(module));
-
     const {
         default: init,
         evaluate,
@@ -147,6 +137,8 @@ ${Object.keys(dbMacros).length} macros.`;
                 const result = await evaluate(`${editor.value}`);
                 const executionTime = (performance.now() - start).toFixed(3);
 
+                // CHANGE
+
                 const steps = await evaluate(`[/${editor.value}]<--[add/[step]/-2]`);
 
                 if (statusTime) {
@@ -159,9 +151,11 @@ ${Object.keys(dbMacros).length} macros.`;
                         statusSteps.textContent = "Error"
                     } else {
                         statusSteps.classList.remove("error");
-                        statusSteps.textContent = steps.replace(/<--(\d+)$/, "$1");
+                        statusSteps.textContent = steps.replace(/.*<--(\d+)$/, "$1");
                     }
                 }
+
+                // END CHANGE
 
                 output.classList.remove("error");
 
