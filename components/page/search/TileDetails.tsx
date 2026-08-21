@@ -144,11 +144,11 @@ export function Details({ selected }: DetailsProps) {
                                     : ""
                             }
                         </div>
-                        <div className="tabs-bar">
+                        <div className="cbtn-group small">
 
                             <button
                                 type="button"
-                                className={`tab-btn ${select === "one_tile" ? "selected" : ""}`}
+                                className={`cbtn ${select === "one_tile" ? "selected" : ""}`}
                                 data-tab_action="one_tile"
                                 onClick={handleSelect}
                             >
@@ -157,7 +157,7 @@ export function Details({ selected }: DetailsProps) {
 
                             <button
                                 type="button"
-                                className={`tab-btn ${select === "full_tiling" ? "selected" : ""}`}
+                                className={`cbtn ${select === "full_tiling" ? "selected" : ""}`}
                                 data-tab_action="full_tiling"
                                 onClick={handleSelect}
                             >
