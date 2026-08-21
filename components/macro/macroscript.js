@@ -147,7 +147,7 @@ ${Object.keys(dbMacros).length} macros.`;
                 const result = await evaluate(`${editor.value}`);
                 const executionTime = (performance.now() - start).toFixed(3);
 
-                const steps = await evaluate(`[/${editor.value}]<--[add/[step]/-2]`);
+                const steps = await evaluate(`[add/[step]/-2]-->[/${editor.value}]`);
 
                 if (statusTime) {
                     statusTime.textContent = `${executionTime}ms`;
@@ -159,7 +159,7 @@ ${Object.keys(dbMacros).length} macros.`;
                         statusSteps.textContent = "Error"
                     } else {
                         statusSteps.classList.remove("error");
-                        statusSteps.textContent = steps.replace(/<--(\d+)$/, "$1");
+                        statusSteps.textContent = steps.replace(/^(\d+)-->/, "$1");
                     }
                 }
 
