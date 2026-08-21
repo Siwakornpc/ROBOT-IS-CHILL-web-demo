@@ -180,6 +180,10 @@ ul {
 ::-webkit-scrollbar-thumb:hover {
 	background: rgb(var(--md-color-on-surface));
 }
+.inset-scrollbar::-webkit-scrollbar-button {
+    width: var(--scrollbar-inset-size, 8px);
+    height: var(--scrollbar-inset-size, 8px);
+}
 
 ::selection,
 .selection {
@@ -794,13 +798,6 @@ hr {
     position: relative;
     display: inline-block;
     width: fit-content;
-}
-
-.menu-options-container {
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 0%;
-    gap: 4px;
 }
 
 .menu-option-wrapper {

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, ReactNode, CSSProperties, FocusEvent, MouseEvent as ReactMouseEvent, cloneElement, useId } from "react";
+import { useEffect, useRef, useState, ReactNode, CSSProperties, FocusEvent, MouseEvent as ReactMouseEvent, cloneElement } from "react";
+import { createPortal } from "react-dom";
 
 export type MenuAnchor = "t" | "b" | "l" | "r" | "tl" | "tr" | "bl" | "br" | "s" | "e" | "st" | "sb" | "et" | "eb";
 
@@ -19,9 +20,9 @@ interface MenuItemProps<T extends string> {
     onCloseAll: () => void;
     optionIcon?: (option: MenuOption<T>) => ReactNode;
     submenuAnchor?: MenuAnchor;
+    pageMargin?: number;
 }
 
-// recursive component for rendering individual menu items and their submenus
 function MenuItem<T extends string>({
     item,
     selectedValue,
@@ -29,54 +30,61 @@ function MenuItem<T extends string>({
     onCloseAll,
     optionIcon,
     submenuAnchor = "st",
+    pageMargin = 12,
 }: MenuItemProps<T>) {
     const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
-    const [flipLeft, setFlipLeft] = useState(false);
-    const [flipUp, setFlipUp] = useState(false);
+    const [activeAnchor, setActiveAnchor] = useState<MenuAnchor>(submenuAnchor);
     const [maxHeight, setMaxHeight] = useState<number | undefined>(undefined);
-    const [offsetY, setOffsetY] = useState<number>(0);
-    const submenuRef = useRef<HTMLDivElement>(null);
+    const [coords, setCoords] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
 
-    const generatedSubmenuId = useId().replace(/:/g, "");
-    const submenuAnchorName = `--menu-item-anchor-${generatedSubmenuId}`;
+    const wrapperRef = useRef<HTMLDivElement>(null);
+    const submenuRef = useRef<HTMLDivElement>(null);
 
     const hasChildren = Boolean(item.children && item.children.length > 0);
     const isSelected = item.value === selectedValue;
     const rawIcon = optionIcon ? optionIcon(item) : item.icon;
 
-    // Measure viewport collision whenever the submenu opens
+    // compare available space on each side of the menu
     useEffect(() => {
-        if (isSubmenuOpen && submenuRef.current) {
-            const el = submenuRef.current;
-            const rect = el.getBoundingClientRect();
-            const padding = 12;
-            const minHeight = 148;
+        if (isSubmenuOpen && wrapperRef.current) {
+            const anchorRect = wrapperRef.current.getBoundingClientRect();
+            const submenuElement = submenuRef.current;
 
-            const isFlippedLeft = rect.right > window.innerWidth - padding;
-            const isFlippedUp = rect.bottom > window.innerHeight - padding;
+            const menuWidth = submenuElement?.offsetWidth || 240;
+            const menuHeight = submenuElement?.offsetHeight || 148;
 
-            setFlipLeft(isFlippedLeft);
-            setFlipUp(isFlippedUp);
+            // space available on each side
+            const spaceRight = window.innerWidth - anchorRect.right - pageMargin;
+            const spaceLeft = anchorRect.left - pageMargin;
 
-            let availableSpace = isFlippedUp
-                ? rect.bottom - padding
-                : window.innerHeight - rect.top - padding;
+            const spaceBelow = window.innerHeight - anchorRect.top - pageMargin;
+            const spaceAbove = anchorRect.bottom - pageMargin;
 
-            if (availableSpace < minHeight) {
-                const shift = minHeight - availableSpace;
-                setOffsetY(isFlippedUp ? shift : -shift);
-                setMaxHeight(minHeight);
-            } else {
-                setOffsetY(0);
-                setMaxHeight(availableSpace);
-            }
+            // only flip if overflowing boundary
+            const shouldFlipLeft = spaceRight < menuWidth && spaceLeft > spaceRight;
+            const shouldFlipUp = spaceBelow < menuHeight && spaceAbove > spaceBelow;
+
+            let resolvedAnchor = submenuAnchor;
+            if (shouldFlipUp && shouldFlipLeft) resolvedAnchor = "eb";
+            else if (shouldFlipLeft) resolvedAnchor = "et";
+            else if (shouldFlipUp) resolvedAnchor = "sb";
+            else resolvedAnchor = "st";
+
+            setActiveAnchor(resolvedAnchor);
+
+            // calculate fixed position on viewport for portal
+            const top = shouldFlipUp ? anchorRect.bottom - menuHeight : anchorRect.top;
+            const left = shouldFlipLeft ? anchorRect.left - menuWidth : anchorRect.right;
+
+            setCoords({ top, left });
+
+            const targetSpace = shouldFlipUp ? spaceAbove : spaceBelow;
+            setMaxHeight(Math.max(100, targetSpace));
         } else {
-            setFlipLeft(false);
-            setFlipUp(false);
+            setActiveAnchor(submenuAnchor);
             setMaxHeight(undefined);
-            setOffsetY(0);
         }
-    }, [isSubmenuOpen]);
+    }, [isSubmenuOpen, submenuAnchor, pageMargin]);
 
     const renderIcon = () => {
         if (isSelected) return <i className="icon menu-option-icon">check</i>;
@@ -91,17 +99,10 @@ function MenuItem<T extends string>({
 
     return (
         <div
+            ref={wrapperRef}
             className="menu-option-wrapper"
-            style={{
-                position: "relative",
-                anchorName: submenuAnchorName,
-            } as CSSProperties}
             onMouseEnter={() => hasChildren && setIsSubmenuOpen(true)}
-            onMouseLeave={() => {
-                if (hasChildren) {
-                    setIsSubmenuOpen(false);
-                }
-            }}
+            onMouseLeave={() => hasChildren && setIsSubmenuOpen(false)}
         >
             <div
                 onMouseDown={(e) => e.preventDefault()}
@@ -116,7 +117,7 @@ function MenuItem<T extends string>({
                 className={`menu-option ${isSelected ? "selected" : ""}`}
             >
                 {renderIcon()}
-                
+
                 <div>
                     <div className="menu-option-label">{item.label}</div>
                     {item.description && <div className="menu-option-desc">{item.description}</div>}
@@ -125,39 +126,34 @@ function MenuItem<T extends string>({
                 {hasChildren && <i className="icon menu-option-menu-icon">arrow_right</i>}
             </div>
 
-            {hasChildren && isSubmenuOpen && (
+            {hasChildren && isSubmenuOpen && typeof document !== "undefined" && createPortal(
                 <div
                     ref={submenuRef}
-                    className={`menu submenu-popout anchor-${submenuAnchor} visible`}
+                    className={`menu submenu-popout ascroll-y inset-scrollbar anchor-${activeAnchor} visible`}
                     style={{
-                        position: "absolute",
-                        positionAnchor: submenuAnchorName,
+                        position: "fixed",
+                        top: `${coords.top}px`,
+                        left: `${coords.left}px`,
                         maxHeight: maxHeight ? `${maxHeight}px` : undefined,
-                        display: "flex",
-                        flexDirection: "column",
-                        transform: offsetY ? `translateY(${offsetY}px)` : undefined,
-                        ...(flipLeft
-                            ? { right: "100%", left: "auto" }
-                            : { left: "100%", right: "auto" }),
-                        ...(flipUp
-                            ? { bottom: 0, top: "auto" }
-                            : { top: 0, bottom: "auto" }),
-                    } as CSSProperties}
+                        zIndex: 9999,
+                    }}
+                    onMouseEnter={() => setIsSubmenuOpen(true)}
+                    onMouseLeave={() => setIsSubmenuOpen(false)}
                 >
-                    <div className="menu-options-container" style={{ overflowY: "auto", flex: 1 }}>
-                        {item.children!.map((child) => (
-                            <MenuItem
-                                key={child.value}
-                                item={child}
-                                selectedValue={selectedValue}
-                                onChange={onChange}
-                                onCloseAll={onCloseAll}
-                                optionIcon={optionIcon}
-                                submenuAnchor={submenuAnchor}
-                            />
-                        ))}
-                    </div>
-                </div>
+                    {item.children!.map((child) => (
+                        <MenuItem
+                            key={child.value}
+                            item={child}
+                            selectedValue={selectedValue}
+                            onChange={onChange}
+                            onCloseAll={onCloseAll}
+                            optionIcon={optionIcon}
+                            submenuAnchor={submenuAnchor}
+                            pageMargin={pageMargin}
+                        />
+                    ))}
+                </div>,
+                document.body
             )}
         </div>
     );
@@ -184,7 +180,7 @@ interface MenuSelectProps<T extends string> {
     style?: CSSProperties;
     anchor?: MenuAnchor;
     submenuAnchor?: MenuAnchor;
-    minHeight?: number;
+    pageMargin?: number;
 }
 
 export default function MenuSelect<T extends string>({
@@ -200,51 +196,47 @@ export default function MenuSelect<T extends string>({
     style,
     anchor = "st",
     submenuAnchor = "st",
-    minHeight = 148,
+    pageMargin = 12,
 }: MenuSelectProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
-    const [flipLeft, setFlipLeft] = useState(false);
-    const [flipUp, setFlipUp] = useState(false);
+    const [activeAnchor, setActiveAnchor] = useState<MenuAnchor>(anchor);
     const [maxHeight, setMaxHeight] = useState<number | undefined>(undefined);
-    const [offsetY, setOffsetY] = useState<number>(0);
-
-    const generatedMenuId = useId().replace(/:/g, "");
-    const menuAnchorName = `--menu-trigger-anchor-${id || generatedMenuId}`;
 
     const wrapperRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
 
+    // Compare available space on each side of the top-level menu trigger
     useEffect(() => {
-        if (isOpen && menuRef.current) {
-            const el = menuRef.current;
-            const rect = el.getBoundingClientRect();
-            const padding = 12;
+        if (isOpen && wrapperRef.current && menuRef.current) {
+            const anchorRect = wrapperRef.current.getBoundingClientRect();
+            const menuElement = menuRef.current;
 
-            const isFlippedLeft = rect.right > window.innerWidth - padding;
-            const isFlippedUp = rect.bottom > window.innerHeight - padding;
+            const menuWidth = menuElement.offsetWidth;
+            const menuHeight = menuElement.offsetHeight;
 
-            setFlipLeft(isFlippedLeft);
-            setFlipUp(isFlippedUp);
+            const spaceRight = window.innerWidth - anchorRect.left - pageMargin;
+            const spaceLeft = anchorRect.right - pageMargin;
+            const spaceBelow = window.innerHeight - anchorRect.bottom - pageMargin;
+            const spaceAbove = anchorRect.top - pageMargin;
 
-            let availableSpace = isFlippedUp
-                ? rect.bottom - padding
-                : window.innerHeight - rect.top - padding;
+            const shouldFlipLeft = spaceRight < menuWidth && spaceLeft > spaceRight;
+            const shouldFlipUp = spaceBelow < menuHeight && spaceAbove > spaceBelow;
 
-            if (availableSpace < minHeight) {
-                const shift = minHeight - availableSpace;
-                setOffsetY(isFlippedUp ? shift : -shift);
-                setMaxHeight(minHeight);
-            } else {
-                setOffsetY(0);
-                setMaxHeight(availableSpace);
-            }
+            let resolvedAnchor = anchor;
+            if (shouldFlipUp && shouldFlipLeft) resolvedAnchor = "tr";
+            else if (shouldFlipLeft) resolvedAnchor = "br";
+            else if (shouldFlipUp) resolvedAnchor = "tl";
+            else resolvedAnchor = anchor;
+
+            setActiveAnchor(resolvedAnchor);
+
+            const targetSpace = shouldFlipUp ? spaceAbove : spaceBelow;
+            setMaxHeight(Math.max(100, targetSpace));
         } else {
-            setFlipLeft(false);
-            setFlipUp(false);
+            setActiveAnchor(anchor);
             setMaxHeight(undefined);
-            setOffsetY(0);
         }
-    }, [isOpen, minHeight]);
+    }, [isOpen, anchor, pageMargin]);
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -278,7 +270,6 @@ export default function MenuSelect<T extends string>({
         }
     };
 
-    // optional thing to spread onto custom input triggers
     const getInputProps = (customProps: Record<string, any> = {}) => ({
         onFocus: openMenu,
         onClick: openMenu,
@@ -289,10 +280,7 @@ export default function MenuSelect<T extends string>({
         <div
             className="menu-wrapper"
             ref={wrapperRef}
-            style={{
-                ...style,
-                anchorName: menuAnchorName,
-            } as CSSProperties}
+            style={style}
             onFocusCapture={handleFocusCapture}
             onClickCapture={handleClickCapture}
         >
@@ -318,32 +306,22 @@ export default function MenuSelect<T extends string>({
 
             <div
                 ref={menuRef}
-                className={`menu anchor-${anchor} ${id ? `${id}-options` : ""} ${isOpen ? "visible" : ""}`}
-                style={{
-                    positionAnchor: menuAnchorName,
-                    maxHeight: maxHeight ? `${maxHeight}px` : undefined,
-                    display: "flex",
-                    flexDirection: "column",
-                    transform: offsetY ? `translateY(${offsetY}px)` : undefined,
-                    ...(flipLeft ? { right: 0, left: "auto" } : {}),
-                    ...(flipUp ? { bottom: "100%", top: "auto" } : {}),
-                } as CSSProperties}
+                className={`menu ascroll-y inset-scrollbar anchor-${activeAnchor} ${id ? `${id}-options` : ""} ${isOpen ? "visible" : ""}`}
+                style={{ maxHeight: maxHeight ? `${maxHeight}px` : undefined }}
             >
                 {title && <div className="menu-title">{title}</div>}
-                
-                <div className="menu-options-container ascroll-y" style={{ flex: 1 }}>
-                    {options.map((item) => (
-                        <MenuItem
-                            key={item.value}
-                            item={item}
-                            selectedValue={value}
-                            onChange={onChange}
-                            onCloseAll={() => setIsOpen(false)}
-                            optionIcon={optionIcon}
-                            submenuAnchor={submenuAnchor}
-                        />
-                    ))}
-                </div>
+                {options.map((item) => (
+                    <MenuItem
+                        key={item.value}
+                        item={item}
+                        selectedValue={value}
+                        onChange={onChange}
+                        onCloseAll={() => setIsOpen(false)}
+                        optionIcon={optionIcon}
+                        submenuAnchor={submenuAnchor}
+                        pageMargin={pageMargin}
+                    />
+                ))}
             </div>
         </div>
     );
