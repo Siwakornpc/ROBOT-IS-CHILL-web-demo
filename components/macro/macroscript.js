@@ -140,7 +140,7 @@ ${Object.keys(dbMacros).length} macros.`;
                 // CHANGE
 
                 const steps = await evaluate(`${editor.value}
-                    <--[add/[step]/-1]`);
+                    <--[add/[step]/-2]`);
 
                 if (statusTime) {
                     statusTime.textContent = `${executionTime}ms`;
