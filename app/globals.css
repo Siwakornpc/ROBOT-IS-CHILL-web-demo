@@ -1723,7 +1723,12 @@ hr {
     position: absolute;
     top: -2px;
     right: 0;
-    transition: opacity 0.2s ease;
+
+    transform: translate(0px, 0px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+
+    pointer-events: none;
+    z-index: 10000;
 }
 
 .search-details-image-tiled {
@@ -1735,6 +1740,7 @@ hr {
     opacity: 0;
 }
 .tiling-index-label:hover::after {
+    transform: translate(10px, -10px);
     opacity: 1;
 }
 .search-details-image-tiled img {
