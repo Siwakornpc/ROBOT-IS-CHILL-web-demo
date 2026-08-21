@@ -1562,10 +1562,13 @@ hr {
 }
 
 .search-results.tiles {
-    grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
 }
 .search-results.macros {
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+.search-results.filters {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
 .search-item {
@@ -1592,10 +1595,14 @@ hr {
 }
 
 .search-item-tile, .search-details-image {
-    width: 48px;
-    height: 48px;
+    width: auto;
+    min-width: 64px;
+    height: auto;
     image-rendering: pixelated;
     filter: var(--f-elevation-5);
+}
+.search-results.filters :is(.search-item-tile, .search-details-image) {
+    min-width: 120px;
 }
 .search-item-tile.pending {
     border-radius: 4px;
