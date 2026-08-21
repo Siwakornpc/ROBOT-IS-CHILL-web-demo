@@ -796,11 +796,17 @@ hr {
     width: fit-content;
 }
 
+.menu-options-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0%;
+    gap: 4px;
+}
+
 .menu-option-wrapper {
     display: flex;
     flex-direction: column;
-    padding-inline: 8px;
-    margin-inline: -4px;
+    padding-inline: 4px;
 }
 
 .menu-option-wrapper:has(:is(
@@ -1747,10 +1753,10 @@ hr {
     transition: filter 0.2s ease;
 }
 .search-details-image-tiled:hover img:not(:hover) {
-    filter: brightness(0.5) var(--f-elevation-0);
+    filter: brightness(0.5);
 }
 .search-details-image-tiled:hover img {
-    filter: brightness(1) var(--f-elevation-5);
+    filter: brightness(1);
 }
 
 /* end frame index label*/

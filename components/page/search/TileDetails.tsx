@@ -170,12 +170,11 @@ export function Details({ selected }: DetailsProps) {
                     <div className="search-details-image-wrapper">
                         <div
                             className="search-details-image-asize"
-                            data-frame={currentIndex}
                         >
                             <img
                                 alt={selected.name}
                                 className="search-details-image"
-                                src={currentFrame}
+                                src={`https://ric-api.sno.mba/tiles/${selected.name}.gif`}
                             />
                         </div>
                     </div>
