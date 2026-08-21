@@ -1707,12 +1707,73 @@ hr {
     left: 1rem;
 }
 
+.tiling-index-label {
+    position: relative;
+    pointer-events: none;
+}
+.tiling-index-label::after {
+    content: attr(data-frame-tiled);
+
+    color: var(--normal);
+    font-family: var(--font-family-code);
+    font-size: 1.2em;
+
+    opacity: 0.8;
+    text-shadow: var(--t-elevation-5);
+
+    position: absolute;
+    top: -2px;
+    right: 0;
+    transition: opacity 0.2s ease;
+}
+
+.search-details-image-tiled {
+    filter: var(--f-elevation-2);
+}
+
+.search-details-image-tiled:hover
+.tiling-index-label:not(:hover)::after {
+    opacity: 0;
+}
+.tiling-index-label:hover::after {
+    opacity: 1;
+}
+.search-details-image-tiled img {
+    transition: filter 0.2s ease;
+}
+.search-details-image-tiled:hover img:not(:hover) {
+    filter: brightness(0.5) var(--f-elevation-0);
+}
+.search-details-image-tiled:hover img {
+    filter: brightness(1) var(--f-elevation-5);
+}
+
 /* end frame index label*/
 
 .search-details-image-asize {
     max-width: calc(8 * 24px);
     max-height: calc(8 * 24px);
     margin: 2em auto;
+}
+
+.search-details-image-asize-tiled {
+    display: flex;
+    align-items: center;
+    padding: 2em;
+    height: stretch;
+    width: max-content;
+    margin: 0 auto;
+}
+
+.search-details-image-row {
+    display: flex;
+}
+
+.search-details-image-row img,
+.search-details-image-row span {
+    width: 48px;
+    height: 48px;
+    image-rendering: pixelated;
 }
 
 .search-details-image-wrapper {
@@ -1789,7 +1850,8 @@ th, td {
 th:not(:first-child) {
     border-left: 1px solid rgb(var(--md-color-outline));
 }
-td:not(:first-child) {
+td:not(:first-child),
+.tab-btn:not(:first-child) {
     border-left: 1px solid var(--editor-outline);
 }
 
@@ -1801,6 +1863,38 @@ tr:nth-child(odd) td {
     background: rgb(var(--md-color-on-surface), 0.08);
 }
 
+/*
+    tabs
+*/
+
+.tabs-bar {
+    width: -webkit-fill-available;
+    width: -moz-available;
+    width: stretch;
+
+    display: flex;
+
+    margin: 12px 0;
+    border-radius: 8px;
+    background: rgb(var(--md-color-surface-container-low));
+    outline: 1px solid var(--editor-outline);
+    overflow: hidden;
+}
+
+.tab-btn {
+    padding: 6px 12px;
+    width: 100%;
+    text-align: center;
+}
+.tab-btn:not(.selected):hover {
+    background: var(--surface-hovered);
+}
+.tab-btn:not(.selected):active {
+    background: var(--surface-pressed);
+}
+.tab-btn.selected {
+    background: rgb(var(--md-color-secondary-container));
+}
 
 /*
 *

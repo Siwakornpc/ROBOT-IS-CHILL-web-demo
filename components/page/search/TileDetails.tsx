@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { type SelectedSearchResult } from "./SearchResultsGrid";
 import { updateMacroStaticHighlight } from "@/components/highlight/macro-highlight-static.js";
 import { DiscordMarkdown } from "@/components/DiscordMarkdown";
@@ -14,14 +14,27 @@ type DetailsProps = {
 export function Details({ selected }: DetailsProps) {
     const macroElementRef = useRef<HTMLDivElement>(null);
     const [tilingFrame, setTilingFrame] = useState(0);
+    const [select, setSelect] = useState<string | null>("one_tile");
 
+    // macroElementRef
+    useEffect(() => {
+        if (!("macro" in selected)) return;
+
+        const element = macroElementRef.current;
+
+        if (!element) return;
+
+        updateMacroStaticHighlight(element, selected.macro.value ? selected.macro.value : "");
+    }, [selected]);
+
+    // [tilingFrame, setTilingFrame]
     useEffect(() => {
         if (!("tile" in selected)) return;
 
         setTilingFrame(0);
 
         const tiled = mapTiling(selected.name, selected.tile.tiling);
-        const imageMap = tiled.imageMap.flat();
+        const imageMap = tiled.imageMap.flat().filter(item => item !== "");
 
         if (imageMap.length <= 1) return;
 
@@ -32,15 +45,14 @@ export function Details({ selected }: DetailsProps) {
         return () => clearInterval(interval);
     }, [selected]);
 
-    useEffect(() => {
-        if (!("macro" in selected)) return;
+    // [showTiled, setShowTiled]
+    function handleSelect(e: React.MouseEvent<HTMLButtonElement>) {
+        const value = e.currentTarget.dataset.tab_action;
 
-        const element = macroElementRef.current;
-
-        if (!element) return;
-
-        updateMacroStaticHighlight(element, selected.macro.value ? selected.macro.value : "");
-    }, [selected]);
+        if (value !== undefined) {
+            setSelect(value)
+        }
+    }
 
     function displayMacroName(name: string): string {
         return Array.from(name)
@@ -73,22 +85,84 @@ export function Details({ selected }: DetailsProps) {
                     {selected.name}
                 </p>
 
-                {selected.tile.tiling.includes("tiling")
+                {selected.tile.tiling !== "none"
                     ?
                     <>
-                        <div className="search-details-image-wrapper">
-                            <div
-                                className="search-details-image-asize"
-                                data-frame={currentIndex}
-                            >
-                                <img
-                                    alt={selected.name}
-                                    className="search-details-image"
-                                    src={currentFrame}
-                                />
-                            </div>
+                        <div
+                            ref={(el) => applyOverflowFade(el, "x")}
+                            className="search-details-image-wrapper ascroll-x"
+                        >
+                            {select === "one_tile"
+                                ?
+                                <div
+                                    className="search-details-image-asize"
+                                    data-frame={currentIndex}
+                                >
+                                    <img
+                                        alt={selected.name}
+                                        className="search-details-image"
+                                        src={currentFrame}
+                                    />
+                                </div>
+                                : select === "full_tiling"
+                                    ?
+                                    <div
+                                        className="search-details-image-asize-tiled"
+                                    >
+                                        <div className="search-details-image-tiled">
+                                            {
+                                                tiled.imageMap.map((img, i) => (
+                                                    <div
+                                                        key={i}
+                                                        className="search-details-image-row"
+                                                    >
+                                                        {tiled.indexMap[i].map((index, j) =>
+                                                            typeof index === "number" ? (
+                                                                <div
+                                                                    key={j}
+                                                                    className="tiling-index-label"
+                                                                    data-frame-tiled={index}
+                                                                >
+                                                                    <img
+                                                                        key={j}
+                                                                        alt={`${selected.name}-frame-${index}`}
+                                                                        src={img[j]}
+                                                                    />
+                                                                </div>
+                                                            ) : (
+                                                                <span
+                                                                    key={j}
+                                                                    aria-hidden="true"
+                                                                />
+                                                            )
+                                                        )}
+                                                    </div>
+                                                ))
+                                            }
+                                        </div>
+                                    </div>
+                                    : ""
+                            }
                         </div>
-                        <div>
+                        <div className="tabs-bar">
+
+                            <button
+                                type="button"
+                                className={`tab-btn ${select === "one_tile" ? "selected" : ""}`}
+                                data-tab_action="one_tile"
+                                onClick={handleSelect}
+                            >
+                                One Tile
+                            </button>
+
+                            <button
+                                type="button"
+                                className={`tab-btn ${select === "full_tiling" ? "selected" : ""}`}
+                                data-tab_action="full_tiling"
+                                onClick={handleSelect}
+                            >
+                                Full Tiling
+                            </button>
 
                         </div>
                     </>
