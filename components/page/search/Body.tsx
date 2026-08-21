@@ -31,6 +31,10 @@ export function FilterPanel({
     onFiltersChange: (filters: Record<string, string[]>) => void;
 }) {
     const [sourceOptions, setSourceOptions] = useState<{ value: string; label: string }[]>([]);
+    const [sourceSearchQuery, setSourceSearchQuery] = useState("");
+    const filteredSourceOptions = sourceOptions.filter((option) =>
+        option.label.toLowerCase().includes(sourceSearchQuery.toLowerCase())
+    );
 
     useEffect(() => {
         sourcesPromise.then(setSourceOptions);
@@ -141,7 +145,7 @@ export function FilterPanel({
                     <MenuSelect
                         id={`source-select-${index}`}
                         value={value}
-                        options={sourceOptions}
+                        options={filteredSourceOptions}
                         onChange={(newValue) => handleValueChange(type, index, newValue)}
                         trigger={({ getInputProps }) => (
                             <label className="text-field small has-placeholder">
@@ -150,8 +154,10 @@ export function FilterPanel({
                                         type: "text",
                                         placeholder: "Search source...",
                                         value: value,
-                                        onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-                                            handleValueChange(type, index, e.target.value),
+                                        onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                                            setSourceSearchQuery(e.target.value);
+                                            handleValueChange(type, index, e.target.value); // Fixed comma to semicolon
+                                        },
                                         autoComplete: "off",
                                     })}
                                 />

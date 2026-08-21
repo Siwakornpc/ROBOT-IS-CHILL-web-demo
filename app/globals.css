@@ -1027,6 +1027,26 @@ hr {
     --anchor-y: 100%;
 }
 
+@supports (anchor-name: --a) {
+    .menu {
+        position: absolute;
+        position-try-fallbacks: flip-block, flip-inline;
+    }
+
+    .anchor-t  { position-area: top center; }
+    .anchor-b  { position-area: bottom center; }
+    .anchor-l  { position-area: left center; }
+    .anchor-r  { position-area: right center; }
+    .anchor-tl { position-area: top left; }
+    .anchor-tr { position-area: top right; }
+    .anchor-bl { position-area: bottom left; }
+    .anchor-br { position-area: bottom right; }
+    .anchor-st { position-area: right top; }
+    .anchor-sb { position-area: right bottom; }
+    .anchor-et { position-area: left top; }
+    .anchor-eb { position-area: left bottom; }
+}
+
 /*
     scrolling
 */
