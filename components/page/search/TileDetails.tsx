@@ -144,7 +144,10 @@ export function Details({ selected }: DetailsProps) {
                                     : ""
                             }
                         </div>
-                        <div className="cbtn-group small">
+                        <div
+                            className="cbtn-group small"
+                            style={{marginBottom: "12px"}}
+                        >
 
                             <button
                                 type="button"
