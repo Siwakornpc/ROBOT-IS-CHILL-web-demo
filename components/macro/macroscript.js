@@ -138,21 +138,26 @@ ${Object.keys(dbMacros).length} macros.`;
                 const executionTime = (performance.now() - start).toFixed(3);
 
                 // CHANGE
+                
+                const stepMatch = /<--(\d+)$/gm;
 
-                const steps = await evaluate(`${editor.value}
+                const calculateStepsFromMacEval = await evaluate(`${editor.value}
                     <--[add/[step]/-2]`);
+
+                const steps = [...calculateStepsFromMacEval.matchAll(stepMatch)]
+                    .map(match => Number(match[1]));
 
                 if (statusTime) {
                     statusTime.textContent = `${executionTime}ms`;
                 }
 
                 if (statusSteps) {
-                    if (steps.includes("[MACRO ERROR]")) {
+                    if (result.includes("[MACRO ERROR]")) {
                         statusSteps.classList.add("error");
-                        statusSteps.textContent = "Error"
+                        statusSteps.textContent = "Error";
                     } else {
                         statusSteps.classList.remove("error");
-                        statusSteps.textContent = steps.replace(/.*|[\s]*<--(\d+)$/, "$1");
+                        statusSteps.textContent = steps[0] ?? 0;
                     }
                 }
 

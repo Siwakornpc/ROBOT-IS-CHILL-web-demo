@@ -1,9 +1,12 @@
+import { applyOverflowFade } from "@/components/OverflowFade";
+
 export function RenderScreen() {
     return (
-        <div className="render-screen">
-            <div className="render-screen-scroll">
-                <div id="render-output"></div>
-            </div>
+        <div
+            ref={(el) => applyOverflowFade(el, "y")}
+            className="render-screen ascroll-y"
+        >
+            <div id="render-output"></div>
         </div>
     );
 }
