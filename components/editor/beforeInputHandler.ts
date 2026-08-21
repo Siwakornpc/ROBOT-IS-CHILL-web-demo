@@ -77,7 +77,6 @@ export function createBeforeInputHandler(deps: BeforeInputDeps) {
                     leftBracketPressedCount = 0;
                     isLeftBracketPressed = false;
                 }
-                console.log(isLeftBracketPressed, leftBracketPressedCount);
                 break;
             }
 
