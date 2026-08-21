@@ -47,7 +47,7 @@ export type SelectedFilter = {
     filter: FilterRecord;
 };
 
-export type SelectedSearchResult = SelectedTile | SelectedMacro;
+export type SelectedSearchResult = SelectedTile | SelectedMacro | SelectedFilter;
 
 type SearchEntry = [string, unknown];
 type SearchResults = Record<string, unknown> | SearchEntry[];
@@ -267,7 +267,7 @@ export default function SearchResults({
     });
 
     useEffect(() => {
-        if (!detailsName || (mode !== "tiles" && mode !== "macros")) {
+        if (!detailsName || (mode !== "tiles" && mode !== "macros" && mode !== "filters")) {
             restoredDetailsRef.current = null;
             return;
         }
@@ -289,6 +289,9 @@ export default function SearchResults({
             restoredDetailsRef.current = detailsKey;
         } else if (mode === "macros" && isMacroRecord(data)) {
             onSelect({ name: safeName, macro: data });
+            restoredDetailsRef.current = detailsKey;
+        } else if (mode === "filters" && isFilterRecord(data)) {
+            onSelect({ name: safeName, filter: data });
             restoredDetailsRef.current = detailsKey;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -441,6 +444,51 @@ export default function SearchResults({
                                 <span className="macro-name">{displayMacroName(safeName)}</span>
                                 <span className="macro-brackets">]</span>
                             </span>
+                        </button>
+                    );
+                })
+            }
+
+            {mode === "filters" &&
+                entries.map(([name, filter], index) => {
+                    const safeName = String(name ?? "").trim();
+                    const imageUrl = `https://ric-api.sno.mba/filters/${encodeURIComponent(safeName)}.png`;
+                    const isBroken = brokenImages.has(safeName);
+                    const canLoad = settledImages.has(safeName) || safeName === nextImageName;
+
+                    return (
+                        <button
+                            type="button"
+                            className="kill-styling search-item"
+                            key={safeName || `filter-${index}`}
+                            onClick={() => {
+                                if (isFilterRecord(filter)) {
+                                    onSelect({ name: safeName, filter });
+                                }
+                            }}
+                        >
+                            {isBroken ? (
+                                <div className="search-item-tile search-item-tile-broken">
+                                    <div></div><div></div>
+                                </div>
+                            ) : canLoad ? (
+                                <img
+                                    className="search-item-tile"
+                                    src={imageUrl}
+                                    alt=""
+                                    aria-hidden="true"
+                                    loading="lazy"
+                                    decoding="async"
+                                    onLoad={() => settleImage(safeName)}
+                                    onError={() => {
+                                        handleImageError(safeName);
+                                        settleImage(safeName);
+                                    }}
+                                />
+                            ) : (
+                                <span className="search-item-tile pending" aria-hidden="true" />
+                            )}
+                            <span className="search-item-name">{safeName}</span>
                         </button>
                     );
                 })
