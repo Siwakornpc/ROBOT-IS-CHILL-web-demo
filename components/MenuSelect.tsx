@@ -19,9 +19,9 @@ interface MenuItemProps<T extends string> {
     onCloseAll: () => void;
     optionIcon?: (option: MenuOption<T>) => ReactNode;
     submenuAnchor?: MenuAnchor;
+    pageMargin?: number;
 }
 
-// recursive component for rendering individual menu items and their submenus
 function MenuItem<T extends string>({
     item,
     selectedValue,
@@ -29,11 +29,13 @@ function MenuItem<T extends string>({
     onCloseAll,
     optionIcon,
     submenuAnchor = "st",
+    pageMargin = 12,
 }: MenuItemProps<T>) {
     const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
     const [flipLeft, setFlipLeft] = useState(false);
     const [flipUp, setFlipUp] = useState(false);
-    
+    const [maxHeight, setMaxHeight] = useState<number | undefined>(undefined);
+
     const wrapperRef = useRef<HTMLDivElement>(null);
     const submenuRef = useRef<HTMLDivElement>(null);
 
@@ -46,22 +48,26 @@ function MenuItem<T extends string>({
         if (isSubmenuOpen && wrapperRef.current) {
             const anchorRect = wrapperRef.current.getBoundingClientRect();
 
-            // measure available horizontal space
+            // Measure available horizontal space
             const spaceRight = window.innerWidth - anchorRect.right;
             const spaceLeft = anchorRect.left;
 
-            // measure available vertical space
-            const spaceBelow = window.innerHeight - anchorRect.top;
-            const spaceAbove = anchorRect.bottom;
+            // Measure available vertical space
+            const spaceBelow = window.innerHeight - anchorRect.top - pageMargin;
+            const spaceAbove = anchorRect.bottom - pageMargin;
 
-            // flip toward the side with more available room
+            const shouldFlipUp = spaceAbove > spaceBelow;
+            const availableVerticalSpace = shouldFlipUp ? spaceAbove : spaceBelow;
+
             setFlipLeft(spaceLeft > spaceRight);
-            setFlipUp(spaceAbove > spaceBelow);
+            setFlipUp(shouldFlipUp);
+            setMaxHeight(Math.max(100, availableVerticalSpace));
         } else {
             setFlipLeft(false);
             setFlipUp(false);
+            setMaxHeight(undefined);
         }
-    }, [isSubmenuOpen]);
+    }, [isSubmenuOpen, pageMargin]);
 
     const renderIcon = () => {
         if (isSelected) return <i className="icon menu-option-icon">check</i>;
@@ -99,7 +105,7 @@ function MenuItem<T extends string>({
                 className={`menu-option ${isSelected ? "selected" : ""}`}
             >
                 {renderIcon()}
-                
+
                 <div>
                     <div className="menu-option-label">{item.label}</div>
                     {item.description && <div className="menu-option-desc">{item.description}</div>}
@@ -111,9 +117,10 @@ function MenuItem<T extends string>({
             {hasChildren && isSubmenuOpen && (
                 <div
                     ref={submenuRef}
-                    className={`menu submenu-popout anchor-${submenuAnchor} visible`}
+                    className={`menu submenu-popout ascroll-y anchor-${submenuAnchor} visible`}
                     style={{
                         position: "absolute",
+                        maxHeight: maxHeight ? `${maxHeight}px` : undefined,
                         ...(flipLeft
                             ? { right: "100%", left: "auto" }
                             : { left: "100%", right: "auto" }),
@@ -131,6 +138,7 @@ function MenuItem<T extends string>({
                             onCloseAll={onCloseAll}
                             optionIcon={optionIcon}
                             submenuAnchor={submenuAnchor}
+                            pageMargin={pageMargin}
                         />
                     ))}
                 </div>
@@ -160,6 +168,7 @@ interface MenuSelectProps<T extends string> {
     style?: CSSProperties;
     anchor?: MenuAnchor;
     submenuAnchor?: MenuAnchor;
+    pageMargin?: number;
 }
 
 export default function MenuSelect<T extends string>({
@@ -175,10 +184,12 @@ export default function MenuSelect<T extends string>({
     style,
     anchor = "st",
     submenuAnchor = "st",
+    pageMargin = 12,
 }: MenuSelectProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
     const [flipLeft, setFlipLeft] = useState(false);
     const [flipUp, setFlipUp] = useState(false);
+    const [maxHeight, setMaxHeight] = useState<number | undefined>(undefined);
 
     const wrapperRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -193,17 +204,21 @@ export default function MenuSelect<T extends string>({
             const spaceLeft = anchorRect.right;
 
             // Measure available vertical space
-            const spaceBelow = window.innerHeight - anchorRect.bottom;
-            const spaceAbove = anchorRect.top;
+            const spaceBelow = window.innerHeight - anchorRect.bottom - pageMargin;
+            const spaceAbove = anchorRect.top - pageMargin;
 
-            // Flip toward the side with strictly more available room
+            const shouldFlipUp = spaceAbove > spaceBelow;
+            const availableVerticalSpace = shouldFlipUp ? spaceAbove : spaceBelow;
+
             setFlipLeft(spaceLeft > spaceRight);
-            setFlipUp(spaceAbove > spaceBelow);
+            setFlipUp(shouldFlipUp);
+            setMaxHeight(Math.max(100, availableVerticalSpace));
         } else {
             setFlipLeft(false);
             setFlipUp(false);
+            setMaxHeight(undefined);
         }
-    }, [isOpen]);
+    }, [isOpen, pageMargin]);
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -274,8 +289,9 @@ export default function MenuSelect<T extends string>({
 
             <div
                 ref={menuRef}
-                className={`menu anchor-${anchor} ${id ? `${id}-options` : ""} ${isOpen ? "visible" : ""}`}
+                className={`menu ascroll-y anchor-${anchor} ${id ? `${id}-options` : ""} ${isOpen ? "visible" : ""}`}
                 style={{
+                    maxHeight: maxHeight ? `${maxHeight}px` : undefined,
                     ...(flipLeft ? { right: 0, left: "auto" } : {}),
                     ...(flipUp ? { bottom: "100%", top: "auto" } : {}),
                 }}
@@ -290,6 +306,7 @@ export default function MenuSelect<T extends string>({
                         onCloseAll={() => setIsOpen(false)}
                         optionIcon={optionIcon}
                         submenuAnchor={submenuAnchor}
+                        pageMargin={pageMargin}
                     />
                 ))}
             </div>
