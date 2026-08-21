@@ -134,17 +134,15 @@ ${Object.keys(dbMacros).length} macros.`;
 
             try {
                 const start = performance.now();
-                const result = await evaluate(`${editor.value}`);
+                const result = await evaluate(`${editor.value}
+<--[add/[step]/-2]`);
                 const executionTime = (performance.now() - start).toFixed(3);
 
                 // CHANGE
                 
                 const stepMatch = /<--(\d+)$/gm;
 
-                const calculateStepsFromMacEval = await evaluate(`${editor.value}
-                    <--[add/[step]/-2]`);
-
-                const steps = [...calculateStepsFromMacEval.matchAll(stepMatch)]
+                const steps = [...result.matchAll(stepMatch)]
                     .map(match => Number(match[1]));
 
                 if (statusTime) {
@@ -169,7 +167,7 @@ ${Object.keys(dbMacros).length} macros.`;
                     output.classList.add("error");
                 }
 
-                output.textContent = result;
+                output.textContent = result.replace(/[\s\n]*<--(\d+)$/, "");
             }
             catch (err) {
                 output.classList.add("error");
