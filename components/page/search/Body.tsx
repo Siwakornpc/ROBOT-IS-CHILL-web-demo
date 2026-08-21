@@ -1,7 +1,23 @@
+import { useEffect, useState } from "react";
 import SearchResults from "./SearchResultsGrid";
 import { type SelectedSearchResult } from "./SearchResultsGrid";
 import SearchSelect, { type SearchMode } from "./SearchSelect";
 import MenuSelect from "@/components/MenuSelect";
+
+// cache sprite sources
+const sourcesPromise: Promise<{ value: string; label: string }[]> = fetch(
+    "https://api.github.com/repos/ROBOT-IS-CHILL/robot-is-chill/contents/data/sprites"
+)
+    .then((res) => (res.ok ? res.json() : []))
+    .then((data: Array<{ name: string; type: string }>) =>
+        data
+            .filter((item) => item.type === "dir")
+            .map((item) => ({ value: item.name, label: item.name }))
+    )
+    .catch((err) => {
+        console.error("Failed to load source folders:", err);
+        return [];
+    });
 
 export function FilterPanel({
     mode,
@@ -14,6 +30,12 @@ export function FilterPanel({
     filters: Record<string, string[]>;
     onFiltersChange: (filters: Record<string, string[]>) => void;
 }) {
+    const [sourceOptions, setSourceOptions] = useState<{ value: string; label: string }[]>([]);
+
+    useEffect(() => {
+        sourcesPromise.then(setSourceOptions);
+    }, []);
+
     const filterOptions = {
         tiles: [
             { value: "source", label: "Source" },
@@ -37,14 +59,13 @@ export function FilterPanel({
             { value: "mode", label: "Mode" },
             { value: "date", label: "Upload Date" },
         ],
-        overlays: [
-
-        ]
+        overlays: [],
     } as const;
 
-    const currentOptions = mode in filterOptions 
-        ? filterOptions[mode as keyof typeof filterOptions] 
-        : [];
+    const currentOptions =
+        mode in filterOptions
+            ? filterOptions[mode as keyof typeof filterOptions]
+            : [];
 
     const getFilterTitle = (filterType: string) => {
         const match = currentOptions.find((opt) => opt.value === filterType);
@@ -86,15 +107,84 @@ export function FilterPanel({
         values.map((value, index) => ({ type, value, index }))
     );
 
+    const renderFilterInput = (type: string, value: string, index: number) => {
+        switch (type) {
+            case "builtin":
+                return (
+                    <label className="checkbox">
+                        <input
+                            type="checkbox"
+                            checked={value === "true"}
+                            onChange={(e) =>
+                                handleValueChange(type, index, e.target.checked ? "true" : "false")
+                            }
+                        />
+                        <span>Is Builtin</span>
+                    </label>
+                );
+
+            case "desc":
+                return (
+                    <label className="text-field">
+                        <span className="text-field-label">Description</span>
+                        <textarea
+                            placeholder=" "
+                            value={value}
+                            onChange={(e) => handleValueChange(type, index, e.target.value)}
+                            rows={2}
+                        />
+                    </label>
+                );
+
+            case "source":
+                return (
+                    <MenuSelect
+                        id={`source-select-${index}`}
+                        value={value}
+                        options={sourceOptions}
+                        onChange={(newValue) => handleValueChange(type, index, newValue)}
+                        trigger={({ getInputProps }) => (
+                            <label className="text-field small has-placeholder">
+                                <input
+                                    {...getInputProps({
+                                        type: "text",
+                                        placeholder: "Search source...",
+                                        value: value,
+                                        onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+                                            handleValueChange(type, index, e.target.value),
+                                        autoComplete: "off",
+                                    })}
+                                />
+                            </label>
+                        )}
+                        anchor="b"
+                    />
+                );
+
+            default:
+                return (
+                    <label className="text-field small has-placeholder">
+                        <input
+                            type="text"
+                            placeholder="Filter..."
+                            value={value}
+                            onChange={(e) => handleValueChange(type, index, e.target.value)}
+                            autoComplete="off"
+                        />
+                    </label>
+                );
+        }
+    };
+
     return (
         <div className="filter-controls">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
                 <p className="text-label">Search</p>
                 <SearchSelect value={mode} onChange={onModeChange} />
             </div>
-            
+
             <hr />
-            
+
             {currentOptions.length > 0 && (
                 <div className="filter-section">
                     <p className="text-label">Filters</p>
@@ -103,15 +193,7 @@ export function FilterPanel({
                         <div key={`${type}-${index}`} className="filter-item">
                             <div className="filter-item-controls">
                                 <span className="filter-title">{getFilterTitle(type)}</span>
-                                <label className="text-field small has-placeholder">
-                                    <input
-                                        type="text"
-                                        placeholder="Filter..."
-                                        value={value}
-                                        onChange={(e) => handleValueChange(type, index, e.target.value)}
-                                        autoComplete="off"
-                                    />
-                                </label>
+                                {renderFilterInput(type, value, index)}
                             </div>
                             <button
                                 type="button"
@@ -170,9 +252,7 @@ export default function Body({
                             type="checkbox"
                             className="hidden"
                             checked={showMenu}
-                            onChange={(e) =>
-                                onToggleFilter(e.currentTarget.checked)
-                            }
+                            onChange={(e) => onToggleFilter(e.currentTarget.checked)}
                         />
                         <i className="icon">menu</i>
                     </label>
@@ -187,9 +267,7 @@ export default function Body({
                             type="checkbox"
                             className="hidden"
                             checked={useRegex}
-                            onChange={(e) =>
-                                onRegexChange(e.currentTarget.checked)
-                            }
+                            onChange={(e) => onRegexChange(e.currentTarget.checked)}
                         />
                         <i className="icon">regular_expression</i>
                     </label>
