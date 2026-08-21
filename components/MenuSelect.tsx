@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, ReactNode, CSSProperties, FocusEvent, MouseEvent as ReactMouseEvent, cloneElement, useId } from "react";
+import { useEffect, useRef, useState, ReactNode, CSSProperties, FocusEvent, MouseEvent as ReactMouseEvent, cloneElement } from "react";
 
 export type MenuAnchor = "t" | "b" | "l" | "r" | "tl" | "tr" | "bl" | "br" | "s" | "e" | "st" | "sb" | "et" | "eb";
 
@@ -33,12 +33,7 @@ function MenuItem<T extends string>({
     const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
     const [flipLeft, setFlipLeft] = useState(false);
     const [flipUp, setFlipUp] = useState(false);
-    const [maxHeight, setMaxHeight] = useState<number | undefined>(undefined);
-    const [offsetY, setOffsetY] = useState<number>(0);
     const submenuRef = useRef<HTMLDivElement>(null);
-
-    const generatedSubmenuId = useId().replace(/:/g, "");
-    const submenuAnchorName = `--menu-item-anchor-${generatedSubmenuId}`;
 
     const hasChildren = Boolean(item.children && item.children.length > 0);
     const isSelected = item.value === selectedValue;
@@ -47,34 +42,14 @@ function MenuItem<T extends string>({
     // Measure viewport collision whenever the submenu opens
     useEffect(() => {
         if (isSubmenuOpen && submenuRef.current) {
-            const el = submenuRef.current;
-            const rect = el.getBoundingClientRect();
-            const padding = 12;
-            const minHeight = 148;
+            const rect = submenuRef.current.getBoundingClientRect();
+            const padding = 12; // Safety margin from viewport edge
 
-            const isFlippedLeft = rect.right > window.innerWidth - padding;
-            const isFlippedUp = rect.bottom > window.innerHeight - padding;
-
-            setFlipLeft(isFlippedLeft);
-            setFlipUp(isFlippedUp);
-
-            let availableSpace = isFlippedUp
-                ? rect.bottom - padding
-                : window.innerHeight - rect.top - padding;
-
-            if (availableSpace < minHeight) {
-                const shift = minHeight - availableSpace;
-                setOffsetY(isFlippedUp ? shift : -shift);
-                setMaxHeight(minHeight);
-            } else {
-                setOffsetY(0);
-                setMaxHeight(availableSpace);
-            }
+            setFlipLeft(rect.right > window.innerWidth - padding);
+            setFlipUp(rect.bottom > window.innerHeight - padding);
         } else {
             setFlipLeft(false);
             setFlipUp(false);
-            setMaxHeight(undefined);
-            setOffsetY(0);
         }
     }, [isSubmenuOpen]);
 
@@ -92,10 +67,7 @@ function MenuItem<T extends string>({
     return (
         <div
             className="menu-option-wrapper"
-            style={{
-                position: "relative",
-                anchorName: submenuAnchorName,
-            } as CSSProperties}
+            style={{ position: "relative" }}
             onMouseEnter={() => hasChildren && setIsSubmenuOpen(true)}
             onMouseLeave={() => {
                 if (hasChildren) {
@@ -131,32 +103,25 @@ function MenuItem<T extends string>({
                     className={`menu submenu-popout anchor-${submenuAnchor} visible`}
                     style={{
                         position: "absolute",
-                        positionAnchor: submenuAnchorName,
-                        maxHeight: maxHeight ? `${maxHeight}px` : undefined,
-                        display: "flex",
-                        flexDirection: "column",
-                        transform: offsetY ? `translateY(${offsetY}px)` : undefined,
                         ...(flipLeft
                             ? { right: "100%", left: "auto" }
                             : { left: "100%", right: "auto" }),
                         ...(flipUp
                             ? { bottom: 0, top: "auto" }
                             : { top: 0, bottom: "auto" }),
-                    } as CSSProperties}
+                    }}
                 >
-                    <div className="menu-options-container" style={{ overflowY: "auto", flex: 1 }}>
-                        {item.children!.map((child) => (
-                            <MenuItem
-                                key={child.value}
-                                item={child}
-                                selectedValue={selectedValue}
-                                onChange={onChange}
-                                onCloseAll={onCloseAll}
-                                optionIcon={optionIcon}
-                                submenuAnchor={submenuAnchor}
-                            />
-                        ))}
-                    </div>
+                    {item.children!.map((child) => (
+                        <MenuItem
+                            key={child.value}
+                            item={child}
+                            selectedValue={selectedValue}
+                            onChange={onChange}
+                            onCloseAll={onCloseAll}
+                            optionIcon={optionIcon}
+                            submenuAnchor={submenuAnchor}
+                        />
+                    ))}
                 </div>
             )}
         </div>
@@ -184,7 +149,6 @@ interface MenuSelectProps<T extends string> {
     style?: CSSProperties;
     anchor?: MenuAnchor;
     submenuAnchor?: MenuAnchor;
-    minHeight?: number;
 }
 
 export default function MenuSelect<T extends string>({
@@ -200,51 +164,27 @@ export default function MenuSelect<T extends string>({
     style,
     anchor = "st",
     submenuAnchor = "st",
-    minHeight = 148,
 }: MenuSelectProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
     const [flipLeft, setFlipLeft] = useState(false);
     const [flipUp, setFlipUp] = useState(false);
-    const [maxHeight, setMaxHeight] = useState<number | undefined>(undefined);
-    const [offsetY, setOffsetY] = useState<number>(0);
-
-    const generatedMenuId = useId().replace(/:/g, "");
-    const menuAnchorName = `--menu-trigger-anchor-${id || generatedMenuId}`;
 
     const wrapperRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
 
+    // Measure viewport collision for the top-level menu
     useEffect(() => {
         if (isOpen && menuRef.current) {
-            const el = menuRef.current;
-            const rect = el.getBoundingClientRect();
-            const padding = 12;
+            const rect = menuRef.current.getBoundingClientRect();
+            const padding = 12; // Safety margin from viewport edge
 
-            const isFlippedLeft = rect.right > window.innerWidth - padding;
-            const isFlippedUp = rect.bottom > window.innerHeight - padding;
-
-            setFlipLeft(isFlippedLeft);
-            setFlipUp(isFlippedUp);
-
-            let availableSpace = isFlippedUp
-                ? rect.bottom - padding
-                : window.innerHeight - rect.top - padding;
-
-            if (availableSpace < minHeight) {
-                const shift = minHeight - availableSpace;
-                setOffsetY(isFlippedUp ? shift : -shift);
-                setMaxHeight(minHeight);
-            } else {
-                setOffsetY(0);
-                setMaxHeight(availableSpace);
-            }
+            setFlipLeft(rect.right > window.innerWidth - padding);
+            setFlipUp(rect.bottom > window.innerHeight - padding);
         } else {
             setFlipLeft(false);
             setFlipUp(false);
-            setMaxHeight(undefined);
-            setOffsetY(0);
         }
-    }, [isOpen, minHeight]);
+    }, [isOpen]);
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -289,10 +229,7 @@ export default function MenuSelect<T extends string>({
         <div
             className="menu-wrapper"
             ref={wrapperRef}
-            style={{
-                ...style,
-                anchorName: menuAnchorName,
-            } as CSSProperties}
+            style={style}
             onFocusCapture={handleFocusCapture}
             onClickCapture={handleClickCapture}
         >
@@ -320,30 +257,22 @@ export default function MenuSelect<T extends string>({
                 ref={menuRef}
                 className={`menu anchor-${anchor} ${id ? `${id}-options` : ""} ${isOpen ? "visible" : ""}`}
                 style={{
-                    positionAnchor: menuAnchorName,
-                    maxHeight: maxHeight ? `${maxHeight}px` : undefined,
-                    display: "flex",
-                    flexDirection: "column",
-                    transform: offsetY ? `translateY(${offsetY}px)` : undefined,
                     ...(flipLeft ? { right: 0, left: "auto" } : {}),
                     ...(flipUp ? { bottom: "100%", top: "auto" } : {}),
-                } as CSSProperties}
+                }}
             >
                 {title && <div className="menu-title">{title}</div>}
-                
-                <div className="menu-options-container ascroll-y" style={{ flex: 1 }}>
-                    {options.map((item) => (
-                        <MenuItem
-                            key={item.value}
-                            item={item}
-                            selectedValue={value}
-                            onChange={onChange}
-                            onCloseAll={() => setIsOpen(false)}
-                            optionIcon={optionIcon}
-                            submenuAnchor={submenuAnchor}
-                        />
-                    ))}
-                </div>
+                {options.map((item) => (
+                    <MenuItem
+                        key={item.value}
+                        item={item}
+                        selectedValue={value}
+                        onChange={onChange}
+                        onCloseAll={() => setIsOpen(false)}
+                        optionIcon={optionIcon}
+                        submenuAnchor={submenuAnchor}
+                    />
+                ))}
             </div>
         </div>
     );

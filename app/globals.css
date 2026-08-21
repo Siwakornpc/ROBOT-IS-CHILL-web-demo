@@ -796,17 +796,11 @@ hr {
     width: fit-content;
 }
 
-.menu-options-container {
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 0%;
-    gap: 4px;
-}
-
 .menu-option-wrapper {
     display: flex;
     flex-direction: column;
-    padding-inline: 4px;
+    padding-inline: 8px;
+    margin-inline: -4px;
 }
 
 .menu-option-wrapper:has(:is(
