@@ -1568,7 +1568,7 @@ hr {
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 .search-results.filters {
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 }
 
 .search-item {
@@ -1601,8 +1601,9 @@ hr {
     image-rendering: pixelated;
     filter: var(--f-elevation-5);
 }
-.search-results.filters :is(.search-item-tile) {
-    min-width: 120px;
+.search-results.filters .search-item-tile {
+    min-width: 100px;
+    max-height: 100px;
 }
 .search-item-tile.pending {
     border-radius: 4px;
@@ -1611,9 +1612,14 @@ hr {
 .search-item-tile-broken {
     display: grid;
     grid-template-areas: "stack";
-    align-items: center;
-    justify-items: center;
+    place-items: center;
+    width: 64px;
+    height: 64px;
     filter: none;
+}
+.search-results.filters .search-item-tile-broken {
+    width: 100px;
+    height: 100px;
 }
 .search-item-tile-broken > * {
     grid-area: stack;
