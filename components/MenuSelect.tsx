@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, ReactNode, CSSProperties, FocusEvent, MouseEvent as ReactMouseEvent, cloneElement } from "react";
+import { createPortal } from "react-dom";
 
 export type MenuAnchor = "t" | "b" | "l" | "r" | "tl" | "tr" | "bl" | "br" | "s" | "e" | "st" | "sb" | "et" | "eb";
 
@@ -32,9 +33,9 @@ function MenuItem<T extends string>({
     pageMargin = 12,
 }: MenuItemProps<T>) {
     const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
-    const [flipLeft, setFlipLeft] = useState(false);
-    const [flipUp, setFlipUp] = useState(false);
+    const [activeAnchor, setActiveAnchor] = useState<MenuAnchor>(submenuAnchor);
     const [maxHeight, setMaxHeight] = useState<number | undefined>(undefined);
+    const [coords, setCoords] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
 
     const wrapperRef = useRef<HTMLDivElement>(null);
     const submenuRef = useRef<HTMLDivElement>(null);
@@ -47,27 +48,43 @@ function MenuItem<T extends string>({
     useEffect(() => {
         if (isSubmenuOpen && wrapperRef.current) {
             const anchorRect = wrapperRef.current.getBoundingClientRect();
+            const submenuElement = submenuRef.current;
 
-            // Measure available horizontal space
-            const spaceRight = window.innerWidth - anchorRect.right;
-            const spaceLeft = anchorRect.left;
+            const menuWidth = submenuElement?.offsetWidth || 240;
+            const menuHeight = submenuElement?.offsetHeight || 148;
 
-            // Measure available vertical space
+            // space available on each side
+            const spaceRight = window.innerWidth - anchorRect.right - pageMargin;
+            const spaceLeft = anchorRect.left - pageMargin;
+
             const spaceBelow = window.innerHeight - anchorRect.top - pageMargin;
             const spaceAbove = anchorRect.bottom - pageMargin;
 
-            const shouldFlipUp = spaceAbove > spaceBelow;
-            const availableVerticalSpace = shouldFlipUp ? spaceAbove : spaceBelow;
+            // only flip if overflowing boundary
+            const shouldFlipLeft = spaceRight < menuWidth && spaceLeft > spaceRight;
+            const shouldFlipUp = spaceBelow < menuHeight && spaceAbove > spaceBelow;
 
-            setFlipLeft(spaceLeft > spaceRight);
-            setFlipUp(shouldFlipUp);
-            setMaxHeight(Math.max(100, availableVerticalSpace));
+            let resolvedAnchor = submenuAnchor;
+            if (shouldFlipUp && shouldFlipLeft) resolvedAnchor = "eb";
+            else if (shouldFlipLeft) resolvedAnchor = "et";
+            else if (shouldFlipUp) resolvedAnchor = "sb";
+            else resolvedAnchor = "st";
+
+            setActiveAnchor(resolvedAnchor);
+
+            // calculate fixed position on viewport for portal
+            const top = shouldFlipUp ? anchorRect.bottom - menuHeight : anchorRect.top;
+            const left = shouldFlipLeft ? anchorRect.left - menuWidth : anchorRect.right;
+
+            setCoords({ top, left });
+
+            const targetSpace = shouldFlipUp ? spaceAbove : spaceBelow;
+            setMaxHeight(Math.max(100, targetSpace));
         } else {
-            setFlipLeft(false);
-            setFlipUp(false);
+            setActiveAnchor(submenuAnchor);
             setMaxHeight(undefined);
         }
-    }, [isSubmenuOpen, pageMargin]);
+    }, [isSubmenuOpen, submenuAnchor, pageMargin]);
 
     const renderIcon = () => {
         if (isSelected) return <i className="icon menu-option-icon">check</i>;
@@ -84,13 +101,8 @@ function MenuItem<T extends string>({
         <div
             ref={wrapperRef}
             className="menu-option-wrapper"
-            style={{ position: "relative" }}
             onMouseEnter={() => hasChildren && setIsSubmenuOpen(true)}
-            onMouseLeave={() => {
-                if (hasChildren) {
-                    setIsSubmenuOpen(false);
-                }
-            }}
+            onMouseLeave={() => hasChildren && setIsSubmenuOpen(false)}
         >
             <div
                 onMouseDown={(e) => e.preventDefault()}
@@ -114,20 +126,19 @@ function MenuItem<T extends string>({
                 {hasChildren && <i className="icon menu-option-menu-icon">arrow_right</i>}
             </div>
 
-            {hasChildren && isSubmenuOpen && (
+            {hasChildren && isSubmenuOpen && typeof document !== "undefined" && createPortal(
                 <div
                     ref={submenuRef}
-                    className={`menu submenu-popout ascroll-y anchor-${submenuAnchor} visible`}
+                    className={`menu submenu-popout ascroll-y inset-scrollbar anchor-${activeAnchor} visible`}
                     style={{
-                        position: "absolute",
+                        position: "fixed",
+                        top: `${coords.top}px`,
+                        left: `${coords.left}px`,
                         maxHeight: maxHeight ? `${maxHeight}px` : undefined,
-                        ...(flipLeft
-                            ? { right: "100%", left: "auto" }
-                            : { left: "100%", right: "auto" }),
-                        ...(flipUp
-                            ? { bottom: 0, top: "auto" }
-                            : { top: 0, bottom: "auto" }),
+                        zIndex: 9999,
                     }}
+                    onMouseEnter={() => setIsSubmenuOpen(true)}
+                    onMouseLeave={() => setIsSubmenuOpen(false)}
                 >
                     {item.children!.map((child) => (
                         <MenuItem
@@ -141,7 +152,8 @@ function MenuItem<T extends string>({
                             pageMargin={pageMargin}
                         />
                     ))}
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     );
@@ -187,8 +199,7 @@ export default function MenuSelect<T extends string>({
     pageMargin = 12,
 }: MenuSelectProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
-    const [flipLeft, setFlipLeft] = useState(false);
-    const [flipUp, setFlipUp] = useState(false);
+    const [activeAnchor, setActiveAnchor] = useState<MenuAnchor>(anchor);
     const [maxHeight, setMaxHeight] = useState<number | undefined>(undefined);
 
     const wrapperRef = useRef<HTMLDivElement>(null);
@@ -196,29 +207,36 @@ export default function MenuSelect<T extends string>({
 
     // Compare available space on each side of the top-level menu trigger
     useEffect(() => {
-        if (isOpen && wrapperRef.current) {
+        if (isOpen && wrapperRef.current && menuRef.current) {
             const anchorRect = wrapperRef.current.getBoundingClientRect();
+            const menuElement = menuRef.current;
 
-            // Measure available horizontal space
-            const spaceRight = window.innerWidth - anchorRect.left;
-            const spaceLeft = anchorRect.right;
+            const menuWidth = menuElement.offsetWidth;
+            const menuHeight = menuElement.offsetHeight;
 
-            // Measure available vertical space
+            const spaceRight = window.innerWidth - anchorRect.left - pageMargin;
+            const spaceLeft = anchorRect.right - pageMargin;
             const spaceBelow = window.innerHeight - anchorRect.bottom - pageMargin;
             const spaceAbove = anchorRect.top - pageMargin;
 
-            const shouldFlipUp = spaceAbove > spaceBelow;
-            const availableVerticalSpace = shouldFlipUp ? spaceAbove : spaceBelow;
+            const shouldFlipLeft = spaceRight < menuWidth && spaceLeft > spaceRight;
+            const shouldFlipUp = spaceBelow < menuHeight && spaceAbove > spaceBelow;
 
-            setFlipLeft(spaceLeft > spaceRight);
-            setFlipUp(shouldFlipUp);
-            setMaxHeight(Math.max(100, availableVerticalSpace));
+            let resolvedAnchor = anchor;
+            if (shouldFlipUp && shouldFlipLeft) resolvedAnchor = "tr";
+            else if (shouldFlipLeft) resolvedAnchor = "br";
+            else if (shouldFlipUp) resolvedAnchor = "tl";
+            else resolvedAnchor = anchor;
+
+            setActiveAnchor(resolvedAnchor);
+
+            const targetSpace = shouldFlipUp ? spaceAbove : spaceBelow;
+            setMaxHeight(Math.max(100, targetSpace));
         } else {
-            setFlipLeft(false);
-            setFlipUp(false);
+            setActiveAnchor(anchor);
             setMaxHeight(undefined);
         }
-    }, [isOpen, pageMargin]);
+    }, [isOpen, anchor, pageMargin]);
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -252,7 +270,6 @@ export default function MenuSelect<T extends string>({
         }
     };
 
-    // optional thing to spread onto custom input triggers
     const getInputProps = (customProps: Record<string, any> = {}) => ({
         onFocus: openMenu,
         onClick: openMenu,
@@ -289,12 +306,8 @@ export default function MenuSelect<T extends string>({
 
             <div
                 ref={menuRef}
-                className={`menu ascroll-y anchor-${anchor} ${id ? `${id}-options` : ""} ${isOpen ? "visible" : ""}`}
-                style={{
-                    maxHeight: maxHeight ? `${maxHeight}px` : undefined,
-                    ...(flipLeft ? { right: 0, left: "auto" } : {}),
-                    ...(flipUp ? { bottom: "100%", top: "auto" } : {}),
-                }}
+                className={`menu ascroll-y inset-scrollbar anchor-${activeAnchor} ${id ? `${id}-options` : ""} ${isOpen ? "visible" : ""}`}
+                style={{ maxHeight: maxHeight ? `${maxHeight}px` : undefined }}
             >
                 {title && <div className="menu-title">{title}</div>}
                 {options.map((item) => (

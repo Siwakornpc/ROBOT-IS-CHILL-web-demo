@@ -180,6 +180,10 @@ ul {
 ::-webkit-scrollbar-thumb:hover {
 	background: rgb(var(--md-color-on-surface));
 }
+.inset-scrollbar::-webkit-scrollbar-button {
+    width: var(--scrollbar-inset-size, 8px);
+    height: var(--scrollbar-inset-size, 8px);
+}
 
 ::selection,
 .selection {
