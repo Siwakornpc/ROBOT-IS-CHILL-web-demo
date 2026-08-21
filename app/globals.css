@@ -1709,7 +1709,6 @@ hr {
 
 .tiling-index-label {
     position: relative;
-    pointer-events: none;
 }
 .tiling-index-label::after {
     content: attr(data-frame-tiled);
