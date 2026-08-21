@@ -157,7 +157,7 @@ export function FilterPanel({
                                 />
                             </label>
                         )}
-                        anchor="b"
+                        anchor="t"
                     />
                 );
 
