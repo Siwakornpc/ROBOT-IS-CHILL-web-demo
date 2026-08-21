@@ -33,20 +33,30 @@ function MenuItem<T extends string>({
     const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
     const [flipLeft, setFlipLeft] = useState(false);
     const [flipUp, setFlipUp] = useState(false);
+    
+    const wrapperRef = useRef<HTMLDivElement>(null);
     const submenuRef = useRef<HTMLDivElement>(null);
 
     const hasChildren = Boolean(item.children && item.children.length > 0);
     const isSelected = item.value === selectedValue;
     const rawIcon = optionIcon ? optionIcon(item) : item.icon;
 
-    // Measure viewport collision whenever the submenu opens
+    // compare available space on each side of the menu
     useEffect(() => {
-        if (isSubmenuOpen && submenuRef.current) {
-            const rect = submenuRef.current.getBoundingClientRect();
-            const padding = 12; // Safety margin from viewport edge
+        if (isSubmenuOpen && wrapperRef.current) {
+            const anchorRect = wrapperRef.current.getBoundingClientRect();
 
-            setFlipLeft(rect.right > window.innerWidth - padding);
-            setFlipUp(rect.bottom > window.innerHeight - padding);
+            // measure available horizontal space
+            const spaceRight = window.innerWidth - anchorRect.right;
+            const spaceLeft = anchorRect.left;
+
+            // measure available vertical space
+            const spaceBelow = window.innerHeight - anchorRect.top;
+            const spaceAbove = anchorRect.bottom;
+
+            // flip toward the side with more available room
+            setFlipLeft(spaceLeft > spaceRight);
+            setFlipUp(spaceAbove > spaceBelow);
         } else {
             setFlipLeft(false);
             setFlipUp(false);
@@ -66,6 +76,7 @@ function MenuItem<T extends string>({
 
     return (
         <div
+            ref={wrapperRef}
             className="menu-option-wrapper"
             style={{ position: "relative" }}
             onMouseEnter={() => hasChildren && setIsSubmenuOpen(true)}
@@ -172,14 +183,22 @@ export default function MenuSelect<T extends string>({
     const wrapperRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
 
-    // Measure viewport collision for the top-level menu
+    // Compare available space on each side of the top-level menu trigger
     useEffect(() => {
-        if (isOpen && menuRef.current) {
-            const rect = menuRef.current.getBoundingClientRect();
-            const padding = 12; // Safety margin from viewport edge
+        if (isOpen && wrapperRef.current) {
+            const anchorRect = wrapperRef.current.getBoundingClientRect();
 
-            setFlipLeft(rect.right > window.innerWidth - padding);
-            setFlipUp(rect.bottom > window.innerHeight - padding);
+            // Measure available horizontal space
+            const spaceRight = window.innerWidth - anchorRect.left;
+            const spaceLeft = anchorRect.right;
+
+            // Measure available vertical space
+            const spaceBelow = window.innerHeight - anchorRect.bottom;
+            const spaceAbove = anchorRect.top;
+
+            // Flip toward the side with strictly more available room
+            setFlipLeft(spaceLeft > spaceRight);
+            setFlipUp(spaceAbove > spaceBelow);
         } else {
             setFlipLeft(false);
             setFlipUp(false);
