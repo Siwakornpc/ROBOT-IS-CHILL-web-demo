@@ -48,7 +48,6 @@ function MenuItem<T extends string>({
     useEffect(() => {
         if (isSubmenuOpen && submenuRef.current) {
             const el = submenuRef.current;
-            const isScrollable = el.classList.contains("scroll-y") || el.classList.contains("ascroll-y");
             const rect = el.getBoundingClientRect();
             const padding = 12;
             const minHeight = 148;
@@ -59,19 +58,17 @@ function MenuItem<T extends string>({
             setFlipLeft(isFlippedLeft);
             setFlipUp(isFlippedUp);
 
-            if (isScrollable) {
-                const availableSpace = window.innerHeight - rect.top - padding;
-                if (availableSpace < minHeight) {
-                    const shiftNeeded = minHeight - availableSpace;
-                    setOffsetY(-shiftNeeded);
-                    setMaxHeight(minHeight);
-                } else {
-                    setOffsetY(0);
-                    setMaxHeight(availableSpace);
-                }
+            let availableSpace = isFlippedUp
+                ? rect.bottom - padding
+                : window.innerHeight - rect.top - padding;
+
+            if (availableSpace < minHeight) {
+                const shift = minHeight - availableSpace;
+                setOffsetY(isFlippedUp ? shift : -shift);
+                setMaxHeight(minHeight);
             } else {
                 setOffsetY(0);
-                setMaxHeight(undefined);
+                setMaxHeight(availableSpace);
             }
         } else {
             setFlipLeft(false);
@@ -136,7 +133,8 @@ function MenuItem<T extends string>({
                         position: "absolute",
                         positionAnchor: submenuAnchorName,
                         maxHeight: maxHeight ? `${maxHeight}px` : undefined,
-                        overflowY: maxHeight ? "auto" : undefined,
+                        display: "flex",
+                        flexDirection: "column",
                         transform: offsetY ? `translateY(${offsetY}px)` : undefined,
                         ...(flipLeft
                             ? { right: "100%", left: "auto" }
@@ -146,17 +144,19 @@ function MenuItem<T extends string>({
                             : { top: 0, bottom: "auto" }),
                     } as CSSProperties}
                 >
-                    {item.children!.map((child) => (
-                        <MenuItem
-                            key={child.value}
-                            item={child}
-                            selectedValue={selectedValue}
-                            onChange={onChange}
-                            onCloseAll={onCloseAll}
-                            optionIcon={optionIcon}
-                            submenuAnchor={submenuAnchor}
-                        />
-                    ))}
+                    <div className="menu-options-container" style={{ overflowY: "auto", flex: 1 }}>
+                        {item.children!.map((child) => (
+                            <MenuItem
+                                key={child.value}
+                                item={child}
+                                selectedValue={selectedValue}
+                                onChange={onChange}
+                                onCloseAll={onCloseAll}
+                                optionIcon={optionIcon}
+                                submenuAnchor={submenuAnchor}
+                            />
+                        ))}
+                    </div>
                 </div>
             )}
         </div>
@@ -214,30 +214,29 @@ export default function MenuSelect<T extends string>({
     const wrapperRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
 
-    // Measure viewport collision for the top-level menu
     useEffect(() => {
         if (isOpen && menuRef.current) {
             const el = menuRef.current;
-            const isScrollable = el.classList.contains("scroll-y") || el.classList.contains("ascroll-y");
             const rect = el.getBoundingClientRect();
             const padding = 12;
 
-            setFlipLeft(rect.right > window.innerWidth - padding);
-            setFlipUp(rect.bottom > window.innerHeight - padding);
+            const isFlippedLeft = rect.right > window.innerWidth - padding;
+            const isFlippedUp = rect.bottom > window.innerHeight - padding;
 
-            if (isScrollable) {
-                const availableSpace = window.innerHeight - rect.top - padding;
-                if (availableSpace < minHeight) {
-                    const shiftNeeded = minHeight - availableSpace;
-                    setOffsetY(-shiftNeeded);
-                    setMaxHeight(minHeight);
-                } else {
-                    setOffsetY(0);
-                    setMaxHeight(availableSpace);
-                }
+            setFlipLeft(isFlippedLeft);
+            setFlipUp(isFlippedUp);
+
+            let availableSpace = isFlippedUp
+                ? rect.bottom - padding
+                : window.innerHeight - rect.top - padding;
+
+            if (availableSpace < minHeight) {
+                const shift = minHeight - availableSpace;
+                setOffsetY(isFlippedUp ? shift : -shift);
+                setMaxHeight(minHeight);
             } else {
                 setOffsetY(0);
-                setMaxHeight(undefined);
+                setMaxHeight(availableSpace);
             }
         } else {
             setFlipLeft(false);
@@ -323,24 +322,28 @@ export default function MenuSelect<T extends string>({
                 style={{
                     positionAnchor: menuAnchorName,
                     maxHeight: maxHeight ? `${maxHeight}px` : undefined,
-                    overflowY: maxHeight ? "auto" : undefined,
+                    display: "flex",
+                    flexDirection: "column",
                     transform: offsetY ? `translateY(${offsetY}px)` : undefined,
                     ...(flipLeft ? { right: 0, left: "auto" } : {}),
                     ...(flipUp ? { bottom: "100%", top: "auto" } : {}),
                 } as CSSProperties}
             >
                 {title && <div className="menu-title">{title}</div>}
-                {options.map((item) => (
-                    <MenuItem
-                        key={item.value}
-                        item={item}
-                        selectedValue={value}
-                        onChange={onChange}
-                        onCloseAll={() => setIsOpen(false)}
-                        optionIcon={optionIcon}
-                        submenuAnchor={submenuAnchor}
-                    />
-                ))}
+                
+                <div className="menu-options-container ascroll-y" style={{ flex: 1 }}>
+                    {options.map((item) => (
+                        <MenuItem
+                            key={item.value}
+                            item={item}
+                            selectedValue={value}
+                            onChange={onChange}
+                            onCloseAll={() => setIsOpen(false)}
+                            optionIcon={optionIcon}
+                            submenuAnchor={submenuAnchor}
+                        />
+                    ))}
+                </div>
             </div>
         </div>
     );
