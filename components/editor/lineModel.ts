@@ -26,7 +26,7 @@ export function lineColumnToOffset(lines: string[], lineIndex: number, column: n
     let offset = 0;
 
     for (let i = 0; i < lineIndex; i++) {
-        offset += lines[i].length + 1;
+        offset += lines[i]?.length + 1;
     }
 
     return offset + column;
