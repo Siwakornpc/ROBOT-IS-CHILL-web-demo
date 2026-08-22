@@ -5,6 +5,7 @@ export async function GET(
     { params }: { params: { name: string } }
 ) {
     const imageName = params.name;
+    const extensions = ["png", "gif", "jpg", "webp"];
 
     let upstreamRes: Response | null = null;
 
@@ -12,7 +13,13 @@ export async function GET(
     if (imageName.includes(".")) {
         upstreamRes = await fetch(`https://ric-api.sno.mba/filters/${imageName}`);
     } else {
-        upstreamRes = await fetch(`https://ric-api.sno.mba/filters/${imageName}.png`);
+        for (const ext of extensions) {
+            const res = await fetch(`https://ric-api.sno.mba/filters/${imageName}.${ext}`);
+            if (res.ok) {
+                upstreamRes = res;
+                break;
+            }
+        }
     }
 
     if (!upstreamRes || !upstreamRes.ok) {
