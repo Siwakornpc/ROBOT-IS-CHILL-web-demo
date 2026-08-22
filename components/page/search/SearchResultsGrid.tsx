@@ -5,7 +5,7 @@ import { type SearchMode } from "./SearchSelect";
 import stdlib_macros from "./stdlib_macros";
 import JSONbig from "json-bigint";
 import { applyOverflowFade } from "@/components/OverflowFade";
-import { name } from "next/dist/server/ci-info";
+import { NextRequest, NextResponse } from "next/server";
 
 const BATCH_SIZE = 32;
 
@@ -14,6 +14,28 @@ const endpoints: Partial<Record<SearchMode, string>> = {
     macros: "macros.json",
     filters: "filters.json",
 } as const;
+
+export async function GET(
+    _request: NextRequest,
+    { params }: { params: { name: string } }
+) {
+    const imageName = params.name;
+    const upstreamRes = await fetch(`https://ric-api.sno.mba/filters/${imageName}`);
+
+    if (!upstreamRes.ok) {
+        return new NextResponse("Image not found", { status: 404 });
+    }
+    const imageBlob = await upstreamRes.blob();
+
+    return new NextResponse(imageBlob, {
+        headers: {
+            // prevents CORB
+            "Content-Type": upstreamRes.headers.get("content-type") || "image/png",
+            "Access-Control-Allow-Origin": "*",
+            "Cache-Control": "public, max-age=31536000, immutable",
+        },
+    });
+}
 
 export type TileRecord = {
     active_color: [number, number];
@@ -481,6 +503,7 @@ export default function SearchResults({
                                     aria-hidden="true"
                                     loading="lazy"
                                     decoding="async"
+                                    crossOrigin="anonymous"
                                     onLoad={() => settleImage(safeName)}
                                     onError={() => {
                                         handleImageError(safeName);
