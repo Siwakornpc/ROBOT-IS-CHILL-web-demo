@@ -1647,7 +1647,7 @@ hr {
     font-weight: bold;
 }
 .search-results.filters .search-item-tile-broken::after {
-    font-size: 12px;
+    font-size: 20px;
     font-weight: normal;
 }
 
