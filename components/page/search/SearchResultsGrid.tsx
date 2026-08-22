@@ -60,7 +60,7 @@ export type MacroRecord = {
 };
 export type FilterRecord = {
     absolute: boolean;
-    author: string;
+    author: number;
     upload_time: number;
 };
 

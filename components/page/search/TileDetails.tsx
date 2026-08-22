@@ -20,6 +20,17 @@ const getImageSize = (url: string): Promise<string> => {
   });
 };
 
+async function getDiscordUsername(userId: number) {
+  try {
+    const res = await fetch(`https://api.lanyard.rest/v1/users/${userId}`);
+    const data = await res.json();
+    if (data.success) {
+      return `@${data.data.discord_user.username}`;
+    }
+  } catch {}
+  return `User (${String(userId).slice(-4)})`;
+}
+
 export function Details({ selected }: DetailsProps) {
     const macroElementRef = useRef<HTMLDivElement>(null);
     const [tilingFrame, setTilingFrame] = useState(0);
@@ -253,7 +264,7 @@ export function Details({ selected }: DetailsProps) {
                     <hr />
 
                     {selected.macro.creator && (
-                        <p className="search-details-label">{selected.macro.creator}</p>
+                        <p className="search-details-label">{getDiscordUsername(selected.macro.creator)}</p>
                     )}
 
                     <p className="search-details-label">Description</p>
@@ -310,12 +321,8 @@ export function Details({ selected }: DetailsProps) {
                     <hr />
 
                     {selected.filter.author && (
-                        <p className="search-details-label">{selected.filter.author}</p>
+                        <p className="search-details-label">{getDiscordUsername(selected.filter.author)}</p>
                     )}
-
-                    <p className="search-details-label">{selected.filter.absolute ? "Absolute" : "Relative"}</p>
-
-                    <hr />
 
                     <table>
                         <tbody>
