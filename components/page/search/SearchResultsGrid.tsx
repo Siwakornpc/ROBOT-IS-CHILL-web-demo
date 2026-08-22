@@ -31,7 +31,7 @@ export type MacroRecord = {
 export type FilterRecord = {
     absolute: boolean;
     author: string;
-    time: number;
+    upload_time: number;
 };
 
 export type SelectedTile = {
@@ -76,8 +76,9 @@ function isMacroRecord(value: unknown): value is MacroRecord {
 function isFilterRecord(value: unknown): value is FilterRecord {
     return typeof value === "object"
         && value !== null
-        && "mode" in value
-        && "date" in value;
+        && "absolute" in value
+        && "author" in value
+        && "upload_time" in value;
 }
 
 export default function SearchResults({
@@ -462,6 +463,7 @@ export default function SearchResults({
                             className="kill-styling search-item"
                             key={safeName || `filter-${index}`}
                             onClick={() => {
+                                console.log(filter);
                                 if (isFilterRecord(filter)) {
                                     onSelect({ name: safeName, filter });
                                 }

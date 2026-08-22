@@ -1596,7 +1596,7 @@ hr {
 
 .search-item-tile {
     width: auto;
-    min-width: 64px;
+    min-width: 48px;
     height: auto;
     image-rendering: pixelated;
     filter: var(--f-elevation-5);
@@ -1609,12 +1609,15 @@ hr {
     border-radius: 4px;
     animation: sit-pending 1s ease-in-out infinite;
 }
+.search-item .search-item-tile.pending {
+    height: 48px;
+}
 .search-item-tile-broken {
     display: grid;
     grid-template-areas: "stack";
     place-items: center;
-    width: 64px;
-    height: 64px;
+    width: 48px;
+    height: 48px;
     filter: none;
 }
 .search-results.filters :is(.search-item-tile.pending, .search-item-tile-broken) {
