@@ -16,13 +16,21 @@ const endpoints: Partial<Record<SearchMode, string>> = {
 } as const;
 
 export async function GET(
-    _request: NextRequest,
+    _request: Request,
     { params }: { params: { name: string } }
 ) {
     const imageName = params.name;
-    const upstreamRes = await fetch(`https://ric-api.sno.mba/filters/${imageName}`);
 
-    if (!upstreamRes.ok) {
+    let upstreamRes: Response | null = null;
+
+    // check if it already has an extension
+    if (imageName.includes(".")) {
+        upstreamRes = await fetch(`https://ric-api.sno.mba/filters/${imageName}`);
+    } else {
+        upstreamRes = await fetch(`https://ric-api.sno.mba/filters/${imageName}.png`);
+    }
+
+    if (!upstreamRes || !upstreamRes.ok) {
         return new NextResponse("Image not found", { status: 404 });
     }
     const imageBlob = await upstreamRes.blob();
