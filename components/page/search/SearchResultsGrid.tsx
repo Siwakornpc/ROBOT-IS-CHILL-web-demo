@@ -24,12 +24,12 @@ export type TileRecord = {
 export type MacroRecord = {
     description: string;
     builtin: boolean;
-    creator?: number;
+    creator?: string;
     value?: string;
 };
 export type FilterRecord = {
     absolute: boolean;
-    author: number;
+    author: string;
     upload_time: number | null;
 };
 
