@@ -11,6 +11,15 @@ type DetailsProps = {
     selected: SelectedSearchResult;
 };
 
+const getImageSize = (url: string): Promise<string> => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.src = url;
+    img.onload = () => resolve(`${img.naturalWidth}x${img.naturalHeight}`);
+    img.onerror = () => resolve("Error loading size");
+  });
+};
+
 export function Details({ selected }: DetailsProps) {
     const macroElementRef = useRef<HTMLDivElement>(null);
     const [tilingFrame, setTilingFrame] = useState(0);
@@ -272,6 +281,14 @@ export function Details({ selected }: DetailsProps) {
     // Details for Filters
 
     if ("filter" in selected) {
+        const [displaySize, setDisplaySize] = useState<string>("Loading...");
+
+        useEffect(() => {
+        if (selected?.name) {
+            getImageSize(`/api/filters/${encodeURIComponent(selected.name)}`).then(setDisplaySize);
+        }
+        }, [selected?.name]);
+
         console.log (selected.filter.upload_time);
         return (
             <>
@@ -316,6 +333,10 @@ export function Details({ selected }: DetailsProps) {
                                     ? new Date(selected.filter.upload_time).toLocaleString()
                                     : "No Date Recorded"
                                 }</td>
+                            </tr>
+                            <tr>
+                                <td>Size</td>
+                                <td>{displaySize}</td>
                             </tr>
                         </tbody>
                     </table>
