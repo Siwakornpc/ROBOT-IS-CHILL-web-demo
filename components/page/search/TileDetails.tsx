@@ -64,21 +64,6 @@ export function Details({ selected }: DetailsProps) {
         }
     }
 
-    function displayMacroName(name: string): string {
-        return Array.from(name)
-            .map((char) => {
-                const code = char.charCodeAt(0);
-
-                if (code === 0) return "\\0";
-                if (code < 0x20 || code === 0x7f) {
-                    return `\\x${code.toString(16).padStart(2, "0")}`;
-                }
-
-                return char;
-            })
-            .join("");
-    }
-
     // Details for Tiles
 
     if ("tile" in selected) {
@@ -238,11 +223,9 @@ export function Details({ selected }: DetailsProps) {
                     className="search-details-macro ascroll-y"
                 >
                     <p className={`search-details-macro-name ${isBuiltin}`}>
-                            <span className="macro-brackets">[</span>
-                            <span className="macro-name">
-                                {displayMacroName(selected.name)}
-                            </span>
-                            <span className="macro-brackets">]</span>
+                        <span className="macro-brackets">[</span>
+                        <span className="macro-name">{selected.name}</span>
+                        <span className="macro-brackets">]</span>
                     </p>
                     {isBuiltin && (
                         <p className="search-details-macro-name-builtin-indicator">Built-in</p>

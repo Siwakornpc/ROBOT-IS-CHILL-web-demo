@@ -351,20 +351,6 @@ export default function SearchResults({
         loadingMoreRef.current = false;
     }, [visibleCount]);
 
-    function displayMacroName(name: string): string {
-        return Array.from(name)
-            .map((char) => {
-                const code = char.charCodeAt(0);
-
-                if (code < 0x20 || code === 0x7f) {
-                    return `\\x${code.toString(16).padStart(2, "0")}`;
-                }
-
-                return char;
-            })
-            .join("");
-    }
-
     return (
         <div
             ref={(el) => {
@@ -421,7 +407,7 @@ export default function SearchResults({
 
             {mode === "macros" &&
                 entries.map(([name, macro], index) => {
-                    const safeName = String(name ?? "").trim();
+                    const safeName = (name ?? "").trim();
                     const isBuiltin = isMacroRecord(macro) && macro.builtin ? "builtin" : "";
 
                     return (
@@ -440,7 +426,7 @@ export default function SearchResults({
                                 className={`search-item-macro ${isBuiltin}`}
                             >
                                 <span className="macro-brackets">[</span>
-                                <span className="macro-name">{displayMacroName(safeName)}</span>
+                                <span className="macro-name">{name}</span>
                                 <span className="macro-brackets">]</span>
                             </span>
                         </button>
