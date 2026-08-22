@@ -1617,7 +1617,7 @@ hr {
     height: 64px;
     filter: none;
 }
-.search-results.filters .search-item-tile-broken {
+.search-results.filters :is(.search-item-tile.pending, .search-item-tile-broken) {
     width: 100px;
     height: 100px;
 }
@@ -1645,6 +1645,10 @@ hr {
     font-family: var(--font-family-code);
     font-size: 12px;
     font-weight: bold;
+}
+.search-results.filters .search-item-tile-broken::after {
+    font-size: 12px;
+    font-weight: normal;
 }
 
 @keyframes sit-pending {
@@ -1851,11 +1855,6 @@ hr {
 
 .search-details-label {
     margin: 0;
-}
-
-.search-details-macro-name.builtin ~ .search-details-detailbox.macro,
-.search-details-macro-name.builtin ~ p:has(+ .search-details-detailbox.macro) {
-    display: none;
 }
 
 table {
