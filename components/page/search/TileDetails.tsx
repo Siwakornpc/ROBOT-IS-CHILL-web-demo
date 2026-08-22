@@ -289,6 +289,25 @@ export function Details({ selected }: DetailsProps) {
                 )}
 
                 <p className="search-details-label">{selected.filter.absolute ? "Absolute" : "Relative"}</p>
+
+                <hr />
+
+                <table>
+                    <tbody>
+                        <tr>
+                            <th className="table-description">Description</th>
+                            <th>Label</th>
+                        </tr>
+                        <tr>
+                            <td>Target Mode</td>
+                            <td>{selected.filter.absolute ? "Absolute" : "Relative"}</td>
+                        </tr>
+                        <tr>
+                            <td>Upload Time</td>
+                            <td>{new Date(selected.filter.time * 1000).toLocaleString()}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </>);
     }
