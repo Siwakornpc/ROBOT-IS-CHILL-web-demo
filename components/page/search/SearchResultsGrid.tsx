@@ -356,7 +356,6 @@ export default function SearchResults({
             .map((char) => {
                 const code = char.charCodeAt(0);
 
-                if (code === 0) return "\\0";
                 if (code < 0x20 || code === 0x7f) {
                     return `\\x${code.toString(16).padStart(2, "0")}`;
                 }
