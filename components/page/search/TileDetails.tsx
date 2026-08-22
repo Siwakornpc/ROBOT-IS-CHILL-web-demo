@@ -284,7 +284,7 @@ export function Details({ selected }: DetailsProps) {
                         <img
                             alt={selected.name}
                             className="search-details-image"
-                            src={`https://ric-api.sno.mba/filters/${selected.name}.png`}
+                            src={`/api/filters/${encodeURIComponent(selected.name)}`}
                         />
                     </div>
                 </div>

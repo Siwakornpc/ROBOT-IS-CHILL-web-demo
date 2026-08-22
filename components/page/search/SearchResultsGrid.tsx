@@ -453,7 +453,7 @@ export default function SearchResults({
             {mode === "filters" &&
                 entries.map(([name, filter], index) => {
                     const safeName = String(name ?? "").trim();
-                    const imageUrl = `https://ric-api.sno.mba/filters/${encodeURIComponent(safeName)}.png`;
+                    const imageUrl = `/api/filters/${encodeURIComponent(safeName)}`;
                     const isBroken = brokenImages.has(safeName);
                     const canLoad = settledImages.has(safeName) || safeName === nextImageName;
 
