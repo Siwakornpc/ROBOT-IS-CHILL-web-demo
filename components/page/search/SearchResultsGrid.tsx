@@ -5,7 +5,6 @@ import { type SearchMode } from "./SearchSelect";
 import stdlib_macros from "./stdlib_macros";
 import JSONbig from "json-bigint";
 import { applyOverflowFade } from "@/components/OverflowFade";
-import { NextRequest, NextResponse } from "next/server";
 
 const BATCH_SIZE = 32;
 
@@ -14,36 +13,6 @@ const endpoints: Partial<Record<SearchMode, string>> = {
     macros: "macros.json",
     filters: "filters.json",
 } as const;
-
-export async function GET(
-    _request: Request,
-    { params }: { params: { name: string } }
-) {
-    const imageName = params.name;
-
-    let upstreamRes: Response | null = null;
-
-    // check if it already has an extension
-    if (imageName.includes(".")) {
-        upstreamRes = await fetch(`https://ric-api.sno.mba/filters/${imageName}`);
-    } else {
-        upstreamRes = await fetch(`https://ric-api.sno.mba/filters/${imageName}.png`);
-    }
-
-    if (!upstreamRes || !upstreamRes.ok) {
-        return new NextResponse("Image not found", { status: 404 });
-    }
-    const imageBlob = await upstreamRes.blob();
-
-    return new NextResponse(imageBlob, {
-        headers: {
-            // prevents CORB
-            "Content-Type": upstreamRes.headers.get("content-type") || "image/png",
-            "Access-Control-Allow-Origin": "*",
-            "Cache-Control": "public, max-age=31536000, immutable",
-        },
-    });
-}
 
 export type TileRecord = {
     active_color: [number, number];
@@ -60,8 +29,8 @@ export type MacroRecord = {
 };
 export type FilterRecord = {
     absolute: boolean;
-    author: string;
-    upload_time: number;
+    author: number;
+    upload_time: number | null;
 };
 
 export type SelectedTile = {
