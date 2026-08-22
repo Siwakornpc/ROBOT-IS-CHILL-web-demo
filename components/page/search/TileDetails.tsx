@@ -319,9 +319,9 @@ export function Details({ selected }: DetailsProps) {
 
                 <div className="search-details-contents-flexbox">
                     <hr />
-                    
+
                     {selected.filter.author && (
-                        <p className="search-details-label">{getDiscordUsername(selected.filter.author)}</p>
+                        <p className="search-details-label">{getDiscordUsername(Number(selected.filter.author))}</p>
                     )}
 
                     <table>
