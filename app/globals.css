@@ -1596,7 +1596,7 @@ hr {
 
 .search-item-tile {
     width: auto;
-    min-width: 48px;
+    min-width: 64px;
     height: auto;
     image-rendering: pixelated;
     filter: var(--f-elevation-5);
@@ -1610,14 +1610,14 @@ hr {
     animation: sit-pending 1s ease-in-out infinite;
 }
 .search-item .search-item-tile.pending {
-    height: 48px;
+    height: 64px;
 }
 .search-item-tile-broken {
     display: grid;
     grid-template-areas: "stack";
     place-items: center;
-    width: 48px;
-    height: 48px;
+    width: 64px;
+    height: 64px;
     filter: none;
 }
 .search-results.filters :is(.search-item-tile.pending, .search-item-tile-broken) {
@@ -1646,7 +1646,7 @@ hr {
     position: absolute;
     color: var(--error);
     font-family: var(--font-family-code);
-    font-size: 12px;
+    font-size: 14px;
     font-weight: bold;
 }
 .search-results.filters .search-item-tile-broken::after {
