@@ -1732,6 +1732,8 @@ hr {
     margin: auto;
     image-rendering: pixelated;
     filter: var(--f-elevation-5);
+
+    pointer-events: none;
 }
 
 /* frame index label */
