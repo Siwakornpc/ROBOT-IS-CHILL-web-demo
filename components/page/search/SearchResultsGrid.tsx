@@ -466,8 +466,11 @@ export default function SearchResults({
                                     aria-hidden="true"
                                     loading="lazy"
                                     decoding="async"
-                                    onLoad={() => handleImageLoad(safeName)}
-                                    onError={() => handleImageError(safeName)}
+                                    onLoad={() => settleImage(safeName)}
+                                    onError={() => {
+                                        handleImageError(safeName);
+                                        settleImage(safeName);
+                                    }}
                                 />
                             ) : (
                                 <span className="search-item-tile pending" aria-hidden="true" />

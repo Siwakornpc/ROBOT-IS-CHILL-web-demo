@@ -1724,6 +1724,16 @@ hr {
     filter: var(--f-elevation-5);
 }
 
+.search-details-image-e {
+    width: 100%;
+    min-width: unset;
+    max-width: 100%;
+    height: 100%;
+    margin: auto;
+    image-rendering: pixelated;
+    filter: var(--f-elevation-5);
+}
+
 /* frame index label */
 
 .search-details-image-asize::after {

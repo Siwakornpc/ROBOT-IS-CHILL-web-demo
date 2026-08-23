@@ -149,7 +149,7 @@ export function Details({ selected }: DetailsProps) {
                         <div className="search-details-image-asize">
                             <img
                                 alt={selected.name}
-                                className="search-details-image"
+                                className={`search-details-image${selected.name === "bab_therealbabdictator" ? "-e" : ""}`}
                                 src={`https://ric-api.sno.mba/tiles/${selected.name}.gif`}
                             />
                         </div>
