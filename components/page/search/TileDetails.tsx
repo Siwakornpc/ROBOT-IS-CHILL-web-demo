@@ -6,6 +6,7 @@ import { updateMacroStaticHighlight } from "@/components/highlight/macro-highlig
 import { DiscordMarkdown } from "@/components/DiscordMarkdown";
 import { applyOverflowFade } from "@/components/OverflowFade";
 import { mapTiling } from "@/components/page/search/image_tiling";
+import "@/types/string.extentions";
 
 type DetailsProps = {
     selected: SelectedSearchResult;
@@ -196,13 +197,13 @@ export function Details({ selected }: DetailsProps) {
                             <td>Tags</td>
                             <td>
                                 {selected.tile.tags.length
-                                    ? selected.tile.tags.join(", ")
+                                    ? selected.tile.tags.join(", ").toTitleCase()
                                     : "None"}
                             </td>
                         </tr>
                         <tr>
                             <td>Tiling</td>
-                            <td>{selected.tile.tiling}</td>
+                            <td>{selected.tile.tiling.toTitleCase()}</td>
                         </tr>
                     </tbody>
                 </table>
