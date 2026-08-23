@@ -8,6 +8,10 @@ import { applyOverflowFade } from "@/components/OverflowFade";
 
 const BATCH_SIZE = 32;
 
+const IMAGE_SUCCESS_DELAY = 150;
+const IMAGE_ERROR_DELAY = 2000;
+const MAX_IMAGE_RETRIES = 4;
+
 const endpoints: Partial<Record<SearchMode, string>> = {
     tiles: "tiles.json",
     macros: "macros.json",
@@ -108,6 +112,11 @@ export default function SearchResults({
     const loadMoreRef = useRef<HTMLDivElement>(null);
     const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
     const [brokenImages, setBrokenImages] = useState<Set<string>>(new Set());
+
+    const [imageRetries, setImageRetries] = useState<Map<string, number>>(new Map());
+    const [imageAttempt, setImageAttempt] = useState(0);
+    const imageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
     const restoredDetailsRef = useRef<string | null>(null);
 
     // Images load one at a time (rather than all-at-once per batch) to avoid
@@ -298,22 +307,81 @@ export default function SearchResults({
     }, [detailsName, mode, results]);
 
     const entries = filteredEntries.slice(0, visibleCount);
+
     const nextImageName = entries
         .map(([name]) => String(name ?? "").trim())
-        .find((name) => name && !settledImages.has(name));
+        .find(
+            (name) =>
+                name &&
+                !settledImages.has(name) &&
+                !brokenImages.has(name),
+        );
+
+
+    function scheduleNextImage(delay: number) {
+        if (imageTimerRef.current) {
+            clearTimeout(imageTimerRef.current);
+        }
+
+        imageTimerRef.current = setTimeout(() => {
+            setImageAttempt((attempt) => attempt + 1);
+        }, delay);
+    }
+
+    function handleImageLoad(name: string) {
+        setImageRetries((current) => {
+            if (!current.has(name)) return current;
+
+            const next = new Map(current);
+            next.delete(name);
+            return next;
+        });
+
+        settleImage(name);
+        scheduleNextImage(IMAGE_SUCCESS_DELAY);
+    }
+
+    function handleImageError(name: string) {
+        setImageRetries((current) => {
+            const retries = current.get(name) ?? 0;
+
+            if (retries >= MAX_IMAGE_RETRIES) {
+                const next = new Map(current);
+                next.delete(name);
+
+                setBrokenImages((broken) => {
+                    if (broken.has(name)) return broken;
+
+                    const nextBroken = new Set(broken);
+                    nextBroken.add(name);
+                    return nextBroken;
+                });
+
+                return next;
+            }
+
+            const next = new Map(current);
+            next.set(name, retries + 1);
+            return next;
+        });
+
+        // Do NOT settle the image here.
+        // It may have failed because of a 429.
+        scheduleNextImage(IMAGE_ERROR_DELAY);
+    }
+
     const totalEntries = filteredEntries.length;
     const hasMore = visibleCount < totalEntries;
 
-    function handleImageError(name: string) {
-        setBrokenImages((current) => {
-            if (current.has(name)) return current;
-            const next = new Set(current);
-            next.add(name);
-            return next;
-        });
-    }
-
     const loadingMoreRef = useRef(false);
+
+    useEffect(() => {
+        return () => {
+            if (imageTimerRef.current) {
+                clearTimeout(imageTimerRef.current);
+            }
+        };
+    }, []);
 
     useEffect(() => {
         const sentinel = loadMoreRef.current;
@@ -351,6 +419,8 @@ export default function SearchResults({
         loadingMoreRef.current = false;
     }, [visibleCount]);
 
+    // returning states
+
     return (
         <div
             ref={(el) => {
@@ -360,6 +430,11 @@ export default function SearchResults({
             className={`search-results ${mode} ascroll-y`}
             data-loaded={Boolean(results)}
         >
+
+            {
+                // Tiles
+            }
+
             {mode === "tiles" &&
                 entries.map(([name, tile], index) => {
                     const safeName = String(name ?? "").trim();
@@ -384,17 +459,15 @@ export default function SearchResults({
                                 </div>
                             ) : canLoad ? (
                                 <img
+                                    key={`${safeName}-${imageAttempt}`}
                                     className="search-item-tile"
                                     src={imageUrl}
                                     alt=""
                                     aria-hidden="true"
                                     loading="lazy"
                                     decoding="async"
-                                    onLoad={() => settleImage(safeName)}
-                                    onError={() => {
-                                        handleImageError(safeName);
-                                        settleImage(safeName);
-                                    }}
+                                    onLoad={() => handleImageLoad(safeName)}
+                                    onError={() => handleImageError(safeName)}
                                 />
                             ) : (
                                 <span className="search-item-tile pending" aria-hidden="true" />
@@ -403,6 +476,10 @@ export default function SearchResults({
                         </button>
                     );
                 })
+            }
+
+            {
+                // Macros
             }
 
             {mode === "macros" &&
@@ -434,10 +511,14 @@ export default function SearchResults({
                 })
             }
 
+            {
+                // Filters
+            }
+
             {mode === "filters" &&
                 entries.map(([name, filter], index) => {
                     const safeName = String(name ?? "").trim();
-                    const imageUrl = `/api/filters/${encodeURIComponent(safeName)}`;
+                    const imageUrl = `https://ric-api.sno.mba/filters/${encodeURIComponent(safeName)}.png`;
                     const isBroken = brokenImages.has(safeName);
                     const canLoad = settledImages.has(safeName) || safeName === nextImageName;
 
@@ -459,18 +540,15 @@ export default function SearchResults({
                                 </div>
                             ) : canLoad ? (
                                 <img
+                                    key={`${safeName}-${imageAttempt}`}
                                     className="search-item-tile"
                                     src={imageUrl}
                                     alt=""
                                     aria-hidden="true"
                                     loading="lazy"
                                     decoding="async"
-                                    crossOrigin="anonymous"
-                                    onLoad={() => settleImage(safeName)}
-                                    onError={() => {
-                                        handleImageError(safeName);
-                                        settleImage(safeName);
-                                    }}
+                                    onLoad={() => handleImageLoad(safeName)}
+                                    onError={() => handleImageError(safeName)}
                                 />
                             ) : (
                                 <span className="search-item-tile pending" aria-hidden="true" />

@@ -12,12 +12,12 @@ type DetailsProps = {
 };
 
 const getImageSize = (url: string): Promise<string> => {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.src = url;
-    img.onload = () => resolve(`${img.naturalWidth}x${img.naturalHeight}`);
-    img.onerror = () => resolve("Error loading size");
-  });
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.src = url;
+        img.onload = () => resolve(`${img.naturalWidth} × ${img.naturalHeight}`);
+        img.onerror = () => resolve("Error loading size");
+    });
 };
 
 export function Details({ selected }: DetailsProps) {
@@ -73,7 +73,6 @@ export function Details({ selected }: DetailsProps) {
 
         const currentFrame = imageMap[tilingFrame];
         const currentIndex = indexMap[tilingFrame];
-
         return (
             <>
                 <p className="text-label search-details-name">
@@ -198,7 +197,7 @@ export function Details({ selected }: DetailsProps) {
                             <td>
                                 {selected.tile.tags.length
                                     ? selected.tile.tags.join(", ")
-                                    : "none"}
+                                    : "None"}
                             </td>
                         </tr>
                         <tr>
@@ -268,7 +267,7 @@ export function Details({ selected }: DetailsProps) {
 
         useEffect(() => {
         if (selected?.name) {
-            getImageSize(`/api/filters/${encodeURIComponent(selected.name)}`).then(setDisplaySize);
+            getImageSize(`https://ric-api.sno.mba/filters/${encodeURIComponent(selected.name)}.png`).then(setDisplaySize);
         }
         }, [selected?.name]);
 
@@ -284,7 +283,7 @@ export function Details({ selected }: DetailsProps) {
                         <img
                             alt={selected.name}
                             className="search-details-image"
-                            src={`/api/filters/${encodeURIComponent(selected.name)}`}
+                            src={`https://ric-api.sno.mba/filters/${encodeURIComponent(selected.name)}.png`}
                         />
                     </div>
                 </div>
@@ -310,7 +309,7 @@ export function Details({ selected }: DetailsProps) {
                                 <td>Upload Time</td>
                                 <td>{selected.filter.upload_time
                                     ? new Date(selected.filter.upload_time).toLocaleString()
-                                    : "No Date Recorded"
+                                    : "Date not recorded"
                                 }</td>
                             </tr>
                             <tr>
