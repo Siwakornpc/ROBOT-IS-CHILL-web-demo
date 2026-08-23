@@ -845,7 +845,7 @@ hr {
     font-size: 14px;
     font-weight: 600;
     line-height: 20px;
-    padding: 4px 12px 0;
+    padding: 4px 16px 0;
     color: rgb(var(--md-color-on-surface-variant));
 }
 .menu-option {
