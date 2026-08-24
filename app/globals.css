@@ -2163,23 +2163,19 @@ tr:nth-child(odd) td {
         position: absolute;
         right: 0;
 
-        --sheet-offset: 100vh;
-
         transform: translateY(var(--sheet-offset));
 
-        transition: transform 0.2s ease;
+        transition: transform 0.2s ease, border-radius 0.2s ease;
         touch-action: none;
     }
 
     .search-details-panel.sb-right-fxb {
         border-radius: 20px 20px 0 0;
-        --sheet-offset: 80vh;
         box-shadow: var(--elevation-3);
-        transition: border-radius 0.2s ease;
     }
 
     .search-details-panel.sb-right-fxb.to-top {
-        border-radius: 0;
+        border-radius: 0px 0px 0 0;
     }
 
     @media only screen and (max-width: 700px) {

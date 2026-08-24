@@ -138,20 +138,28 @@ export function RightBarSearch({
 
     const [isFlexibleMenu, setIsFlexibleMenu] = useState(false);
 
-    const viewHeight = 80;
-
-    const [sheetOffset, setSheetOffset] = useState(viewHeight);
+    const [sheetOffset, setSheetOffset] = useState(0);
+    const [viewHeight, setViewHeight] = useState(0);
 
     const dragStartY = useRef(0);
-    const dragStartOffset = useRef(viewHeight);
+    const dragStartOffset = useRef(0);
     const isDragging = useRef(false);
 
     useEffect(() => {
+        const height = window.innerHeight - 56 - 80;
+
         function handleResize() {
             setIsFlexibleMenu(window.innerWidth < 790);
+
+            if (viewHeight < height) setViewHeight(height);
+            if (sheetOffset > height) {
+                setSheetOffset(height);
+            }
         }
 
         handleResize();
+        
+        setSheetOffset(height);
 
         window.addEventListener("resize", handleResize);
 
@@ -172,7 +180,7 @@ export function RightBarSearch({
         event.currentTarget.setPointerCapture(event.pointerId);
 
         if (panelRef.current) {
-            panelRef.current.style.transition = "none";
+            panelRef.current.style.transition = "border-radius 0.2s ease";
         }
     }
 
@@ -184,11 +192,8 @@ export function RightBarSearch({
         const deltaY =
             event.clientY - dragStartY.current;
 
-        const deltaVh =
-            (deltaY / window.innerHeight) * 100;
-
         const newOffset =
-            dragStartOffset.current + deltaVh;
+            dragStartOffset.current + deltaY;
 
         const clampedOffset = Math.min(
             viewHeight,
@@ -203,16 +208,34 @@ export function RightBarSearch({
 
         isDragging.current = false;
 
-        const midpoint = viewHeight / 2;
+        const upMidpoint = viewHeight * 0.75;
+        const downMidpoint = viewHeight * 0.25;
 
-        const target =
-            sheetOffset < midpoint
-                ? 0
-                : viewHeight;
+        const draggedUp =
+            sheetOffset < dragStartOffset.current;
+
+        const draggedDown =
+            sheetOffset > dragStartOffset.current;
+
+        let target;
+
+        if (draggedUp) {
+            target =
+                sheetOffset < upMidpoint
+                    ? 0
+                    : viewHeight;
+        } else if (draggedDown) {
+            target =
+                sheetOffset > downMidpoint
+                    ? viewHeight
+                    : 0;
+        } else {
+            target = dragStartOffset.current;
+        }
 
         if (panelRef.current) {
             panelRef.current.style.transition =
-                "transform 0.2s ease";
+                "transform 0.2s ease, border-radius 0.2s ease";
         }
 
         setSheetOffset(target);
@@ -231,7 +254,7 @@ export function RightBarSearch({
                     : ""
             }`}
             style={{
-                "--sheet-offset": `${sheetOffset}vh`,
+                "--sheet-offset": `${sheetOffset}px`,
             } as React.CSSProperties}
         >
             {isFlexibleMenu && (
