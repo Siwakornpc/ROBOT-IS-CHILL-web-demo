@@ -199,6 +199,79 @@ export function FilterPanel({
                     />
                 );
 
+            case "tiling":
+                const [textFieldSelected, setTextFieldSelected] = useState("option1");
+                const [recurSelected, setRecurSelected] = useState("new_file");
+                const [searchQuery, setSearchQuery] = useState("");
+
+                const tilingOptions = [
+                    { value: "option1", label: "Option 1" },
+                    { value: "option2", label: "Option 2" },
+                    { value: "option3", label: "Option 3" },
+                ];
+
+                const filteredTilingOptions = tilingOptions.filter((option) =>
+                    option.label.toLowerCase().includes(searchQuery.toLowerCase())
+                );
+
+                return (
+                    <MenuSelect
+                        value={textFieldSelected}
+                        options={filteredTilingOptions}
+                        onChange={(newValue) => {
+                            setTextFieldSelected(newValue);
+                            const matched = tilingOptions.find((opt) => opt.value === newValue);
+                            if (matched) setSearchQuery(matched.label);
+                        }}
+                        trigger={({ getInputProps }) => (
+                            <label className="text-field">
+                                <span className="text-field-label">Tiling Mode</span>
+                                <input
+                                    {...getInputProps({
+                                        type: "text",
+                                        value: searchQuery,
+                                        placeholder: " ",
+                                        required: true,
+                                        autoComplete: "off",
+                                        onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                                            setSearchQuery(e.target.value);
+                                        },
+                                    })}
+                                />
+                            </label>
+                        )}
+                        anchor="t"
+                    />
+                );
+            
+            case "mode":
+                const [select, setSelect] = useState<string | null>("Absolute");
+
+                function handleSelect(e: React.MouseEvent<HTMLButtonElement>) {
+                    const value = e.currentTarget.dataset.tab_action;
+            
+                    if (value !== undefined) {
+                        setSelect(value)
+                    }
+                }
+                return (
+                    <div className="cbtn-group small">
+                        <button
+                            type="button"
+                            className={`cbtn ${select === "absolute" ? "selected" : ""}`}
+                            data-tab_action="absolute"
+                            onClick={handleSelect}
+                        >Absolute</button>
+
+                        <button
+                            type="button"
+                            className={`cbtn ${select === "relative" ? "selected" : ""}`}
+                            data-tab_action="relative"
+                            onClick={handleSelect}
+                        >Relative</button>
+                    </div>
+                );
+
             default:
                 return (
                     <label className="text-field small has-placeholder">
