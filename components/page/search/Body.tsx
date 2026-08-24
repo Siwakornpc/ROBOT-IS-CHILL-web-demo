@@ -204,43 +204,65 @@ export function FilterPanel({
                 const [recurSelected, setRecurSelected] = useState("new_file");
                 const [searchQuery, setSearchQuery] = useState("");
 
-                const tilingOptions = [
-                    { value: "option1", label: "Option 1" },
-                    { value: "option2", label: "Option 2" },
-                    { value: "option3", label: "Option 3" },
-                ];
+                function TilingFilterInput({
+                    value,
+                    onChange,
+                }: {
+                    value: string;
+                    onChange: (val: string) => void;
+                }) {
+                    const [searchQuery, setSearchQuery] = useState("");
 
-                const filteredTilingOptions = tilingOptions.filter((option) =>
-                    option.label.toLowerCase().includes(searchQuery.toLowerCase())
-                );
+                    const tilingOptions = [
+                        { value: "none", label: "None" },
+                        { value: "static", label: "static" },
+                        { value: "animated", label: "Animated" },
+                        { value: "directional", label: "Directional" },
+                        { value: "animated_directional", label: " Animated Directional" },
+                        { value: "character", label: "Character" },
+                        { value: "tiling", label: "Tiling" },
+                        { value: "diagonal_tiling", label: "Diagonal Tiling" },
+                    ];
+
+                    const filteredTilingOptions = tilingOptions.filter((option) =>
+                        option.label.toLowerCase().includes(searchQuery.toLowerCase())
+                    );
+
+                    return (
+                        <MenuSelect
+                            value={value}
+                            options={filteredTilingOptions}
+                            onChange={(newValue) => {
+                                onChange(newValue);
+                                const matched = tilingOptions.find((opt) => opt.value === newValue);
+                                if (matched) setSearchQuery(matched.label);
+                            }}
+                            trigger={({ getInputProps }) => (
+                                <label className="text-field">
+                                    <span className="text-field-label">Tiling Mode</span>
+                                    <input
+                                        {...getInputProps({
+                                            type: "text",
+                                            value: searchQuery,
+                                            placeholder: " ",
+                                            required: true,
+                                            autoComplete: "off",
+                                            onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                                                setSearchQuery(e.target.value);
+                                            },
+                                        })}
+                                    />
+                                </label>
+                            )}
+                            anchor="t"
+                        />
+                    );
+                }
 
                 return (
-                    <MenuSelect
-                        value={textFieldSelected}
-                        options={filteredTilingOptions}
-                        onChange={(newValue) => {
-                            setTextFieldSelected(newValue);
-                            const matched = tilingOptions.find((opt) => opt.value === newValue);
-                            if (matched) setSearchQuery(matched.label);
-                        }}
-                        trigger={({ getInputProps }) => (
-                            <label className="text-field">
-                                <span className="text-field-label">Tiling Mode</span>
-                                <input
-                                    {...getInputProps({
-                                        type: "text",
-                                        value: searchQuery,
-                                        placeholder: " ",
-                                        required: true,
-                                        autoComplete: "off",
-                                        onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-                                            setSearchQuery(e.target.value);
-                                        },
-                                    })}
-                                />
-                            </label>
-                        )}
-                        anchor="t"
+                    <TilingFilterInput
+                        value={value}
+                        onChange={(newValue) => handleValueChange(type, index, newValue)}
                     />
                 );
             
@@ -254,22 +276,35 @@ export function FilterPanel({
                         setSelect(value)
                     }
                 }
-                return (
-                    <div className="cbtn-group small">
-                        <button
-                            type="button"
-                            className={`cbtn ${select === "absolute" ? "selected" : ""}`}
-                            data-tab_action="absolute"
-                            onClick={handleSelect}
-                        >Absolute</button>
 
-                        <button
-                            type="button"
-                            className={`cbtn ${select === "relative" ? "selected" : ""}`}
-                            data-tab_action="relative"
-                            onClick={handleSelect}
-                        >Relative</button>
-                    </div>
+                function ModeFilterInput({
+                    value,
+                    onChange,
+                }: {
+                    value: string;
+                    onChange: (val: string) => void;
+                }) {
+                    return (
+                        <div className="cbtn-group small">
+                            <button
+                                type="button"
+                                className={`cbtn ${value === "absolute" ? "selected" : ""}`}
+                                onClick={() => onChange("absolute")}
+                            >Absolute</button>
+                            <button
+                                type="button"
+                                className={`cbtn ${value === "relative" ? "selected" : ""}`}
+                                onClick={() => onChange("relative")}
+                            >Relative</button>
+                        </div>
+                    );
+                }                
+
+                return (
+                    <ModeFilterInput
+                        value={value}
+                        onChange={(newValue) => handleValueChange(type, index, newValue)}
+                    />
                 );
 
             default:
