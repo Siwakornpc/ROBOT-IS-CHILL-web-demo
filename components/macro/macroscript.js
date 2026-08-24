@@ -128,7 +128,7 @@ ${Object.keys(dbMacros).length} macros.`;
         output.textContent = "Stopped.";
     }
 
-    function macroRunner() {
+    function macroRunner(skipDelay = false) {
         if (delayTimer) {
             clearTimeout(delayTimer);
             delayTimer = null;
@@ -139,26 +139,23 @@ ${Object.keys(dbMacros).length} macros.`;
             running = false;
             run_button_icon.textContent = "play_arrow";
         }
-        
+
         run_button_icon.textContent = "stop";
 
-        output.textContent = "Waiting for pause...";
         output.classList.remove("complete");
         output.classList.remove("error");
 
-        delayTimer = setTimeout(async () => {
-            running = true; 
+        const run = async () => {
+            running = true;
 
             output.textContent = "Evaluating...";
 
             try {
                 const start = performance.now();
                 const result = await evaluate(`${editor.value}
-<--[add/[step]/-2]`);
+    <--[add/[step]/-2]`);
                 const executionTime = (performance.now() - start).toFixed(3);
 
-                // CHANGE
-                
                 const stepMatch = /<--(\d+)$/gm;
 
                 const steps = [...result.matchAll(stepMatch)]
@@ -178,8 +175,6 @@ ${Object.keys(dbMacros).length} macros.`;
                     }
                 }
 
-                // END CHANGE
-
                 output.classList.remove("error");
 
                 if (result.includes("[MACRO ERROR]")) {
@@ -195,9 +190,17 @@ ${Object.keys(dbMacros).length} macros.`;
             }
             finally {
                 running = false;
-                delayTimer = null; 
+                delayTimer = null;
             }
-        }, EXECUTION_DELAY_MS);
+        };
+
+        if (skipDelay) {
+            run();
+        } else {
+            output.textContent = "Waiting for pause...";
+
+            delayTimer = setTimeout(run, EXECUTION_DELAY_MS);
+        }
     }
 
     editorArea.addEventListener("input", async () => {
@@ -210,7 +213,7 @@ ${Object.keys(dbMacros).length} macros.`;
         if (running || delayTimer) {
             stopMacro();
         } else {
-            macroRunner();
+            macroRunner(true);
         }
     });
 
