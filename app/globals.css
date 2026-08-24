@@ -236,7 +236,7 @@ body {
     color: var(--label);
 }
 
-.icon, .ibtn {
+.icon {
     font-family: "Material Symbols Outlined";
     font-weight: normal;
     font-style: normal;
@@ -250,8 +250,9 @@ body {
     font-feature-settings: "liga";
     -webkit-font-feature-settings: "liga";
     -webkit-font-smoothing: antialiased;
+    transition: all 200ms cubic-bezier(0.2, 0.0, 0, 1.0);;
 }
-.icon.custom, .ibtn.custom {
+.icon.custom {
     font-family: ricwd-icons;
 }
 
@@ -364,6 +365,12 @@ hr {
 .btn > input[type="checkbox"]:checked ~ :nth-child(1 of .icon):has(~ .icon),
 .btn > input[type="checkbox"]:not(:checked) ~ :nth-child(2 of .icon) {
     display: none;
+}
+.btn > .icon {
+    font-variation-settings: 'FILL' 1;
+}
+.btn:has(input[type="checkbox"]:not(:checked)) > .icon {
+    font-variation-settings: 'FILL' 0;
 }
 
 .btn.xsmall {
@@ -1447,14 +1454,18 @@ hr {
 .status-separator {
     color: rgb(var(--md-color-outline));
 }
-.status-icon {
+.status-btn {
     padding: 0;
 }
-.status-icon:hover {
+.status-btn:hover {
     background: var(--surface-hovered);
 }
-.status-icon:active {
+.status-btn:active {
     background: var(--surface-pressed);
+}
+.status-btn > .icon {
+    font-size: 20px;
+    font-variation-settings: 'FILL' 1;
 }
 
 /*

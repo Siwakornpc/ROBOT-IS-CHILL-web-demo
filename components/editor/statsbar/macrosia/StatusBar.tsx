@@ -13,9 +13,9 @@ export function StatusBar() {
             </div>
             <button
                 id="run-button"
-                className="status status-icon"
+                className="status status-btn"
             >
-                <span className="icon">play_arrow</span>
+                <i className="icon">play_arrow</i>
             </button>
         </div>
     );
