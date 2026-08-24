@@ -63,6 +63,8 @@ export function FilterPanel({
             { value: "mode", label: "Mode" },
             { value: "date", label: "Upload Date" },
         ],
+        levels: [],
+        palettes: [],
         overlays: [],
     } as const;
 
