@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { type SearchMode } from "./SearchSelect";
 import stdlib_macros from "./stdlib_macros";
 import JSONbig from "json-bigint";
-import { applyOverflowFade } from "@/components/OverflowFade";
+import applyOverflowFade from "@/components/OverflowFade";
 
 const BATCH_SIZE = 32;
 

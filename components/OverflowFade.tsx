@@ -2,7 +2,7 @@ export type OverflowDirection = "x" | "y" | "xy";
 
 const activeElements = new WeakSet<HTMLElement>();
 
-export function applyOverflowFade(
+export default function applyOverflowFade(
     target: HTMLElement | HTMLElement[] | string | null,
     direction: OverflowDirection = "xy"
 ) {

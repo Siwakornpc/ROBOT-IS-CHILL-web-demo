@@ -5,6 +5,7 @@ import SearchSelect, { type SearchMode } from "./SearchSelect";
 import MenuSelect from "@/components/MenuSelect";
 import PaletteColorPicker from "@/components/PaletteColorPicker";
 import { useMenu } from "@/components/MenuContext";
+import applyOverflowFade from "@/components/OverflowFade";
 
 // --- FILTER INPUTS ---
 
@@ -233,6 +234,7 @@ export function FilterPanel({
                     />
                 );
             }
+
             case "builtin":
                 return (
                     <label className="checkbox">
@@ -303,6 +305,29 @@ export function FilterPanel({
                     />
                 );
 
+            case "date":
+                return (<>
+                    <MenuSelect
+                        id={`date-mode-select-${index}`}
+                        value={value}
+                        options={[
+                            { value: "before", label: "Before" },
+                            { value: "on", label: "On" },
+                            { value: "after", label: "After" },
+                        ]}
+                        onChange={(newValue) => handleValueChange(type, index, newValue)}
+                    />
+                    <label className="text-field small has-placeholder">
+                        <input
+                            type="text"
+                            placeholder="Filter..."
+                            value={value}
+                            onChange={(e) => handleValueChange(type, index, e.target.value)}
+                            autoComplete="off"
+                        />
+                    </label>
+                </>)
+
             default:
                 return (
                     <label className="text-field small has-placeholder">
@@ -353,9 +378,9 @@ export function FilterPanel({
 
             <hr />
 
-            {currentOptions.length > 0 && (
-                <div className="filter-section">
-                    <p className="text-label">Filters</p>
+            {currentOptions.length > 0 && (<>
+                <p className="text-label">Filters</p>
+                <div ref={(el) => applyOverflowFade(el, "y")} className="filter-section ascroll-y">
 
                     {activeItems.map(({ type, value, index }) => (
                         <div key={`${type}-${index}`} className="filter-item">
@@ -383,7 +408,7 @@ export function FilterPanel({
                         className="btn ibtn small btn-filled"
                     />
                 </div>
-            )}
+            </>)}
         </div>
     );
 }

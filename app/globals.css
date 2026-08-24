@@ -1721,6 +1721,7 @@ hr {
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
+    height: stretch;
 }
 
 .filter-item {

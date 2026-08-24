@@ -250,6 +250,7 @@ export default function MenuSelect<T extends string>({
     }, []);
 
     const selectedOption = options.find((item) => item.value === value) ?? options[0];
+    const selectedOptionLabel = options.find((item) => item.value === value) ?? options[1];
     const toggleMenu = () => setIsOpen((prev) => !prev);
     const openMenu = () => setIsOpen(true);
     const closeMenu = () => setIsOpen(false);
@@ -300,7 +301,7 @@ export default function MenuSelect<T extends string>({
                     className={`menu-trigger ${className} ${id || ""} ${isOpen ? "clicked" : ""}`}
                     onClick={toggleMenu}
                 >
-                    {triggerValue ? triggerValue(selectedOption) : selectedOption.label}
+                    {triggerValue ? <span>triggerValue(selectedOptionLabel)</span> : selectedOptionLabel.label}
                 </button>
             )}
 

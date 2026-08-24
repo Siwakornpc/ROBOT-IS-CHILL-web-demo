@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { type SelectedSearchResult } from "./SearchResultsGrid";
 import { updateMacroStaticHighlight } from "@/components/highlight/macro-highlight-static.js";
 import { DiscordMarkdown } from "@/components/DiscordMarkdown";
-import { applyOverflowFade } from "@/components/OverflowFade";
+import applyOverflowFade from "@/components/OverflowFade";
 import { mapTiling } from "@/components/page/search/image_tiling";
 import "@/types/string.extentions";
 
