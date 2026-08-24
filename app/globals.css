@@ -1702,7 +1702,7 @@ hr {
 */
 
 .filter-controls {
-    display: flex;
+    display: none;
     flex-direction: column;
     gap: 8px;
     width: 300px;
@@ -1711,6 +1711,9 @@ hr {
     border-start-end-radius: 16px;
     border-end-end-radius: 16px;
     background: rgb(var(--md-color-surface-container-low));
+}
+.filter-controls.opened {
+    display: flex;
 }
 
 .filter-section {
@@ -2277,11 +2280,13 @@ tr:nth-child(odd) td {
     }
 
     .filter-controls {
+        display: flex;
         position: absolute;
-        z-index: 84;
-        box-shadow: var(--elevation-0);
+        inset-inline-start: 56px;
         height: stretch;
+        box-shadow: var(--elevation-0);
         transform: translate(-300px);
+        z-index: 84;
     }
     [dir=rtl] .filter-controls {
         transform: translate(300px);
