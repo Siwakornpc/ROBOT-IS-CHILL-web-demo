@@ -235,39 +235,84 @@ export default function SearchResults({
     const filteredEntries = allEntries.filter(([name, data]) => {
         const normalizedName = String(name ?? "").trim();
 
-        if (!normalizedName) {
-            return false;
-        }
+        if (!normalizedName) return false;
 
         if (searchQuery) {
             if (useRegex) {
                 // Use regex search
                 try {
                     const regex = new RegExp(searchQuery, "i");
-                    if (!regex.test(normalizedName)) {
-                        return false;
-                    }
+                    if (!regex.test(normalizedName)) return false;
                 } catch {
                     return false;
                 }
             } else {
                 const query = searchQuery.toLowerCase();
-
-                if (!normalizedName.toLowerCase().includes(query)) {
-                    return false;
-                }
+                if (!normalizedName.toLowerCase().includes(query)) return false;
             }
         }
 
-        // apply filters
+        // apply active filters
         for (const [filterKey, filterValues] of Object.entries(filters)) {
-            if (filterValues.length === 0) continue;
+            // ignore empty values
+            const validValues = filterValues.filter((v) => v !== "" && v !== undefined && v !== null);
+            if (validValues.length === 0) continue;
 
-            if (filterKey === "creator" && isMacroRecord(data)) {
-                if (
-                    data.creator === undefined || !filterValues.includes(data.creator.toString())
-                ) {
-                    return false;
+            // --- TILE FILTERS ---
+            if (mode === "tiles" && isTileRecord(data)) {
+                if (filterKey === "color") {
+                    const [x, y] = data.active_color;
+                    if (!validValues.includes(`${x},${y}`)) return false;
+                }
+
+                if (filterKey === "iacolor") {
+                    const [x, y] = data.inactive_color;
+                    if (x === null || y === null) return false;
+                    if (!validValues.includes(`${x},${y}`)) return false;
+                }
+
+                if (filterKey === "tiling") {
+                    if (!validValues.includes(data.tiling)) return false;
+                }
+
+                if (filterKey === "tags") {
+                    const hasTag = validValues.some((val) =>
+                        data.tags.some((tag) => tag.toLowerCase().includes(val.toLowerCase()))
+                    );
+                    if (!hasTag) return false;
+                }
+
+                if (filterKey === "source") {
+                    const [sourceDir] = data.sprite;
+                    if (!validValues.some((val) => sourceDir.toLowerCase().includes(val.toLowerCase()))) {
+                        return false;
+                    }
+                }
+            }
+
+            // --- MACRO FILTERS ---
+            if (mode === "macros" && isMacroRecord(data)) {
+                if (filterKey === "creator") {
+                    if (!data.creator || !validValues.includes(data.creator.toString())) return false;
+                }
+
+                if (filterKey === "builtin") {
+                    const wantBuiltin = validValues.includes("true");
+                    if (Boolean(data.builtin) !== wantBuiltin) return false;
+                }
+
+                if (filterKey === "desc") {
+                    const matchesDesc = validValues.some((val) =>
+                        data.description.toLowerCase().includes(val.toLowerCase())
+                    );
+                    if (!matchesDesc) return false;
+                }
+            }
+
+            // --- FILTERIMAGE FILTERS ---
+            if (mode === "filters" && isFilterRecord(data)) {
+                if (filterKey === "creator") {
+                    if (!validValues.includes(data.author)) return false;
                 }
             }
         }
