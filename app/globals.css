@@ -1528,23 +1528,28 @@ hr {
     box-shadow: var(--elevation-0);
     border: 2px solid #ffffff00;
     outline: 2px dashed #ffffff00;
-
     border-radius: 0px;
-
     transition: 0.2s ease;
 }
 .color-btn:not(.selected):hover {
     border: 2px solid #ffffff80;
 }
 .color-btn.selected {
-    position: relative;
-
-    border-radius: 4px;
-    opacity: 1;
-    border: 2px solid black;
-    outline: 2px dashed white;
+    border-radius: 50%;
+    margin: -8px;
     box-shadow: var(--elevation-2);
+    opacity: 1;
     z-index: 1;
+}
+.color-grid:has(.color-btn.selected) .color-btn:not(.selected) {
+    opacity: .4;
+}
+.color-btn.selected::after {
+    content: "check";
+    display: block;
+    font-family: 'Material Symbols Outlined';
+    font-size: 32px;
+    line-height: 1;
 }
 
 /*
