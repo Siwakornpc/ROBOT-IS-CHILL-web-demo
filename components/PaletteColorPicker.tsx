@@ -78,8 +78,8 @@ export default function PaletteColorPicker({
                             style={{
                                 gridColumn: gridX,
                                 gridRow: gridY,
-                                background: item.color,
-                            }}
+                                "color": item.color,
+                            } as React.CSSProperties}
                             title={
                                 item.label
                                     ? `${item.label} [${item.value[0]}, ${item.value[1]}]`

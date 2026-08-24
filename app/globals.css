@@ -1525,6 +1525,7 @@ hr {
     width: 100%;
     aspect-ratio: 1/1;
     cursor: pointer;
+    background: var(--color);
     box-shadow: var(--elevation-0);
     border: 2px solid #ffffff00;
     outline: 2px dashed #ffffff00;
