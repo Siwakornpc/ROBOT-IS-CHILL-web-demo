@@ -137,16 +137,16 @@ export function RightBarSearch({
     const panelRef = useRef<HTMLDivElement>(null);
 
     const [isFlexibleMenu, setIsFlexibleMenu] = useState(false);
+    const height = window.innerHeight - 56 - 80;
 
-    const [sheetOffset, setSheetOffset] = useState(0);
-    const [viewHeight, setViewHeight] = useState(0);
+    const [sheetOffset, setSheetOffset] = useState(height);
+    const [viewHeight, setViewHeight] = useState(height);
 
     const dragStartY = useRef(0);
     const dragStartOffset = useRef(0);
     const isDragging = useRef(false);
 
     useEffect(() => {
-        const height = window.innerHeight - 56 - 80;
 
         function handleResize() {
             setIsFlexibleMenu(window.innerWidth < 790);
