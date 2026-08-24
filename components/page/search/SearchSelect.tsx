@@ -20,6 +20,14 @@ const options = [
         label: "Filters",
     },
     {
+        value: "levels",
+        label: "Levels",
+    },
+    {
+        value: "palettes",
+        label: "Palettes",
+    },
+    {
         value: "overlays",
         label: "Overlays",
     },
