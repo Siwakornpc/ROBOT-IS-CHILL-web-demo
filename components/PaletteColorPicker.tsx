@@ -57,10 +57,8 @@ export default function PaletteColorPicker({
         <div className="palette-color-picker-container">
             <div
                 className="color-grid"
-                style={{
-                    gridTemplateColumns: `repeat(${maxColumn}, 24px)`,
-                    gridTemplateRows: `repeat(${maxRow}, 24px)`,
-                }}
+                data-columns={maxColumn}
+                data-rows={maxRow}
             >
                 {palette.map((item) => {
                     const isSelected =

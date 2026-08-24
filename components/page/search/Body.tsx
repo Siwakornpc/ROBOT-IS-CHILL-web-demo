@@ -218,17 +218,17 @@ export function FilterPanel({
 
                     {activeItems.map(({ type, value, index }) => (
                         <div key={`${type}-${index}`} className="filter-item">
-                            <div className="filter-item-controls">
+                            <div className="filter-item-title">
                                 <span className="filter-title">{getFilterTitle(type)}</span>
-                                {renderFilterInput(type, value, index)}
+                                <button
+                                    type="button"
+                                    className="btn ibtn xsmall btn-text"
+                                    onClick={() => handleRemoveFilter(type, index)}
+                                >
+                                    <i className="icon">remove</i>
+                                </button>
                             </div>
-                            <button
-                                type="button"
-                                className="btn ibtn xsmall btn-text"
-                                onClick={() => handleRemoveFilter(type, index)}
-                            >
-                                <i className="icon">remove</i>
-                            </button>
+                            {renderFilterInput(type, value, index)}
                         </div>
                     ))}
                     
