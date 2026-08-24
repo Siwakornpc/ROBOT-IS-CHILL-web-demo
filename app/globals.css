@@ -2154,6 +2154,7 @@ tr:nth-child(odd) td {
 @media only screen and (max-width: 790px) {
     .search-details-panel {
         width: calc(100vw - 56px) !important;
+        min-width: 0 !important;
         position: absolute;
         right: 0;
 
