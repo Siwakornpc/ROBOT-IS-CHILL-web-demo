@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState, useRef } from "react";
 import { useMenu } from "@/components/MenuContext";
 
 function navigateWithCode(
@@ -129,9 +129,125 @@ export function RightBar() {
     );
 }
 
-export function RightBarSearch({ children }: { children?: ReactNode }) {
+export function RightBarSearch({
+    children,
+}: {
+    children?: ReactNode;
+}) {
+    const panelRef = useRef<HTMLDivElement>(null);
+
+    const [isFlexibleMenu, setIsFlexibleMenu] = useState(false);
+
+    const viewHeight = 80;
+
+    const [sheetOffset, setSheetOffset] = useState(viewHeight);
+
+    const dragStartY = useRef(0);
+    const dragStartOffset = useRef(viewHeight);
+    const isDragging = useRef(false);
+
+    useEffect(() => {
+        function handleResize() {
+            setIsFlexibleMenu(window.innerWidth < 790);
+        }
+
+        handleResize();
+
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
+
+    function handlePointerDown(
+        event: React.PointerEvent<HTMLDivElement>
+    ) {
+        if (!isFlexibleMenu) return;
+
+        dragStartY.current = event.clientY;
+        dragStartOffset.current = sheetOffset;
+        isDragging.current = true;
+
+        event.currentTarget.setPointerCapture(event.pointerId);
+
+        if (panelRef.current) {
+            panelRef.current.style.transition = "none";
+        }
+    }
+
+    function handlePointerMove(
+        event: React.PointerEvent<HTMLDivElement>
+    ) {
+        if (!isDragging.current) return;
+
+        const deltaY =
+            event.clientY - dragStartY.current;
+
+        const deltaVh =
+            (deltaY / window.innerHeight) * 100;
+
+        const newOffset =
+            dragStartOffset.current + deltaVh;
+
+        const clampedOffset = Math.min(
+            viewHeight,
+            Math.max(0, newOffset)
+        );
+
+        setSheetOffset(clampedOffset);
+    }
+
+    function handlePointerUp() {
+        if (!isDragging.current) return;
+
+        isDragging.current = false;
+
+        const midpoint = viewHeight / 2;
+
+        const target =
+            sheetOffset < midpoint
+                ? 0
+                : viewHeight;
+
+        if (panelRef.current) {
+            panelRef.current.style.transition =
+                "transform 0.2s ease";
+        }
+
+        setSheetOffset(target);
+    }
+
     return (
-        <div className="sb-right search-details-panel ascroll-y">
+        <div
+            ref={panelRef}
+            className={`sb-right ${
+                isFlexibleMenu
+                    ? "sb-right-fxb"
+                    : ""
+            } search-details-panel ascroll-y ${
+                sheetOffset === 0
+                    ? "to-top"
+                    : ""
+            }`}
+            style={{
+                "--sheet-offset": `${sheetOffset}vh`,
+            } as React.CSSProperties}
+        >
+            {isFlexibleMenu && (
+                <div
+                    className="search-details-drag-handle"
+                    onPointerDown={handlePointerDown}
+                    onPointerMove={handlePointerMove}
+                    onPointerUp={handlePointerUp}
+                    onPointerCancel={handlePointerUp}
+                >
+                    <div className="drag-handle-hitbox">
+                        <div className="drag-handle" />
+                    </div>
+                </div>
+            )}
+
             {children}
         </div>
     );
