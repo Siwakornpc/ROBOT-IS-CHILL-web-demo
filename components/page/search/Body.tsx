@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 import SearchResults from "./SearchResultsGrid";
 import { type SelectedSearchResult } from "./SearchResultsGrid";
 import SearchSelect, { type SearchMode } from "./SearchSelect";
@@ -116,12 +116,14 @@ export function FilterPanel({
     filters,
     onFiltersChange,
     onToggleFilter,
+    showMenu,
 }: {
     mode: SearchMode;
     onModeChange: (mode: SearchMode) => void;
     filters: Record<string, string[]>;
     onFiltersChange: (filters: Record<string, string[]>) => void;
     onToggleFilter: () => void;
+    showMenu: boolean;
 }) {
     const [sourceOptions, setSourceOptions] = useState<{ value: string; label: string }[]>([]);
     const [sourceSearchQuery, setSourceSearchQuery] = useState("");
@@ -336,7 +338,10 @@ export function FilterPanel({
     }, []);
 
     return (
-        <div className={`filter-controls ${isFlexibleMenu ? "fc-fxb" : ""}`}>
+        <div
+            className={`filter-controls ${isFlexibleMenu ? "fc-fxb" : ""}`}
+            style={{transform: "translateX(-300px)"}}
+        >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
                 <button
                     type="button"

@@ -2209,7 +2209,7 @@ tr:nth-child(odd) td {
     }
 
     .sb-left-fxb.opened {
-        transform: translateX(0px);
+        transform: translateX(0);
     }
 
     .nav-btn {

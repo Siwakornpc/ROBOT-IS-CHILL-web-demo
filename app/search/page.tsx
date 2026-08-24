@@ -96,20 +96,19 @@ export default function Home() {
     return (
         <main className="align-layout">
             <LeftBar />
-            {showMenu && (
-                <FilterPanel
-                    mode={mode}
-                    onModeChange={handleModeChange}
-                    filters={modeFilters[mode] ?? {}}
-                    onFiltersChange={(updatedFilters) => {
-                        setModeFilters((prev) => ({
-                            ...prev,
-                            [mode]: updatedFilters,
-                        }));
-                    }}
-                    onToggleFilter={() => setShowMenu((prev) => !prev)}
-                />
-            )}
+            <FilterPanel
+                mode={mode}
+                onModeChange={handleModeChange}
+                filters={modeFilters[mode] ?? {}}
+                onFiltersChange={(updatedFilters) => {
+                    setModeFilters((prev) => ({
+                        ...prev,
+                        [mode]: updatedFilters,
+                    }));
+                }}
+                onToggleFilter={() => setShowMenu((prev) => !prev)}
+                showMenu={showMenu}
+            />
             <Body
                 mode={mode}
                 onSelect={handleSelect}
