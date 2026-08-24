@@ -124,39 +124,184 @@ ul {
     discord markdown
 */
 
-.discord-inline-code {
-    word-wrap: break-word;
-    white-space: break-spaces;
+.discord-markdown {
+    line-height: 1.375;
     overflow-wrap: anywhere;
+}
 
+/*
+ * Every ordinary Discord message line is rendered as its own <p>.
+ * Inline Markdown must stay inline so <strong>, spoilers, mentions, etc.
+ * can safely live inside that paragraph.
+ */
+.discord-markdown p {
+    margin: 0 0 0.125rem;
+}
+
+.discord-markdown .discord-text-part,
+.discord-markdown span,
+.discord-markdown a,
+.discord-markdown strong,
+.discord-markdown em,
+.discord-markdown u,
+.discord-markdown s,
+.discord-markdown code,
+.discord-markdown time {
+    display: inline;
+}
+
+.discord-markdown ul,
+.discord-markdown ol {
+    margin: 0.25rem 0 0.5rem;
+    padding-left: 1.5rem;
+}
+
+.discord-markdown li {
+    margin: 0.125rem 0;
+}
+
+.discord-markdown li > p {
+    margin: 0;
+}
+
+/* Nested bullet styles */
+.discord-markdown ul {
+    list-style-type: disc;
+}
+
+.discord-markdown ul ul {
+    list-style-type: circle;
+}
+
+.discord-markdown ul ul ul {
+    list-style-type: square;
+}
+
+.discord-markdown .discord-spoiler {
+    display: inline;
+    width: auto;
+    background: #202225;
+    color: transparent;
+    border-radius: 3px;
+    cursor: pointer;
+    padding: 0 2px;
+    transition:
+        background-color 0.15s,
+        color 0.15s;
+}
+
+.discord-markdown .discord-spoiler:hover,
+.discord-markdown .discord-spoiler:focus,
+.discord-markdown .discord-spoiler:active {
+    background: #4f545c;
+    color: inherit;
+}
+
+.discord-markdown .discord-subtext {
+    color: #949ba4;
+    font-size: 0.875rem;
+    margin: 0.225rem 0;
+}
+
+.discord-markdown .discord-mention {
+    display: inline;
+    width: auto;
+    padding: 0 2px;
+    border-radius: 3px;
+    background: rgba(88, 101, 242, 0.15);
+    color: #c9cdfb;
+}
+
+.discord-markdown .discord-inline-code {
+    display: inline;
+    width: auto;
+    padding: 0.1em 0.3em;
+    background: rgb(var(--md-color-surface-container));
     border: 1px solid rgb(var(--md-color-outline-variant));
-    padding: 1px 6px;
     border-radius: 4px;
-    margin: 0 2px;
 
+    font-family: var(--font-family-code);
     font-size: var(--font-size-code);
-
-    background: rgb(var(--md-color-surface-container));
 }
-.discord-code-block {
-    display: inline-block;
-    word-wrap: break-word;
-    white-space: break-spaces;
-    overflow-wrap: anywhere;
 
-    outline: 1px solid rgb(var(--md-color-outline-variant));
-    padding: 8px 12px;
+.discord-markdown .discord-code-block {
+    display: block;
+    width: auto;
+    margin: 0.5rem 0;
+    padding: 0.75rem;
+    background: rgb(var(--md-color-surface-container));
+    border: 1px solid rgb(var(--md-color-outline-variant));
+    border-radius: 8px;
+}
+
+.discord-markdown .discord-code-block code {
+    display: inline;
+    font-family: var(--font-family-code);
+    font-size: var(--font-size-code);
+    white-space: pre-wrap;
+}
+
+.discord-markdown .discord-custom-emoji {
+    display: inline;
+    width: 1.375em;
+    height: 1.375em;
+    object-fit: contain;
+    vertical-align: -0.3em;
+}
+
+.discord-markdown .discord-timestamp {
+    display: inline;
+    width: auto;
+    color: #949ba4;
+    background: rgba(79, 84, 92, 0.25);
+    border-radius: 3px;
+    padding: 0 2px;
+}
+
+.discord-markdown .discord-blockquote {
+    display: block;
+    width: auto;
+    margin: 0.25rem 0;
+    padding-left: 0.75rem;
+    border-left: 4px solid #4e5058;
+}
+
+.discord-markdown .discord-table-wrapper {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.discord-markdown .discord-table {
+    border-collapse: collapse;
+    margin: 0.5rem 0;
+}
+
+.discord-markdown .discord-table th,
+.discord-markdown .discord-table td {
+    padding: 0.4rem 0.6rem;
+    border: 1px solid #4e5058;
+}
+
+.discord-markdown .discord-task-list-item {
+    list-style: none;
+    margin-left: -1.25rem;
+}
+
+.discord-markdown .discord-task-list-item > input {
+    margin-right: 0.4rem;
+}
+
+.discord-markdown .discord-image {
+    display: block;
+    max-width: 100%;
+    max-height: 500px;
     border-radius: 4px;
-    margin: 4px;
-
-    font-size: var(--font-size-code);
-
-    background: rgb(var(--md-color-surface-container));
 }
-.discord-subtext {
-    color: rgb(var(--md-color-outline));
-    font-size: 0.825em;
-    margin: 0.6em 0 !important;
+
+.discord-markdown .discord-footnote {
+    margin-top: 0.5rem;
+    color: #949ba4;
+    font-size: 0.875rem;
 }
 
 /*
