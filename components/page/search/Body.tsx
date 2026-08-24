@@ -75,6 +75,7 @@ function ModeFilterInput({
                 className={`cbtn ${isAbsolute ? "selected" : ""}`}
                 onClick={() => onChange("true")}
             >Absolute</button>
+            
             <button
                 type="button"
                 className={`cbtn ${!isAbsolute ? "selected" : ""}`}

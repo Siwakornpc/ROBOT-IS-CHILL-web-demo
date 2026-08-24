@@ -314,6 +314,10 @@ export default function SearchResults({
                 if (filterKey === "creator") {
                     if (!validValues.includes(data.author)) return false;
                 }
+
+                if (filterKey === "mode") {
+                    if (data.absolute !== (filters.mode[0] === "true")) return false;
+                }
             }
         }
 
