@@ -8,16 +8,24 @@ import { useMenu } from "@/components/MenuContext";
 
 // cache sprite sources
 const sourcesPromise: Promise<{ value: string; label: string }[]> = fetch(
-    "https://api.github.com/repos/ROBOT-IS-CHILL/robot-is-chill/contents/data/sprites"
+    "https://ric-api.sno.mba/tiles.json"
 )
-    .then((res) => (res.ok ? res.json() : []))
-    .then((data: Array<{ name: string; type: string }>) =>
-        data
-            .filter((item) => item.type === "dir")
-            .map((item) => ({ value: item.name, label: item.name }))
-    )
+    .then((res) => (res.ok ? res.json() : {}))
+    .then((data: Record<string, { sprite?: [string, string] }>) => {
+        const uniqueSources = new Set<string>();
+
+        Object.values(data).forEach((tile) => {
+            if (tile.sprite && tile.sprite[0]) {
+                uniqueSources.add(tile.sprite[0]);
+            }
+        });
+
+        return Array.from(uniqueSources)
+            .sort()
+            .map((source) => ({ value: source, label: source }));
+    })
     .catch((err) => {
-        console.error("Failed to load source folders:", err);
+        console.error("Failed to load tile sources from API:", err);
         return [];
     });
 
