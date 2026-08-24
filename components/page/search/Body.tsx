@@ -338,10 +338,7 @@ export function FilterPanel({
     }, []);
 
     return (
-        <div
-            className={`filter-controls ${isFlexibleMenu ? "fc-fxb" : ""}`}
-            style={{transform: "translateX(-300px)"}}
-        >
+        <div className={`filter-controls ${isFlexibleMenu ? "fc-fxb" : ""} ${showMenu ? "opened" : ""}`}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
                 <button
                     type="button"
