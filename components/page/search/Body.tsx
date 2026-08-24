@@ -3,6 +3,7 @@ import SearchResults from "./SearchResultsGrid";
 import { type SelectedSearchResult } from "./SearchResultsGrid";
 import SearchSelect, { type SearchMode } from "./SearchSelect";
 import MenuSelect from "@/components/MenuSelect";
+import PaletteColorPicker from "@/components/PaletteColorPicker";
 
 // cache sprite sources
 const sourcesPromise: Promise<{ value: string; label: string }[]> = fetch(
@@ -115,6 +116,24 @@ export function FilterPanel({
 
     const renderFilterInput = (type: string, value: string, index: number) => {
         switch (type) {
+            case "color":
+            case "iacolor": {
+                const coords = value ? value.split(",").map(Number) : null;
+                const selectedColor: [number, number] | null = 
+                    coords && coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])
+                        ? [coords[0], coords[1]]
+                        : null;
+
+                return (
+                    <PaletteColorPicker
+                        selectedColor={selectedColor}
+                        onChange={(newColor) => {
+                            const formattedValue = newColor ? `${newColor[0]},${newColor[1]}` : "";
+                            handleValueChange(type, index, formattedValue);
+                        }}
+                    />
+                );
+            }
             case "builtin":
                 return (
                     <label className="checkbox">

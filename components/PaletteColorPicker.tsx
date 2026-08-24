@@ -42,7 +42,7 @@ export const DEFAULT_PALETTE: SwatchItem[] = [
     { color: "#0b0b0e", value: [6, 4] },
 ];
 
-export function PaletteColorPicker({
+export default function PaletteColorPicker({
     selectedColor,
     onChange,
     palette = DEFAULT_PALETTE,
@@ -51,9 +51,17 @@ export function PaletteColorPicker({
     onChange: (color: [number, number] | null) => void;
     palette?: SwatchItem[];
 }) {
+    const maxColumn = palette.length > 0 ? Math.max(...palette.map((i) => i.value[0])) + 1 : 1;
+    const maxRow = palette.length > 0 ? Math.max(...palette.map((i) => i.value[1])) + 1 : 1;
     return (
         <div className="palette-color-picker-container">
-            <div className="color-grid">
+            <div
+                className="color-grid"
+                style={{
+                    gridTemplateColumns: `repeat(${maxColumn}, 24px)`,
+                    gridTemplateRows: `repeat(${maxRow}, 24px)`,
+                }}
+            >
                 {palette.map((item) => {
                     const isSelected =
                         selectedColor?.[0] === item.value[0] &&
@@ -68,9 +76,9 @@ export function PaletteColorPicker({
                             type="button"
                             className={`color-btn ${isSelected ? "selected" : ""}`}
                             style={{
-                                backgroundColor: item.color,
                                 gridColumn: gridX,
                                 gridRow: gridY,
+                                background: item.color,
                             }}
                             title={
                                 item.label

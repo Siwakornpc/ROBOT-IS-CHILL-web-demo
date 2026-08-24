@@ -1458,6 +1458,20 @@ hr {
 }
 
 /*
+    palette color picker thing
+*/
+
+.color-grid {
+    display: grid;
+}
+
+.color-btn {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+/*
     search elements
 */
 
