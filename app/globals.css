@@ -353,30 +353,6 @@ body {
     caret-color: rgb(var(--md-color-primary));
 }
 
-.main-body {
-    display: flex;
-    flex-direction: column;
-    height: calc(100% - 24px);
-    gap: 8px;
-    margin: 12px;
-
-    position: relative;
-}
-
-.align-layout {
-    flex: 100%;
-    display: grid;
-    grid-template-areas: 'nav main details';
-    grid-auto-columns: auto 1fr auto;
-}
-.align-layout:has(.nav-btn.selected[aria-label="Search"]) {
-    grid-template-areas: 'nav filters main details';
-    grid-auto-columns: auto auto 1fr auto;
-}
-.align-layout > main {
-    grid-area: main;
-}
-
 .text-label {
     color: var(--label);
 }
@@ -1238,6 +1214,34 @@ hr {
 }
 
 /*
+    main layout
+*/
+
+.main-body {
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 24px);
+    gap: 8px;
+    margin: 12px;
+
+    position: relative;
+}
+
+.align-layout {
+    flex: 100%;
+    display: grid;
+    grid-template-areas: 'nav main details';
+    grid-auto-columns: auto 1fr auto;
+}
+.align-layout:has(.nav-btn.selected[aria-label="Search"]) {
+    grid-template-areas: 'nav filters main details';
+    grid-auto-columns: auto auto 1fr auto;
+}
+.align-layout > main {
+    grid-area: main;
+}
+
+/*
     topbar
 */
 
@@ -1329,7 +1333,6 @@ hr {
     z-index: 2;
 }
 
-
 .nav-btn-label {
     display: none;
     text-align: center;
@@ -1337,27 +1340,23 @@ hr {
 }
 
 .head-btn {
-    position: relative;
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
+    position: relative;
     width: 48px;
     height: 48px;
     border-radius: 28px;
-    color: rgb(var(--md-color-on-surface-variant));
-    background-color: rgb(255, 255, 255, 0.1);
+    color: rgb(var(--md-color-on-secondary-container));
+    background: rgb(var(--md-color-on-secondary-container), .08);
 
     cursor: pointer;
 }
 .head-btn:hover {
-    background-color: rgb(255, 255, 255, 0.125);
+    background: rgb(var(--md-color-on-secondary-container), .1);
 }
 .head-btn:active {
-    background-color: rgb(255, 255, 255, 0.2);
-}
-
-.head-btn {
-    display: none;
+    background: rgb(var(--md-color-on-secondary-container), .16);
 }
 
 /*
@@ -2188,52 +2187,12 @@ tr:nth-child(odd) td {
 }
 
 /*
-    tabs
-*/
-
-.tabs-bar {
-    width: -webkit-fill-available;
-    width: -moz-available;
-    width: stretch;
-
-    display: flex;
-
-    margin: 12px 0;
-    border-radius: 8px;
-    background: rgb(var(--md-color-surface-container-low));
-    outline: 1px solid var(--editor-outline);
-    overflow: hidden;
-}
-
-.tab-btn {
-    padding: 6px 12px;
-    width: 100%;
-    text-align: center;
-}
-.tab-btn:not(.selected):hover {
-    background: var(--surface-hovered);
-}
-.tab-btn:not(.selected):active {
-    background: var(--surface-pressed);
-}
-.tab-btn.selected {
-    background: rgb(var(--md-color-secondary-container));
-}
-
-/*
 *
 *       FLEXIBILITY
 *
 */
 
 @media only screen and (max-width: 700px) {
-    /* .align-layout {
-        grid-template-areas: 'main details'
-                             'nav nav';
-        grid-auto-columns: 1fr auto;
-        grid-auto-rows: 1fr auto;
-    } */
-    
     .head-btn {
         display: flex;
     }
@@ -2274,14 +2233,14 @@ tr:nth-child(odd) td {
         justify-content: flex-start;
         padding: 0 12px;
     }
+    .nav-btn-label {
+        display: inline;
+    }
 
     .has-tooltip::after {
         display: none;
     }
 
-    .nav-btn-label {
-        display: inline;
-    }
 }
 
 .screen-blur {
@@ -2295,18 +2254,17 @@ tr:nth-child(odd) td {
     transition: background 0.2s ease, backdrop-filter 0.2s ease;
     z-index: 90;
 }
-
 .screen-blur.true {
     backdrop-filter: blur(5px);
     background: #00000080;
     pointer-events: auto;
 }
 
-@media only screen and (max-width: 1100px) {
+@media only screen and (max-width: 1096px) {
 
 }
 
-@media only screen and (max-width: 790px) {
+@media only screen and (max-width: 1096px) {
     .search-details-panel {
         width: calc(100vw - 56px) !important;
         min-width: 0 !important;
@@ -2318,12 +2276,10 @@ tr:nth-child(odd) td {
         transition: transform 0.2s ease, border-radius 0.2s ease;
         touch-action: none;
     }
-
     .search-details-panel.sb-right-fxb {
         border-radius: 20px 20px 0 0;
         box-shadow: var(--elevation-3);
     }
-
     .search-details-panel.sb-right-fxb.to-top {
         border-radius: 0px 0px 0 0;
     }

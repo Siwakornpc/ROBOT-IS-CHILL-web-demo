@@ -15,18 +15,14 @@ function navigateWithCode(
         event.ctrlKey ||
         event.shiftKey ||
         event.altKey
-    ) {
-        return;
-    }
+    ) {return}
 
     event.preventDefault();
 
     const code = new URLSearchParams(window.location.search).get("code");
     const target = new URL(path, window.location.href);
 
-    if (code !== null) {
-        target.searchParams.set("code", code);
-    }
+    if (code !== null) target.searchParams.set("code", code);
 
     window.location.href = target.toString();
 }
@@ -54,29 +50,10 @@ export function LeftBar() {
     return (
         <>
             {isFlexibleMenu
-                ?
-                <div className={`screen-blur ${
-                    isMenuOpen
-                        ? "true"
-                        : ""
-                }`}
-                    onClick={closeMenu}
-                >
-                
-                </div>
+                ? <div className={`screen-blur ${isMenuOpen ? "true" : ""}`} onClick={closeMenu}></div>
                 : ""
             }
-            <div
-                className={`sb-left ${
-                    isFlexibleMenu
-                        ? "sb-left-fxb"
-                        : ""
-                } ${
-                    isMenuOpen
-                        ? "opened"
-                        : ""      
-                }`}
-            >
+            <div className={`sb-left ${isFlexibleMenu ? "sb-left-fxb" : ""} ${isMenuOpen ? "opened" : ""}`}>
                 <Link
                     href="../macrosia"
                     className="nav-btn has-tooltip"
@@ -123,17 +100,11 @@ export function LeftBar() {
 
 export function RightBar() {
     return (
-        <div className="sb-right">
-            
-        </div>
+        <div className="sb-right"></div>
     );
 }
 
-export function RightBarSearch({
-    children,
-}: {
-    children?: ReactNode;
-}) {
+export function RightBarSearch({children}: {children?: ReactNode}) {
     const panelRef = useRef<HTMLDivElement>(null);
 
     const [isFlexibleMenu, setIsFlexibleMenu] = useState(false);
@@ -150,16 +121,13 @@ export function RightBarSearch({
 
     useEffect(() => {
         function handleResize() {
-            setIsFlexibleMenu(window.innerWidth <= 790);
+            setIsFlexibleMenu(window.innerWidth <= 1096);
 
             if (viewHeight < height) setViewHeight(height);
-            if (sheetOffset > height) {
-                setSheetOffset(height);
-            }
+            if (sheetOffset > height) setSheetOffset(height);
         }
 
         handleResize();
-
         window.addEventListener("resize", handleResize);
 
         return () => {
@@ -167,9 +135,7 @@ export function RightBarSearch({
         };
     }, []);
 
-    function handlePointerDown(
-        event: React.PointerEvent<HTMLDivElement>
-    ) {
+    function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
         if (!isFlexibleMenu) return;
 
         dragStartY.current = event.clientY;
@@ -178,26 +144,15 @@ export function RightBarSearch({
 
         event.currentTarget.setPointerCapture(event.pointerId);
 
-        if (panelRef.current) {
-            panelRef.current.style.transition = "border-radius 0.2s ease";
-        }
+        if (panelRef.current) panelRef.current.style.transition = "border-radius 0.2s ease";
     }
 
-    function handlePointerMove(
-        event: React.PointerEvent<HTMLDivElement>
-    ) {
+    function handlePointerMove(event: React.PointerEvent<HTMLDivElement>) {
         if (!isDragging.current) return;
 
-        const deltaY =
-            event.clientY - dragStartY.current;
-
-        const newOffset =
-            dragStartOffset.current + deltaY;
-
-        const clampedOffset = Math.min(
-            viewHeight,
-            Math.max(0, newOffset)
-        );
+        const deltaY = event.clientY - dragStartY.current;
+        const newOffset = dragStartOffset.current + deltaY;
+        const clampedOffset = Math.min(viewHeight, Math.max(0, newOffset));
 
         setSheetOffset(clampedOffset);
     }
@@ -210,32 +165,17 @@ export function RightBarSearch({
         const upMidpoint = viewHeight * 0.75;
         const downMidpoint = viewHeight * 0.25;
 
-        const draggedUp =
-            sheetOffset < dragStartOffset.current;
+        const draggedUp = sheetOffset < dragStartOffset.current;
 
-        const draggedDown =
-            sheetOffset > dragStartOffset.current;
+        const draggedDown = sheetOffset > dragStartOffset.current;
 
         let target;
 
-        if (draggedUp) {
-            target =
-                sheetOffset < upMidpoint
-                    ? 0
-                    : viewHeight;
-        } else if (draggedDown) {
-            target =
-                sheetOffset > downMidpoint
-                    ? viewHeight
-                    : 0;
-        } else {
-            target = dragStartOffset.current;
-        }
+        if (draggedUp) target = sheetOffset < upMidpoint ? 0 : viewHeight;
+        else if (draggedDown) target = sheetOffset > downMidpoint ? viewHeight : 0;
+        else target = dragStartOffset.current;
 
-        if (panelRef.current) {
-            panelRef.current.style.transition =
-                "transform 0.2s ease, border-radius 0.2s ease";
-        }
+        if (panelRef.current) panelRef.current.style.transition = "transform 0.2s ease, border-radius 0.2s ease";
 
         setSheetOffset(target);
     }
@@ -243,18 +183,8 @@ export function RightBarSearch({
     return (
         <div
             ref={panelRef}
-            className={`sb-right ${
-                isFlexibleMenu
-                    ? "sb-right-fxb"
-                    : ""
-            } search-details-panel ascroll-y ${
-                sheetOffset === 0
-                    ? "to-top"
-                    : ""
-            }`}
-            style={{
-                "--sheet-offset": `${sheetOffset}px`,
-            } as React.CSSProperties}
+            className={`sb-right ${isFlexibleMenu ? "sb-right-fxb" : ""} search-details-panel ascroll-y ${sheetOffset === 0 ? "to-top" : ""}`}
+            style={{"--sheet-offset": `${sheetOffset}px`} as React.CSSProperties}
         >
             {isFlexibleMenu && (
                 <div

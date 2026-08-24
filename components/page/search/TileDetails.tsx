@@ -76,9 +76,7 @@ export function Details({ selected }: DetailsProps) {
         const currentIndex = indexMap[tilingFrame];
         return (
             <>
-                <p className="text-label search-details-name">
-                    {selected.name}
-                </p>
+                <p className="text-label search-details-name">{selected.name}</p>
 
                 {selected.tile.tiling !== "none"
                     ? <>
