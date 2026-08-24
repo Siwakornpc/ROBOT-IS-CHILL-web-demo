@@ -172,9 +172,14 @@ export function FilterPanel({
 
     const handleAddFilter = (filterType: string) => {
         const existingList = filters[filterType] ?? [];
+        const defaultValue =
+            filterType === "mode" ? "true" :
+            filterType === "builtin" ? "true" :
+            "";
+        
         onFiltersChange({
             ...filters,
-            [filterType]: [...existingList, ""],
+            [filterType]: [...existingList, defaultValue],
         });
     };
 
