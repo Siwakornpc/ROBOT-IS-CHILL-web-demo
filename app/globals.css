@@ -1175,6 +1175,7 @@ hr {
 .nav-btn::after {
     content: attr(aria-label, "ERROR");
     position: absolute;
+    z-index: 2;
 }
 
 
@@ -1489,7 +1490,7 @@ hr {
     color: rgb(var(--md-color-outline));
 }
 .status-btn {
-    padding: 0;
+    padding: 0 1px;
 }
 .status-btn:hover {
     background: var(--surface-hovered);
