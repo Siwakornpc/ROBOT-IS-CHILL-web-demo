@@ -2265,9 +2265,7 @@ tr:nth-child(odd) td {
         min-width: 0 !important;
         position: absolute;
         inset-inline-end: 0;
-
         transform: translateY(var(--sheet-offset));
-
         transition: transform 0.2s ease, border-radius 0.2s ease;
         touch-action: none;
     }
@@ -2286,6 +2284,7 @@ tr:nth-child(odd) td {
         height: stretch;
         box-shadow: var(--elevation-0);
         transform: translate(-300px);
+        transition: transform 0.2s ease;
         z-index: 84;
     }
     [dir=rtl] .filter-controls {
