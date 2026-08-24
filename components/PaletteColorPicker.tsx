@@ -78,7 +78,7 @@ export default function PaletteColorPicker({
                             style={{
                                 gridColumn: gridX,
                                 gridRow: gridY,
-                                "color": item.color,
+                                "--color": item.color,
                             } as React.CSSProperties}
                             title={
                                 item.label
