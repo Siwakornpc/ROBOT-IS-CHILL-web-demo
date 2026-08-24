@@ -22,6 +22,8 @@ export default function Home() {
         macros: {},
         variants: {},
         filters: {},
+        palettes: {},
+        levels: {},
         overlays: {},
     });
 
