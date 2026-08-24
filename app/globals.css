@@ -1173,6 +1173,9 @@ hr {
     color: rgb(var(--md-color-on-secondary-container));
     background: var(--sb-button-selected);
 }
+.nav-btn.selected .icon {
+    --icon-FILL: 1;
+}
 .nav-btn::after {
     content: attr(aria-label, "ERROR");
     position: absolute;
