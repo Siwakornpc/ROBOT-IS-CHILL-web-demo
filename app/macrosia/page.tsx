@@ -13,8 +13,8 @@ export default function Home() {
         | "macros"
         | "variants"
         | "filters"
-        | "palettes"
         | "levels"
+        | "palettes"
         | "overlays"
     >("tiles");
     const [searchQuery, setSearchQuery] = useState<string>("");
