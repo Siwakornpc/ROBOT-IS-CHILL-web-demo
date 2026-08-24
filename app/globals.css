@@ -1100,7 +1100,8 @@ hr {
     align-items: center;
     box-sizing: border-box;
     height: 56px;
-    padding: 12px;
+    padding: 0 4px;
+    gap: 4px;
     color: var(--normal);
     background: var(--editor-titlebar);
 }
@@ -1110,6 +1111,8 @@ hr {
     position: relative;
     top: 2px;
     font-size: 1.2rem;
+
+    margin-left: 10px;
 
     color: rgb(var(--md-color-on-secondary-container));
     text-decoration: none;
@@ -1138,7 +1141,7 @@ hr {
 }
 .sb-left {
     grid-area: nav;
-    gap: 8px;
+    gap: 4px;
     padding: 4px;
 }
 .sb-right {
@@ -1172,6 +1175,37 @@ hr {
 .nav-btn::after {
     content: attr(aria-label, "ERROR");
     position: absolute;
+}
+
+
+.nav-btn-label {
+    display: none;
+    text-align: center;
+    width: 100%;
+}
+
+.head-btn {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 28px;
+    color: rgb(var(--md-color-on-surface-variant));
+    background-color: rgb(255, 255, 255, 0.1);
+
+    cursor: pointer;
+}
+.head-btn:hover {
+    background-color: rgb(255, 255, 255, 0.125);
+}
+.head-btn:active {
+    background-color: rgb(255, 255, 255, 0.2);
+}
+
+.head-btn {
+    display: none;
 }
 
 /*
@@ -2004,10 +2038,77 @@ tr:nth-child(odd) td {
 */
 
 @media only screen and (max-width: 700px) {
-    .align-layout {
+    /* .align-layout {
         grid-template-areas: 'main details'
                              'nav nav';
         grid-auto-columns: 1fr auto;
         grid-auto-rows: 1fr auto;
+    } */
+    
+    .head-btn {
+        display: flex;
     }
+
+    .sb-left {
+        position: absolute;
+        transform: translateX(-200px);
+        z-index: 100;
+    }
+
+    .sb-left-fxb {
+        box-shadow: var(--elevation-5);
+        transition: 0.2s ease;
+    }
+
+    .sb-left-fxb.opened {
+        transform: translateX(0px);
+    }
+
+    .nav-btn {
+        width: 180px;
+        justify-content: flex-start;
+        padding: 0 12px;
+    }
+
+    .has-tooltip::after {
+        display: none;
+    }
+
+    .nav-btn-label {
+        display: inline;
+    }
+}
+
+@media only screen and (min-width: 1200px) {
+    .nav-btn {
+        width: 160px;
+        justify-content: flex-start;
+        padding: 0 12px;
+    }
+
+    .has-tooltip::after {
+        display: none;
+    }
+
+    .nav-btn-label {
+        display: inline;
+    }
+}
+
+.screen-blur {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background: #00000000;
+    pointer-events: none;
+
+    backdrop-filter: blur(0px);
+    transition: background 0.2s ease, backdrop-filter 0.2s ease;
+    z-index: 90;
+}
+
+.screen-blur.true {
+    backdrop-filter: blur(5px);
+    background: #00000080;
+    pointer-events: auto;
 }
