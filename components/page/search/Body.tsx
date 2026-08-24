@@ -19,7 +19,7 @@ function TilingFilterInput({
 
     const tilingOptions = [
         { value: "none", label: "None" },
-        { value: "static", label: "static" },
+        { value: "static", label: "Static" },
         { value: "animated", label: "Animated" },
         { value: "directional", label: "Directional" },
         { value: "animated_directional", label: " Animated Directional" },
@@ -28,14 +28,10 @@ function TilingFilterInput({
         { value: "diagonal_tiling", label: "Diagonal Tiling" },
     ];
 
-    const filteredTilingOptions = tilingOptions.filter((option) =>
-        option.label.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
     return (
         <MenuSelect
             value={value}
-            options={filteredTilingOptions}
+            options={tilingOptions}
             onChange={(newValue) => {
                 onChange(newValue);
                 const matched = tilingOptions.find((opt) => opt.value === newValue);
@@ -70,22 +66,20 @@ function ModeFilterInput({
     value: string;
     onChange: (val: string) => void;
 }) {
+    const isAbsolute = value === "true";
+
     return (
         <div className="cbtn-group small">
             <button
                 type="button"
-                className={`cbtn ${value === "absolute" ? "selected" : ""}`}
-                onClick={() => onChange("absolute")}
-            >
-                Absolute
-            </button>
+                className={`cbtn ${isAbsolute ? "selected" : ""}`}
+                onClick={() => onChange("true")}
+            >Absolute</button>
             <button
                 type="button"
-                className={`cbtn ${value === "relative" ? "selected" : ""}`}
-                onClick={() => onChange("relative")}
-            >
-                Relative
-            </button>
+                className={`cbtn ${!isAbsolute ? "selected" : ""}`}
+                onClick={() => onChange("false")}
+            >Relative</button>
         </div>
     );
 }
