@@ -1501,19 +1501,31 @@ hr {
 .color-grid {
     display: grid;
     grid-template-columns: repeat(var(--columns), 1fr);
-    grid-template-rows: repeat(var(--rows), 16px);
-    gap: 0px 8px;
+    grid-template-rows: repeat(var(--rows), 1fr);
 }
 
 .color-btn {
     width: 100%;
-    height: 100%;
+    aspect-ratio: 1/1;
     cursor: pointer;
-    opacity: 0.38;
+    box-shadow: var(--elevation-0);
+    border: 2px solid #ffffff00;
+    outline: 2px dashed #ffffff00;
+
+    border-radius: 0px;
+
+    transition: 0.2s ease;
+}
+.color-btn:not(.selected):hover {
+    border: 2px solid #ffffff80;
 }
 .color-btn.selected {
-    border-radius: 8px;
+    position: relative;
+
+    border-radius: 4px;
     opacity: 1;
+    border: 2px solid black;
+    outline: 2px dashed white;
     box-shadow: var(--elevation-2);
     z-index: 1;
 }
