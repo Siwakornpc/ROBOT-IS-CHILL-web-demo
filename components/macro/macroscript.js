@@ -25,7 +25,7 @@ export async function initMacro() {
     const editor = await window.editorReady;
     const editorArea = document.getElementById("editor-area");
     const output = document.getElementById("render-output");
-    const button = document.getElementById("stop");
+    const run_button = document.getElementById("run-button");
     const statusTime = document.getElementById("status-time");
     const statusSteps = document.getElementById("status-steps");
 
@@ -107,10 +107,26 @@ ${Object.keys(stdMacros).length} macros.
 [Custom macros]:
 ${Object.keys(dbMacros).length} macros.`;
     /*
-        Auto execution (good bye big and intimidating run button, you will be MISSED...)
+        Auto execution
     */
 
-    let delayTimer = null; 
+    let delayTimer = null;
+
+    function stopMacro() {
+        if (delayTimer) {
+            clearTimeout(delayTimer);
+            delayTimer = null;
+        }
+
+        if (running) {
+            cancel_running_macro();
+            running = false;
+        }
+
+        run_button_icon.textContent = "play_arrow";
+
+        output.textContent = "Stopped.";
+    }
 
     function macroRunner() {
         if (delayTimer) {
@@ -121,7 +137,10 @@ ${Object.keys(dbMacros).length} macros.`;
         if (running) {
             cancel_running_macro();
             running = false;
+            run_button_icon.textContent = "play_arrow";
         }
+        
+        run_button_icon.textContent = "stop";
 
         output.textContent = "Waiting for pause...";
         output.classList.remove("complete");
@@ -168,6 +187,7 @@ ${Object.keys(dbMacros).length} macros.`;
                 }
 
                 output.textContent = result.replace(/[\s\n]*<--(\d+)$/, "");
+                run_button_icon.textContent = "play_arrow";
             }
             catch (err) {
                 output.classList.add("error");
@@ -182,6 +202,16 @@ ${Object.keys(dbMacros).length} macros.`;
 
     editorArea.addEventListener("input", async () => {
         macroRunner();
+    });
+
+    const run_button_icon = run_button.querySelector(".icon")
+
+    run_button.addEventListener("click", async () => {
+        if (running || delayTimer) {
+            stopMacro();
+        } else {
+            macroRunner();
+        }
     });
 
     editorArea.addEventListener("keydown", async (e) => {

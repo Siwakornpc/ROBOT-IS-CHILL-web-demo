@@ -190,6 +190,10 @@ ul {
     background: var(--selection);
 }
 
+.selection {
+    display: inline-block;
+}
+
 ::placeholder {
     color: var(--variant);
 }
@@ -1442,6 +1446,15 @@ hr {
 }
 .status-separator {
     color: rgb(var(--md-color-outline));
+}
+.status-icon {
+    padding: 0;
+}
+.status-icon:hover {
+    background: var(--surface-hovered);
+}
+.status-icon:active {
+    background: var(--surface-pressed);
 }
 
 /*
