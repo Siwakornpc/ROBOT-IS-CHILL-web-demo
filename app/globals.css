@@ -1595,15 +1595,15 @@ hr {
 }
 
 .search-item-tile {
-    width: auto;
-    min-width: 64px;
-    height: auto;
+    width: 64px;
+    height: 64px;
     image-rendering: pixelated;
+    object-fit: contain;
     filter: var(--f-elevation-5);
 }
 .search-results.filters .search-item-tile {
-    min-width: 100px;
-    max-height: 100px;
+    width: 100px;
+    height: 100px;
 }
 .search-item-tile.pending {
     border-radius: 4px;
@@ -1616,8 +1616,6 @@ hr {
     display: grid;
     grid-template-areas: "stack";
     place-items: center;
-    width: 64px;
-    height: 64px;
     filter: none;
 }
 .search-results.filters :is(.search-item-tile.pending, .search-item-tile-broken) {
@@ -1714,11 +1712,8 @@ hr {
 }
 
 .search-details-image {
-    width: 100%;
-    min-width: unset;
-    max-width: 100%;
-    height: 100%;
-    max-height: 192px;
+    width: 192px;
+    height: 192px;
     margin: auto;
     image-rendering: pixelated;
     filter: var(--f-elevation-5);
@@ -1731,9 +1726,13 @@ hr {
     height: 100%;
     margin: auto;
     image-rendering: pixelated;
+    object-fit: contain;
     filter: var(--f-elevation-5);
 
     pointer-events: none;
+}
+.search-details-image-e[alt="bab_therealbabdictator"] {
+    height: auto;
 }
 
 /* frame index label */
