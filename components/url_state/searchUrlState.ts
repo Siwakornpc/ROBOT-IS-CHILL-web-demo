@@ -17,6 +17,8 @@ const modeHashes: Record<SearchMode, string> = {
     macros: "macros",
     variants: "variants",
     filters: "filters",
+    palettes: "palettes",
+    levels: "levels",
     overlays: "overlays",
 };
 

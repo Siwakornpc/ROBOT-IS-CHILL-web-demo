@@ -8,7 +8,15 @@ import { readSearchUrlState, writeSearchUrlState, } from "@/components/url_state
 
 export default function Home() {
     const [code, setCode] = useState<string | null>(null);
-    const [mode, setMode] = useState<"tiles" | "macros" | "variants" | "filters" | "overlays">("tiles");
+    const [mode, setMode] = useState<
+        "tiles"
+        | "macros"
+        | "variants"
+        | "filters"
+        | "palettes"
+        | "levels"
+        | "overlays"
+    >("tiles");
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [useRegex, setUseRegex] = useState<boolean>(false);
     const [detailsName, setDetailsName] = useState<string | null>(null);
