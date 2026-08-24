@@ -4,6 +4,7 @@ import { type SelectedSearchResult } from "./SearchResultsGrid";
 import SearchSelect, { type SearchMode } from "./SearchSelect";
 import MenuSelect from "@/components/MenuSelect";
 import PaletteColorPicker from "@/components/PaletteColorPicker";
+import { useMenu } from "@/components/MenuContext";
 
 // cache sprite sources
 const sourcesPromise: Promise<{ value: string; label: string }[]> = fetch(
@@ -25,11 +26,13 @@ export function FilterPanel({
     onModeChange,
     filters,
     onFiltersChange,
+    onToggleFilter,
 }: {
     mode: SearchMode;
     onModeChange: (mode: SearchMode) => void;
     filters: Record<string, string[]>;
     onFiltersChange: (filters: Record<string, string[]>) => void;
+    onToggleFilter: () => void;
 }) {
     const [sourceOptions, setSourceOptions] = useState<{ value: string; label: string }[]>([]);
     const [sourceSearchQuery, setSourceSearchQuery] = useState("");
@@ -203,9 +206,40 @@ export function FilterPanel({
         }
     };
 
+    
+    const { isMenuOpen } = useMenu();
+    const [isFlexibleMenu, setIsFlexibleMenu] = useState(false);
+    
+    useEffect(() => {
+        function handleResize() {
+            setIsFlexibleMenu(window.innerWidth <= 790);
+        }
+    
+        // Set initial state
+        handleResize();
+    
+        window.addEventListener("resize", handleResize);
+    
+        // Cleanup
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
+
     return (
-        <div className="filter-controls">
+        <div className={`filter-controls ${
+            isFlexibleMenu
+                ? "fc-fxb"
+                : ""
+        }`}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+                <button
+                    type="button"
+                    className="btn ibtn small btn-text"
+                    onClick={onToggleFilter}
+                >
+                    <span className="icon">arrow_back</span>
+                </button>
                 <p className="text-label">Search</p>
                 <SearchSelect value={mode} onChange={onModeChange} />
             </div>

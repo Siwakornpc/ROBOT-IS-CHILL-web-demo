@@ -139,6 +139,8 @@ export function RightBarSearch({
     const [isFlexibleMenu, setIsFlexibleMenu] = useState(false);
     const height = window.innerHeight - 56 - 80;
 
+    const setShift = 120;
+
     const [sheetOffset, setSheetOffset] = useState(height);
     const [viewHeight, setViewHeight] = useState(height);
 
@@ -147,9 +149,8 @@ export function RightBarSearch({
     const isDragging = useRef(false);
 
     useEffect(() => {
-
         function handleResize() {
-            setIsFlexibleMenu(window.innerWidth < 790);
+            setIsFlexibleMenu(window.innerWidth <= 790);
 
             if (viewHeight < height) setViewHeight(height);
             if (sheetOffset > height) {
@@ -158,8 +159,6 @@ export function RightBarSearch({
         }
 
         handleResize();
-        
-        setSheetOffset(height);
 
         window.addEventListener("resize", handleResize);
 

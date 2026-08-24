@@ -1105,6 +1105,7 @@ hr {
     gap: 4px;
     color: var(--normal);
     background: var(--editor-titlebar);
+    z-index: 100000;
 }
 
 .title-name {
@@ -2156,6 +2157,10 @@ tr:nth-child(odd) td {
     pointer-events: auto;
 }
 
+@media only screen and (max-width: 1100px) {
+
+}
+
 @media only screen and (max-width: 790px) {
     .search-details-panel {
         width: calc(100vw - 56px) !important;
@@ -2177,11 +2182,31 @@ tr:nth-child(odd) td {
     .search-details-panel.sb-right-fxb.to-top {
         border-radius: 0px 0px 0 0;
     }
+    
+    .filter-controls {
+        position: absolute;
+        z-index: 84;
+        box-shadow: var(--elevation-0);
+        height: stretch;
+        transform: translate(-300px);
+    }
+
+    .fc-fxb {
+        left: 56px;
+        transform: translate(0px);
+        box-shadow: var(--elevation-3);
+
+        transition: transform 0.2s ease;
+    }
 
     @media only screen and (max-width: 700px) {
         .search-details-panel {
             width: 100vw !important;
             right: 0;
+        }
+
+        .fc-fxb {
+            left: 0;
         }
     }
 }

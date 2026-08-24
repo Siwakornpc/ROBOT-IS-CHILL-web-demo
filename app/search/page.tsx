@@ -107,6 +107,7 @@ export default function Home() {
                             [mode]: updatedFilters,
                         }));
                     }}
+                    onToggleFilter={() => setShowMenu((prev) => !prev)}
                 />
             )}
             <Body
