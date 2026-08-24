@@ -57,8 +57,10 @@ export default function PaletteColorPicker({
         <div className="palette-color-picker-container">
             <div
                 className="color-grid"
-                data-columns={maxColumn}
-                data-rows={maxRow}
+                style={{
+                    "--columns": maxColumn,
+                    "--rows": maxRow,
+                } as React.CSSProperties}
             >
                 {palette.map((item) => {
                     const isSelected =
