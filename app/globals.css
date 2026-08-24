@@ -250,7 +250,8 @@ body {
     font-feature-settings: "liga";
     -webkit-font-feature-settings: "liga";
     -webkit-font-smoothing: antialiased;
-    transition: all 200ms cubic-bezier(0.2, 0.0, 0, 1.0);;
+    font-variation-settings: 'FILL' var(--icon-FILL, 0);
+    transition: all 200ms cubic-bezier(0.2, 0.0, 0, 1.0);
 }
 .icon.custom {
     font-family: ricwd-icons;
@@ -367,10 +368,10 @@ hr {
     display: none;
 }
 .btn > .icon {
-    font-variation-settings: 'FILL' 1;
+    --icon-FILL: 1;
 }
 .btn:has(input[type="checkbox"]:not(:checked)) > .icon {
-    font-variation-settings: 'FILL' 0;
+    --icon-FILL: 0;
 }
 
 .btn.xsmall {
@@ -1173,9 +1174,13 @@ hr {
     color: rgb(var(--md-color-on-secondary-container));
     background: var(--sb-button-selected);
 }
+.nav-btn.selected .icon {
+    --icon-FILL: 1;
+}
 .nav-btn::after {
     content: attr(aria-label, "ERROR");
     position: absolute;
+    z-index: 2;
 }
 
 
@@ -1490,7 +1495,7 @@ hr {
     color: rgb(var(--md-color-outline));
 }
 .status-btn {
-    padding: 0;
+    padding: 0 1px;
 }
 .status-btn:hover {
     background: var(--surface-hovered);
@@ -1500,7 +1505,7 @@ hr {
 }
 .status-btn > .icon {
     font-size: 20px;
-    font-variation-settings: 'FILL' 1;
+    --icon-FILL: 1;
 }
 
 /*
