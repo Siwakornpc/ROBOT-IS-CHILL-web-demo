@@ -226,7 +226,7 @@ export default function MenuSelect<T extends string>({
             const spaceBelow = window.innerHeight - anchorRect.bottom - pageMargin;
             const spaceAbove = anchorRect.top - pageMargin;
 
-            const minRequiredHeight = Math.min(menuHeight, 164);
+            const minRequiredHeight = Math.min(menuHeight, 180);
             const shouldFlipUp = spaceBelow < minRequiredHeight && spaceAbove > spaceBelow;
             const shouldFlipLeft = spaceRight < menuWidth && spaceLeft > spaceRight;
 
@@ -239,7 +239,7 @@ export default function MenuSelect<T extends string>({
             setActiveAnchor(resolvedAnchor);
 
             const targetSpace = shouldFlipUp ? spaceAbove : spaceBelow;
-            setMaxHeight(Math.max(148, targetSpace));
+            setMaxHeight(Math.max(120, targetSpace));
         } else if (!isOpen) {
             setActiveAnchor(anchor);
             setMaxHeight(undefined);
