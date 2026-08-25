@@ -2266,6 +2266,7 @@ tr:nth-child(odd) td {
         min-width: 0 !important;
         position: absolute;
         inset-inline-end: 0;
+        padding-top: 48px;
         transform: translateY(var(--sheet-offset));
         transition: transform 0.2s ease, border-radius 0.2s ease;
         touch-action: none;
