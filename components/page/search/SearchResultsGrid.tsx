@@ -181,24 +181,45 @@ export default function SearchResults({
                 if (endpointToLoad === "macros.json") {
                     const stdMacros = await stdlib_macros();
 
-                    const apiMacroEntries: SearchEntry[] = Object.entries(data)
-                        .map(([name, macro]): SearchEntry => [
-                            name.trim(),
+                    const macroMap = new Map<string, SearchEntry>();
+
+                    // Standard-library macros win over API macros.
+                    for (const [name, macro] of stdMacros) {
+                        const safeName = String(name ?? "").trim();
+
+                        if (!safeName) continue;
+
+                        const key = safeName.toLowerCase();
+
+                        macroMap.set(key, [
+                            safeName,
+                            {
+                                ...(macro as Record<string, unknown>),
+                                builtin: true,
+                            },
+                        ]);
+                    }
+
+                    // Add API macros only if they aren't already present.
+                    for (const [name, macro] of Object.entries(data)) {
+                        const safeName = String(name ?? "").trim();
+
+                        if (!safeName) continue;
+
+                        const key = safeName.toLowerCase();
+
+                        if (macroMap.has(key)) continue;
+
+                        macroMap.set(key, [
+                            safeName,
                             {
                                 ...(macro as Record<string, unknown>),
                                 builtin: false,
                             },
-                        ])
-                        .filter(([name]) => Boolean(name));
+                        ]);
+                    }
 
-                    const stdMacroNames = new Set(
-                        stdMacros.map(([name]) => String(name ?? "").trim()),
-                    );
-
-                    const combinedMacros: SearchEntry[] = [
-                        ...stdMacros,
-                        ...apiMacroEntries.filter(([name]) => !stdMacroNames.has(name)),
-                    ];
+                    const combinedMacros = Array.from(macroMap.values());
 
                     cachedResults.set(endpointToLoad, combinedMacros);
 

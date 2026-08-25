@@ -108,9 +108,7 @@ export function RightBarSearch({children}: {children?: ReactNode}) {
     const panelRef = useRef<HTMLDivElement>(null);
 
     const [isFlexibleMenu, setIsFlexibleMenu] = useState(false);
-    const height = window.innerHeight - 56 - 80;
-
-    const setShift = 120;
+    const height = window.innerHeight - 56 - 120;
 
     const [sheetOffset, setSheetOffset] = useState(height);
     const [viewHeight, setViewHeight] = useState(height);
