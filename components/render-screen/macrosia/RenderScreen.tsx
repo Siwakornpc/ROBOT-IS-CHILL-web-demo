@@ -1,4 +1,4 @@
-import { applyOverflowFade } from "@/components/OverflowFade";
+import applyOverflowFade from "@/components/OverflowFade";
 
 export function RenderScreen() {
     return (
