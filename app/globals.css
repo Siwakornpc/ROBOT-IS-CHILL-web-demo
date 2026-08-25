@@ -1933,6 +1933,7 @@ hr {
     font-size: 1em;
     text-align: center;
     word-wrap: anywhere;
+    white-space: pre-wrap;
 }
 
 /*
@@ -1983,6 +1984,7 @@ hr {
 .search-details-macro-name {
     font-size: 2em;
     max-height: 6em;
+    white-space: pre-wrap;
 }
 .search-details-macro-name-builtin-indicator {
     color: rgb(var(--md-color-outline));
