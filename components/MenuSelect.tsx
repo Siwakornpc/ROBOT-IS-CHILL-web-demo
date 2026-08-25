@@ -58,9 +58,8 @@ function MenuItem<T extends string>({
             const spaceBelow = window.innerHeight - anchorRect.bottom - pageMargin;
             const spaceAbove = anchorRect.top - pageMargin;
 
-            // only flip if overflowing boundary
-            const shouldFlipLeft = spaceRight < menuWidth && spaceLeft > spaceRight;
             const shouldFlipUp = spaceBelow < menuHeight && spaceAbove > spaceBelow;
+            const shouldFlipLeft = spaceRight < menuWidth && spaceLeft > spaceRight;
 
             let resolvedAnchor = submenuAnchor;
             if (shouldFlipUp && shouldFlipLeft) resolvedAnchor = "eb";
@@ -77,7 +76,7 @@ function MenuItem<T extends string>({
             setCoords({ top, left });
 
             const targetSpace = shouldFlipUp ? spaceAbove : spaceBelow;
-            setMaxHeight(Math.max(148, targetSpace));
+            setMaxHeight(Math.max(100, targetSpace));
         }
     }, [isSubmenuOpen, submenuAnchor, pageMargin]);
 
@@ -92,6 +91,20 @@ function MenuItem<T extends string>({
         return null;
     };
 
+    const handleSelectOption = (e: ReactMouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+
+        if (hasChildren) {
+            setIsSubmenuOpen((prev) => !prev);
+            return;
+        }
+
+        onChange(item.value);
+        setIsSubmenuOpen(false);
+        onCloseAll();
+    };
+
     return (
         <div
             ref={wrapperRef}
@@ -103,20 +116,12 @@ function MenuItem<T extends string>({
             }}
             onMouseLeave={() => {
                 if (window.matchMedia("(pointer: coarse)").matches) return;
-                if (hasChildren) setIsSubmenuOpen(false);
+                setIsSubmenuOpen(false);
             }}
         >
             <div
                 onMouseDown={(e) => e.preventDefault()}
-                onClick={(e) => {
-                    e.stopPropagation();
-                    if (hasChildren) {
-                        setIsSubmenuOpen((prev) => !prev);
-                    } else {
-                        onChange(item.value);
-                        onCloseAll();
-                    }
-                }}
+                onClick={handleSelectOption}
                 className={`menu-option ${isSelected ? "selected" : ""}`}
             >
                 {renderIcon()}
@@ -140,6 +145,8 @@ function MenuItem<T extends string>({
                         maxHeight: maxHeight ? `${maxHeight}px` : undefined,
                         zIndex: 9999,
                     }}
+                    onMouseEnter={() => setIsSubmenuOpen(true)}
+                    onMouseLeave={() => setIsSubmenuOpen(false)}
                 >
                     {item.children!.map((child) => (
                         <MenuItem
@@ -206,22 +213,22 @@ export default function MenuSelect<T extends string>({
     const wrapperRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
 
-    // Compare available space on each side of the top-level menu trigger
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (isOpen && wrapperRef.current && menuRef.current) {
             const anchorRect = wrapperRef.current.getBoundingClientRect();
             const menuElement = menuRef.current;
 
-            const menuWidth = menuElement.offsetWidth || 240;
-            const menuHeight = menuElement.offsetHeight || 148;
+            const menuWidth = menuElement.offsetWidth || 230;
+            const menuHeight = menuElement.offsetHeight || 200;
 
             const spaceRight = window.innerWidth - anchorRect.left - pageMargin;
             const spaceLeft = anchorRect.right - pageMargin;
             const spaceBelow = window.innerHeight - anchorRect.bottom - pageMargin;
             const spaceAbove = anchorRect.top - pageMargin;
 
+            const minRequiredHeight = Math.min(menuHeight, 164);
+            const shouldFlipUp = spaceBelow < minRequiredHeight && spaceAbove > spaceBelow;
             const shouldFlipLeft = spaceRight < menuWidth && spaceLeft > spaceRight;
-            const shouldFlipUp = spaceBelow < menuHeight && spaceAbove > spaceBelow;
 
             let resolvedAnchor = anchor;
             if (shouldFlipUp && shouldFlipLeft) resolvedAnchor = "tr";
@@ -232,12 +239,12 @@ export default function MenuSelect<T extends string>({
             setActiveAnchor(resolvedAnchor);
 
             const targetSpace = shouldFlipUp ? spaceAbove : spaceBelow;
-            setMaxHeight(Math.max(100, targetSpace));
+            setMaxHeight(Math.max(148, targetSpace));
         } else if (!isOpen) {
             setActiveAnchor(anchor);
             setMaxHeight(undefined);
         }
-    }, [isOpen, anchor, pageMargin]);
+    }, [isOpen, anchor, pageMargin, options]);
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
