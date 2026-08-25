@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, ReactNode, CSSProperties, FocusEvent, MouseEvent as ReactMouseEvent, cloneElement } from "react";
+import { useEffect, useRef, useState, ReactNode, CSSProperties, FocusEvent, MouseEvent as ReactMouseEvent, cloneElement, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
 
 export type MenuAnchor = "t" | "b" | "l" | "r" | "tl" | "tr" | "bl" | "br" | "s" | "e" | "st" | "sb" | "et" | "eb";
@@ -44,13 +44,7 @@ function MenuItem<T extends string>({
     const isSelected = item.value === selectedValue;
     const rawIcon = optionIcon ? optionIcon(item) : item.icon;
 
-    // reset submenu state
-    useEffect(() => {
-        return () => setIsSubmenuOpen(false);
-    }, []);
-
-    // Compare available space on each side of the menu
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (isSubmenuOpen && wrapperRef.current) {
             const anchorRect = wrapperRef.current.getBoundingClientRect();
             const submenuElement = submenuRef.current;
@@ -61,8 +55,8 @@ function MenuItem<T extends string>({
             // space available on each side
             const spaceRight = window.innerWidth - anchorRect.right - pageMargin;
             const spaceLeft = anchorRect.left - pageMargin;
-            const spaceBelow = window.innerHeight - anchorRect.top - pageMargin;
-            const spaceAbove = anchorRect.bottom - pageMargin;
+            const spaceBelow = window.innerHeight - anchorRect.bottom - pageMargin;
+            const spaceAbove = anchorRect.top - pageMargin;
 
             // only flip if overflowing boundary
             const shouldFlipLeft = spaceRight < menuWidth && spaceLeft > spaceRight;
@@ -83,10 +77,7 @@ function MenuItem<T extends string>({
             setCoords({ top, left });
 
             const targetSpace = shouldFlipUp ? spaceAbove : spaceBelow;
-            setMaxHeight(Math.max(100, targetSpace));
-        } else {
-            setActiveAnchor(submenuAnchor);
-            setMaxHeight(undefined);
+            setMaxHeight(Math.max(148, targetSpace));
         }
     }, [isSubmenuOpen, submenuAnchor, pageMargin]);
 
@@ -105,15 +96,21 @@ function MenuItem<T extends string>({
         <div
             ref={wrapperRef}
             className="menu-option-wrapper"
-            onMouseEnter={() => hasChildren && setIsSubmenuOpen(true)}
-            onMouseLeave={() => hasChildren && setIsSubmenuOpen(false)}
+            onMouseEnter={() => {
+                // ignore hover events for mobile devices
+                if (window.matchMedia("(pointer: coarse)").matches) return;
+                if (hasChildren) setIsSubmenuOpen(true);
+            }}
+            onMouseLeave={() => {
+                if (window.matchMedia("(pointer: coarse)").matches) return;
+                if (hasChildren) setIsSubmenuOpen(false);
+            }}
         >
             <div
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={(e) => {
+                    e.stopPropagation();
                     if (hasChildren) {
-                        // prevent click from closing parent menus
-                        e.stopPropagation();
                         setIsSubmenuOpen((prev) => !prev);
                     } else {
                         onChange(item.value);
@@ -143,8 +140,6 @@ function MenuItem<T extends string>({
                         maxHeight: maxHeight ? `${maxHeight}px` : undefined,
                         zIndex: 9999,
                     }}
-                    onMouseEnter={() => setIsSubmenuOpen(true)}
-                    onMouseLeave={() => setIsSubmenuOpen(false)}
                 >
                     {item.children!.map((child) => (
                         <MenuItem
@@ -256,7 +251,6 @@ export default function MenuSelect<T extends string>({
     }, []);
 
     const selectedOption = options.find((item) => item.value === value) ?? options[0];
-    const selectedOptionLabel = options.find((item) => item.value === value) ?? options[1];
     const toggleMenu = () => setIsOpen((prev) => !prev);
     const openMenu = () => setIsOpen(true);
     const closeMenu = () => setIsOpen(false);
@@ -283,10 +277,6 @@ export default function MenuSelect<T extends string>({
         ...customProps,
     });
 
-    const handleCloseAll = () => {
-        setIsOpen(false);
-    };
-
     return (
         <div
             className="menu-wrapper"
@@ -311,31 +301,32 @@ export default function MenuSelect<T extends string>({
                     className={`menu-trigger ${className} ${id || ""} ${isOpen ? "clicked" : ""}`}
                     onClick={toggleMenu}
                 >
-                    {triggerValue ? <span>triggerValue(selectedOptionLabel)</span> : selectedOptionLabel.label}
+                    {triggerValue ? triggerValue(selectedOption) : selectedOption.label}
                 </button>
             )}
 
-            {isOpen && (
-                <div
-                    ref={menuRef}
-                    className={`menu ascroll-y inset-scrollbar anchor-${activeAnchor} ${id ? `${id}-options` : ""} ${isOpen ? "visible" : ""}`}
-                    style={{ maxHeight: maxHeight ? `${maxHeight}px` : undefined }}
-                >
-                    {title && <div className="menu-title">{title}</div>}
-                    {options.map((item) => (
-                        <MenuItem
-                            key={item.value}
-                            item={item}
-                            selectedValue={value}
-                            onChange={onChange}
-                            onCloseAll={handleCloseAll}
-                            optionIcon={optionIcon}
-                            submenuAnchor={submenuAnchor}
-                            pageMargin={pageMargin}
-                        />
-                    ))}
-                </div>
-            )}
+            <div
+                ref={menuRef}
+                className={`menu ascroll-y inset-scrollbar anchor-${activeAnchor} ${id ? `${id}-options` : ""} ${isOpen ? "visible" : ""}`}
+                style={{
+                    maxHeight: maxHeight ? `${maxHeight}px` : undefined,
+                    display: isOpen ? "block" : "none",
+                }}
+            >
+                {title && <div className="menu-title">{title}</div>}
+                {options.map((item) => (
+                    <MenuItem
+                        key={item.value}
+                        item={item}
+                        selectedValue={value}
+                        onChange={onChange}
+                        onCloseAll={() => setIsOpen(false)}
+                        optionIcon={optionIcon}
+                        submenuAnchor={submenuAnchor}
+                        pageMargin={pageMargin}
+                    />
+                ))}
+            </div>
         </div>
     );
 }
