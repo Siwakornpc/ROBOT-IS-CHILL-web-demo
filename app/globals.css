@@ -863,7 +863,7 @@ hr {
     gap: 4px;
     position: absolute;
     pointer-events: none;
-    width: 230px;
+    width: 240px;
     padding-block: 4px;
     border-radius: 16px;
     background: rgb(var(--md-color-surface-container-low));

@@ -71,7 +71,7 @@ function MenuItem<T extends string>({
             setActiveAnchor(resolvedAnchor);
 
             // calculate fixed position on viewport for portal
-            const top = shouldFlipUp ? anchorRect.bottom - menuHeight : anchorRect.top;
+            const top = shouldFlipUp ? Math.max(pageMargin, anchorRect.bottom - menuHeight) : anchorRect.top;
             const left = shouldFlipLeft ? anchorRect.left - menuWidth : anchorRect.right;
 
             setCoords({ top, left });
@@ -212,8 +212,8 @@ export default function MenuSelect<T extends string>({
             const anchorRect = wrapperRef.current.getBoundingClientRect();
             const menuElement = menuRef.current;
 
-            const menuWidth = menuElement.offsetWidth;
-            const menuHeight = menuElement.offsetHeight;
+            const menuWidth = menuElement.offsetWidth || 240;
+            const menuHeight = menuElement.offsetHeight || 148;
 
             const spaceRight = window.innerWidth - anchorRect.left - pageMargin;
             const spaceLeft = anchorRect.right - pageMargin;
@@ -233,7 +233,7 @@ export default function MenuSelect<T extends string>({
 
             const targetSpace = shouldFlipUp ? spaceAbove : spaceBelow;
             setMaxHeight(Math.max(100, targetSpace));
-        } else {
+        } else if (!isOpen) {
             setActiveAnchor(anchor);
             setMaxHeight(undefined);
         }
@@ -310,7 +310,6 @@ export default function MenuSelect<T extends string>({
                 className={`menu ascroll-y inset-scrollbar anchor-${activeAnchor} ${id ? `${id}-options` : ""} ${isOpen ? "visible" : ""}`}
                 style={{
                     maxHeight: maxHeight ? `${maxHeight}px` : undefined,
-                    display: isOpen ? "block" : "none",
                 }}
             >
                 {title && <div className="menu-title">{title}</div>}
