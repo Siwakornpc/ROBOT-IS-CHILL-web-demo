@@ -1951,23 +1951,6 @@ hr {
     z-index: 85;
 }
 
-.drag-handle-hitbox {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 48px;
-    touch-action: none;
-}
-
-.drag-handle {
-    width: 100px;
-    height: 8px;
-    border-radius: 4px;
-    margin: 16px auto auto;
-    background: var(--editor-outline);
-}
-
 .search-details-name {
     font-size: 22px;
     line-height: 28px;
@@ -2018,6 +2001,28 @@ hr {
 }
 .search-details-image-e[alt="bab_therealbabdictator"] {
     height: auto;
+}
+
+.drag-handle-hitbox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 36px;
+    padding-bottom: 12px;
+    touch-action: none;
+}
+.drag-handle {
+    width: 20%;
+    height: 4px;
+    border-radius: 4px;
+    background: var(--editor-outline);
+}
+.drag-handle-hitbox:hover .drag-handle {
+    background: var(--normal);
 }
 
 /* frame index label */
@@ -2271,7 +2276,7 @@ tr:nth-child(odd) td {
         min-width: 0 !important;
         position: absolute;
         inset-inline-end: 0;
-        padding-top: 48px;
+        padding-top: 24px;
         transform: translateY(var(--sheet-offset));
         transition: transform 0.2s ease, border-radius 0.2s ease;
     }
