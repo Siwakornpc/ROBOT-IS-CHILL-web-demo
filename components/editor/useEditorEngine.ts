@@ -91,11 +91,16 @@ export function useEditorEngine({
             gutterWrap.scrollTop = scrollEl.scrollTop;
         };
 
+        const handleResize = () => {
+            render(state.value.length, state.value.length);
+        };
+
         editorArea.addEventListener("beforeinput", handleBeforeInput as EventListener);
         editorArea.addEventListener("keydown", handleKeydown);
         document.addEventListener("selectionchange", handleSelectionChange);
         scrollEl.addEventListener("scroll", handleScroll);
         editorArea.addEventListener("click", handleClick);
+        window.addEventListener("resize", handleResize);
 
         const api: EditorApi = {
             get value() {
@@ -133,6 +138,7 @@ export function useEditorEngine({
             document.removeEventListener("selectionchange", handleSelectionChange);
             scrollEl.removeEventListener("scroll", handleScroll);
             editorArea.removeEventListener("click", handleClick);
+            window.removeEventListener("resize", handleResize);
             window.removeEventListener("executionmodechange", refreshHighlighting);
             window.removeEventListener("rendersyntaxloaded", refreshHighlighting);
         };
