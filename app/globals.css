@@ -202,11 +202,15 @@ ul {
         background-color 0.15s,
         color 0.15s;
 }
-.discord-markdown .discord-spoiler:hover,
-.discord-markdown .discord-spoiler:focus,
-.discord-markdown .discord-spoiler:active {
+.discord-markdown .discord-spoiler:hover, .discord-markdown .discord-spoiler:focus, .discord-markdown .discord-spoiler:active {
+    background: rgb(var(--md-color-on-surface-variant));
+}
+.discord-markdown .discord-spoiler:has(> input[type=checkbox]:checked) {
     color: inherit;
     background: var(--surface-pressed);
+}
+.discord-markdown .discord-spoiler > input[type="checkbox"] {
+    display: none;
 }
 .discord-markdown .discord-spoiler p {
     display: inline;

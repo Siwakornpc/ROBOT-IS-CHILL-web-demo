@@ -985,18 +985,19 @@ function renderToken(
             };
 
             return (
-                <span
+                <label
                     key={key}
                     className="discord-spoiler"
                     role="button"
                     tabIndex={0}
                 >
+                    <input type="checkbox" />
                     {renderChildren(
                         nested.tree.children,
                         `${key}-spoiler`,
                         nestedContext
                     )}
-                </span>
+                </label>
             );
         }
 
