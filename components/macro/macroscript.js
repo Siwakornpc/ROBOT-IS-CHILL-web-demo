@@ -152,7 +152,7 @@ ${Object.keys(dbMacros).length} macros.`;
 
             try {
                 const start = performance.now();
-                const result = await evaluate(`${editor.value}
+                let result = await evaluate(`${editor.value}
     <--[add/[step]/-2]`);
                 const executionTime = (performance.now() - start).toFixed(3);
 
@@ -177,11 +177,14 @@ ${Object.keys(dbMacros).length} macros.`;
 
                 output.classList.remove("error");
 
+                result = result.replace(/\s*<--(\d+)$/, "");
+
                 if (result.includes("[MACRO ERROR]")) {
                     output.classList.add("error");
+                    result = result.replace(/\s*<--\[add\/\[step\]\/-2\](\n-----)/, "$1");
                 }
 
-                output.textContent = result.replace(/[\s\n]*<--(\d+)$/, "");
+                output.textContent = result;
                 run_button_icon.textContent = "play_arrow";
             }
             catch (err) {
