@@ -135,7 +135,21 @@ ul {
  * can safely live inside that paragraph.
  */
 .discord-markdown p {
-    margin: 0 0 0.125rem;
+    margin-bottom: .125rem;
+}
+
+.discord-markdown :is(h1, h2, h3) {
+    font-weight: bold;
+    margin: 16px 0 8px;
+}
+.discord-markdown :is(h1, h2, h3):first-child {
+    margin-top: 8px;
+}
+.discord-markdown h1 {
+    font-size: 1.5rem;
+}
+.discord-markdown h2 {
+    font-size: 1.25rem;
 }
 
 .discord-markdown .discord-text-part,
@@ -153,26 +167,25 @@ ul {
 .discord-markdown ul,
 .discord-markdown ol {
     margin: 0.25rem 0 0.5rem;
-    padding-left: 1.5rem;
+    padding-inline-start: 1.5rem;
 }
 
 .discord-markdown li {
     margin: 0.125rem 0;
 }
-
 .discord-markdown li > p {
     margin: 0;
 }
-
+.discord-markdown li::marker {
+    color: var(--variant);
+}
 /* Nested bullet styles */
 .discord-markdown ul {
     list-style-type: disc;
 }
-
 .discord-markdown ul ul {
     list-style-type: circle;
 }
-
 .discord-markdown ul ul ul {
     list-style-type: square;
 }
@@ -180,42 +193,44 @@ ul {
 .discord-markdown .discord-spoiler {
     display: inline;
     width: auto;
-    background: #202225;
-    color: transparent;
-    border-radius: 3px;
-    cursor: pointer;
     padding: 0 2px;
+    border-radius: 3px;
+    color: transparent;
+    background: rgb(var(--md-color-inverse-surface));
+    cursor: pointer;
     transition:
         background-color 0.15s,
         color 0.15s;
 }
-
 .discord-markdown .discord-spoiler:hover,
 .discord-markdown .discord-spoiler:focus,
 .discord-markdown .discord-spoiler:active {
-    background: #4f545c;
     color: inherit;
+    background: var(--surface-pressed);
+}
+.discord-markdown .discord-spoiler p {
+    display: inline;
 }
 
 .discord-markdown .discord-subtext {
-    color: #949ba4;
+    color: rgb(var(--md-color-outline));
     font-size: 0.875rem;
     margin: 0.225rem 0;
 }
 
 .discord-markdown .discord-mention {
     display: inline;
-    width: auto;
     padding: 0 2px;
-    border-radius: 3px;
-    background: rgba(88, 101, 242, 0.15);
-    color: #c9cdfb;
+    border-radius: 4px;
+    color: rgb(var(--md-color-on-tertiary-container));
+    background: rgb(var(--md-color-tertiary-container));
 }
 
 .discord-markdown .discord-inline-code {
     display: inline;
     width: auto;
     padding: 0.1em 0.3em;
+    color: var(--variant);
     background: rgb(var(--md-color-surface-container));
     border: 1px solid rgb(var(--md-color-outline-variant));
     border-radius: 4px;
@@ -252,18 +267,25 @@ ul {
 .discord-markdown .discord-timestamp {
     display: inline;
     width: auto;
-    color: #949ba4;
-    background: rgba(79, 84, 92, 0.25);
-    border-radius: 3px;
     padding: 0 2px;
+    border-radius: 3px;
+    color: rgb(var(--md-color-on-secondary-container));
+    background: rgb(var(--md-color-secondary-container));
 }
 
 .discord-markdown .discord-blockquote {
-    display: block;
+    display: flex;
+    gap: .5rem;
     width: auto;
-    margin: 0.25rem 0;
-    padding-left: 0.75rem;
-    border-left: 4px solid #4e5058;
+    margin: .25rem 0;
+}
+.discord-markdown .discord-blockquote::before {
+    content: "";
+    position: relative;
+    width: 2px;
+    margin-bottom: .125rem;
+    border-radius: 1px;
+    background: rgb(var(--md-color-outline));
 }
 
 .discord-markdown .discord-table-wrapper {
@@ -284,11 +306,11 @@ ul {
 
 .discord-markdown .discord-task-list-item {
     list-style: none;
-    margin-left: -1.25rem;
+    margin-inline-start: -1.25rem;
 }
 
 .discord-markdown .discord-task-list-item > input {
-    margin-right: 0.4rem;
+    margin-inline-end: 0.4rem;
 }
 
 .discord-markdown .discord-image {
@@ -298,10 +320,15 @@ ul {
     border-radius: 4px;
 }
 
-.discord-markdown .discord-footnote {
-    margin-top: 0.5rem;
-    color: #949ba4;
-    font-size: 0.875rem;
+.discord-markdown a {
+    padding: 0 2px;
+    margin: -2px;
+    border-radius: 4px;
+    color: rgb(var(--md-color-primary));
+}
+.discord-markdown a:hover {
+    text-decoration: underline;
+    background: rgb(var(--md-color-primary), .08);
 }
 
 /*

@@ -14,53 +14,53 @@ import type { Root } from "mdast";
  */
 
 type DiscordToken =
-    | {
-          type: "spoiler";
-          content: string;
-      }
-    | {
-          type: "subtext";
-          content: string;
-      }
-    | {
-          type: "user";
-          id: string;
-      }
-    | {
-          type: "role";
-          id: string;
-      }
-    | {
-          type: "channel";
-          id: string;
-      }
-    | {
-          type: "emoji";
-          name: string;
-          id: string;
-          animated: boolean;
-      }
-    | {
-          type: "timestamp";
-          timestamp: number;
-          style?: string;
-      }
-    | {
-          type: "slashCommand";
-          name: string;
-          id: string;
-      }
-    | {
-          type: "guildNavigation";
-          typeName: string;
-          id?: string;
-      }
-    | {
-          type: "everyone";
-      }
-    | {
-          type: "here";
-      };
+    {
+        type: "spoiler";
+        content: string;
+    } |
+    {
+        type: "subtext";
+        content: string;
+    } |
+    {
+        type: "user";
+        id: string;
+    } |
+    {
+        type: "role";
+        id: string;
+    } |
+    {
+        type: "channel";
+        id: string;
+    } |
+    {
+        type: "emoji";
+        name: string;
+        id: string;
+        animated: boolean;
+    } |
+    {
+        type: "timestamp";
+        timestamp: number;
+        style?: string;
+    } |
+    {
+        type: "slashCommand";
+        name: string;
+        id: string;
+    } |
+    {
+        type: "guildNavigation";
+        typeName: string;
+        id?: string;
+    } |
+    {
+        type: "everyone";
+    } |
+    {
+        type: "here";
+    };
 
 type DiscordTokenStore = DiscordToken[];
 
@@ -216,7 +216,7 @@ function normalizeDiscordLists(source: string): string {
             continue;
         }
 
-        if (line.startsWith(">>>")) {
+        if (line.startsWith(">>> ")) {
             multiLineQuote = true;
 
             const content = line.slice(3).replace(/^ /, "");
@@ -1792,42 +1792,6 @@ function renderNode(
          */
         case "html":
             return node.value ?? "";
-
-        /*
-         * --------------------------------------------------------------
-         * GFM footnote reference
-         * --------------------------------------------------------------
-         */
-        case "footnoteReference":
-            /*
-             * Footnotes are not part of Discord Markdown. Preserve the
-             * visible label rather than creating a functional footnote.
-             */
-            return (
-                <span key={key}>
-                    [{String(
-                        node.label ??
-                        node.identifier ??
-                        ""
-                    )}]
-                </span>
-            );
-
-        /*
-         * --------------------------------------------------------------
-         * GFM footnote definition
-         * --------------------------------------------------------------
-         */
-        case "footnoteDefinition":
-            return (
-                <div key={key}>
-                    {renderChildren(
-                        node.children,
-                        key,
-                        context
-                    )}
-                </div>
-            );
 
         /*
          * --------------------------------------------------------------
