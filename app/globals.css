@@ -803,6 +803,40 @@ hr {
 }
 
 /*
+    checkbox
+*/
+
+.checkbox input[type="checkbox"] {
+    appearance: none;
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    position: absolute;
+}
+.checkbox span {
+    margin-left: 28px;
+}
+.checkbox input[type="checkbox"]::before {
+    font-family: "Material Symbols Outlined";
+    font-size: 24px;
+    line-height: 1;
+    display: inline-block;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "liga";
+    -webkit-font-feature-settings: "liga";
+    transition: all 200ms cubic-bezier(0.2, 0, 0, 1);
+}
+.checkbox input[type="checkbox"]:not(:checked)::before {
+    content: "check_box_outline_blank";
+    font-variation-settings: 'FILL' var(--icon-FILL, 0);
+}
+.checkbox input[type="checkbox"]:checked::before {
+    content: "check_box";
+    color: rgb(var(--md-color-primary));
+    font-variation-settings: 'FILL' var(--icon-FILL, 1);
+}
+
+/*
     text input
 */
 
