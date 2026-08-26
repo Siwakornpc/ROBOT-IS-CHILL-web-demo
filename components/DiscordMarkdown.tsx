@@ -259,34 +259,40 @@ function protectDiscordSyntax(
         if (i === 0 || source[i - 1] === "\n") {
             const rest = source.slice(i);
 
+            // ```lang\ncode``` — Discord (unlike CommonMark) allows the closing
+            // fence to sit on the same line as the last line of code, e.g.
+            //   ```js
+            //   code```
+            // remark won't recognize that as closed, so we extract the pieces
+            // ourselves and re-emit a fence with the closing marker forced onto
+            // its own line, which remark is guaranteed to parse correctly.
             const fence = rest.match(
-                /^ {0,3}(`{3,}|~{3,})[^\n]*(?:\n|$)/
+                /^```(?:(\w+)\n)?([\s\S]*?)```/
             );
 
             if (fence) {
-                if (!inFence) {
-                    inFence = true;
-                    fenceChar = fence[1][0];
-                    fenceLength = fence[1].length;
-                } else if (
-                    fence[1][0] === fenceChar &&
-                    fence[1].length >= fenceLength
-                ) {
-                    inFence = false;
-                    fenceChar = "";
-                    fenceLength = 0;
+                const lang = fence[1] ?? "";
+                let content = fence[2];
+
+                // When there's no language token, the newline that terminates the
+                // opening ``` line ends up captured as a leading "\n" in content
+                // instead of being consumed separately — strip it back out.
+                if (!lang && content.startsWith("\n")) {
+                    content = content.slice(1);
                 }
 
-                result += fence[0];
+                const normalized =
+                    "```" +
+                    lang +
+                    "\n" +
+                    content +
+                    (content.endsWith("\n") ? "" : "\n") +
+                    "```";
+
+                result += normalized;
                 i += fence[0].length;
                 continue;
             }
-        }
-
-        if (inFence) {
-            result += source[i];
-            i++;
-            continue;
         }
 
         /*
@@ -295,26 +301,14 @@ function protectDiscordSyntax(
          * --------------------------------------------------------------
          */
         if (source[i] === "`") {
-            let runLength = 1;
+            // `code` — single backtick delimiters only.
+            const inline = source
+                .slice(i)
+                .match(/^`([^`]*)`/);
 
-            while (
-                source[i + runLength] === "`"
-            ) {
-                runLength++;
-            }
-
-            const delimiter = "`".repeat(runLength);
-            const end = source.indexOf(
-                delimiter,
-                i + runLength
-            );
-
-            if (end !== -1) {
-                const endIndex = end + runLength;
-
-                result += source.slice(i, endIndex);
-                i = endIndex;
-
+            if (inline) {
+                result += inline[0];
+                i += inline[0].length;
                 continue;
             }
         }

@@ -869,7 +869,7 @@ hr {
     background: rgb(var(--md-color-surface-container-low));
     box-shadow: var(--elevation-3);
     transform: scale(.95);
-    opacity: 0;
+    opacity: 0.5;
     z-index: 1;
     transition: all .2s, top, left;
 }
