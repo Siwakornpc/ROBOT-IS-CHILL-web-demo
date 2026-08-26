@@ -179,35 +179,35 @@ export function FilterPanel({
         const defaultValue =
             filterType === "mode" ? "true" :
             filterType === "builtin" ? "true" :
+            filterType === "tiling" ? "none" :
             "";
         
-        onFiltersChange({
+        const updatedFilters = {
             ...filters,
             [filterType]: [...existingList, defaultValue],
-        });
+        };
+        onFiltersChange(updatedFilters);
     };
 
     const handleRemoveFilter = (filterType: string, indexToRemove: number) => {
         const updatedList = (filters[filterType] ?? []).filter((_, i) => i !== indexToRemove);
-        const nextFilters = { ...filters };
+        const updatedFilters = { ...filters };
 
-        if (updatedList.length > 0) {
-            nextFilters[filterType] = updatedList;
-        } else {
-            delete nextFilters[filterType];
-        }
+        if (updatedList.length > 0) updatedFilters[filterType] = updatedList;
+        else delete updatedFilters[filterType];
 
-        onFiltersChange(nextFilters);
+        onFiltersChange(updatedFilters);
     };
 
     const handleValueChange = (filterType: string, indexToUpdate: number, newValue: string) => {
         const updatedList = [...(filters[filterType] ?? [])];
         updatedList[indexToUpdate] = newValue;
 
-        onFiltersChange({
+        const updatedFilters = {
             ...filters,
             [filterType]: updatedList,
-        });
+        };
+        onFiltersChange(updatedFilters);
     };
 
     const activeItems = Object.entries(filters).flatMap(([type, values]) =>
