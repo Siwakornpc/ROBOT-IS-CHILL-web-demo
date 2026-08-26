@@ -1,6 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState, ReactNode, CSSProperties, FocusEvent, MouseEvent as ReactMouseEvent, cloneElement, useLayoutEffect } from "react";
+import {
+    useEffect,
+    useRef,
+    useState,
+    useMemo,
+    ReactNode,
+    CSSProperties,
+    FocusEvent,
+    MouseEvent as ReactMouseEvent,
+    KeyboardEvent as ReactKeyboardEvent,
+    cloneElement,
+    useLayoutEffect,
+} from "react";
 import { createPortal } from "react-dom";
 
 export type MenuAnchor = "t" | "b" | "l" | "r" | "tl" | "tr" | "bl" | "br" | "s" | "e" | "st" | "sb" | "et" | "eb";
@@ -10,7 +22,29 @@ export interface MenuOption<T extends string = string> {
     label: string;
     description?: string;
     icon?: ReactNode;
+    disabled?: boolean;
     children?: MenuOption<T>[];
+}
+
+/** Cheap shared hook so every item/menu isn't calling matchMedia on every hover. */
+function useIsCoarsePointer() {
+    const [isCoarse, setIsCoarse] = useState(false);
+    useEffect(() => {
+        const mql = window.matchMedia("(pointer: coarse)");
+        setIsCoarse(mql.matches);
+        const handler = (e: MediaQueryListEvent) => setIsCoarse(e.matches);
+        mql.addEventListener("change", handler);
+        return () => mql.removeEventListener("change", handler);
+    }, []);
+    return isCoarse;
+}
+
+/** Maps a starting anchor to the initial (pre-flip) top/left side, matching the CSS anchor-* rules. */
+function initialSideFromAnchor(anchor: MenuAnchor): { side: "right" | "left" | "bottom" | "top" } {
+    if (anchor === "l" || anchor === "tl" || anchor === "bl") return { side: "left" };
+    if (anchor === "r" || anchor === "tr" || anchor === "br" || anchor === "e" || anchor === "et" || anchor === "eb") return { side: "right" };
+    if (anchor === "s" || anchor === "st" || anchor === "sb") return { side: "right" };
+    return { side: "right" };
 }
 
 interface MenuItemProps<T extends string> {
@@ -18,6 +52,8 @@ interface MenuItemProps<T extends string> {
     selectedValue: T;
     onChange: (value: T) => void;
     onCloseAll: () => void;
+    /** Bumped by an ancestor whenever the whole tree should collapse; lets each item reset its own open state. */
+    closeSignal: number;
     optionIcon?: (option: MenuOption<T>) => ReactNode;
     submenuAnchor?: MenuAnchor;
     pageMargin?: number;
@@ -28,53 +64,109 @@ function MenuItem<T extends string>({
     selectedValue,
     onChange,
     onCloseAll,
+    closeSignal,
     optionIcon,
     submenuAnchor = "st",
     pageMargin = 12,
 }: MenuItemProps<T>) {
     const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
-    const [coords, setCoords] = useState<{ top: number; left: number; flipLeft: boolean; flipUp: boolean }>({ top: 0, left: 0, flipLeft: false, flipUp: false });
+    const [coords, setCoords] = useState<{ top: number; left: number; flipLeft: boolean; flipUp: boolean }>({
+        top: 0,
+        left: 0,
+        flipLeft: initialSideFromAnchor(submenuAnchor).side === "left",
+        flipUp: false,
+    });
 
     const itemRef = useRef<HTMLDivElement>(null);
     const submenuRef = useRef<HTMLDivElement>(null);
+    const isCoarsePointer = useIsCoarsePointer();
 
     const hasChildren = Boolean(item.children && item.children.length > 0);
     const isSelected = item.value === selectedValue;
     const rawIcon = optionIcon ? optionIcon(item) : item.icon;
 
+    // Any ancestor (or this menu) closing collapses this item's submenu too,
+    // so reopening the tree later doesn't resurrect stale open submenus.
+    useEffect(() => {
+        setIsSubmenuOpen(false);
+    }, [closeSignal]);
+
+    const recalcPosition = () => {
+        if (!itemRef.current) return;
+        const rect = itemRef.current.getBoundingClientRect();
+        const submenuEl = submenuRef.current;
+
+        const menuWidth = submenuEl?.offsetWidth || 200;
+        const menuHeight = submenuEl?.offsetHeight || 156;
+
+        const spaceRight = window.innerWidth - rect.right - pageMargin;
+        const spaceLeft = rect.left - pageMargin;
+        const spaceBelow = window.innerHeight - rect.bottom - pageMargin;
+        const spaceAbove = rect.top - pageMargin;
+
+        const preferLeft = initialSideFromAnchor(submenuAnchor).side === "left";
+        const flipLeft = preferLeft
+            ? !(spaceLeft > menuWidth || spaceLeft > spaceRight)
+            : spaceRight < menuWidth && spaceLeft > spaceRight;
+
+        const flipUp = spaceBelow < 120 && spaceAbove > spaceBelow;
+
+        const top = flipUp ? Math.max(pageMargin, rect.bottom - menuHeight) : rect.top;
+        const left = flipLeft ? Math.max(pageMargin, rect.left - menuWidth) : rect.right;
+
+        setCoords({ top, left, flipLeft, flipUp });
+    };
+
     useLayoutEffect(() => {
-        if (isSubmenuOpen && itemRef.current) {
-            const rect = itemRef.current.getBoundingClientRect();
-            const submenuEl = submenuRef.current;
-
-            const menuWidth = submenuEl?.offsetWidth || 200;
-            const menuHeight = submenuEl?.offsetHeight || 156;
-
-            const spaceRight = window.innerWidth - rect.right - pageMargin;
-            const spaceLeft = rect.left - pageMargin;
-            const spaceBelow = window.innerHeight - rect.bottom - pageMargin;
-            const spaceAbove = rect.top - pageMargin;
-
-            const flipUp = spaceBelow < 120 && spaceAbove > spaceBelow;
-            const flipLeft = spaceRight < menuWidth && spaceLeft > spaceRight;
-
-            const top = flipUp ? Math.max(pageMargin, rect.bottom - menuHeight) : rect.top;
-            const left = flipLeft ? Math.max(pageMargin, rect.left - menuWidth) : rect.right;
-
-            setCoords({ top, left, flipLeft, flipUp });
-        }
+        if (isSubmenuOpen) recalcPosition();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSubmenuOpen, pageMargin]);
+
+    // Keep the submenu glued to its anchor if the page scrolls/resizes while open.
+    useEffect(() => {
+        if (!isSubmenuOpen) return;
+        const handle = () => recalcPosition();
+        window.addEventListener("scroll", handle, true);
+        window.addEventListener("resize", handle);
+        return () => {
+            window.removeEventListener("scroll", handle, true);
+            window.removeEventListener("resize", handle);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isSubmenuOpen]);
+
+    const selectItem = () => {
+        if (item.disabled) return;
+        onChange(item.value);
+        setIsSubmenuOpen(false);
+        onCloseAll();
+    };
 
     const handleItemClick = (e: ReactMouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
+        if (item.disabled) return;
 
         if (hasChildren) {
             setIsSubmenuOpen((prev) => !prev);
         } else {
-            onChange(item.value);
+            selectItem();
+        }
+    };
+
+    const handleKeyDown = (e: ReactKeyboardEvent) => {
+        if (item.disabled) return;
+        if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            if (hasChildren) setIsSubmenuOpen((prev) => !prev);
+            else selectItem();
+        } else if (e.key === "ArrowRight" && hasChildren) {
+            e.preventDefault();
+            setIsSubmenuOpen(true);
+        } else if (e.key === "Escape" && hasChildren && isSubmenuOpen) {
+            e.preventDefault();
+            e.stopPropagation();
             setIsSubmenuOpen(false);
-            onCloseAll();
         }
     };
 
@@ -83,7 +175,7 @@ function MenuItem<T extends string>({
         if (rawIcon) {
             if (typeof rawIcon === "string") return <i className="icon menu-option-icon">{rawIcon}</i>;
             return cloneElement(rawIcon as any, {
-                className: `${(rawIcon as any).props?.className || ''} menu-option-icon`.trim()
+                className: `${(rawIcon as any).props?.className || ""} menu-option-icon`.trim(),
             });
         }
         return null;
@@ -94,19 +186,25 @@ function MenuItem<T extends string>({
             ref={itemRef}
             className="menu-option-wrapper"
             onMouseEnter={() => {
-                // ignore hover events for mobile devices
-                if (window.matchMedia("(pointer: coarse)").matches) return;
+                if (isCoarsePointer || item.disabled) return;
                 if (hasChildren) setIsSubmenuOpen(true);
             }}
             onMouseLeave={() => {
-                if (window.matchMedia("(pointer: coarse)").matches) return;
+                if (isCoarsePointer) return;
                 setIsSubmenuOpen(false);
             }}
         >
             <div
+                role={hasChildren ? "menuitem" : "menuitemradio"}
+                aria-haspopup={hasChildren || undefined}
+                aria-expanded={hasChildren ? isSubmenuOpen : undefined}
+                aria-checked={!hasChildren ? isSelected : undefined}
+                aria-disabled={item.disabled || undefined}
+                tabIndex={item.disabled ? -1 : 0}
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={handleItemClick}
-                className={`menu-option ${isSelected ? "selected" : ""} ${isSubmenuOpen ? "hover-active" : ""}`}
+                onKeyDown={handleKeyDown}
+                className={`menu-option ${isSelected ? "selected" : ""} ${isSubmenuOpen ? "hover-active" : ""} ${item.disabled ? "disabled" : ""}`}
             >
                 {renderIcon()}
 
@@ -118,34 +216,39 @@ function MenuItem<T extends string>({
                 {hasChildren && <i className="icon menu-option-menu-icon">arrow_right</i>}
             </div>
 
-            {hasChildren && isSubmenuOpen && typeof document !== "undefined" && createPortal(
-                <div
-                    ref={submenuRef}
-                    className={`menu submenu-popout ascroll-y inset-scrollbar visible ${coords.flipUp ? "anchor-sb" : "anchor-st"}`}
-                    style={{
-                        position: "fixed",
-                        top: `${coords.top}px`,
-                        left: `${coords.left}px`,
-                        zIndex: 9999,
-                    }}
-                    onMouseEnter={() => setIsSubmenuOpen(true)}
-                    onMouseLeave={() => setIsSubmenuOpen(false)}
-                >
-                    {item.children!.map((child) => (
-                        <MenuItem
-                            key={child.value}
-                            item={child}
-                            selectedValue={selectedValue}
-                            onChange={onChange}
-                            onCloseAll={onCloseAll}
-                            optionIcon={optionIcon}
-                            submenuAnchor={submenuAnchor}
-                            pageMargin={pageMargin}
-                        />
-                    ))}
-                </div>,
-                document.body
-            )}
+            {hasChildren &&
+                isSubmenuOpen &&
+                typeof document !== "undefined" &&
+                createPortal(
+                    <div
+                        ref={submenuRef}
+                        role="menu"
+                        className={`menu submenu-popout ascroll-y inset-scrollbar visible ${coords.flipUp ? "anchor-sb" : "anchor-st"}`}
+                        style={{
+                            position: "fixed",
+                            top: `${coords.top}px`,
+                            left: `${coords.left}px`,
+                            zIndex: "var(--z-menu, 9999)",
+                        }}
+                        onMouseEnter={() => setIsSubmenuOpen(true)}
+                        onMouseLeave={() => setIsSubmenuOpen(false)}
+                    >
+                        {item.children!.map((child) => (
+                            <MenuItem
+                                key={child.value}
+                                item={child}
+                                selectedValue={selectedValue}
+                                onChange={onChange}
+                                onCloseAll={onCloseAll}
+                                closeSignal={closeSignal}
+                                optionIcon={optionIcon}
+                                submenuAnchor={submenuAnchor}
+                                pageMargin={pageMargin}
+                            />
+                        ))}
+                    </div>,
+                    document.body
+                )}
         </div>
     );
 }
@@ -193,90 +296,116 @@ export default function MenuSelect<T extends string>({
 }: MenuSelectProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
     const [activeAnchor, setActiveAnchor] = useState<MenuAnchor>(anchor);
-    const [maxHeight, setMaxHeight] = useState<number | undefined>(undefined);
+    // Bumped every time the menu (or a submenu tree) should fully collapse its internal state.
+    const [closeSignal, setCloseSignal] = useState(0);
 
     const wrapperRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
 
+    const recalcPosition = () => {
+        if (!wrapperRef.current || !menuRef.current) return;
+        const anchorRect = wrapperRef.current.getBoundingClientRect();
+        const isMobile = window.matchMedia("(pointer: coarse)").matches || window.innerWidth <= 768;
+
+        const spaceBelow = window.innerHeight - anchorRect.bottom - pageMargin;
+        const spaceAbove = anchorRect.top - pageMargin;
+
+        let shouldFlipUp = !forceDirectionDown && spaceBelow < 100 && spaceAbove > spaceBelow;
+        if (isMobile && forceDirectionDown) shouldFlipUp = false;
+
+        const resolvedAnchor = shouldFlipUp ? (anchor.startsWith("t") ? (anchor.replace("t", "b") as MenuAnchor) : "bl") : anchor;
+
+        setActiveAnchor(resolvedAnchor);
+        const targetSpace = shouldFlipUp ? spaceAbove : spaceBelow;
+    };
+
     useLayoutEffect(() => {
-        if (isOpen && wrapperRef.current && menuRef.current) {
-            const anchorRect = wrapperRef.current.getBoundingClientRect();
-
-            // Mobile detection check
-            const isMobile = window.matchMedia("(pointer: coarse)").matches || window.innerWidth <= 768;
-
-            const spaceBelow = window.innerHeight - anchorRect.bottom - pageMargin;
-            const spaceAbove = anchorRect.top - pageMargin;
-
-            let shouldFlipUp = !forceDirectionDown && (spaceBelow < 100 && spaceAbove > spaceBelow);
-
-            if (isMobile && forceDirectionDown) shouldFlipUp = false;
-
-            let resolvedAnchor = anchor;
-            if (shouldFlipUp) resolvedAnchor = anchor.startsWith("b") ? (anchor.replace("b", "t") as MenuAnchor) : "tl";
-            else resolvedAnchor = anchor;
-
-            setActiveAnchor(resolvedAnchor);
-
-            const targetSpace = shouldFlipUp ? spaceAbove : spaceBelow;
-            setMaxHeight(Math.max(120, targetSpace));
-        }
+        recalcPosition();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpen, anchor, pageMargin, options, forceDirectionDown]);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        const handle = () => recalcPosition();
+        window.addEventListener("scroll", handle, true);
+        window.addEventListener("resize", handle);
+        return () => {
+            window.removeEventListener("scroll", handle, true);
+            window.removeEventListener("resize", handle);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen]);
+
+    const closeMenu = () => {
+        setIsOpen(false);
+        // Let every descendant MenuItem reset its own submenu state.
+        setCloseSignal((n) => n + 1);
+    };
+    const openMenu = () => setIsOpen(true);
+    const toggleMenu = () => (isOpen ? closeMenu() : openMenu());
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
-                // don't close if clicking inside a submenu
                 const isPortalClick = (event.target as HTMLElement).closest(".submenu-popout");
-                if (!isPortalClick) {
-                    setIsOpen(false);
-                }
+                if (!isPortalClick) closeMenu();
             }
+        }
+        function handleEscape(event: globalThis.KeyboardEvent) {
+            if (event.key === "Escape" && isOpen) closeMenu();
         }
 
         document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
+        document.addEventListener("keydown", handleEscape);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+            document.removeEventListener("keydown", handleEscape);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen]);
 
-    const selectedOption = options.find((item) => item.value === value) ?? options[0];
-    const toggleMenu = () => setIsOpen((prev) => !prev);
-    const openMenu = () => setIsOpen(true);
-    const closeMenu = () => setIsOpen(false);
+    const selectedOption = useMemo(() => options.find((item) => item.value === value) ?? options[0], [options, value]);
 
-    // open when any child input element receives focus
     const handleFocusCapture = (e: FocusEvent<HTMLDivElement>) => {
         const target = e.target as HTMLElement;
         if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") {
-            setIsOpen(true);
+            openMenu();
         }
     };
 
-    const getInputProps = (customProps: Record<string, any> = {}) => ({
-        onFocus: openMenu,
-        onClick: openMenu,
-        ...customProps,
-    });
+    // Compose with any handlers the caller already passed instead of clobbering them.
+    const getInputProps = (customProps: Record<string, any> = {}) => {
+        const { onFocus, onClick, ...rest } = customProps;
+        return {
+            onFocus: (e: FocusEvent<HTMLInputElement>) => {
+                openMenu();
+                onFocus?.(e);
+            },
+            onClick: (e: ReactMouseEvent<HTMLInputElement>) => {
+                openMenu();
+                onClick?.(e);
+            },
+            ...rest,
+        };
+    };
 
     return (
-        <div
-            className="menu-wrapper"
-            ref={wrapperRef}
-            style={style}
-            onFocusCapture={handleFocusCapture}
-        >
+        <div className="menu-wrapper" ref={wrapperRef} style={style} onFocusCapture={handleFocusCapture}>
             {trigger ? (
                 trigger({
                     isOpen,
                     toggle: toggleMenu,
                     open: openMenu,
                     close: closeMenu,
-                    setIsOpen,
+                    setIsOpen: (open: boolean) => (open ? openMenu() : closeMenu()),
                     selectedOption,
                     getInputProps,
                 })
             ) : (
                 <button
                     type="button"
+                    aria-haspopup="menu"
+                    aria-expanded={isOpen}
                     className={`menu-trigger ${className} ${id || ""} ${isOpen ? "clicked" : ""}`}
                     onClick={toggleMenu}
                 >
@@ -286,10 +415,8 @@ export default function MenuSelect<T extends string>({
 
             <div
                 ref={menuRef}
+                role="menu"
                 className={`menu ascroll-y inset-scrollbar anchor-${activeAnchor} ${id ? `${id}-options` : ""} ${isOpen ? "visible" : ""}`}
-                style={{
-                    maxHeight: maxHeight ? `${maxHeight}px` : undefined,
-                }}
             >
                 {title && <div className="menu-title">{title}</div>}
                 {options.map((item) => (
@@ -298,7 +425,8 @@ export default function MenuSelect<T extends string>({
                         item={item}
                         selectedValue={value}
                         onChange={onChange}
-                        onCloseAll={() => setIsOpen(false)}
+                        onCloseAll={closeMenu}
+                        closeSignal={closeSignal}
                         optionIcon={optionIcon}
                         submenuAnchor={submenuAnchor}
                         pageMargin={pageMargin}
