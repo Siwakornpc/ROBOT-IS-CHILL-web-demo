@@ -283,35 +283,6 @@ export default function SearchResults({
             if (mode === "tiles" && isTileRecord(data)) {
                 if (filterKey === "color") {
                     const [x, y] = data.active_color;
-                    if (!validValues.includes(`${x},${y}`)) return false;
-                }
-
-                if (filterKey === "iacolor") {
-                    const [x, y] = data.inactive_color;
-                    if (x === null || y === null) return false;
-                    if (!validValues.includes(`${x},${y}`)) return false;
-                }
-
-                if (filterKey === "tiling") {
-                    if (!validValues.includes(data.tiling)) return false;
-                }
-
-                if (filterKey === "tags") {
-                    const hasTag = validValues.some((val) =>
-                        data.tags.some((tag) => tag.toLowerCase().includes(val.toLowerCase()))
-                    );
-                    if (!hasTag) return false;
-                }
-
-                if (filterKey === "source") {
-                    const [sourceDir] = data.sprite;
-                    if (!validValues.some((val) => sourceDir.toLowerCase().includes(val.toLowerCase()))) {
-                        return false;
-                    }
-                }
-
-                if (filterKey === "color") {
-                    const [x, y] = data.active_color;
                     const tileColor = `${x},${y}`;
                     const selectedColors = validValues.flatMap((val) => val.split(";"));
 
@@ -324,6 +295,20 @@ export default function SearchResults({
                     const selectedColors = validValues.flatMap((val) => val.split(";"));
 
                     if (!selectedColors.includes(tileIaColor)) return false;
+                }
+
+                if (filterKey === "tiling") {
+                    if (!validValues.includes(data.tiling)) return false;
+                }
+
+                if (filterKey === "tags") {
+                    const hasTag = validValues.some((val) => data.tags.some((tag) => tag.toLowerCase().includes(val.toLowerCase())));
+                    if (!hasTag) return false;
+                }
+
+                if (filterKey === "source") {
+                    const [sourceDir] = data.sprite;
+                    if (!validValues.some((val) => sourceDir.toLowerCase().includes(val.toLowerCase()))) return false;
                 }
             }
 
