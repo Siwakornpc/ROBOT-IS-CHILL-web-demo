@@ -335,10 +335,6 @@ ul {
     background: var(--selection);
 }
 
-.selection {
-    display: inline-block;
-}
-
 ::placeholder {
     color: var(--variant);
 }
