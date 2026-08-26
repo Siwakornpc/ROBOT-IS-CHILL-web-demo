@@ -11,6 +11,7 @@ import {
 from "./handlers";
 import { getCaret } from "./caretUtils";
 
+
 type EditorRefs = {
     editorAreaRef: RefObject<HTMLDivElement | null>;
     gutterElRef: RefObject<HTMLDivElement | null>;
@@ -66,8 +67,24 @@ export function useEditorEngine({
             redo,
             onCodeChange,
         });
-        const handleKeydown = createKeydownHandler({ editorArea, state, saveState, render, undo, redo, onCodeChange });
-        const handleSelectionChange = createSelectionChangeHandler({ win, editorArea, gutterEl, state });
+        const handleKeydown = createKeydownHandler(
+            {
+                editorArea,
+                state,
+                saveState,
+                render,
+                undo,
+                redo,
+                onCodeChange
+            }
+        );
+        const handleSelectionChange = createSelectionChangeHandler(
+            {
+                win,
+                editorArea,
+                gutterEl,
+                state
+            });
         const handleClick = createEditorClickHandler(editorArea);
 
         const handleScroll = () => {
