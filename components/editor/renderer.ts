@@ -45,6 +45,39 @@ function highlightLines(win: WindowWithEditor, lines: string[], value: string) {
     return highlightedLines;
 }
 
+// Gets all node elements of ".editor-line", and get the selection of the range
+// if it has a node element. Then get the current line node closest to the
+// caret. Identify the layout boundaries using the first and last children
+// elements, which will then used in a condition to scroll all the way when the
+// caret reaches the end of the text area.
+function scrollCaretIntoView(scrollEl: HTMLElement) {
+    const selection = window.getSelection();
+    if (!selection || !selection.rangeCount) return;
+
+    const range = selection.getRangeAt(0);
+    let node: Node | null = range.startContainer;
+
+    if (node.nodeType === Node.TEXT_NODE) {
+        node = node.parentNode;
+    }
+
+    const currentLine = (node as HTMLElement | null)?.closest?.(".editor-line") as HTMLElement | null;
+    if (!currentLine) return;
+
+    const firstLine = currentLine.parentElement?.firstElementChild;
+    const lastLine = currentLine.parentElement?.lastElementChild;
+
+    if (currentLine === firstLine) {
+        scrollEl.scrollTop = 0;
+    } else if (currentLine === lastLine) {
+        scrollEl.scrollTop = scrollEl.scrollHeight;
+    } else {
+        currentLine.scrollIntoView({
+            block: "nearest",
+        });
+    }
+}
+
 export function createRenderer(deps: RendererDeps) {
     const {
         win,
@@ -78,6 +111,7 @@ export function createRenderer(deps: RendererDeps) {
         const e = clamp(end, 0, state.value.length);
 
         setRange(editorArea, lines, s, e);
+        scrollCaretIntoView(scrollEl);
 
         const { lineIndex } = offsetToLineColumn(lines, s);
         const lineEls = Array.from(editorArea.children) as HTMLElement[];
@@ -91,6 +125,7 @@ export function createRenderer(deps: RendererDeps) {
             if (gen !== state.renderGen) return;
             if (document.activeElement !== editorArea) return;
             setRange(editorArea, lines, s, e);
+            scrollCaretIntoView(scrollEl);
         });
     }
 
