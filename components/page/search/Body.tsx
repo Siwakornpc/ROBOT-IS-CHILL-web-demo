@@ -218,17 +218,22 @@ export function FilterPanel({
         switch (type) {
             case "color":
             case "iacolor": {
-                const coords = value ? value.split(",").map(Number) : null;
-                const selectedColor: [number, number] | null = 
-                    coords && coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])
-                        ? [coords[0], coords[1]]
-                        : null;
+                const selectedColors: [number, number][] = value
+                    ? value
+                        .split(";")
+                        .map((pair) => pair.split(",").map(Number))
+                        .filter(
+                            (coords): coords is [number, number] =>
+                                coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])
+                        )
+                    : [];
 
                 return (
                     <PaletteColorPicker
-                        selectedColor={selectedColor}
-                        onChange={(newColor) => {
-                            const formattedValue = newColor ? `${newColor[0]},${newColor[1]}` : "";
+                        multiple={true}
+                        selectedColor={selectedColors}
+                        onChange={(newColors) => {
+                            const formattedValue = newColors.map((c) => `${c[0]},${c[1]}`).join(";");
                             handleValueChange(type, index, formattedValue);
                         }}
                     />

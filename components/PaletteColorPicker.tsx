@@ -42,17 +42,30 @@ export const DEFAULT_PALETTE: SwatchItem[] = [
     { color: "#0b0b0e", value: [6, 4] },
 ];
 
-export default function PaletteColorPicker({
-    selectedColor,
-    onChange,
-    palette = DEFAULT_PALETTE,
-}: {
+type SingleSelectProps = {
+    multiple?: false;
     selectedColor: [number, number] | null;
     onChange: (color: [number, number] | null) => void;
     palette?: SwatchItem[];
-}) {
+};
+
+type MultiSelectProps = {
+    multiple: true;
+    selectedColor: [number, number][];
+    onChange: (colors: [number, number][]) => void;
+    palette?: SwatchItem[];
+};
+
+type PaletteColorPickerProps = SingleSelectProps | MultiSelectProps;
+
+export default function PaletteColorPicker(props: PaletteColorPickerProps) {
+    const { palette = DEFAULT_PALETTE } = props;
+
     const maxColumn = palette.length > 0 ? Math.max(...palette.map((i) => i.value[0])) + 1 : 1;
     const maxRow = palette.length > 0 ? Math.max(...palette.map((i) => i.value[1])) + 1 : 1;
+
+    const isMatch = (A: [number, number], B: [number, number]) => A[0] === B[0] && A[1] === B[1];
+
     return (
         <div className="palette-color-picker-container">
             <div
@@ -64,11 +77,23 @@ export default function PaletteColorPicker({
             >
                 {palette.map((item) => {
                     const isSelected =
-                        selectedColor?.[0] === item.value[0] &&
-                        selectedColor?.[1] === item.value[1];
+                        props.multiple ? (props.selectedColor ?? []).some((c) => isMatch(c, item.value))
+                        : props.selectedColor ? isMatch(props.selectedColor, item.value)
+                        : false;
 
-                    const gridX = item.value[0] + 1;
-                    const gridY = item.value[1] + 1;
+                    const handleClick = () => {
+                        if (props.multiple) {
+                            const current = props.selectedColor ?? [];
+                            const exists = current.some((c) => isMatch(c, item.value));
+                            if (exists) {
+                                props.onChange(current.filter((c) => !isMatch(c, item.value)));
+                            } else {
+                                props.onChange([...current, item.value]);
+                            }
+                        } else {
+                            props.onChange(isSelected ? null : item.value);
+                        }
+                    };
 
                     return (
                         <button
@@ -76,8 +101,8 @@ export default function PaletteColorPicker({
                             type="button"
                             className={`color-btn ${isSelected ? "selected" : ""}`}
                             style={{
-                                gridColumn: gridX,
-                                gridRow: gridY,
+                                gridColumn: item.value[0] + 1,
+                                gridRow: item.value[1] + 1,
                                 "--color": item.color,
                             } as React.CSSProperties}
                             title={
@@ -85,13 +110,7 @@ export default function PaletteColorPicker({
                                     ? `${item.label} [${item.value[0]}, ${item.value[1]}]`
                                     : `[${item.value[0]}, ${item.value[1]}]`
                             }
-                            onClick={() =>
-                                onChange(
-                                    isSelected
-                                        ? null
-                                        : (item.value as [number, number]),
-                                )
-                            }
+                            onClick={handleClick}
                         />
                     );
                 })}

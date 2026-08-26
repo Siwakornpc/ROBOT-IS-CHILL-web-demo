@@ -309,6 +309,22 @@ export default function SearchResults({
                         return false;
                     }
                 }
+
+                if (filterKey === "color") {
+                    const [x, y] = data.active_color;
+                    const tileColor = `${x},${y}`;
+                    const selectedColors = validValues.flatMap((val) => val.split(";"));
+
+                    if (!selectedColors.includes(tileColor)) return false;
+                }
+
+                if (filterKey === "iacolor") {
+                    const [x, y] = data.inactive_color;
+                    const tileIaColor = `${x},${y}`;
+                    const selectedColors = validValues.flatMap((val) => val.split(";"));
+
+                    if (!selectedColors.includes(tileIaColor)) return false;
+                }
             }
 
             // --- MACRO FILTERS ---
