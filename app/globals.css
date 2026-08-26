@@ -193,7 +193,6 @@ ul {
 .discord-markdown .discord-spoiler {
     display: inline;
     width: auto;
-    padding: 0 2px;
     border-radius: 3px;
     color: transparent;
     background: rgb(var(--md-color-inverse-surface));
@@ -214,6 +213,9 @@ ul {
 }
 .discord-markdown .discord-spoiler p {
     display: inline;
+}
+.discord-markdown .discord-spoiler:not(:has(:not(input[type=checkbox])))::before {
+    content: " ";
 }
 
 .discord-markdown .discord-subtext {
