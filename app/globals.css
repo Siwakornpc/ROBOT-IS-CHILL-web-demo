@@ -47,6 +47,8 @@
     --variant-name: rgb(var(--md-color-render-variant-name));
     --variant-value: rgb(var(--md-color-render-variant-value));
 
+    --type-encapsulated: rgb(var(--md-color-outline));
+
     --surface-hovered: rgb(var(--md-color-on-surface), .08);
     --surface-pressed: rgb(var(--md-color-on-surface), .1);
     --sb-button-selected: rgb(var(--md-color-secondary-container));
@@ -1623,6 +1625,24 @@ hr {
 }
 .variant-value {
     color: var(--variant-value)
+}
+
+/* typescript-alike syntax */
+
+.type-encapsulated {
+    color: var(--type-encapsulated);
+}
+.type-variantname {
+    color: var(--variant-name);
+}
+.type-flagname {
+    color: var(--flag-name);
+}
+.type-variable {
+    color: rgb(var(--md-color-primary));
+}
+.type-value {
+    color: rgb(var(--md-color-tertiary));
 }
 
 /*

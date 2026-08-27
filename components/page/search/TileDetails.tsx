@@ -352,11 +352,15 @@ export function Details({ selected }: DetailsProps) {
                             {selected.variant.applied}
                         </DiscordMarkdown>
                     </div>
-                
-                    <p className="search-details-label">Syntax</p>
-                    <div className="search-details-detailbox variant" id="description">
-                        {selected.variant.syntax}
-                    </div>
+
+                    {selected.variant.syntax && (
+                        <>
+                            <p className="search-details-label">Syntax</p>
+                            <div className="search-details-detailbox variant" id="description">
+                                {selected.variant.syntax}
+                            </div>
+                        </>
+                    )}
                 </div>
             </>
         );

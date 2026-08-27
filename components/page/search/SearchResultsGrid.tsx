@@ -47,7 +47,7 @@ export type FilterRecord = {
 
 export type VariantRecord = {
     description: string;
-    syntax: string;
+    syntax?: string;
     applied: string;
 }
 export type FlagRecord = {
@@ -132,7 +132,6 @@ function isVariantRecord(value: unknown): value is VariantRecord {
     return typeof value === "object"
         && value !== null
         && "description" in value
-        && "syntax" in value
         && "applied" in value;
 }
 
