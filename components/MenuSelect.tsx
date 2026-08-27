@@ -59,7 +59,6 @@ function MenuItem<T extends string>({
     submenuAnchor = "st",
 }: MenuItemProps<T>) {
     const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
-    const itemRef = useRef<HTMLDivElement>(null);
     const submenuRef = useRef<HTMLDivElement>(null);
     const isCoarsePointer = useIsCoarsePointer();
     const anchorId = useId().replace(/:/g, "");
@@ -82,35 +81,16 @@ function MenuItem<T extends string>({
         setIsSubmenuOpen(false);
     }, [closeSignal]);
 
-    const selectItem = () => {
-        if (item.disabled) return;
-        onChange(item.value);
-        setIsSubmenuOpen(false);
-        onCloseAll();
-    };
-
     const handleItemClick = (e: ReactMouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
         if (item.disabled) return;
 
-        if (hasChildren) setIsSubmenuOpen((prev) => !prev);
-        else selectItem();
-    };
-
-    const handleKeyDown = (e: ReactKeyboardEvent) => {
-        if (item.disabled) return;
-        if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            if (hasChildren) setIsSubmenuOpen((prev) => !prev);
-            else selectItem();
-        } else if (e.key === "ArrowRight" && hasChildren) {
-            e.preventDefault();
-            setIsSubmenuOpen(true);
-        } else if (e.key === "Escape" && hasChildren && isSubmenuOpen) {
-            e.preventDefault();
-            e.stopPropagation();
-            setIsSubmenuOpen(false);
+        if (hasChildren) {
+            setIsSubmenuOpen((prev) => !prev);
+        } else {
+            onChange(item.value);
+            onCloseAll();
         }
     };
 
@@ -127,17 +107,10 @@ function MenuItem<T extends string>({
 
     return (
         <div
-            ref={itemRef}
             className="menu-option-wrapper"
             style={{ anchorName: `--submenu-trigger-${anchorId}` } as CSSProperties}
-            onMouseEnter={() => {
-                if (isCoarsePointer || item.disabled) return;
-                if (hasChildren) setIsSubmenuOpen(true);
-            }}
-            onMouseLeave={() => {
-                if (isCoarsePointer) return;
-                setIsSubmenuOpen(false);
-            }}
+            onMouseEnter={() => !isCoarsePointer && hasChildren && setIsSubmenuOpen(true)}
+            onMouseLeave={() => !isCoarsePointer && hasChildren && setIsSubmenuOpen(false)}
         >
             <div
                 role={hasChildren ? "menuitem" : "menuitemradio"}
@@ -148,7 +121,6 @@ function MenuItem<T extends string>({
                 tabIndex={item.disabled ? -1 : 0}
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={handleItemClick}
-                onKeyDown={handleKeyDown}
                 className={`menu-option ${isSelected ? "selected" : ""} ${isSubmenuOpen ? "hover-active" : ""} ${item.disabled ? "disabled" : ""}`}
             >{renderIcon()}
                 <div>
@@ -165,9 +137,6 @@ function MenuItem<T extends string>({
                     role="menu"
                     className={`menu submenu-popout ascroll-y inset-scrollbar ${isSubmenuOpen ? "visible" : ""} anchor-${submenuAnchor}`}
                     style={{ positionAnchor: `--submenu-trigger-${anchorId}` } as CSSProperties}
-                    onMouseEnter={() => setIsSubmenuOpen(true)}
-                    onMouseLeave={() => setIsSubmenuOpen(false)}
-                    onToggle={(e: any) => {if (e.newState === "closed") setIsSubmenuOpen(false);}}
                 >
                     {item.children!.map((child) => (
                         <MenuItem

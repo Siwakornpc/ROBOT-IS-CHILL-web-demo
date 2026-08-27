@@ -988,25 +988,34 @@ hr {
 .submenu-popout.anchor-st,
 .submenu-popout.anchor-sb {
     inset-inline-start: 100%;
-    margin: -4px 0;
+    margin-inline-start: 4px;
 }
 .submenu-popout.anchor-e,
 .submenu-popout.anchor-et,
 .submenu-popout.anchor-eb {
     inset-inline-end: 100%;
-    margin: -4px 0;
+    margin-inline-end: 4px;
 }
 
-.menu-wrapper {
-    position: relative;
-    display: inline-block;
-    width: fit-content;
+@supports (anchor-name: --a) {
+    .submenu-popout.anchor-st { position-area: end top; }
+    .submenu-popout.anchor-sb { position-area: end bottom; }
+    .submenu-popout.anchor-et { position-area: start top; }
+    .submenu-popout.anchor-eb { position-area: start bottom; }
 }
 
 .menu-option-wrapper {
     display: flex;
     flex-direction: column;
     padding-inline: 4px;
+}
+
+.menu-option-wrapper:hover > .submenu-popout,
+.menu-option-wrapper:focus-within > .submenu-popout,
+.submenu-popout:hover {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .menu-option-wrapper:has(:is(
