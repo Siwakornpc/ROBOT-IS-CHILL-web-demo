@@ -232,6 +232,7 @@ export default function MenuSelect<T extends string>({
     const wrapperRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
     const triggerAnchorId = useId().replace(/:/g, "");
+    const anchorNameStyle = { anchorName: `--menu-trigger-${triggerAnchorId}` } as CSSProperties;
 
     useEffect(() => {
         if (menuRef.current && isOpen) {
@@ -259,10 +260,10 @@ export default function MenuSelect<T extends string>({
         }
     };
 
-    // Compose with any handlers the caller already passed instead of clobbering them.
     const getInputProps = (customProps: Record<string, any> = {}) => {
-        const { onFocus, onClick, ...rest } = customProps;
+        const { onFocus, onClick, style: customStyle, ...rest } = customProps;
         return {
+            style: { ...anchorNameStyle, ...customStyle },
             onFocus: (e: FocusEvent<HTMLInputElement>) => {
                 openMenu();
                 onFocus?.(e);
@@ -276,12 +277,7 @@ export default function MenuSelect<T extends string>({
     };
 
     return (
-        <div
-            className="menu-wrapper"
-            ref={wrapperRef}
-            style={{ ...style, anchorName: `--menu-trigger-${triggerAnchorId}` } as CSSProperties}
-            onFocusCapture={handleFocusCapture}
-        >
+        <div className="menu-wrapper" style={style}>
             {trigger ? (
                 trigger({
                     isOpen,
@@ -299,6 +295,7 @@ export default function MenuSelect<T extends string>({
                     aria-expanded={isOpen}
                     className={`menu-trigger ${className} ${id || ""} ${isOpen ? "clicked" : ""}`}
                     onClick={toggleMenu}
+                    style={anchorNameStyle}
                 >{triggerValue ? triggerValue(selectedOption) : selectedOption.label}
                 </button>
             )}
@@ -309,7 +306,7 @@ export default function MenuSelect<T extends string>({
                 role="menu"
                 className={`menu ascroll-y inset-scrollbar anchor-${anchor} ${id ? `${id}-options` : ""} ${isOpen ? "visible" : ""}`}
                 style={{ positionAnchor: `--menu-trigger-${triggerAnchorId}` } as CSSProperties}
-                onToggle={(e: any) => {if (e.newState === "closed") closeMenu();}}
+                onToggle={(e: any) => { if (e.newState === "closed") closeMenu(); }}
             >
                 {title && <div className="menu-title">{title}</div>}
                 {options.map((item) => (
