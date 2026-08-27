@@ -1,0 +1,422 @@
+{
+  "noop": {
+    "description": "Does nothing. Useful for resetting persistent variants.",
+    "syntax": "",
+    "applied": "None"
+  },
+  "m_syntax_shim": {
+    "description": "Shim to handle erroring for removed syntax.",
+    "syntax": "<m!><_args: list[str]>",
+    "applied": "While parsing"
+  },
+  "porp": {
+    "description": "It's a secret to nobody.",
+    "syntax": "<porp>",
+    "applied": "While parsing"
+  },
+  "palette": {
+    "description": "Sets a tile's palette.",
+    "syntax": "<p!|pal|palette><palette: str>",
+    "applied": "While parsing"
+  },
+  "beta": {
+    "description": "Makes custom words appear as beta text.",
+    "syntax": "<beta>",
+    "applied": "While parsing"
+  },
+  "anchor": {
+    "description": "Sets the anchor of a sign text. https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html",
+    "syntax": "<anchor!|a!>",
+    "applied": "While placing sign texts"
+  },
+  "stroke": {
+    "description": "Sets the sign text's stroke.",
+    "syntax": "<stroke><color: Color>/<size: int>",
+    "applied": "While placing sign texts"
+  },
+  "font": {
+    "description": "Applies a font to a sign text object.",
+    "syntax": "<f!|font!><name: Literal[*tuple(Path(f).stem for f in glob.glob('data/fonts/*.ttf'))]>",
+    "applied": "While placing sign texts"
+  },
+  "align": {
+    "description": "Applies a font to a sign text object.",
+    "syntax": "<align!><name: Literal['left', 'center', 'right']>",
+    "applied": "While placing sign texts"
+  },
+  "direction": {
+    "description": "Sets the direction of a tile.",
+    "syntax": "<direction: Literal[*tuple(constants.DIRECTION_VARIANTS.keys())]>",
+    "applied": "While deciding sprite"
+  },
+  "frame": {
+    "description": "Sets the animation frame of a sprite.",
+    "syntax": "<frame: int>",
+    "applied": "While deciding sprite"
+  },
+  "tiling": {
+    "description": "Alters the tiling of a tile. Only works on tiles that tile.",
+    "syntax": "<tiling: Literal[*tuple(constants.AUTO_VARIANTS.keys())]>",
+    "applied": "While deciding sprite"
+  },
+  "animation_frame": {
+    "description": "Sets the animation frame of a tile.",
+    "syntax": "<a><frame: int>",
+    "applied": "While deciding sprite"
+  },
+  "sleep": {
+    "description": "Makes the tile fall asleep. Only functions correctly on character tiles.",
+    "syntax": "<sleep|s>",
+    "applied": "While deciding sprite"
+  },
+  "textwidth": {
+    "description": "Sets the width of the custom text the text generator tries to expand to.",
+    "syntax": "<tw|textwidth><width: int>",
+    "applied": "While deciding sprite"
+  },
+  "default_color_index": {
+    "description": "Sets the default color of a tile by index.",
+    "syntax": "<%|dcol><px: int>/<py: int>",
+    "applied": "While deciding sprite"
+  },
+  "default_color_palette": {
+    "description": "Sets the default color of a tile by name.",
+    "syntax": "<%|dcol><name: Literal[*constants.COLOR_NAMES.keys()]>",
+    "applied": "While deciding sprite"
+  },
+  "inactive": {
+    "description": "Applies the color that an inactive text of a tile's color would have. This only operates on the default color!",
+    "syntax": "<inactive|in>",
+    "applied": "While deciding sprite"
+  },
+  "custom": {
+    "description": "Forces custom generation of the text.",
+    "syntax": "<custom|ct>",
+    "applied": "While deciding sprite"
+  },
+  "letter": {
+    "description": "Makes custom words appear as letter groups.",
+    "syntax": "<letter|let>",
+    "applied": "While deciding sprite"
+  },
+  "oneline": {
+    "description": "Makes custom words appear in one line.",
+    "syntax": "<oneline|1l>",
+    "applied": "While deciding sprite"
+  },
+  "frames": {
+    "description": "Sets the wobble of the tile to the specified frame(s). 1 or 3 can be specified.",
+    "syntax": "<frames|f><frame: list[int]>",
+    "applied": "While deciding sprite"
+  },
+  "apply": {
+    "description": "Immediately applies a sprite's default color.",
+    "syntax": "<apply|ac|~>",
+    "applied": "While applying effects to sprite image"
+  },
+  "color": {
+    "description": "Sets a sprite's color.",
+    "syntax": "<color: Color>",
+    "applied": "While applying effects to sprite image"
+  },
+  "posterize": {
+    "description": "Posterizes a sprite.",
+    "syntax": "<posterize><bands: int>",
+    "applied": "While applying effects to sprite image"
+  },
+  "gradient": {
+    "description": "Applies a gradient to a tile.\nInterpolates color through CIELUV color space by default. This can be toggled with the `raw` argument.\nIf `extrapolate` is enabled, then colors outside the gradient will be extrapolated, as opposed to clamping from 0% to 100%.\nEnabling `dither` does nothing with `steps` set to 0.",
+    "syntax": "<gradient|grad><color: Color>/[angle: float = 0.0]/[width: float = 1.0]/[offset: float = 0]/[steps: int = 0]/[raw: bool = False]/[extrapolate: bool = False]/[dither: bool = False]",
+    "applied": "While applying effects to sprite image"
+  },
+  "overlay": {
+    "description": "Applies an overlay to a sprite. X and Y can be given to offset the overlay.",
+    "syntax": "<overlay|o!><overlay: str>/[x: int = 0]/[y: int = 0]",
+    "applied": "While applying effects to sprite image"
+  },
+  "property": {
+    "description": "Applies a property plate to a sprite.",
+    "syntax": "<noun|prop|quality>[plate: Literal[\"blank\", \"left\", \"up\", \"right\", \"down\", \"turn\", \"deturn\", \"soft\", \"\"] = \"\"]",
+    "applied": "While applying effects to sprite image"
+  },
+  "hide": {
+    "description": "Sets the tile's opacity to 0.",
+    "syntax": "<hide|->",
+    "applied": "While applying effects to sprite image"
+  },
+  "rotate": {
+    "description": "Rotates a sprite.",
+    "syntax": "<rotate|rot><angle: float>/[expand: bool = False]",
+    "applied": "While applying effects to sprite image"
+  },
+  "rotate3d": {
+    "description": "Rotates a sprite in 3D space.",
+    "syntax": "<rotate3d|rot3d|r3d><phi: float>/<theta: float>/<gamma: float>",
+    "applied": "While applying effects to sprite image"
+  },
+  "scale": {
+    "description": "Scales a sprite by the given multipliers.",
+    "syntax": "<sc|scale><w: float>/[h: float = 0]/[interpolation: Literal[\"nearest\", \"linear\", \"cubic\", \"area\", \"lanczos\"] = \"nearest\"]",
+    "applied": "While applying effects to sprite image"
+  },
+  "nineslice": {
+    "description": "Stretches the sprite to the given width and height multiplier using the 9-Slices algorithm.",
+    "syntax": "<9s|nineslice><w: int>/[h: int = 0]/[left: int = 4]/[top: int = 4]/[right: int = None]/[bottom: int = None]/[kind: Literal[\"stretch\", \"repeat\"] = \"repeat\"]",
+    "applied": "While applying effects to sprite image"
+  },
+  "pad": {
+    "description": "Pads the sprite by the specified values.",
+    "syntax": "<pad><left: int>/<top: int>/<right: int>/<bottom: int>",
+    "applied": "While applying effects to sprite image"
+  },
+  "pixelate": {
+    "description": "Pixelates a sprite.",
+    "syntax": "<pixelate|px><x: int>/<y: int>",
+    "applied": "While applying effects to sprite image"
+  },
+  "meta": {
+    "description": "Applies a meta filter to an sprite.",
+    "syntax": "<meta|m>[level: int = 1]/[kernel: Literal[\"full\", \"edge\", \"unit\"] = \"full\"]/[size: int = 1]",
+    "applied": "While applying effects to sprite image"
+  },
+  "outline": {
+    "description": "Applies an outline to a sprite.",
+    "syntax": "<outline|o>[color: Color = None]/[size: int = 1]/[kernel: Literal[\"full\", \"edge\", \"unit\"] = \"full\"]",
+    "applied": "While applying effects to sprite image"
+  },
+  "omni": {
+    "description": "Gives the tile an overlay, like the omni text.",
+    "syntax": "[type: Literal[\"pivot\", \"branching\"] = \"branching\"]",
+    "applied": "While applying effects to sprite image"
+  },
+  "land": {
+    "description": "Removes all space between the sprite and its bounding box on the specified side.",
+    "syntax": "<land>[direction: Literal[\"left\", \"top\", \"right\", \"bottom\"] = \"bottom\"]",
+    "applied": "While applying effects to sprite image"
+  },
+  "bbox": {
+    "description": "Puts the sprite's bounding box behind it. Useful for debugging.",
+    "syntax": "<bbox>",
+    "applied": "While applying effects to sprite image"
+  },
+  "warp": {
+    "description": "Warps the sprite by displacing the bounding box's corners.\n    Point 1 is top-left, point 2 is top-right, point 3 is bottom-right, and point 4 is bottom-left.\n    If the sprite grows past its original bounding box, it will need to be recentered manually.",
+    "syntax": "<warp><x1: int>/<y1: int>/<x2: int>/<y2: int>/<x3: int>/<y3: int>/<x4: int>/<y4: int>",
+    "applied": "While applying effects to sprite image"
+  },
+  "matmul": {
+    "description": "Multiplies the sprite by the given RGBA matrix.",
+    "syntax": "<matrix|mm|matmul><aa: float>/<ab: float>/<ac: float>/<ad: float>/<ba: float>/<bb: float>/<bc: float>/<bd: float>/<ca: float>/<cb: float>/<cc: float>/<cd: float>/<da: float>/<db: float>/<dc: float>/<dd: float>/[ea: float = None]/[eb: float = None]/[ec: float = None]/[ed: float = None]",
+    "applied": "While applying effects to sprite image"
+  },
+  "clip": {
+    "description": "Crops the sprite to within its grid space.",
+    "syntax": "<clip|cl>",
+    "applied": "While applying effects to sprite image"
+  },
+  "neon": {
+    "description": "Darkens the inside of each region of color.",
+    "syntax": "<neon>[strength: float = 0.714]",
+    "applied": "While applying effects to sprite image"
+  },
+  "scan": {
+    "description": "Removes rows or columns of pixels to create a scan line effect.",
+    "syntax": "<scan><axis: Literal[\"x\", \"y\"]>/[on: int = 1]/[off: int = 1]/[offset: int = 0]",
+    "applied": "While applying effects to sprite image"
+  },
+  "flip": {
+    "description": "Flips the sprite along the specified axis.",
+    "syntax": "<flip><axis: Literal[\"x\", \"y\"]>",
+    "applied": "While applying effects to sprite image"
+  },
+  "mirror": {
+    "description": "Mirrors the sprite along the specified direction.",
+    "syntax": "<mirror><axis: Literal[\"x\", \"y\"]>/<half: Literal[\"back\", \"front\"]>",
+    "applied": "While applying effects to sprite image"
+  },
+  "normalize": {
+    "description": "Centers the sprite on its visual bounding box.",
+    "syntax": "<normalize|norm>",
+    "applied": "While applying effects to sprite image"
+  },
+  "floodfill": {
+    "description": "Floodfills either inside or outside a sprite with a given brightness value.",
+    "syntax": "<floodfill|flood><color: Color>/[inside: bool = True]",
+    "applied": "While applying effects to sprite image"
+  },
+  "pointfill": {
+    "description": "Floodfills a sprite starting at a given point.",
+    "syntax": "<pointfill|pf><color: Color>/<x: int>/<y: int>",
+    "applied": "While applying effects to sprite image"
+  },
+  "remove": {
+    "description": "Removes a certain color from the sprite. If `invert` is on, then it removes all but that color.",
+    "syntax": "<remove|rm><color: Color>/[invert: bool = False]",
+    "applied": "While applying effects to sprite image"
+  },
+  "replace": {
+    "description": "Replaces a certain color with a different color. If `invert` is on, then it replaces all but that color.",
+    "syntax": "<replace|rp><color1: Color>/<color2: Color>/[invert: bool = False]",
+    "applied": "While applying effects to sprite image"
+  },
+  "color_select": {
+    "description": "Keeps only the selected colors, indexed by their occurrence. This changes per-frame, not per-tile.",
+    "syntax": "<color_select|csel|c><index: list[int]>",
+    "applied": "While applying effects to sprite image"
+  },
+  "color_slice": {
+    "description": "Keeps only the slice of colors, indexed by their occurrence. This changes per-frame, not per-tile.",
+    "syntax": "<color_slice|cslice|cs><s: list[int]>",
+    "applied": "While applying effects to sprite image"
+  },
+  "color_shift": {
+    "description": "Shifts the colors of a sprite around, by index of occurence.",
+    "syntax": "<color_shift|cshift|csh><s: list[int]>",
+    "applied": "While applying effects to sprite image"
+  },
+  "croppoly": {
+    "description": "Crops the sprite to the specified polygon.",
+    "syntax": "<croppoly><point_coords: list[int]>",
+    "applied": "While applying effects to sprite image"
+  },
+  "snippoly": {
+    "description": "Snips the sprite to the specified polygon.",
+    "syntax": "<snippoly><point_coords: list[int]>",
+    "applied": "While applying effects to sprite image"
+  },
+  "aberrate": {
+    "description": "Abberates the colors of a sprite.",
+    "syntax": "<aberrate|abberate>[x: int = 1]/[y: int = 0]",
+    "applied": "While applying effects to sprite image"
+  },
+  "opacity": {
+    "description": "Sets the opacity of the sprite, from 0 to 1.",
+    "syntax": "<opacity|alpha|op><amount: float>",
+    "applied": "While applying effects to sprite image"
+  },
+  "negative": {
+    "description": "Inverts the sprite's RGB or RGBA values.",
+    "syntax": "<negative|neg>[alpha: bool = False]",
+    "applied": "While applying effects to sprite image"
+  },
+  "wrap": {
+    "description": "Wraps the sprite around its image box.",
+    "syntax": "<wrap><x: int>/<y: int>",
+    "applied": "While applying effects to sprite image"
+  },
+  "melt": {
+    "description": "Removes transparent pixels from each row/column and shifts the remaining ones to the end.",
+    "syntax": "<melt>[side: Literal[\"left\", \"top\", \"right\", \"bottom\"] = \"bottom\"]",
+    "applied": "While applying effects to sprite image"
+  },
+  "bend": {
+    "description": "Displaces the sprite by a wave. Frequency is a percentage of the sprite's size along the axis.",
+    "syntax": "<bend><axis: Literal[\"x\", \"y\"]>/<amplitude: int>/<offset: float>/<frequency: float>",
+    "applied": "While applying effects to sprite image"
+  },
+  "hueshift": {
+    "description": "Shifts the hue of the sprite. 0 to 360.",
+    "syntax": "<hueshift|hs><angle: int>",
+    "applied": "While applying effects to sprite image"
+  },
+  "brightness": {
+    "description": "Sets the brightness of the sprite.",
+    "syntax": "<brightness|gamma|g><brightness: float>",
+    "applied": "While applying effects to sprite image"
+  },
+  "palette_snap": {
+    "description": "Snaps all the colors in the tile to the specified palette.",
+    "syntax": "<palette_snap|ps>",
+    "applied": "While applying effects to sprite image"
+  },
+  "wave": {
+    "description": "Displaces the sprite per-slice by a wave. Frequency is a percentage of the sprite's size along the axis.",
+    "syntax": "<wave><axis: Literal[\"x\", \"y\"]>/<amplitude: int>/<offset: float>/<frequency: float>",
+    "applied": "While applying effects to sprite image"
+  },
+  "saturation": {
+    "description": "Saturates or desaturates a sprite.",
+    "syntax": "<saturation|sat|grayscale|gscale>[saturation: float = 0]",
+    "applied": "While applying effects to sprite image"
+  },
+  "blank": {
+    "description": "Sets a sprite to pure white.",
+    "syntax": "<blank>",
+    "applied": "While applying effects to sprite image"
+  },
+  "liquify": {
+    "description": "\"Liquifies\" the tile by melting every color except the main color and distributing the main color downwards.",
+    "syntax": "<liquify>",
+    "applied": "While applying effects to sprite image"
+  },
+  "planet": {
+    "description": "Turns the tile into a planet by melting every color except the main color and distributing the main color in a circle.",
+    "syntax": "<planet>",
+    "applied": "While applying effects to sprite image"
+  },
+  "normalize_lightness": {
+    "description": "Normalizes a sprite's HSL lightness, bringing the lightest value up to full brightness.",
+    "syntax": "<normalize_lightness|nl>",
+    "applied": "While applying effects to sprite image"
+  },
+  "crop": {
+    "description": "Crops the sprite to the specified bounding box.\n    If the `change_bbox` toggle is on, then the sprite's bounding box is altered, as opposed to removing pixels.",
+    "syntax": "<crop|cr><x: int>/<y: int>/<u: int>/<v: int>/[change_bbox: bool = False]",
+    "applied": "While applying effects to sprite image"
+  },
+  "snip": {
+    "description": "Snips the specified box out of the sprite.",
+    "syntax": "<snip|sn><x: int>/<y: int>/<u: int>/<v: int>",
+    "applied": "While applying effects to sprite image"
+  },
+  "convert": {
+    "description": "Converts the sprite's color space to or from RGB. Mostly for use with :matrix.",
+    "syntax": "<convert|cvt><direction: Literal[\"to\", \"from\"]>/<space: Literal[\"BGR\", \"HSV\", \"HLS\", \"YUV\", \"YCrCb\", \"XYZ\", \"Lab\", \"Luv\"]>",
+    "applied": "While applying effects to sprite image"
+  },
+  "threshold": {
+    "description": "Removes all pixels below a threshold.\nThis can be used in conjunction with blur, opacity, and additive blending to create a bloom effect!\nIf a value is negative, it removes pixels above the threshold instead.",
+    "syntax": "<threshold><r: float>/<g: float>/<b: float>/<a: float>",
+    "applied": "While applying effects to sprite image"
+  },
+  "blur": {
+    "description": "Blurs a sprite. Uses box blur by default, though gaussian blur can be used with the boolean toggle.",
+    "syntax": "<blur><radius: int>/[gaussian: bool = False]",
+    "applied": "While applying effects to sprite image"
+  },
+  "fisheye": {
+    "description": "Applies a fisheye effect.",
+    "syntax": "<fisheye|fish><strength: float>",
+    "applied": "While applying effects to sprite image"
+  },
+  "filterimage": {
+    "description": "Applies a filter image to a sprite. For information about filter images, look at the filterimage command.",
+    "syntax": "<filterimage|filter|fi!><name: str>",
+    "applied": "While applying effects to sprite image"
+  },
+  "glitch": {
+    "description": "Randomly displaces a sprite's pixels. An RNG seed is created using the tile's attributes if not specified.",
+    "syntax": "<glitch><distance: int>/[chance: float = 1.0]/[seed: int = None]",
+    "applied": "While applying effects to sprite image"
+  },
+  "convolve": {
+    "description": "Convolves the sprite with the given 2D convolution matrix. Information on these can be found at https://en.wikipedia.org/wiki/Kernel_(image_processing)",
+    "syntax": "<convolve|cv><width: int>/<height: int>/<cell: list[float]>",
+    "applied": "While applying effects to sprite image"
+  },
+  "splice": {
+    "description": "Splices a portion of the sprite onto itself.",
+    "syntax": "<splice|sp><source_x: int>/<source_y: int>/<width: int>/<height: int>/<dest_x: int>/<dest_y: int>/[mode: Literal[\"replace\", \"composite\", \"add\", \"multiply\"] = \"replace\"]/[color: Color = None]",
+    "applied": "While applying effects to sprite image"
+  },
+  "blending": {
+    "description": "Sets the blending mode for a tile.",
+    "syntax": "<mode: Literal[*constants.BLENDING_MODES]>/[keep_alpha: bool = True]",
+    "applied": "While placing sprite onto image"
+  },
+  "displace": {
+    "description": "Displaces the tile by the specified coordinates.",
+    "syntax": "<displace|disp|d><x: int>/<y: int>",
+    "applied": "While placing sprite onto image"
+  }
+}

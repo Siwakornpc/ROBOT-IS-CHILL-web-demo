@@ -1,0 +1,110 @@
+{
+  "background": {
+    "syntax": "(-b | --background)=#<color: Color>",
+    "description": "Sets the background of a render to a color."
+  },
+  "palette": {
+    "syntax": "(-p | --palette)=<palette: str>",
+    "description": "Sets the palette to use for the render. For a list of palettes, try `search type:palette`."
+  },
+  "raw": {
+    "syntax": "(-r | --raw)=<name: str>",
+    "description": "Alias for -F=<name> -f=zip -m=1."
+  },
+  "filename": {
+    "syntax": "(-F | --filename)=<name: str>",
+    "description": "Sets the filename of the render.\nWhen used in conjunction with `--format=zip`, each frame in the zip will be named `<filename>_<frame // 3>_<frame % 3>.png`.\nThe filename must be at most 64 characters long, and must be valid."
+  },
+  "prefix": {
+    "syntax": "(-P | --prefix)=<name: str>",
+    "description": "Sets the default prefix of the render.\nFor example, `-p=text` is the same as rendering using `=rule`."
+  },
+  "letters": {
+    "syntax": "--letter",
+    "description": "Makes text default to letters."
+  },
+  "bypass_limits": {
+    "syntax": "--bypass-limits",
+    "description": "Bypasses time limits. Owner only."
+  },
+  "frames": {
+    "syntax": "(--frames | -f)=<frame: 1, 2, or 3 (arbitrary # of times)>",
+    "description": "Sets which wobble frames to use."
+  },
+  "combine": {
+    "syntax": "-c | --combine",
+    "description": "Sets an image to combine this render with."
+  },
+  "combine_background": {
+    "syntax": "-bg | --combine-background",
+    "description": "Sets an image to set as the background for this render."
+  },
+  "speed": {
+    "syntax": "(--speed | -speed)=<speed: int>[%]",
+    "description": "Sets how fast the render is.\nUse % to set a percentage of the default render speed."
+  },
+  "global_variant": {
+    "syntax": "(--global | -g)=<variant: str>",
+    "description": "Applies a variant to every tile."
+  },
+  "sync": {
+    "syntax": "--consistent|-co|--synchronize|-sync",
+    "description": "Removes the random animation offset."
+  },
+  "autocrop": {
+    "syntax": "--clip|-cl",
+    "description": "Clips tiles extending off the border of the render. Overrides --expand."
+  },
+  "limited_palette": {
+    "syntax": "--limited_palette|-lp",
+    "description": "Only uses colors used within tiles in the render.\n        Vastly speeds up GIF encoding at the cost of breaking effects like blending modes and transparency.\n        Does nothing with -b enabled."
+  },
+  "crop": {
+    "syntax": "--crop=<left: int>/<top: int>/<right: int>/<bottom: int>",
+    "description": "Crops the render on each side."
+  },
+  "pad": {
+    "syntax": "--pad=<left: int>/<top: int>/<right: int>/<bottom: int>",
+    "description": "Pads the render on each side."
+  },
+  "gscale": {
+    "syntax": "--scale|-s=<scale: int>",
+    "description": "Sets the scale of all sprites. Applied before variants."
+  },
+  "upscale": {
+    "syntax": "--multiplier|-m=<scale: float>",
+    "description": "Sets the scale of all sprites. Applied after variants."
+  },
+  "verbose": {
+    "syntax": "--verbose|-v",
+    "description": "Shows some extra stats about the render."
+  },
+  "noloop": {
+    "syntax": "--noloop|-nl",
+    "description": "Makes the render not loop."
+  },
+  "expand": {
+    "syntax": "--expand|-ex",
+    "description": "Expands the render for tiles displaced with the `:displace` variant."
+  },
+  "anim": {
+    "syntax": "--anim|-am=<wobble: int>/<timestep: int>",
+    "description": "Makes the wobble frames independent of the animation.\nThe first number is how many frames are in a wobble frame, and the second is how many frames are in a timestep."
+  },
+  "format": {
+    "syntax": "--format|-f=<format: gif | png | pdf | zip | tiff | webp>",
+    "description": "Set the format of the render."
+  },
+  "spacing": {
+    "syntax": "(--spacing | -sp)=<spacing: int>",
+    "description": "Adds spacing to the render."
+  },
+  "tileborder": {
+    "syntax": "--tileborder|-tb",
+    "description": "Makes the render's border connect to tiles that tile."
+  },
+  "boomerang": {
+    "syntax": "--boomerang|-br",
+    "description": "Make the render reverse at the end."
+  }
+}
