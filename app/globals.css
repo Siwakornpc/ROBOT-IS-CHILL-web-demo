@@ -2055,8 +2055,8 @@ hr {
 .search-details-variant-name .variant-name.name,
 .search-item-variant .variant-name.name,
 
-.search-details-flag-name .flag-name
-.search-item-flag .flag-name {
+.search-details-flag-name .flag-name.name,
+.search-item-flag .flag-name.name {
     font-weight: bold;
 }
 
