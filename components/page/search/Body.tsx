@@ -258,9 +258,7 @@ export function FilterPanel({
                 );
 
             case "source":
-                const [searchQuery, setSearchQuery] = useState("");
                 const [sourceOptions, setSourceOptions] = useState<{ value: string; label: string }[]>([]);
-                const [textFieldSelected, setTextFieldSelected] = useState("option1");
                 const [sourceSearchQuery, setSourceSearchQuery] = useState("");
                 const filteredSourceOptions = sourceOptions.filter((option) =>
                     option.label.toLowerCase().includes(sourceSearchQuery.toLowerCase())
@@ -269,31 +267,24 @@ export function FilterPanel({
                 useEffect(() => {
                     sourcesPromise.then(setSourceOptions);
                 }, []);
-
                 return (
                     <MenuSelect
                         id={`source-select-${index}`}
                         value={value}
                         options={filteredSourceOptions}
-                        onChange={(newValue) => {
-                            setTextFieldSelected(newValue);
-                            const matched = sourceOptions.find((opt) => opt.value === newValue);
-                            if (matched) setSearchQuery(matched.label);
-                            handleValueChange(type, index, newValue);
-                        }}
+                        onChange={(newValue) => handleValueChange(type, index, newValue)}
                         trigger={({ getInputProps }) => (
                             <label className="text-field small has-placeholder">
                                 <input
                                     {...getInputProps({
                                         type: "text",
-                                        value: searchQuery,
                                         placeholder: "Search source...",
-                                        required: true,
-                                        autoComplete: "off",
+                                        value: value,
                                         onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
                                             setSourceSearchQuery(e.target.value);
                                             handleValueChange(type, index, e.target.value);
                                         },
+                                        autoComplete: "off",
                                     })}
                                 />
                             </label>
