@@ -1239,9 +1239,15 @@ hr {
     --anchor-y: 100%;
 }
 
+.menu[popover] {
+    margin: 0;
+    border: none;
+    inset: auto;
+}
+
 @supports (anchor-name: --a) {
     .menu {
-        position: absolute;
+        position: fixed;
         position-try-fallbacks: flip-block, flip-inline;
     }
 
