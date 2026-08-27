@@ -59,6 +59,7 @@ function MenuItem<T extends string>({
 }: MenuItemProps<T>) {
     const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
     const submenuRef = useRef<HTMLDivElement>(null);
+    const triggerRef = useRef<HTMLDivElement>(null);
     const isCoarsePointer = useIsCoarsePointer();
     const anchorId = useId().replace(/:/g, "");
 
@@ -67,12 +68,14 @@ function MenuItem<T extends string>({
     const rawIcon = optionIcon ? optionIcon(item) : item.icon;
 
     useEffect(() => {
-        if (submenuRef.current && isSubmenuOpen) {
-            submenuRef.current.showPopover();
-        } else if (submenuRef.current && !isSubmenuOpen) {
-            try {
-                submenuRef.current.hidePopover();
-            } catch {}
+        if (submenuRef.current) {
+            if (isSubmenuOpen) {
+                submenuRef.current.showPopover();
+            } else {
+                try {
+                    submenuRef.current.hidePopover();
+                } catch {}
+            }
         }
     }, [isSubmenuOpen]);
 
@@ -106,10 +109,16 @@ function MenuItem<T extends string>({
 
     return (
         <div
+            ref={triggerRef}
             className="menu-option-wrapper"
             style={{ anchorName: `--submenu-trigger-${anchorId}` } as CSSProperties}
             onMouseEnter={() => !isCoarsePointer && hasChildren && setIsSubmenuOpen(true)}
-            onMouseLeave={() => !isCoarsePointer && hasChildren && setIsSubmenuOpen(false)}
+            onMouseLeave={(e) => {
+                if (isCoarsePointer || !hasChildren) return;
+                const related = e.relatedTarget as Node | null;
+                if (submenuRef.current && related && submenuRef.current.contains(related)) return;
+                setIsSubmenuOpen(false);
+            }}
         >
             <div
                 role={hasChildren ? "menuitem" : "menuitemradio"}
@@ -136,7 +145,12 @@ function MenuItem<T extends string>({
                     role="menu"
                     className={`menu submenu-popout ascroll-y inset-scrollbar ${isSubmenuOpen ? "visible" : ""} anchor-${submenuAnchor}`}
                     style={{ positionAnchor: `--submenu-trigger-${anchorId}` } as CSSProperties}
-                    onClick={(e) => e.stopPropagation()}
+                    onMouseLeave={(e) => {
+                        if (isCoarsePointer) return;
+                        const related = e.relatedTarget as Node | null;
+                        if (triggerRef.current && related && triggerRef.current.contains(related)) return;
+                        setIsSubmenuOpen(false);
+                    }}
                 >
                     {item.children!.map((child) => (
                         <MenuItem
@@ -203,12 +217,14 @@ export default function MenuSelect<T extends string>({
     const anchorNameStyle = { anchorName: `--menu-trigger-${triggerAnchorId}` } as CSSProperties;
 
     useEffect(() => {
-        if (menuRef.current && isOpen) {
-            menuRef.current.showPopover();
-        } else if (menuRef.current && !isOpen) {
-            try {
-                menuRef.current.hidePopover();
-            } catch {}
+        if (menuRef.current) {
+            if (isOpen) {
+                menuRef.current.showPopover();
+            } else {
+                try {
+                    menuRef.current.hidePopover();
+                } catch {}
+            }
         }
     }, [isOpen]);
 
@@ -267,7 +283,7 @@ export default function MenuSelect<T extends string>({
                 role="menu"
                 className={`menu ascroll-y inset-scrollbar anchor-${anchor} ${id ? `${id}-options` : ""} ${isOpen ? "visible" : ""}`}
                 style={{ positionAnchor: `--menu-trigger-${triggerAnchorId}` } as CSSProperties}
-                onToggle={(e: any) => { if (e.newState === "closed" && isOpen) closeMenu(); }}
+                onToggle={(e: any) => {if (e.newState === "closed") closeMenu();}}
             >
                 {title && <div className="menu-title">{title}</div>}
                 {options.map((item) => (
