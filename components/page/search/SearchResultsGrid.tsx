@@ -756,6 +756,36 @@ export default function SearchResults({
                 })
             }
 
+            {
+                // Flags
+            }
+
+            {mode === "flags" &&
+                entries.map(([name, flag], index) => {
+                    const safeName = (name ?? "").trim();
+
+                    return (
+                        <button
+                            type="button"
+                            className="kill-styling search-item"
+                            key={safeName || `flag-${index}`}
+                            onClick={() => {
+                                if (isFlagRecord(flag)) {
+                                    onSelect({ name: safeName, flag });
+                                }
+                            }}
+                        >
+                            <span
+                                ref={(el) => applyOverflowFade(el, "y")}
+                                className={`search-item-flag`}
+                            >
+                                <span className="flag-name">--</span>
+                                <span className="flag-name name">{name}</span>
+                            </span>
+                        </button>
+                    );
+                })
+            }
             {hasMore && <div ref={loadMoreRef} />}
         </div>
     );

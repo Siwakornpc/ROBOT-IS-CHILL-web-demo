@@ -361,4 +361,39 @@ export function Details({ selected }: DetailsProps) {
             </>
         );
     }
+
+    // Details for Variants
+
+    if ("flag" in selected) {
+        return (
+            <>
+                <div
+                    ref={(el) => applyOverflowFade(el, "y")}
+                    className="search-details-flag ascroll-y"
+                >
+                    <p className={`search-details-flag-name`}>
+                        <span className="flag-name">--</span>
+                        <span className="flag-name name">{selected.name}</span>
+                    </p>
+                </div>
+
+                <div className="search-details-contents-flexbox">
+                    <hr />
+                
+                    <p className="search-details-label">Alias</p>
+                    <div className="search-details-detailbox flag" id="description">
+                        {selected.flag.syntax}
+                    </div>
+
+                    <p className="search-details-label">Description</p>
+                    <div className="search-details-detailbox" id="description">
+                        <DiscordMarkdown>
+                            {selected.flag.description}
+                        </DiscordMarkdown>
+                    </div>
+
+                </div>
+            </>
+        );
+    }
 }
