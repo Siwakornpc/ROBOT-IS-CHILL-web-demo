@@ -279,13 +279,14 @@ export function FilterPanel({
                                 <input
                                     {...getInputProps({
                                         type: "text",
-                                        placeholder: "Search source...",
                                         value: value,
+                                        placeholder: "Search source...",
+                                        required: true,
+                                        autoComplete: "off",
                                         onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
                                             setSourceSearchQuery(e.target.value);
                                             handleValueChange(type, index, e.target.value);
                                         },
-                                        autoComplete: "off",
                                     })}
                                 />
                             </label>
