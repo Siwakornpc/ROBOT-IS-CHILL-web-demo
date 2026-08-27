@@ -238,7 +238,6 @@ export function Details({ selected }: DetailsProps) {
                     )}
 
                     <p className="search-details-label">Description</p>
-
                     <div className="search-details-detailbox" id="description">
                         <DiscordMarkdown>
                             {selected.macro.description}
@@ -317,6 +316,47 @@ export function Details({ selected }: DetailsProps) {
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </>
+        );
+    }
+
+    // Details for Variants
+
+    if ("variant" in selected) {
+        return (
+            <>
+                <div
+                    ref={(el) => applyOverflowFade(el, "y")}
+                    className="search-details-variant ascroll-y"
+                >
+                    <p className={`search-details-variant-name`}>
+                        <span className="variant-name">:</span>
+                        <span className="variant-name name">{selected.name}</span>
+                    </p>
+                </div>
+
+                <div className="search-details-contents-flexbox">
+                    <hr />
+
+                    <p className="search-details-label">Description</p>
+                    <div className="search-details-detailbox" id="description">
+                        <DiscordMarkdown>
+                            {selected.variant.description}
+                        </DiscordMarkdown>
+                    </div>
+                
+                    <p className="search-details-label">Applied</p>
+                    <div className="search-details-detailbox" id="description">
+                        <DiscordMarkdown>
+                            {selected.variant.applied}
+                        </DiscordMarkdown>
+                    </div>
+                
+                    <p className="search-details-label">Syntax</p>
+                    <div className="search-details-detailbox variant" id="description">
+                        {selected.variant.syntax}
+                    </div>
                 </div>
             </>
         );

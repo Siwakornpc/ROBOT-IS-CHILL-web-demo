@@ -5,9 +5,9 @@ import MenuSelect from "@/components/MenuSelect";
 const options = [
     { value: "tiles", label: "Tiles", },
     { value: "macros", label: "Macros", },
-    { value: "variants", label: "Variants", },
-    { value: "flags", label: "Variants", },
     { value: "filters", label: "Filters", },
+    { value: "variants", label: "Variants", },
+    { value: "flags", label: "Flags", },
     { value: "levels", label: "Levels", },
     { value: "palettes", label: "Palettes", },
     { value: "overlays", label: "Overlays", },

@@ -1895,7 +1895,9 @@ hr {
 .search-results.tiles {
     grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
 }
-.search-results.macros {
+.search-results.macros,
+.search-results.variants,
+.search-results.flags {
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 }
 .search-results.filters {
@@ -1995,7 +1997,9 @@ hr {
     }
 }
 
-.search-item-macro {
+.search-item-macro,
+.search-item-variant,
+.search-item-flag {
     max-height: 6em;
     font-family: var(--font-family-code);
     font-size: 1em;
@@ -2025,14 +2029,18 @@ hr {
     margin-inline-end: 56px;
 }
 
-.search-details-macro {
+.search-details-macro,
+.search-details-variant,
+.search-details-flag {
     text-align: center;
     font-family: var(--font-family-code);
     margin: 2rem auto;
     word-wrap: break-word;
     min-height: 3em;
 }
-.search-details-macro-name {
+.search-details-macro-name,
+.search-details-variant-name,
+.search-details-flag-name {
     font-size: 2em;
     max-height: 6em;
     white-space: pre-wrap;
@@ -2042,7 +2050,13 @@ hr {
 }
 
 .search-details-macro-name.builtin .macro-name,
-.search-item-macro.builtin .macro-name {
+.search-item-macro.builtin .macro-name,
+
+.search-details-variant-name .variant-name.name,
+.search-item-variant .variant-name.name,
+
+.search-details-flag-name .flag-name
+.search-item-flag .flag-name {
     font-weight: bold;
 }
 
@@ -2213,7 +2227,9 @@ hr {
 .search-details-detailbox p:not(:first-child) {
     margin-top: 1.2em;
 }
-.search-details-detailbox.macro {
+.search-details-detailbox.macro,
+.search-details-detailbox.variant,
+.search-details-detailbox.flag {
     font-family: var(--font-family-code);
     font-size: var(--font-size-code);
 }

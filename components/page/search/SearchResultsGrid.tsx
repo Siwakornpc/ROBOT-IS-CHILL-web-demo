@@ -725,6 +725,37 @@ export default function SearchResults({
                 })
             }
 
+            {
+                // Variant
+            }
+
+            {mode === "variants" &&
+                entries.map(([name, variant], index) => {
+                    const safeName = (name ?? "").trim();
+
+                    return (
+                        <button
+                            type="button"
+                            className="kill-styling search-item"
+                            key={safeName || `value-${index}`}
+                            onClick={() => {
+                                if (isVariantRecord(variant)) {
+                                    onSelect({ name: safeName, variant });
+                                }
+                            }}
+                        >
+                            <span
+                                ref={(el) => applyOverflowFade(el, "y")}
+                                className={`search-item-variant`}
+                            >
+                                <span className="variant-name">:</span>
+                                <span className="variant-name name">{name}</span>
+                            </span>
+                        </button>
+                    );
+                })
+            }
+
             {hasMore && <div ref={loadMoreRef} />}
         </div>
     );
