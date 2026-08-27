@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { EditorScreen } from "@/components/editor/EditorScreen";
 import MenuSelect, { MenuOption } from "@/components/MenuSelect";
+
+import { updateVariantStaticHighlight } from "@/components/highlight/metadata-hightlight.js"
 
 const options = [
     { value: "option1", label: "Option 1" },
@@ -101,6 +103,19 @@ export default function Body() {
         }
     };
 
+    const variantText =
+        '<wave><axis: Literal["x", "y"]>/<amplitude: int>/<offset: float>/<frequency: float>';
+
+    const variantElementRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const element = variantElementRef.current;
+
+        if (!element) return;
+
+        updateVariantStaticHighlight(element, variantText);
+    }, []);
+
     return (
         <main style={{ width: "stretch" }}>
             <div className="main-body">
@@ -150,6 +165,12 @@ export default function Body() {
                     className="btn medium btn-filled"
                     anchor="s"
                 />
+
+                <div
+                    ref={variantElementRef}
+                    className="search-details-detailbox variant"
+                />
+
             </div>
         </main>
     );
