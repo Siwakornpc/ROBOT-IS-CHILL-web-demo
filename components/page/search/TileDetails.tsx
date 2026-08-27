@@ -379,17 +379,17 @@ export function Details({ selected }: DetailsProps) {
 
                 <div className="search-details-contents-flexbox">
                     <hr />
-                
-                    <p className="search-details-label">Alias</p>
-                    <div className="search-details-detailbox flag" id="description">
-                        {selected.flag.syntax}
-                    </div>
 
                     <p className="search-details-label">Description</p>
                     <div className="search-details-detailbox" id="description">
                         <DiscordMarkdown>
                             {selected.flag.description}
                         </DiscordMarkdown>
+                    </div>
+                
+                    <p className="search-details-label">Syntax</p>
+                    <div className="search-details-detailbox flag" id="description">
+                        {selected.flag.syntax}
                     </div>
 
                 </div>
