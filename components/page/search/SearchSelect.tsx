@@ -6,6 +6,7 @@ const options = [
     { value: "tiles", label: "Tiles", },
     { value: "macros", label: "Macros", },
     { value: "variants", label: "Variants", },
+    { value: "flags", label: "Variants", },
     { value: "filters", label: "Filters", },
     { value: "levels", label: "Levels", },
     { value: "palettes", label: "Palettes", },

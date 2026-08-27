@@ -21,6 +21,7 @@ export default function Home() {
         tiles: {},
         macros: {},
         variants: {},
+        flags: {},
         filters: {},
         levels: {},
         palettes: {},

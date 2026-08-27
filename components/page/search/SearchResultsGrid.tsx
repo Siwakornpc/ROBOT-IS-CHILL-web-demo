@@ -46,13 +46,13 @@ export type FilterRecord = {
 };
 
 export type VariantRecord = {
-    description?: string;
-    syntax?: string;
+    description: string;
+    syntax: string;
     applied: string;
 }
 export type FlagRecord = {
     syntax: string;
-    description?: string;
+    description: string;
 }
 
 export type SelectedTile = {
@@ -77,7 +77,24 @@ export type SelectedFlag = {
     flag: FlagRecord
 }
 
-export type SelectedSearchResult = SelectedTile | SelectedMacro | SelectedFilter;
+export type SelectedSearchResult =
+    SelectedTile
+    | SelectedMacro
+    | SelectedFilter
+    | SelectedVariant
+    | SelectedFlag;
+
+const variantEntries: SearchEntry[] = Object.entries(variants);
+const flagEntries: SearchEntry[] = Object.entries(flags);
+
+type OverlayEntry =
+    | [string, VariantRecord]
+    | [string, FlagRecord];
+
+const overlayEntries: OverlayEntry[] = [
+    ...Object.entries(variants),
+    ...Object.entries(flags),
+];
 
 type SearchEntry = [string, unknown];
 type SearchResults = Record<string, unknown> | SearchEntry[];
@@ -111,6 +128,21 @@ function isFilterRecord(value: unknown): value is FilterRecord {
         && "upload_time" in value;
 }
 
+function isVariantRecord(value: unknown): value is VariantRecord {
+    return typeof value === "object"
+        && value !== null
+        && "description" in value
+        && "syntax" in value
+        && "applied" in value;
+}
+
+function isFlagRecord(value: unknown): value is FlagRecord {
+    return typeof value === "object"
+        && value !== null
+        && "syntax" in value
+        && "description" in value;
+}
+
 export default function SearchResults({
     mode,
     onSelect,
@@ -134,7 +166,11 @@ export default function SearchResults({
         ? loadedResults?.endpoint === endpoint
             ? loadedResults.data
             : cachedResults.get(endpoint) ?? null
-        : null;
+        : mode === "variants"
+            ? variantEntries
+            : mode === "flags"
+                ? flagEntries
+                : null;
 
     const loadMoreRef = useRef<HTMLDivElement>(null);
     const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
@@ -368,13 +404,36 @@ export default function SearchResults({
                     if (data.absolute !== (filters.mode[0] === "true")) return false;
                 }
             }
+
+            // --- VARIANT FILTERS ---
+            if (mode === "variants" && isVariantRecord(data)) {
+                if (filterKey === "desc") {
+                    const matches = validValues.some((val) =>
+                        data.description.toLowerCase().includes(val.toLowerCase())
+                    );
+                    if (!matches) return false;
+                }
+            }
+
+            // --- FLAG FILTERS ---
+            if (mode === "flags" && isFlagRecord(data)) {
+                if (filterKey === "desc") {
+                    const matches = validValues.some((val) =>
+                        data.description.toLowerCase().includes(val.toLowerCase())
+                    );
+                    if (!matches) return false;
+                }
+            }
         }
 
         return true;
     });
 
     useEffect(() => {
-        if (!detailsName || (mode !== "tiles" && mode !== "macros" && mode !== "filters")) {
+        if (!detailsName ||
+            !["tiles", "macros", "filters", "variants", "flags"]
+            .includes(mode)
+        ) {
             restoredDetailsRef.current = null;
             return;
         }
@@ -399,6 +458,12 @@ export default function SearchResults({
             restoredDetailsRef.current = detailsKey;
         } else if (mode === "filters" && isFilterRecord(data)) {
             onSelect({ name: safeName, filter: data });
+            restoredDetailsRef.current = detailsKey;
+        } else if (mode === "variants" && isVariantRecord(data)) {
+            onSelect({ name: safeName, variant: data });
+            restoredDetailsRef.current = detailsKey;
+        } else if (mode === "flags" && isFlagRecord(data)) {
+            onSelect({ name: safeName, flag: data });
             restoredDetailsRef.current = detailsKey;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
