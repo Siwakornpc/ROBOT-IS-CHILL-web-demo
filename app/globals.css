@@ -310,7 +310,7 @@ ul {
 .discord-markdown .discord-table th,
 .discord-markdown .discord-table td {
     padding: 0.4rem 0.6rem;
-    border: 1px solid #4e5058;
+    border: 1px solid rgb(var(--md-color-outline));
 }
 
 .discord-markdown .discord-task-list-item {
@@ -1529,39 +1529,6 @@ hr {
 }
 
 /*
-    run button
-*/
-
-#run {
-    box-sizing: border-box;
-    background: #1c1c1f;
-    border: 1px solid #3a3a3d;
-    color: white;
-    width: stretch;
-    height: 32px;
-    font-family: var(--font-family-code);
-    font-size: var(--font-size-code);
-    border-radius: 8px;
-    transition: .2s ease;
-}
-#run:hover {
-    background: #222225;
-    border: 1px solid #4b4b50;
-}
-#run:active {
-    background: #1a1a1d;
-    border: 1px solid #353538;
-    transition: 0s ease;
-}
-.run-controls {
-    display: flex;
-    align-items: center;
-    position: relative;
-    gap: 8px;
-    height: 24px;
-}
-
-/*
     syntax highlighting
 */
 
@@ -1678,6 +1645,14 @@ hr {
 /*
     status bar
 */
+
+.run-controls {
+    display: flex;
+    align-items: center;
+    position: relative;
+    gap: 8px;
+    height: 24px;
+}
 
 .status-bar {
     display: flex;
