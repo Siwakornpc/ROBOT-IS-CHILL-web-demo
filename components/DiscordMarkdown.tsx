@@ -1661,11 +1661,13 @@ function renderNode(
                     key={key}
                     className="discord-blockquote"
                 >
-                    {renderChildren(
-                        node.children,
-                        key,
-                        context
-                    )}
+                    <span className="discord-blockquote-content">
+                        {renderChildren(
+                            node.children,
+                            key,
+                            context
+                        )}
+                    </span>
                 </blockquote>
             );
 

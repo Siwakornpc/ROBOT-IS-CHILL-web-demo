@@ -291,7 +291,10 @@ ul {
     width: 2px;
     margin-bottom: .125rem;
     border-radius: 1px;
-    background: rgb(var(--md-color-outline));
+    background: rgb(var(--md-color-outline-variant));
+}
+.discord-blockquote-content {
+    width: fit-content;
 }
 
 .discord-markdown .discord-table-wrapper {
