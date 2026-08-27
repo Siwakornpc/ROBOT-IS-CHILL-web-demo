@@ -657,6 +657,25 @@ function prepareSource(
         normalizeDiscordLists(source)
     );
 
+    const lines = normalized.split("\n");
+
+    let inFence = false;
+
+    /*
+     * Require a space after '>' for blockquotes.
+     * Escapes any '>' at line start (with up to 3 leading spaces) that is NOT followed by a space, newline, or '>'.
+     */
+    const strictBlockquotes = lines.map((line) => {
+        const fence = line.match(/^ {0,3}(`{3,}|~{3,})/);
+
+        if (fence) {
+            inFence = !inFence;
+            return line;
+        }
+        if (inFence) return line;
+        return line.replace(/^(\s*)>(?![ >\r\n]|$)/, "$1\\>");
+    });
+
     /*
      * Discord subtext:
      *
@@ -664,37 +683,24 @@ function prepareSource(
      *
      * We replace the entire line with a token.
      */
-    const lines = normalized.split("\n");
+    inFence = false;
 
-    let inFence = false;
-
-    const withSubtext = lines.map((line) => {
-        const fence = line.match(
-            /^ {0,3}(`{3,}|~{3,})/
-        );
+    const withSubtext = strictBlockquotes.map((line) => {
+        const fence = line.match(/^ {0,3}(`{3,}|~{3,})/);
 
         if (fence) {
             inFence = !inFence;
             return line;
         }
-
-        if (
-            !inFence &&
-            line.startsWith("-# ")
-        ) {
+        if (!inFence && line.startsWith("-# ")) {
             return makeToken(tokens, {
                 type: "subtext",
                 content: line.slice(3),
             });
         }
-
         return line;
     });
-
-    return protectDiscordSyntax(
-        withSubtext.join("\n"),
-        tokens
-    );
+    return protectDiscordSyntax(withSubtext.join("\n"), tokens);
 }
 
 function parseMarkdown(
@@ -705,12 +711,7 @@ function parseMarkdown(
     prepared: string;
 } {
     const tokens: DiscordTokenStore = [];
-
-    const prepared = prepareSource(
-        source,
-        tokens
-    );
-
+    const prepared = prepareSource(source, tokens);
     const tree = markdown.parse(prepared) as Root;
 
     markDiscordUnderline(tree, prepared);
@@ -758,21 +759,13 @@ function markDiscordUnderline(
                 node.position.end.offset
             );
 
-            if (
-                raw.startsWith("__") &&
-                raw.endsWith("__")
-            ) {
-                node.type = "discordUnderline";
-            }
+            if (raw.startsWith("__") && raw.endsWith("__")) node.type = "discordUnderline";
         }
 
         if (Array.isArray(node.children)) {
-            for (const child of node.children) {
-                visit(child);
-            }
+            for (const child of node.children) visit(child);
         }
     }
-
     visit(root);
 }
 
@@ -795,12 +788,8 @@ function safeUrl(
             url.protocol === "https:" ||
             url.protocol === "mailto:" ||
             url.protocol === "tel:"
-        ) {
-            return value;
-        }
-    } catch {
-        // Invalid URL.
-    }
+        ) return value;
+    } catch {}
 
     return undefined;
 }
@@ -809,16 +798,7 @@ function discordEmojiUrl(
     id: string,
     animated: boolean
 ): string {
-    /*
-     * Discord recommends WebP for emoji rendering.
-     *
-     * Animated emoji can use:
-     *   .webp?animated=true
-     */
-    if (animated) {
-        return `https://cdn.discordapp.com/emojis/${id}.webp?animated=true`;
-    }
-
+    if (animated) return `https://cdn.discordapp.com/emojis/${id}.webp?animated=true`;
     return `https://cdn.discordapp.com/emojis/${id}.webp`;
 }
 
@@ -829,9 +809,7 @@ function formatDiscordTimestamp(
 ): string {
     const date = new Date(timestamp * 1000);
 
-    if (Number.isNaN(date.getTime())) {
-        return String(timestamp);
-    }
+    if (Number.isNaN(date.getTime())) return String(timestamp);
 
     switch (style ?? "f") {
         case "t":
@@ -905,17 +883,8 @@ function formatDiscordTimestamp(
                 divisor = 60;
                 unit = "minute";
             }
-
-            const value = Math.round(
-                delta / divisor
-            );
-
-            return new Intl.RelativeTimeFormat(
-                locale,
-                {
-                    numeric: "always",
-                }
-            ).format(value, unit);
+            const value = Math.round(delta / divisor);
+            return new Intl.RelativeTimeFormat(locale, {numeric: "always"}).format(value, unit);
         }
 
         default:
@@ -975,10 +944,7 @@ function renderToken(
 ): ReactNode {
     switch (token.type) {
         case "spoiler": {
-            const nested = parseMarkdown(
-                token.content
-            );
-
+            const nested = parseMarkdown(token.content);
             const nestedContext: RenderContext = {
                 ...context,
                 tokens: nested.tokens,
@@ -1002,9 +968,7 @@ function renderToken(
         }
 
         case "subtext": {
-            const nested = parseMarkdown(
-                token.content
-            );
+            const nested = parseMarkdown(token.content);
 
             const nestedContext: RenderContext = {
                 ...context,
@@ -1026,49 +990,37 @@ function renderToken(
         }
 
         case "user": {
-            const name =
-                context.resolveUser?.(token.id) ??
-                token.id;
-
+            const name = context.resolveUser?.(token.id) ?? token.id;
             return (
                 <span
                     key={key}
                     className="discord-mention discord-mention-user"
                     data-id={token.id}
-                >
-                    @{name}
+                >@{name}
                 </span>
             );
         }
 
         case "role": {
-            const name =
-                context.resolveRole?.(token.id) ??
-                token.id;
-
+            const name = context.resolveRole?.(token.id) ?? token.id;
             return (
                 <span
                     key={key}
                     className="discord-mention discord-mention-role"
                     data-id={token.id}
-                >
-                    @{name}
+                >@{name}
                 </span>
             );
         }
 
         case "channel": {
-            const name =
-                context.resolveChannel?.(token.id) ??
-                token.id;
-
+            const name = context.resolveChannel?.(token.id) ?? token.id;
             return (
                 <span
                     key={key}
                     className="discord-mention discord-mention-channel"
                     data-id={token.id}
-                >
-                    #{name}
+                >#{name}
                 </span>
             );
         }
@@ -1078,8 +1030,7 @@ function renderToken(
                 <span
                     key={key}
                     className="discord-mention discord-mention-everyone"
-                >
-                    @everyone
+                >@everyone
                 </span>
             );
 
@@ -1088,22 +1039,14 @@ function renderToken(
                 <span
                     key={key}
                     className="discord-mention discord-mention-here"
-                >
-                    @here
+                >@here
                 </span>
             );
 
         case "emoji": {
             const src =
-                context.resolveEmojiUrl?.(
-                    token.id,
-                    token.animated
-                ) ??
-                discordEmojiUrl(
-                    token.id,
-                    token.animated
-                );
-
+                context.resolveEmojiUrl?.(token.id, token.animated) ??
+                discordEmojiUrl(token.id, token.animated);
             return (
                 <img
                     key={key}
@@ -1116,10 +1059,7 @@ function renderToken(
         }
 
         case "timestamp": {
-            const date = new Date(
-                token.timestamp * 1000
-            );
-
+            const date = new Date(token.timestamp * 1000);
             const formatted =
                 formatDiscordTimestamp(
                     token.timestamp,
@@ -1133,16 +1073,10 @@ function renderToken(
                     className="discord-timestamp"
                     dateTime={
                         Number.isNaN(date.getTime())
-                            ? undefined
-                            : date.toISOString()
+                            ? undefined : date.toISOString()
                     }
-                    title={`<t:${token.timestamp}${
-                        token.style
-                            ? `:${token.style}`
-                            : ""
-                    }>`}
-                >
-                    {formatted}
+                    title={`<t:${token.timestamp}${token.style ? `:${token.style}` : ""}>`}
+                >{formatted}
                 </time>
             );
         }
@@ -1153,8 +1087,7 @@ function renderToken(
                     key={key}
                     className="discord-slash-command"
                     data-id={token.id}
-                >
-                    /{token.name}
+                >/{token.name}
                 </span>
             );
 
@@ -1165,12 +1098,12 @@ function renderToken(
                     className="discord-guild-navigation"
                     data-type={token.typeName}
                     data-id={token.id}
-                >
-                    &lt;id:{token.typeName}
+                >&lt;
+                    id:{token.typeName}
                     {token.id
                         ? `:${token.id}`
                         : ""}
-                    &gt;
+                &gt;
                 </span>
             );
     }
@@ -1187,25 +1120,16 @@ function renderText(
     key: string,
     context: RenderContext
 ): ReactNode {
-    const tokenRegex =
-        /\uE000(\d+)\uE001/g;
-
+    const tokenRegex = /\uE000(\d+)\uE001/g;
     const parts: ReactNode[] = [];
 
     let lastIndex = 0;
     let match: RegExpExecArray | null;
     let partIndex = 0;
 
-    while (
-        (match = tokenRegex.exec(value)) !== null
-    ) {
+    while ((match = tokenRegex.exec(value)) !== null) {
         if (match.index > lastIndex) {
-            parts.push(
-                value.slice(
-                    lastIndex,
-                    match.index
-                )
-            );
+            parts.push(value.slice(lastIndex, match.index));
         }
 
         const tokenIndex = Number(match[1]);
@@ -1219,29 +1143,20 @@ function renderText(
                     context
                 )
             );
-        } else {
-            parts.push(match[0]);
-        }
+        } else parts.push(match[0]);
 
         partIndex++;
-        lastIndex =
-            match.index + match[0].length;
+        lastIndex = match.index + match[0].length;
     }
 
-    if (lastIndex < value.length) {
-        parts.push(value.slice(lastIndex));
-    }
-
-    if (parts.length === 0) {
-        return value;
-    }
+    if (lastIndex < value.length) parts.push(value.slice(lastIndex));
+    if (parts.length === 0) return value;
 
     return parts.map((part, index) => (
         <span
             key={`${key}-${index}`}
             className="discord-text-part"
-        >
-            {part}
+        >{part}
         </span>
     ));
 }
@@ -1278,11 +1193,7 @@ function renderNode(
     context: RenderContext
 ): ReactNode {
     switch (node.type) {
-        /*
-         * --------------------------------------------------------------
-         * Text
-         * --------------------------------------------------------------
-         */
+        /* Text */
         case "text":
             return renderText(
                 node.value ?? "",
@@ -1290,19 +1201,10 @@ function renderNode(
                 context
             );
 
-        /*
-         * --------------------------------------------------------------
-         * Break
-         * --------------------------------------------------------------
-         */
-        case "break":
-            return <br key={key} />;
+        /* Break */
+        case "break": return <br key={key} />;
 
-        /*
-         * --------------------------------------------------------------
-         * Strong
-         * --------------------------------------------------------------
-         */
+        /* Strong */
         case "strong":
             return (
                 <strong key={key}>
@@ -1314,11 +1216,7 @@ function renderNode(
                 </strong>
             );
 
-        /*
-         * --------------------------------------------------------------
-         * Italic
-         * --------------------------------------------------------------
-         */
+        /* Italic */
         case "emphasis":
             return (
                 <em key={key}>
@@ -1330,11 +1228,7 @@ function renderNode(
                 </em>
             );
 
-        /*
-         * --------------------------------------------------------------
-         * Discord underline
-         * --------------------------------------------------------------
-         */
+        /* Underline */
         case "discordUnderline":
             return (
                 <u key={key}>
@@ -1346,11 +1240,7 @@ function renderNode(
                 </u>
             );
 
-        /*
-         * --------------------------------------------------------------
-         * GFM strikethrough
-         * --------------------------------------------------------------
-         */
+        /* Strikethrough */
         case "delete":
             return (
                 <s key={key}>
@@ -1362,26 +1252,17 @@ function renderNode(
                 </s>
             );
 
-        /*
-         * --------------------------------------------------------------
-         * Inline code
-         * --------------------------------------------------------------
-         */
+        /* Inline code */
         case "inlineCode":
             return (
                 <code
                     key={key}
                     className="discord-inline-code"
-                >
-                    {node.value}
+                >{node.value}
                 </code>
             );
 
-        /*
-         * --------------------------------------------------------------
-         * Code block
-         * --------------------------------------------------------------
-         */
+        /* Code block */
         case "code":
             return (
                 <pre
@@ -1392,17 +1273,12 @@ function renderNode(
                         data-language={
                             node.lang ?? undefined
                         }
-                    >
-                        {node.value}
+                    >{node.value}
                     </code>
                 </pre>
             );
 
-        /*
-         * --------------------------------------------------------------
-         * Link
-         * --------------------------------------------------------------
-         */
+        /* Link */
         case "link": {
             const href = safeUrl(node.url);
 
@@ -1435,16 +1311,9 @@ function renderNode(
             );
         }
 
-        /*
-         * --------------------------------------------------------------
-         * Link reference
-         * --------------------------------------------------------------
-         */
+        /* Link reference */
         case "linkReference": {
-            const definition =
-                context.definitions.get(
-                    String(node.identifier).toLowerCase()
-                );
+            const definition = context.definitions.get(String(node.identifier).toLowerCase());
 
             if (!definition) {
                 return (
@@ -1458,9 +1327,7 @@ function renderNode(
                 );
             }
 
-            const href = safeUrl(
-                definition.url
-            );
+            const href = safeUrl(definition.url);
 
             if (!href) {
                 return (
@@ -1478,10 +1345,7 @@ function renderNode(
                 <a
                     key={key}
                     href={href}
-                    title={
-                        definition.title ??
-                        undefined
-                    }
+                    title={definition.title ?? undefined}
                     target="_blank"
                     rel="noopener noreferrer"
                 >
@@ -1494,17 +1358,10 @@ function renderNode(
             );
         }
 
-        /*
-         * --------------------------------------------------------------
-         * Image
-         * --------------------------------------------------------------
-         */
+        /* Image */
         case "image": {
             const src = safeUrl(node.url);
-
-            if (!src) {
-                return null;
-            }
+            if (!src) return null;
 
             return (
                 <img
@@ -1517,24 +1374,14 @@ function renderNode(
             );
         }
 
-        /*
-         * --------------------------------------------------------------
-         * Image reference
-         * --------------------------------------------------------------
-         */
+        /* Image reference */
         case "imageReference": {
             const definition =
                 context.definitions.get(
                     String(node.identifier).toLowerCase()
                 );
-
-            const src = safeUrl(
-                definition?.url
-            );
-
-            if (!src) {
-                return null;
-            }
+            const src = safeUrl(definition?.url);
+            if (!src) return null;
 
             return (
                 <img
@@ -1542,25 +1389,13 @@ function renderNode(
                     className="discord-image"
                     src={src}
                     alt={node.alt ?? ""}
-                    title={
-                        definition?.title ??
-                        undefined
-                    }
+                    title={definition?.title ?? undefined}
                 />
             );
         }
 
-        /*
-         * --------------------------------------------------------------
-         * Paragraph
-         * --------------------------------------------------------------
-         */
+        /* Paragraph */
         case "paragraph": {
-            /*
-             * A -# line becomes a single token inside
-             * a paragraph. Give the paragraph the Discord
-             * subtext class.
-             */
             const onlyChild =
                 node.children?.length === 1
                     ? node.children[0]
@@ -1568,18 +1403,10 @@ function renderNode(
 
             if (
                 onlyChild?.type === "text" &&
-                /^\uE000\d+\uE001$/.test(
-                    onlyChild.value
-                )
+                /^\uE000\d+\uE001$/.test(onlyChild.value)
             ) {
-                const tokenIndex = Number(
-                    onlyChild.value.match(
-                        /\uE000(\d+)\uE001/
-                    )?.[1]
-                );
-
-                const token =
-                    context.tokens[tokenIndex];
+                const tokenIndex = Number(onlyChild.value.match(/\uE000(\d+)\uE001/)?.[1]);
+                const token = context.tokens[tokenIndex];
 
                 if (token?.type === "subtext") {
                     return (
@@ -1608,29 +1435,15 @@ function renderNode(
             );
         }
 
-        /*
-         * --------------------------------------------------------------
-         * Heading
-         * --------------------------------------------------------------
-         */
+        /* Heading */
         case "heading": {
-            /*
-             * Discord currently documents #, ## and ###.
-             *
-             * We still safely render deeper Markdown headings.
-             */
             const level = Number(node.depth) || 1;
-
             const children = renderChildren(
                 node.children,
                 key,
                 context
             );
 
-            /*
-             * Discord documents only #, ## and ### headings.
-             * Deeper ATX headings are therefore treated as ordinary text.
-             */
             if (level > 3) {
                 return (
                     <p key={key}>
@@ -1641,20 +1454,13 @@ function renderNode(
             }
 
             switch (level) {
-                case 1:
-                    return <h1 key={key}>{children}</h1>;
-                case 2:
-                    return <h2 key={key}>{children}</h2>;
-                default:
-                    return <h3 key={key}>{children}</h3>;
+                case 1: return <h1 key={key}>{children}</h1>;
+                case 2: return <h2 key={key}>{children}</h2>;
+                default: return <h3 key={key}>{children}</h3>;
             }
         }
 
-        /*
-         * --------------------------------------------------------------
-         * Block quote
-         * --------------------------------------------------------------
-         */
+        /* Block quote */
         case "blockquote":
             return (
                 <blockquote
@@ -1671,31 +1477,9 @@ function renderNode(
                 </blockquote>
             );
 
-        /*
-         * --------------------------------------------------------------
-         * Lists
-         * --------------------------------------------------------------
-         *
-         * Remark has already built the correct nested tree.
-         *
-         * Example:
-         *
-         * - one
-         *   - two
-         *
-         * becomes:
-         *
-         * list
-         *   listItem
-         *     paragraph
-         *     list
-         *       listItem
-         */
+        /* Lists */
         case "list": {
-            const Tag = node.ordered
-                ? "ol"
-                : "ul";
-
+            const Tag = node.ordered ? "ol" : "ul";
             return (
                 <Tag
                     key={key}
@@ -1707,11 +1491,7 @@ function renderNode(
                             : undefined
                     }
                 >
-                    {node.children.map(
-                        (
-                            item: any,
-                            index: number
-                        ) =>
+                    {node.children.map((item: any, index: number) =>
                             renderListItem(
                                 item,
                                 `${key}-${index}`,
@@ -1722,19 +1502,11 @@ function renderNode(
             );
         }
 
-        /*
-         * --------------------------------------------------------------
-         * Thematic break
-         * --------------------------------------------------------------
-         */
+        /* Thematic break */
         case "thematicBreak":
             return <hr key={key} />;
 
-        /*
-         * --------------------------------------------------------------
-         * GFM task list item
-         * --------------------------------------------------------------
-         */
+        /* GFM task list item */
         case "listItem": {
             return renderListItem(
                 node,
@@ -1743,11 +1515,7 @@ function renderNode(
             );
         }
 
-        /*
-         * --------------------------------------------------------------
-         * GFM table
-         * --------------------------------------------------------------
-         */
+        /* GFM table */
         case "table": {
             /*
              * protectUnsupportedGfmSyntax() normally prevents this node.
@@ -1761,9 +1529,7 @@ function renderNode(
                             <span key={`${key}-row-${rowIndex}`}>
                                 {row.children.map(
                                     (cell: any, cellIndex: number) => (
-                                        <span
-                                            key={`${key}-${rowIndex}-${cellIndex}`}
-                                        >
+                                        <span key={`${key}-${rowIndex}-${cellIndex}`}>
                                             {cellIndex > 0 ? " | " : ""}
                                             {renderChildren(
                                                 cell.children,
@@ -1773,9 +1539,7 @@ function renderNode(
                                         </span>
                                     )
                                 )}
-                                {rowIndex < node.children.length - 1
-                                    ? <br />
-                                    : null}
+                                {rowIndex < node.children.length - 1 ? <br /> : null}
                             </span>
                         )
                     )}
@@ -1783,10 +1547,7 @@ function renderNode(
             );
         }
 
-        /*
-         * --------------------------------------------------------------
-         * HTML
-         * --------------------------------------------------------------
+        /* HTML
          *
          * Do NOT use dangerouslySetInnerHTML.
          *
@@ -1796,15 +1557,9 @@ function renderNode(
         case "html":
             return node.value ?? "";
 
-        /*
-         * --------------------------------------------------------------
-         * Unknown/custom nodes
-         * --------------------------------------------------------------
-         */
+        /* Unknown/custom nodes */
         default:
-            if (
-                Array.isArray(node.children)
-            ) {
+            if (Array.isArray(node.children)) {
                 return (
                     <span key={key}>
                         {renderChildren(
@@ -1815,13 +1570,7 @@ function renderNode(
                     </span>
                 );
             }
-
-            if (
-                typeof node.value === "string"
-            ) {
-                return node.value;
-            }
-
+            if (typeof node.value === "string") return node.value;
             return null;
     }
 }
@@ -1868,10 +1617,7 @@ export function DiscordMarkdown({
     resolveEmojiUrl,
     locale = "en-US",
 }: DiscordMarkdownProps) {
-    const {
-        tree,
-        tokens,
-    } = parseMarkdown(children);
+    const {tree, tokens} = parseMarkdown(children);
 
     /*
      * Reference definitions are global to the document.
@@ -1898,9 +1644,7 @@ export function DiscordMarkdown({
         }
 
         if (Array.isArray(node.children)) {
-            for (const child of node.children) {
-                collectDefinitions(child);
-            }
+            for (const child of node.children) collectDefinitions(child);
         }
     }
 
