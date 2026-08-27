@@ -1,6 +1,6 @@
 "use client";
 
-import Body from "@/components/page/settings/Body";
+import Body from "@/components/page/testing/Body";
 import { LeftBar } from "@/components/page/SideBars";
 import { useEffect } from "react";
 import { nav_btn_select } from "@/components/nav_select";
