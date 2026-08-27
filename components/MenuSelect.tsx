@@ -9,7 +9,6 @@ import {
     CSSProperties,
     FocusEvent,
     MouseEvent as ReactMouseEvent,
-    KeyboardEvent as ReactKeyboardEvent,
     cloneElement,
     useId,
 } from "react";
@@ -133,10 +132,11 @@ function MenuItem<T extends string>({
             {hasChildren && (
                 <div
                     ref={submenuRef}
-                    popover="auto"
+                    popover="manual"
                     role="menu"
                     className={`menu submenu-popout ascroll-y inset-scrollbar ${isSubmenuOpen ? "visible" : ""} anchor-${submenuAnchor}`}
                     style={{ positionAnchor: `--submenu-trigger-${anchorId}` } as CSSProperties}
+                    onClick={(e) => e.stopPropagation()}
                 >
                     {item.children!.map((child) => (
                         <MenuItem
@@ -198,7 +198,6 @@ export default function MenuSelect<T extends string>({
     const [isOpen, setIsOpen] = useState(false);
     const [closeSignal, setCloseSignal] = useState(0);
 
-    const wrapperRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
     const triggerAnchorId = useId().replace(/:/g, "");
     const anchorNameStyle = { anchorName: `--menu-trigger-${triggerAnchorId}` } as CSSProperties;
@@ -221,13 +220,6 @@ export default function MenuSelect<T extends string>({
     const toggleMenu = () => (isOpen ? closeMenu() : openMenu());
 
     const selectedOption = useMemo(() => options.find((item) => item.value === value) ?? options[0], [options, value]);
-
-    const handleFocusCapture = (e: FocusEvent<HTMLDivElement>) => {
-        const target = e.target as HTMLElement;
-        if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") {
-            openMenu();
-        }
-    };
 
     const getInputProps = (customProps: Record<string, any> = {}) => {
         const { onFocus, onClick, style: customStyle, ...rest } = customProps;
@@ -275,7 +267,7 @@ export default function MenuSelect<T extends string>({
                 role="menu"
                 className={`menu ascroll-y inset-scrollbar anchor-${anchor} ${id ? `${id}-options` : ""} ${isOpen ? "visible" : ""}`}
                 style={{ positionAnchor: `--menu-trigger-${triggerAnchorId}` } as CSSProperties}
-                onToggle={(e: any) => { if (e.newState === "closed") closeMenu(); }}
+                onToggle={(e: any) => { if (e.newState === "closed" && isOpen) closeMenu(); }}
             >
                 {title && <div className="menu-title">{title}</div>}
                 {options.map((item) => (
