@@ -126,6 +126,16 @@ export function FilterPanel({
     onToggleFilter: () => void;
     showMenu: boolean;
 }) {
+    const [sourceOptions, setSourceOptions] = useState<{ value: string; label: string }[]>([]);
+    const [sourceSearchQuery, setSourceSearchQuery] = useState("");
+    const filteredSourceOptions = sourceOptions.filter((option) =>
+        option.label.toLowerCase().includes(sourceSearchQuery.toLowerCase())
+    );
+
+    useEffect(() => {
+        sourcesPromise.then(setSourceOptions);
+    }, []);
+    
     const filterOptions = {
         tiles: [
             { value: "source", label: "Source" },
@@ -258,15 +268,6 @@ export function FilterPanel({
                 );
 
             case "source":
-                const [sourceOptions, setSourceOptions] = useState<{ value: string; label: string }[]>([]);
-                const [sourceSearchQuery, setSourceSearchQuery] = useState("");
-                const filteredSourceOptions = sourceOptions.filter((option) =>
-                    option.label.toLowerCase().includes(sourceSearchQuery.toLowerCase())
-                );
-
-                useEffect(() => {
-                    sourcesPromise.then(setSourceOptions);
-                }, []);
                 return (
                     <MenuSelect
                         id={`source-select-${index}`}
