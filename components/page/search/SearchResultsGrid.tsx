@@ -87,9 +87,7 @@ export type SelectedSearchResult =
 const variantEntries: SearchEntry[] = Object.entries(variants);
 const flagEntries: SearchEntry[] = Object.entries(flags);
 
-type OverlayEntry =
-    | [string, VariantRecord]
-    | [string, FlagRecord];
+type OverlayEntry = [string, VariantRecord] | [string, FlagRecord];
 
 const overlayEntries: OverlayEntry[] = [
     ...Object.entries(variants),
