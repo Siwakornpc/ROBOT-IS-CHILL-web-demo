@@ -103,9 +103,7 @@ export default function Body() {
         }
     };
 
-    const variantText =
-        '<wave><axis: Literal["x", "y"]>/<amplitude: int>/<offset: float>/<frequency: float>';
-
+    const variantText = '<wave><axis: Literal["x", "y"]>/<amplitude: int>/<offset: float>/<frequency: float>';
     const variantElementRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -170,7 +168,6 @@ export default function Body() {
                     ref={variantElementRef}
                     className="search-details-detailbox variant"
                 />
-
             </div>
         </main>
     );
