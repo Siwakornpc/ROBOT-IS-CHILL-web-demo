@@ -5,12 +5,22 @@ import { type SearchMode } from "./SearchSelect";
 import stdlib_macros from "./stdlib_macros";
 import JSONbig from "json-bigint";
 import applyOverflowFade from "@/components/OverflowFade";
+import {
+    loadUpstream,
+    loadVariants,
+    loadFlags,
+} from "@/data/ric_metadata";
 
 const BATCH_SIZE = 32;
 
 const IMAGE_SUCCESS_DELAY = 150;
 const IMAGE_ERROR_DELAY = 2000;
 const MAX_IMAGE_RETRIES = 4;
+
+const {
+    variants,
+    flags,
+} = await loadUpstream();
 
 const endpoints: Partial<Record<SearchMode, string>> = {
     tiles: "tiles.json",
