@@ -7,8 +7,6 @@ import JSONbig from "json-bigint";
 import applyOverflowFade from "@/components/OverflowFade";
 import {
     loadUpstream,
-    loadVariants,
-    loadFlags,
 } from "@/data/ric_metadata";
 
 const BATCH_SIZE = 32;
@@ -47,6 +45,16 @@ export type FilterRecord = {
     upload_time: number | null;
 };
 
+export type VariantRecord = {
+    description?: string;
+    syntax?: string;
+    applied: string;
+}
+export type FlagRecord = {
+    syntax: string;
+    description?: string;
+}
+
 export type SelectedTile = {
     name: string;
     tile: TileRecord;
@@ -59,6 +67,15 @@ export type SelectedFilter = {
     name: string;
     filter: FilterRecord;
 };
+
+export type SelectedVariant = {
+    name: string;
+    variant: VariantRecord;
+}
+export type SelectedFlag = {
+    name: string;
+    flag: FlagRecord
+}
 
 export type SelectedSearchResult = SelectedTile | SelectedMacro | SelectedFilter;
 
