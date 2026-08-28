@@ -9,7 +9,7 @@ import { updateFlagStaticHighlight } from "@/components/highlight/metadata-hight
 
 import { DiscordMarkdown } from "@/components/DiscordMarkdown";
 import applyOverflowFade from "@/components/OverflowFade";
-import { mapTiling } from "@/components/page/search/image_tiling";
+import { mapTiling } from "@/image_tiling";
 import "@/types/string.extentions";
 
 type DetailsProps = {
