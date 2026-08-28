@@ -36,7 +36,7 @@
   },
   "font": {
     "description": "Applies a font to a sign text object.",
-    "syntax": "<f!|font!><name: Literal[*tuple(Path(f).stem for f in glob.glob('data/fonts/*.ttf'))]>",
+    "syntax": "<f!|font!><name: Literal['04b03', 'monospace', 'icon', 'bytesized', 'ui', 'default', 'offset']>",
     "applied": "While placing sign texts"
   },
   "align": {

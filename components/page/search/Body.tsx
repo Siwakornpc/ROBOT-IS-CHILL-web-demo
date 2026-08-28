@@ -7,85 +7,6 @@ import PaletteColorPicker from "@/components/PaletteColorPicker";
 import { useMenu } from "@/components/MenuContext";
 import applyOverflowFade from "@/components/OverflowFade";
 
-// --- FILTER INPUTS ---
-
-function TilingFilterInput({
-    value,
-    onChange,
-}: {
-    value: string;
-    onChange: (val: string) => void;
-}) {
-    const [searchQuery, setSearchQuery] = useState("");
-
-    const tilingOptions = [
-        { value: "none", label: "None" },
-        { value: "static", label: "Static" },
-        { value: "animated", label: "Animated" },
-        { value: "directional", label: "Directional" },
-        { value: "animated_directional", label: " Animated Directional" },
-        { value: "character", label: "Character" },
-        { value: "tiling", label: "Tiling" },
-        { value: "diagonal_tiling", label: "Diagonal Tiling" },
-    ];
-
-    return (
-        <MenuSelect
-            value={value}
-            options={tilingOptions}
-            onChange={(newValue) => {
-                onChange(newValue);
-                const matched = tilingOptions.find((opt) => opt.value === newValue);
-                if (matched) setSearchQuery(matched.label);
-            }}
-            trigger={({ getInputProps }) => (
-                <label className="text-field">
-                    <span className="text-field-label">Tiling Mode</span>
-                    <input
-                        {...getInputProps({
-                            type: "text",
-                            value: searchQuery,
-                            placeholder: " ",
-                            required: true,
-                            autoComplete: "off",
-                            onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-                                setSearchQuery(e.target.value);
-                            },
-                        })}
-                    />
-                </label>
-            )}
-            anchor="t"
-        />
-    );
-}
-
-function ModeFilterInput({
-    value,
-    onChange,
-}: {
-    value: string;
-    onChange: (val: string) => void;
-}) {
-    const isAbsolute = value === "true";
-
-    return (
-        <div className="cbtn-group small">
-            <button
-                type="button"
-                className={`cbtn ${isAbsolute ? "selected" : ""}`}
-                onClick={() => onChange("true")}
-            >Absolute</button>
-            
-            <button
-                type="button"
-                className={`cbtn ${!isAbsolute ? "selected" : ""}`}
-                onClick={() => onChange("false")}
-            >Relative</button>
-        </div>
-    );
-}
-
 // cache sprite sources
 const sourcesPromise: Promise<{ value: string; label: string }[]> = fetch(
     "https://ric-api.sno.mba/tiles.json"
@@ -151,6 +72,8 @@ export function FilterPanel({
         ],
         variants: [
             { value: "desc", label: "Description" },
+            { value: "syntax", label: "Syntax" },
+            { value: "applied", label: "Applied" },
             { value: "type", label: "Type" },
             { value: "anim", label: "Animatable" },
         ],
@@ -295,43 +218,93 @@ export function FilterPanel({
                 );
 
             case "tiling":
+                const [searchQuery, setSearchQuery] = useState("");
+
+                const tilingOptions = [
+                    { value: "none", label: "None" },
+                    { value: "static", label: "Static" },
+                    { value: "animated", label: "Animated" },
+                    { value: "directional", label: "Directional" },
+                    { value: "animated_directional", label: " Animated Directional" },
+                    { value: "character", label: "Character" },
+                    { value: "tiling", label: "Tiling" },
+                    { value: "diagonal_tiling", label: "Diagonal Tiling" },
+                ];
+
                 return (
-                    <TilingFilterInput
+                    <MenuSelect
                         value={value}
-                        onChange={(newValue) => handleValueChange(type, index, newValue)}
+                        options={tilingOptions}
+                        onChange={(newValue) => {
+                            handleValueChange(type, index, newValue);
+                            const matched = tilingOptions.find((opt) => opt.value === newValue);
+                            if (matched) setSearchQuery(matched.label);
+                        }}
+                        trigger={({ getInputProps }) => (
+                            <label className="text-field">
+                                <span className="text-field-label">Tiling Mode</span>
+                                <input
+                                    {...getInputProps({
+                                        type: "text",
+                                        value: searchQuery,
+                                        placeholder: " ",
+                                        required: true,
+                                        autoComplete: "off",
+                                        onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                                            setSearchQuery(e.target.value);
+                                        },
+                                    })}
+                                />
+                            </label>
+                        )}
+                        anchor="t"
                     />
                 );
 
             case "mode":
+                const isAbsolute = value === "true";
                 return (
-                    <ModeFilterInput
-                        value={value}
-                        onChange={(newValue) => handleValueChange(type, index, newValue)}
-                    />
+                    <div className="cbtn-group small">
+                        <button
+                            type="button"
+                            className={`cbtn ${isAbsolute ? "selected" : ""}`}
+                            onClick={() => handleValueChange(type, index, "true")}
+                        >Absolute
+                        </button>
+                        
+                        <button
+                            type="button"
+                            className={`cbtn ${!isAbsolute ? "selected" : ""}`}
+                            onClick={() => handleValueChange(type, index, "false")}
+                        >Relative
+                        </button>
+                    </div>
                 );
 
             case "date":
-                return (<>
-                    <MenuSelect
-                        id={`date-mode-select-${index}`}
-                        value={value}
-                        options={[
-                            { value: "before", label: "Before" },
-                            { value: "on", label: "On" },
-                            { value: "after", label: "After" },
-                        ]}
-                        onChange={(newValue) => handleValueChange(type, index, newValue)}
-                    />
-                    <label className="text-field small has-placeholder">
-                        <input
-                            type="text"
-                            placeholder="Filter..."
-                            value={value}
-                            onChange={(e) => handleValueChange(type, index, e.target.value)}
-                            autoComplete="off"
+                return (
+                    <div style={{display: "flex"}}>
+                        <MenuSelect
+                            id={`date-mode-select-${index}`}
+                            value={value[0]}
+                            options={[
+                                { value: "before", label: "Before" },
+                                { value: "on", label: "On" },
+                                { value: "after", label: "After" },
+                            ]}
+                            onChange={(newValue) => handleValueChange(type, index, `${newValue};${value[1]}`)}
                         />
-                    </label>
-                </>)
+                        <label className="text-field small has-placeholder">
+                            <input
+                                type="text"
+                                placeholder="Filter..."
+                                value={value[1]}
+                                onChange={(e) => handleValueChange(type, index, `${value[0]};${e.target.value}`)}
+                                autoComplete="off"
+                            />
+                        </label>
+                    </div>
+                )
 
             default:
                 return (
