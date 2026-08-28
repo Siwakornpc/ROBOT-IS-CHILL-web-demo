@@ -5,10 +5,11 @@ import { type SelectedSearchResult } from "./SearchResultsGrid";
 
 import { updateMacroStaticHighlight } from "@/components/highlight/macro-highlight-static.js";
 import { updateVariantStaticHighlight } from "@/components/highlight/metadata-hightlight.js";
+import { updateFlagStaticHighlight } from "@/components/highlight/metadata-hightlight.js";
 
 import { DiscordMarkdown } from "@/components/DiscordMarkdown";
 import applyOverflowFade from "@/components/OverflowFade";
-import { mapTiling } from "@/components/page/search/image_tiling";
+import { mapTiling } from "@/image_tiling";
 import "@/types/string.extentions";
 
 type DetailsProps = {
@@ -27,11 +28,12 @@ const getImageSize = (url: string): Promise<string> => {
 export function Details({ selected }: DetailsProps) {
     const macroElementRef = useRef<HTMLDivElement>(null);
     const variantElementRef = useRef<HTMLDivElement>(null);
+    const flagElementRef = useRef<HTMLDivElement>(null);
     const [tilingFrame, setTilingFrame] = useState(0);
     const [select, setSelect] = useState<string | null>("one_tile");
     console.log(selected);
 
-    // macroElementRef
+    // syntaxes
     useEffect(() => {
         if (!("macro" in selected)) return;
 
@@ -52,6 +54,19 @@ export function Details({ selected }: DetailsProps) {
         updateVariantStaticHighlight(
             element,
             selected.variant.syntax ?? ""
+        );
+    }, [selected]);
+
+    useEffect(() => {
+        if (!("flag" in selected)) return;
+
+        const element = flagElementRef.current;
+
+        if (!element) return;
+
+        updateFlagStaticHighlight(
+            element,
+            selected.flag.syntax ?? ""
         );
     }, [selected]);
 
@@ -315,7 +330,12 @@ export function Details({ selected }: DetailsProps) {
             >
                 <p className={`search-details-variant-name`}>
                     <span className="variant-name">:</span>
-                    <span className="variant-name name">{selected.name}</span>
+                    {selected.name !== "m_syntax_shim"
+                        ? 
+                        <span className="variant-name name">{selected.name}</span>
+                        :
+                        <s className="variant-name name">{selected.name}</s>
+                    }
                 </p>
             </div>
 
@@ -368,7 +388,10 @@ export function Details({ selected }: DetailsProps) {
                 </div>
             
                 <p className="search-details-label">Syntax</p>
-                <div className="search-details-detailbox flag" id="description">
+                <div
+                    ref={flagElementRef}
+                    className="search-details-detailbox flag" id="description"
+                >
                     {selected.flag.syntax}
                 </div>
             </div>

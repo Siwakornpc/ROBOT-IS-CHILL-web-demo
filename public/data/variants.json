@@ -36,7 +36,7 @@
   },
   "font": {
     "description": "Applies a font to a sign text object.",
-    "syntax": "<f!|font!><name: Literal['04b03', 'monospace', 'icon', 'bytesized', 'ui', 'default', 'offset']>",
+    "syntax": "<f!|font!><name: Literal['04b03', 'bytesized', 'icon', 'monospace', 'offset', 'ui']>",
     "applied": "While placing sign texts"
   },
   "align": {
@@ -46,7 +46,7 @@
   },
   "direction": {
     "description": "Sets the direction of a tile.",
-    "syntax": "<direction: Literal[*tuple(constants.DIRECTION_VARIANTS.keys())]>",
+    "syntax": "<direction: Literal['right', 'r', 'up', 'u', 'left', 'l', 'down', 'd']>",
     "applied": "While deciding sprite"
   },
   "frame": {
@@ -56,7 +56,7 @@
   },
   "tiling": {
     "description": "Alters the tiling of a tile. Only works on tiles that tile.",
-    "syntax": "<tiling: Literal[*tuple(constants.AUTO_VARIANTS.keys())]>",
+    "syntax": "<tiling: Literal['tr', 'tileright', 'tu', 'tileup', 'tl', 'tileleft', 'td', 'tiledown', 'tur', 'tileupright', 'tul', 'tileupleft', 'tdl', 'tiledownleft', 'tdr', 'tiledownright']>",
     "applied": "While deciding sprite"
   },
   "animation_frame": {
@@ -81,7 +81,7 @@
   },
   "default_color_palette": {
     "description": "Sets the default color of a tile by name.",
-    "syntax": "<%|dcol><name: Literal[*constants.COLOR_NAMES.keys()]>",
+    "syntax": "<%|dcol><name: Literal['maroon', 'gold', 'teal', 'red', 'orange', 'yellow', 'lime', 'green', 'cyan', 'blue', 'purple', 'pink', 'rosy', 'grey', 'gray', 'black', 'silver', 'white', 'brown']>",
     "applied": "While deciding sprite"
   },
   "inactive": {
@@ -136,7 +136,7 @@
   },
   "property": {
     "description": "Applies a property plate to a sprite.",
-    "syntax": "<noun|prop|quality>[plate: Literal[\"blank\", \"left\", \"up\", \"right\", \"down\", \"turn\", \"deturn\", \"soft\", \"\"] = \"\"]",
+    "syntax": "<noun|prop|quality>[plate: Literal[\"blank\", \"left\", \"up\", \"right\",\n            \"down\", \"turn\", \"deturn\", \"soft\", \"\"] = \"\"]",
     "applied": "While applying effects to sprite image"
   },
   "hide": {
@@ -411,7 +411,7 @@
   },
   "blending": {
     "description": "Sets the blending mode for a tile.",
-    "syntax": "<mode: Literal[*constants.BLENDING_MODES]>/[keep_alpha: bool = True]",
+    "syntax": "<mode: Literal['normal', 'add', 'subtract', 'sub', 'multiply', 'divide', 'max', 'min', 'screen', 'softlight', 'hardlight', 'overlay', 'mask', 'dodge', 'burn', 'cut', 'xor', 'xora']>/[keep_alpha: bool = True]",
     "applied": "While placing sprite onto image"
   },
   "displace": {

@@ -8,6 +8,9 @@ import applyOverflowFade from "@/components/OverflowFade";
 import {
     loadUpstream,
 } from "@/data/ric_metadata";
+import {
+    type Palette,
+} from "@/data/palette_colors";
 
 const BATCH_SIZE = 32;
 
@@ -67,6 +70,10 @@ export type SelectedFilter = {
     name: string;
     filter: FilterRecord;
 };
+export type SelectedPalette = {
+    name: string;
+    palette: Palette;
+}
 
 export type SelectedVariant = {
     name: string;
@@ -82,17 +89,11 @@ export type SelectedSearchResult =
     | SelectedMacro
     | SelectedFilter
     | SelectedVariant
-    | SelectedFlag;
+    | SelectedFlag
+    | SelectedPalette;
 
 const variantEntries: SearchEntry[] = Object.entries(variants);
 const flagEntries: SearchEntry[] = Object.entries(flags);
-
-type OverlayEntry = [string, VariantRecord] | [string, FlagRecord];
-
-const overlayEntries: OverlayEntry[] = [
-    ...Object.entries(variants),
-    ...Object.entries(flags),
-];
 
 type SearchEntry = [string, unknown];
 type SearchResults = Record<string, unknown> | SearchEntry[];
@@ -102,6 +103,7 @@ type LoadedResults = {
 };
 
 const cachedResults = new Map<string, SearchResults>();
+const cachedPalettes = new Map<string, SearchResults>();
 
 function isTileRecord(value: unknown): value is TileRecord {
     return typeof value === "object"
@@ -140,6 +142,13 @@ function isFlagRecord(value: unknown): value is FlagRecord {
         && "description" in value;
 }
 
+function isPaletteRecord(value: unknown): value is Palette {
+    return typeof value === "object"
+        && value !== null
+        && "source" in value
+        && "colors" in value;
+}
+
 export default function SearchResults({
     mode,
     onSelect,
@@ -167,7 +176,9 @@ export default function SearchResults({
             ? variantEntries
             : mode === "flags"
                 ? flagEntries
-                : null;
+                : mode === "palettes"
+                    ? cachedPalettes.get("palettes") ?? null
+                    : null;
 
     const loadMoreRef = useRef<HTMLDivElement>(null);
     const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
@@ -308,6 +319,61 @@ export default function SearchResults({
         return () => controller.abort();
     }, [endpoint, isVisible]);
 
+    useEffect(() => {
+        if (!isVisible || mode !== "palettes") return;
+
+        const cacheKey = "palettes";
+
+        const cached = cachedPalettes.get(cacheKey);
+
+        if (cached) {
+            setLoadedResults({
+                endpoint: cacheKey,
+                data: cached,
+            });
+            return;
+        }
+
+        let cancelled = false;
+
+        async function load() {
+            try {
+                const response = await fetch("/api/palettes");
+
+                if (!response.ok) {
+                    throw new Error(
+                        `Palette API returned ${response.status}`,
+                    );
+                }
+
+                const palettes: Palette =
+                    await response.json();
+
+                if (cancelled) return;
+
+                cachedPalettes.set(cacheKey, palettes);
+
+                setLoadedResults({
+                    endpoint: cacheKey,
+                    data: palettes,
+                });
+            } catch (error) {
+                if (!cancelled) {
+                    console.error(
+                        "Could not load palette search results.",
+                        error,
+                    );
+                }
+            }
+        }
+
+        load();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [mode, isVisible]);
+
     const allEntries: SearchEntry[] = results
         ? Array.isArray(results)
             ? results
@@ -319,19 +385,36 @@ export default function SearchResults({
         if (!normalizedName) return false;
 
         if (searchQuery) {
+            const searchTerms =
+                (mode === "variants" && isVariantRecord(data))
+                    ? data.syntax
+                        ?.match(/^<([^>]*)>/)?.[1]
+                            ?.split("|")
+                            .map(term => term.trim())
+                            .filter(Boolean) ?? []
+                    : (mode === "flags" && isFlagRecord(data))
+                        ? data.syntax
+                            ?.match(/^\(([^)]*)\)|^([^=]*)(?:=?.*)?$/)?.[1]
+                            ?.split("|")
+                            .map(term => term.trim().replace(/^--?/, ""))
+                            .filter(Boolean) ?? []
+                        : [normalizedName];
+
             if (useRegex) {
-                // Use regex search
                 try {
                     const regex = new RegExp(searchQuery, "i");
-                    if (!regex.test(normalizedName)) return false;
+
+                    if (!searchTerms.some(term => regex.test(term))) return false;
                 } catch {
                     return false;
                 }
             } else {
                 const query = searchQuery.toLowerCase();
-                if (!normalizedName.toLowerCase().includes(query)) return false;
+
+                if (!searchTerms.some(term => term.toLowerCase().includes(query))) return false;
             }
         }
+
 
         // apply active filters
         for (const [filterKey, filterValues] of Object.entries(filters)) {
@@ -428,7 +511,7 @@ export default function SearchResults({
 
     useEffect(() => {
         if (!detailsName ||
-            !["tiles", "macros", "filters", "variants", "flags"]
+            !["tiles", "macros", "filters", "variants", "flags", "palettes"]
             .includes(mode)
         ) {
             restoredDetailsRef.current = null;
@@ -461,6 +544,9 @@ export default function SearchResults({
             restoredDetailsRef.current = detailsKey;
         } else if (mode === "flags" && isFlagRecord(data)) {
             onSelect({ name: safeName, flag: data });
+            restoredDetailsRef.current = detailsKey;
+        } else if (mode === "palettes" && isPaletteRecord(data)) {
+            onSelect({ name: safeName, palette: data });
             restoredDetailsRef.current = detailsKey;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -746,7 +832,12 @@ export default function SearchResults({
                                 className={`search-item-variant`}
                             >
                                 <span className="variant-name">:</span>
-                                <span className="variant-name name">{name}</span>
+                                {name !== "m_syntax_shim"
+                                    ?
+                                    <span className="variant-name name">{name}</span>
+                                    :
+                                    <s className="variant-name name">{name}</s>
+                                }
                             </span>
                         </button>
                     );
@@ -778,6 +869,53 @@ export default function SearchResults({
                             >
                                 <span className="flag-name">--</span>
                                 <span className="flag-name name">{name}</span>
+                            </span>
+                        </button>
+                    );
+                })
+            }
+            
+            {
+                // Palettes
+            }
+
+            {mode === "palettes" &&
+                entries.map(([name, palette], index) => {
+                    const safeName = String(name ?? "").trim();
+
+                    return (
+                        <button
+                            type="button"
+                            className="kill-styling search-item"
+                            key={safeName || `palette-${index}`}
+                            onClick={() => {
+                                if (isPaletteRecord(palette)) {
+                                    onSelect({
+                                        name: safeName,
+                                        palette,
+                                    });
+                                }
+                            }}
+                        >
+                            {isPaletteRecord(palette) && (
+                                <div className="search-item-palette">
+                                    {palette.colors.flatMap((row, y) =>
+                                        row.map((color, x) => (
+                                            <span
+                                                key={`${y}-${x}`}
+                                                className="search-item-palette-color"
+                                                style={{
+                                                    backgroundColor:
+                                                        color ?? "transparent",
+                                                }}
+                                            />
+                                        ))
+                                    )}
+                                </div>
+                            )}
+
+                            <span className="search-item-name">
+                                {safeName}
                             </span>
                         </button>
                     );

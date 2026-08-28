@@ -1145,7 +1145,7 @@ hr {
     display: block;
     box-sizing: border-box;
     width: stretch;
-    min-width: 64px;
+    max-width: 64px;
     height: 32px;
     padding-inline: 8px;
     border-radius: 8px;
@@ -2056,6 +2056,26 @@ hr {
     word-wrap: anywhere;
     white-space: pre-wrap;
 }
+
+.search-item-palette {
+    max-width: 140px;
+    max-height: 180px;
+
+    display: flex;
+    flex-direction: column;
+}
+.search-item-palette-this-color {
+    --this-palette-color: grey;
+}
+.search-item-palette-this-color {
+    width: 20px;
+    aspect-ratio: 1 / 1;
+    background: var(--this-palette-color);
+}
+.search-item-palette-these-color-row {
+    display: flex;
+}
+
 
 /*
     search details
