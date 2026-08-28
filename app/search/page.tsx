@@ -20,9 +20,9 @@ export default function Home() {
     const [modeFilters, setModeFilters] = useState<Record<SearchMode, Record<string, string[]>>>({
         tiles: {},
         macros: {},
+        filters: {},
         variants: {},
         flags: {},
-        filters: {},
         levels: {},
         palettes: {},
         overlays: {},
