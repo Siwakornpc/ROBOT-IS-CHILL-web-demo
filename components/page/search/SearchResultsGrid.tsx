@@ -321,9 +321,9 @@ export default function SearchResults({
         if (searchQuery) {
             const searchableText =
                 (mode === "variants" && isVariantRecord(data))
-                    ? `${normalizedName} ${data.syntax ?? ""}`
+                    ? `${normalizedName} ${data.syntax ? data.syntax.match(/^(<[^>]*>)/) : ""}`
                     : (mode === "flags" && isFlagRecord(data))
-                        ? `${normalizedName} ${data.syntax ?? ""}`
+                        ? `${normalizedName} ${data.syntax ? data.syntax.match(/(\([^)]*\)|[^=]*)=/) : ""}`
                         : normalizedName;
 
             if (useRegex) {
