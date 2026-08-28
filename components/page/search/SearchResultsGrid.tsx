@@ -323,7 +323,7 @@ export default function SearchResults({
                 (mode === "variants" && isVariantRecord(data))
                     ? `${normalizedName} ${data.syntax ? data.syntax.match(/^(<[^>]*>)/) : ""}`
                     : (mode === "flags" && isFlagRecord(data))
-                        ? `${normalizedName} ${data.syntax ? data.syntax.match(/(\([^)]*\)|[^=]*)=/) : ""}`
+                        ? `${normalizedName} ${data.syntax ? data.syntax.match(/^(\([^)]*\)|[^=]*)=?/) : ""}`
                         : normalizedName;
 
             if (useRegex) {
