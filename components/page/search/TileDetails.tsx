@@ -2,7 +2,10 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { type SelectedSearchResult } from "./SearchResultsGrid";
+
 import { updateMacroStaticHighlight } from "@/components/highlight/macro-highlight-static.js";
+import { updateVariantStaticHighlight } from "@/components/highlight/metadata-hightlight.js";
+
 import { DiscordMarkdown } from "@/components/DiscordMarkdown";
 import applyOverflowFade from "@/components/OverflowFade";
 import { mapTiling } from "@/components/page/search/image_tiling";
@@ -23,6 +26,7 @@ const getImageSize = (url: string): Promise<string> => {
 
 export function Details({ selected }: DetailsProps) {
     const macroElementRef = useRef<HTMLDivElement>(null);
+    const variantElementRef = useRef<HTMLDivElement>(null);
     const [tilingFrame, setTilingFrame] = useState(0);
     const [select, setSelect] = useState<string | null>("one_tile");
     console.log(selected);
@@ -36,6 +40,19 @@ export function Details({ selected }: DetailsProps) {
         if (!element) return;
 
         updateMacroStaticHighlight(element, selected.macro.value ? selected.macro.value : "");
+    }, [selected]);
+
+    useEffect(() => {
+        if (!("variant" in selected)) return;
+
+        const element = variantElementRef.current;
+
+        if (!element) return;
+
+        updateVariantStaticHighlight(
+            element,
+            selected.variant.syntax ?? ""
+        );
     }, [selected]);
 
     // [tilingFrame, setTilingFrame]
@@ -317,7 +334,10 @@ export function Details({ selected }: DetailsProps) {
 
                 {selected.variant.syntax && (<>
                     <p className="search-details-label">Syntax</p>
-                    <div className="search-details-detailbox variant" id="description">
+                    <div
+                        ref={variantElementRef}
+                        className="search-details-detailbox variant" id="description"
+                    >
                         {selected.variant.syntax}
                     </div>
                 </>)}

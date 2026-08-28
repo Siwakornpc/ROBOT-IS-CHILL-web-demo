@@ -11,13 +11,19 @@ const customThemeColors = {
     syntaxName: '#72a5e7',
     syntaxValue: '#e7be72',
     syntaxEscaped: '#fc9929',
-    syntaxBracketLayer0: { color: '#e4dc6a', blend: false }, 
+    syntaxBracketLayer0: { color: '#f1f363', blend: false }, 
     syntaxBracketLayer1: { color: '#c85acc', blend: false }, 
     syntaxBracketLayer2: { color: '#5f94f5', blend: false },
     renderFlagName: '#8bd1ec',
     renderFlagValue: '#84cc7b',
     renderVariantName: '#c06ed4',
     renderVariantValue: '#5f94f5',
+
+    typeArgumentname: '#5f94f5',
+    typeIdentifier: '#0fa779',
+    typeFunction: '#f1f363',
+    typeString: '#e7be72',
+    typeNumber: '#a6ee9d',
 };
 
 export default function ThemeScript() {

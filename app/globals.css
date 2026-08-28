@@ -41,13 +41,22 @@
 
     --bracket-outline: rgb(var(--md-color-on-tertiary-container), .32);
 
-    --flag-name: rgb(var(--md-color-render-flag-name));
-    --flag-value: rgb(var(--md-color-render-flag-value));
-
     --variant-name: rgb(var(--md-color-render-variant-name));
     --variant-value: rgb(var(--md-color-render-variant-value));
 
-    --type-encapsulated: rgb(var(--md-color-outline));
+    --flag-name: rgb(var(--md-color-render-flag-name));
+    --flag-value: rgb(var(--md-color-render-flag-value));
+
+    --type-encapsulated: rgb(var(--md-color-outline-variant));
+    --type-encapsulated-optional: rgb(var(--md-color-outline));
+    --type-variantname: rgb(var(--md-color-render-variant-name));
+    --type-flagname: rgb(var(--md-color-render-flag-name));
+    --type-argumentname: rgb(var(--md-color-type-argumentname));
+    --type-identifier: rgb(var(--md-color-type-identifier));
+    --type-function: rgb(var(--md-color-type-function));
+    --type-string: rgb(var(--md-color-type-string));
+    --type-keyword: rgb(var(--md-color-tertiary));
+    --type-number: rgb(var(--md-color-type-number));
 
     --surface-hovered: rgb(var(--md-color-on-surface), .08);
     --surface-pressed: rgb(var(--md-color-on-surface), .1);
@@ -1632,18 +1641,35 @@ hr {
 .type-encapsulated {
     color: var(--type-encapsulated);
 }
+.type-encapsulated-optional {
+    color: var(--type-encapsulated-optional);
+}
 .type-variantname {
-    color: var(--variant-name);
+    color: var(--type-variantname);
 }
 .type-flagname {
-    color: var(--flag-name);
+    color: var(--type-flagname);
 }
+.type-argumentname,
 .type-variable {
-    color: rgb(var(--md-color-primary));
+    color: var(--type-argumentname);
 }
-.type-value {
-    color: rgb(var(--md-color-tertiary));
+.type-identifier {
+    color: var(--type-identifier);
 }
+.type-function {
+    color: var(--type-function);
+}
+.type-string {
+    color: var(--type-string);
+}
+.type-keyword {
+    color: var(--type-keyword);
+}
+.type-number {
+    color: var(--type-number);
+}
+
 
 /*
     render screen
