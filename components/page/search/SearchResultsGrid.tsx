@@ -615,7 +615,7 @@ export default function SearchResults({
                         >
                             {isBroken ? (
                                 <div className="search-item-tile search-item-tile-broken">
-                                    <div></div><div></div>
+                                    <div/><div/>
                                 </div>
                             ) : canLoad ? (
                                 <img
