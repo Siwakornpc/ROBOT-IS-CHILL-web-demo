@@ -152,7 +152,7 @@ function MenuItem<T extends string>({
                         setIsSubmenuOpen(false);
                     }}
                 >
-                    {item.children!.map((child) => (
+                    {item.children!.map((child) =>
                         <MenuItem
                             key={child.value}
                             item={child}
@@ -163,7 +163,7 @@ function MenuItem<T extends string>({
                             optionIcon={optionIcon}
                             submenuAnchor={submenuAnchor}
                         />
-                    ))}
+                    )}
                 </div>
             )}
         </div>
@@ -214,7 +214,7 @@ export default function MenuSelect<T extends string>({
 
     const menuRef = useRef<HTMLDivElement>(null);
     const triggerAnchorId = useId().replace(/:/g, "");
-    const anchorNameStyle = { anchorName: `--menu-trigger-${triggerAnchorId}` } as CSSProperties;
+    const anchorNameStyle = {anchorName: `--menu-trigger-${triggerAnchorId}`} as CSSProperties;
 
     useEffect(() => {
         if (menuRef.current) {
@@ -233,7 +233,7 @@ export default function MenuSelect<T extends string>({
         setCloseSignal((n) => n + 1);
     };
     const openMenu = () => setIsOpen(true);
-    const toggleMenu = () => (isOpen ? closeMenu() : openMenu());
+    const toggleMenu = () => isOpen ? closeMenu() : openMenu();
 
     const selectedOption = useMemo(() => options.find((item) => item.value === value) ?? options[0], [options, value]);
 
@@ -253,53 +253,50 @@ export default function MenuSelect<T extends string>({
         };
     };
 
-    return (
-        <div className="menu-wrapper" style={style}>
-            {trigger ? (
-                trigger({
-                    isOpen,
-                    toggle: toggleMenu,
-                    open: openMenu,
-                    close: closeMenu,
-                    setIsOpen: (open: boolean) => (open ? openMenu() : closeMenu()),
-                    selectedOption,
-                    getInputProps,
-                })
-            ) : (
-                <button
-                    type="button"
-                    aria-haspopup="menu"
-                    aria-expanded={isOpen}
-                    className={`menu-trigger ${className} ${id || ""} ${isOpen ? "clicked" : ""}`}
-                    onClick={toggleMenu}
-                    style={anchorNameStyle}
-                >{triggerValue ? triggerValue(selectedOption) : selectedOption.label}
-                </button>
-            )}
+    return (<>
+        {trigger ?
+            trigger({
+                isOpen,
+                toggle: toggleMenu,
+                open: openMenu,
+                close: closeMenu,
+                setIsOpen: (open: boolean) => open ? openMenu() : closeMenu(),
+                selectedOption,
+                getInputProps,
+            })
+        : <button
+                type="button"
+                aria-haspopup="menu"
+                aria-expanded={isOpen}
+                className={`menu-trigger ${className} ${id || ""} ${isOpen ? "clicked" : ""}`}
+                onClick={toggleMenu}
+                style={anchorNameStyle}
+            >{triggerValue ? triggerValue(selectedOption) : <span>{selectedOption.label}</span>}
+            </button>
+        }
 
-            <div
-                ref={menuRef}
-                popover="auto"
-                role="menu"
-                className={`menu ascroll-y inset-scrollbar anchor-${anchor} ${id ? `${id}-options` : ""} ${isOpen ? "visible" : ""}`}
-                style={{ positionAnchor: `--menu-trigger-${triggerAnchorId}` } as CSSProperties}
-                onToggle={(e: any) => {if (e.newState === "closed") closeMenu();}}
-            >
-                {title && <div className="menu-title">{title}</div>}
-                {options.map((item) => (
-                    <MenuItem
-                        key={item.value}
-                        item={item}
-                        selectedValue={value}
-                        onChange={onChange}
-                        onCloseAll={closeMenu}
-                        closeSignal={closeSignal}
-                        optionIcon={optionIcon}
-                        submenuAnchor={submenuAnchor}
-                        pageMargin={pageMargin}
-                    />
-                ))}
-            </div>
+        <div
+            ref={menuRef}
+            popover="auto"
+            role="menu"
+            className={`menu ascroll-y inset-scrollbar anchor-${anchor} ${id ? `${id}-options` : ""} ${isOpen ? "visible" : ""}`}
+            style={{ positionAnchor: `--menu-trigger-${triggerAnchorId}` } as CSSProperties}
+            onToggle={(e: any) => {if (e.newState === "closed") closeMenu();}}
+        >
+            {title && <div className="menu-title">{title}</div>}
+            {options.map((item) => 
+                <MenuItem
+                    key={item.value}
+                    item={item}
+                    selectedValue={value}
+                    onChange={onChange}
+                    onCloseAll={closeMenu}
+                    closeSignal={closeSignal}
+                    optionIcon={optionIcon}
+                    submenuAnchor={submenuAnchor}
+                    pageMargin={pageMargin}
+                />
+            )}
         </div>
-    );
+    </>);
 }

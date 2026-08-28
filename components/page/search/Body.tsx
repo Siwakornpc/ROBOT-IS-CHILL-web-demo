@@ -262,19 +262,18 @@ export function FilterPanel({
                 );
 
             case "mode":
-                const isAbsolute = value === "true";
                 return (
                     <div className="cbtn-group small">
                         <button
                             type="button"
-                            className={`cbtn ${isAbsolute ? "selected" : ""}`}
+                            className={`cbtn ${value === "true" ? "selected" : ""}`}
                             onClick={() => handleValueChange(type, index, "true")}
                         >Absolute
                         </button>
                         
                         <button
                             type="button"
-                            className={`cbtn ${!isAbsolute ? "selected" : ""}`}
+                            className={`cbtn ${value === "false" ? "selected" : ""}`}
                             onClick={() => handleValueChange(type, index, "false")}
                         >Relative
                         </button>
@@ -283,10 +282,11 @@ export function FilterPanel({
 
             case "date":
                 return (
-                    <div style={{display: "flex"}}>
+                    <div style={{display: "flex", gap: "4px"}}>
                         <MenuSelect
                             id={`date-mode-select-${index}`}
-                            value={value[0]}
+                            className="btn medium btn-tonal square"
+                            value={value.split(";")[0]}
                             options={[
                                 { value: "before", label: "Before" },
                                 { value: "on", label: "On" },
@@ -294,11 +294,12 @@ export function FilterPanel({
                             ]}
                             onChange={(newValue) => handleValueChange(type, index, `${newValue};${value[1]}`)}
                         />
-                        <label className="text-field small has-placeholder">
+                        <label className="text-field">
+                            <span className="text-field-label">Date</span>
                             <input
                                 type="text"
-                                placeholder="Filter..."
-                                value={value[1]}
+                                placeholder=" "
+                                value={value.split(";")[1]}
                                 onChange={(e) => handleValueChange(type, index, `${value[0]};${e.target.value}`)}
                                 autoComplete="off"
                             />
