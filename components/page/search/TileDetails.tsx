@@ -330,7 +330,12 @@ export function Details({ selected }: DetailsProps) {
             >
                 <p className={`search-details-variant-name`}>
                     <span className="variant-name">:</span>
-                    <span className="variant-name name">{selected.name}</span>
+                    {selected.name !== "m_syntax_shim"
+                        ? 
+                        <span className="variant-name name">{selected.name}</span>
+                        :
+                        <s className="variant-name name">{selected.name}</s>
+                    }
                 </p>
             </div>
 

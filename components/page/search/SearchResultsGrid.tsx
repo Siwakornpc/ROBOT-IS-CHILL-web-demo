@@ -763,7 +763,12 @@ export default function SearchResults({
                                 className={`search-item-variant`}
                             >
                                 <span className="variant-name">:</span>
-                                <span className="variant-name name">{name}</span>
+                                {name !== "m_syntax_shim"
+                                    ?
+                                    <span className="variant-name name">{name}</span>
+                                    :
+                                    <s className="variant-name name">{name}</s>
+                                }
                             </span>
                         </button>
                     );
