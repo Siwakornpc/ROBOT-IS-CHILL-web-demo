@@ -282,9 +282,10 @@ export function FilterPanel({
 
             case "date":
                 return (
-                    <div style={{display: "flex"}}>
+                    <div style={{display: "flex", gap: "4px"}}>
                         <MenuSelect
                             id={`date-mode-select-${index}`}
+                            className="btn medium btn-tonal square"
                             value={value.split(";")[0]}
                             options={[
                                 { value: "before", label: "Before" },
@@ -293,10 +294,11 @@ export function FilterPanel({
                             ]}
                             onChange={(newValue) => handleValueChange(type, index, `${newValue};${value[1]}`)}
                         />
-                        <label className="text-field small has-placeholder">
+                        <label className="text-field">
+                            <span className="text-field-label">Date</span>
                             <input
                                 type="text"
-                                placeholder="Filter..."
+                                placeholder=" "
                                 value={value.split(";")[1]}
                                 onChange={(e) => handleValueChange(type, index, `${value[0]};${e.target.value}`)}
                                 autoComplete="off"
