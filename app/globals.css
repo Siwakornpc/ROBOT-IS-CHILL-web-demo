@@ -1142,7 +1142,7 @@ hr {
     display: block;
     box-sizing: border-box;
     width: stretch;
-    min-width: 64px;
+    max-width: 64px;
     height: 32px;
     padding-inline: 8px;
     border-radius: 8px;
