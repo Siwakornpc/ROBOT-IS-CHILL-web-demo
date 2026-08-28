@@ -319,17 +319,23 @@ export default function SearchResults({
         if (!normalizedName) return false;
 
         if (searchQuery) {
+            const searchableText =
+                (mode === "variants" && isVariantRecord(data))
+                    ? `${normalizedName} ${data.syntax ?? ""}`
+                    : (mode === "flags" && isFlagRecord(data))
+                        ? `${normalizedName} ${data.syntax ?? ""}`
+                        : normalizedName;
+
             if (useRegex) {
-                // Use regex search
                 try {
                     const regex = new RegExp(searchQuery, "i");
-                    if (!regex.test(normalizedName)) return false;
+                    if (!regex.test(searchableText)) return false;
                 } catch {
                     return false;
                 }
             } else {
                 const query = searchQuery.toLowerCase();
-                if (!normalizedName.toLowerCase().includes(query)) return false;
+                if (!searchableText.toLowerCase().includes(query)) return false;
             }
         }
 
