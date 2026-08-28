@@ -319,25 +319,36 @@ export default function SearchResults({
         if (!normalizedName) return false;
 
         if (searchQuery) {
-            const searchableText =
+            const searchTerms =
                 (mode === "variants" && isVariantRecord(data))
-                    ? `${normalizedName} ${data.syntax ? data.syntax.match(/^(<[^>]*>)/) : ""}`
+                    ? data.syntax
+                        ?.match(/^<([^>]*)>/)?.[1]
+                            ?.split("|")
+                            .map(term => term.trim())
+                            .filter(Boolean) ?? []
                     : (mode === "flags" && isFlagRecord(data))
-                        ? `${normalizedName} ${data.syntax ? data.syntax.match(/^(\([^)]*\)|[^=]*)=?/) : ""}`
-                        : normalizedName;
+                        ? data.syntax
+                            ?.match(/^\(([^)]*)\)|^([^=]*)(?:=?.*)?$/)?.[1]
+                            ?.split("|")
+                            .map(term => term.trim().replace(/^--?/, ""))
+                            .filter(Boolean) ?? []
+                        : [normalizedName];
 
             if (useRegex) {
                 try {
                     const regex = new RegExp(searchQuery, "i");
-                    if (!regex.test(searchableText)) return false;
+
+                    if (!searchTerms.some(term => regex.test(term))) return false;
                 } catch {
                     return false;
                 }
             } else {
                 const query = searchQuery.toLowerCase();
-                if (!searchableText.toLowerCase().includes(query)) return false;
+
+                if (!searchTerms.some(term => term.toLowerCase().includes(query))) return false;
             }
         }
+
 
         // apply active filters
         for (const [filterKey, filterValues] of Object.entries(filters)) {
