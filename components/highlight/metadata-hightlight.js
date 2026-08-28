@@ -223,7 +223,6 @@ function tokenizeValue(text, start, end) {
     return tokens;
 }
 
-
 /*
  * Parse:
  *
@@ -300,6 +299,147 @@ function parseVariantNames(text, start) {
             pos
         ),
     });
+
+    return {
+        tokens,
+        end: pos,
+    };
+}
+
+function parseFlagNames(text, start) {
+    const slice = text.slice(start);
+
+    const flagPattern = /-{1,2}(?:[\w-]+|\[[^\]]+\])/g;
+
+    let pos = start;
+    const tokens = [];
+
+    /*
+     * Opening '('
+     */
+    if (text[pos] === "(") {
+        tokens.push({
+            type: "html",
+            html: span(
+                "type-encapsulated",
+                "(",
+                pos
+            ),
+        });
+
+        pos++;
+    }
+
+    /*
+     * Find flags until we reach something that is
+     * not part of the flag expression.
+     */
+    flagPattern.lastIndex = pos - start;
+
+    let match;
+
+    while ((match = flagPattern.exec(slice)) !== null) {
+        const flag = match[0];
+        const flagStart = start + match.index;
+
+        /*
+         * Only accept the flag if it is the next meaningful
+         * thing after the previous token.
+         */
+        const between = text.slice(pos, flagStart);
+
+        if (!/^\s*(?:\|\s*)?$/.test(between)) {
+            break;
+        }
+
+        /*
+         * Preserve whitespace before the flag.
+         */
+        if (flagStart > pos) {
+            tokens.push({
+                type: "text",
+                text: text.slice(pos, flagStart),
+                className: "",
+                pos,
+            });
+        }
+
+        /*
+         * Flag
+         */
+        tokens.push({
+            type: "html",
+            html: span(
+                "type-flagname",
+                flag,
+                flagStart
+            ),
+        });
+
+        pos = flagStart + flag.length;
+
+        /*
+         * Continue to the next flag.
+         */
+        const next = slice.slice(
+            flagStart - start + flag.length
+        );
+
+        if (!/^\s*\|/.test(next)) {
+            break;
+        }
+
+        /*
+         * The next loop will consume the separator's
+         * whitespace and '|'.
+         */
+        const separatorMatch = next.match(
+            /^(\s*\|\s*)/
+        );
+
+        if (separatorMatch) {
+            tokens.push({
+                type: "text",
+                text: separatorMatch[1],
+                className: "",
+                pos,
+            });
+
+            pos += separatorMatch[1].length;
+            flagPattern.lastIndex =
+                pos - start;
+        }
+    }
+
+    /*
+     * Closing ')'
+     */
+    if (text[pos] === ")") {
+        tokens.push({
+            type: "html",
+            html: span(
+                "type-encapsulated",
+                ")",
+                pos
+            ),
+        });
+
+        pos++;
+    }
+
+    /*
+     * We only parsed something if at least one flag
+     * was actually found.
+     */
+    const hasFlag = tokens.some(
+        token =>
+            token.type === "html" &&
+            token.html.includes("type-flag")
+    );
+
+    if (!hasFlag) {
+        return null;
+    }
 
     return {
         tokens,
@@ -520,6 +660,80 @@ function buildVariantTokens(text) {
     return tokens;
 }
 
+function buildFlagTokens(text) {
+    const tokens = [];
+
+    const appendText = (
+        textValue,
+        className = "",
+        pos = -1
+    ) => {
+        const previous = tokens.at(-1);
+
+        if (
+            previous &&
+            previous.type === "text" &&
+            previous.className === className &&
+            previous.pos + previous.text.length === pos
+        ) {
+            previous.text += textValue;
+            return;
+        }
+
+        tokens.push({
+            type: "text",
+            text: textValue,
+            className,
+            pos,
+        });
+    };
+
+
+    for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+
+        if (ch === "[") {
+            const bracketed = parseBracketed(text, i);
+            if (bracketed) {
+                tokens.push(...bracketed.tokens);
+                i = bracketed.end;
+                continue;
+            }
+        }
+
+        // NEW: flags start with "(" or "-", never "<"
+        if (ch === "(" || ch === "-") {
+            const flagNames = parseFlagNames(text, i);
+            if (flagNames) {
+                tokens.push(...flagNames.tokens);
+                i = flagNames.end - 1;   // end is exclusive, unlike the other parsers
+                continue;
+            }
+        }
+
+        if (ch === "<") {
+            const namedValue = parseNamedValue(text, i);   // parseFlagNames call removed from here
+            if (namedValue) {
+                tokens.push(...namedValue.tokens);
+                i = namedValue.end;
+                continue;
+            }
+
+            appendText("<", "", i);
+            continue;
+        }
+
+        if (ch === "\n") {
+            appendText("\n", "", i);
+            continue;
+        }
+
+        appendText(ch, "", i);
+    }
+
+    return tokens;
+}
+
 
 /*
  * Convert tokens to HTML
@@ -558,4 +772,15 @@ export const updateVariantStaticHighlight = (element, text, mode = "variant") =>
     if (!element) return;
 
     element.innerHTML = variantHighlighter(text, mode);
+};
+
+export const flagHighlighter = (text, mode = "variant") =>
+    buildFlagTokens(text, mode)
+        .map(tokenHtml)
+        .join("");
+
+export const updateFlagStaticHighlight = (element, text, mode = "variant") => {
+    if (!element) return;
+
+    element.innerHTML = flagHighlighter(text, mode);
 };
