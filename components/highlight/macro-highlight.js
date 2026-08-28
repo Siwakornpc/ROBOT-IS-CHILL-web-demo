@@ -4,9 +4,8 @@ const escapeHtml = (str) => str
     .replace(/>/g, "&gt;");
 
 const span = (className, textValue, kind = "", id = -1, depth = 0, pos = -1) => {
-    if (kind === "open" || kind === "close") {
+    if (kind === "open" || kind === "close")
         return `<span class="${className} ${kind}-bracket bracket-level-${depth % 3}" data-bid="${id}" data-pos="${pos}">${escapeHtml(textValue)}</span>`;
-    }
 
     const position = pos >= 0 ? ` data-pos="${pos}"` : "";
     return `<span class="${className}"${position}>${escapeHtml(textValue)}</span>`;
@@ -22,18 +21,15 @@ const findBracketPairsInternal = (text) => {
     const topLevel = [];
 
     for (let i = 0; i < text.length; i++) {
-        if (text[i] === "\\") {
-            i++;
-        }
+        if (text[i] === "\\") i++;
         else if (text[i] === "[") {
             pairStack.push(i);
         }
         else if (text[i] === "]" && pairStack.length) {
             const open = pairStack.pop();
             validPairs.set(open, i);
-            if (pairStack.length === 0) {
+            if (pairStack.length === 0)
                 topLevel.push([open, i]);
-            }
         }
     }
 
@@ -80,9 +76,7 @@ const buildMacroTokens = (text) => {
         // it guarantees no <span> ever contains a literal newline - callers can
         // safely split the rendered HTML on "\n" to get one chunk per source line
         // without ever splitting a tag in half.
-        if (ch === "\n") {
-            appendText(ch, "", i);
-        }
+        if (ch === "\n") appendText(ch, "", i);
 
         else if (ch === "\\" && next && escapable.has(next)) {
             const state = stateStack.at(-1);
@@ -124,9 +118,7 @@ const buildMacroTokens = (text) => {
                 i,
             );
         }
-        else {
-            appendText(ch, "", i);
-        }
+        else appendText(ch, "", i);
     }
 
     return tokens;
@@ -229,9 +221,8 @@ export const updateHighlightState = (editorArea, start, end) => {
             pair.some(item => item.pos === start)
         );
 
-        if (pairStartingAtCaret) {
-            bestPair = pairStartingAtCaret;
-        } else {
+        if (pairStartingAtCaret) bestPair = pairStartingAtCaret;
+        else {
             for (const pair of pairs.values()) {
                 if (pair.length !== 2) continue;
 

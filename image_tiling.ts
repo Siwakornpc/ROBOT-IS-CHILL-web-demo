@@ -48,7 +48,6 @@ export function mapTiling(name: string, tiling: string) {
 
             for (const map of group) {
                 // if (typeof map !== "number") continue;
-
                 images.push(createUrl(map));
                 indexes.push(map);
             }

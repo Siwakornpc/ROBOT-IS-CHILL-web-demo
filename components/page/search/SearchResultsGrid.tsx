@@ -5,23 +5,15 @@ import { type SearchMode } from "./SearchSelect";
 import stdlib_macros from "./stdlib_macros";
 import JSONbig from "json-bigint";
 import applyOverflowFade from "@/components/OverflowFade";
-import {
-    loadUpstream,
-} from "@/data/ric_metadata";
-import {
-    type Palette,
-} from "@/data/palette_colors";
+import { loadUpstream } from "@/data/ric_metadata";
+import { type Palette } from "@/data/palette_colors";
 
 const BATCH_SIZE = 32;
-
 const IMAGE_SUCCESS_DELAY = 150;
 const IMAGE_ERROR_DELAY = 2000;
 const MAX_IMAGE_RETRIES = 4;
 
-const {
-    variants,
-    flags,
-} = await loadUpstream();
+const {variants, flags} = await loadUpstream();
 
 const endpoints: Partial<Record<SearchMode, string>> = {
     tiles: "tiles.json",
@@ -173,12 +165,12 @@ export default function SearchResults({
             ? loadedResults.data
             : cachedResults.get(endpoint) ?? null
         : mode === "variants"
-            ? variantEntries
-            : mode === "flags"
-                ? flagEntries
-                : mode === "palettes"
-                    ? cachedPalettes.get("palettes") ?? null
-                    : null;
+        ? variantEntries
+        : mode === "flags"
+        ? flagEntries
+        : mode === "palettes"
+        ? cachedPalettes.get("palettes") ?? null
+        : null;
 
     const loadMoreRef = useRef<HTMLDivElement>(null);
     const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
@@ -223,26 +215,14 @@ export default function SearchResults({
         const endpointToLoad = currentEndpoint;
 
         const cached = cachedResults.get(endpointToLoad);
-        if (cached) {
-            return;
-        }
+        if (cached) return;
 
         const controller = new AbortController();
 
         async function loadResults() {
             try {
-                const response = await fetch(
-                    `https://ric-api.sno.mba/${endpointToLoad}`,
-                    {
-                        signal: controller.signal,
-                    },
-                );
-
-                if (!response.ok) {
-                    throw new Error(
-                        `RIC API returned ${response.status}`,
-                    );
-                }
+                const response = await fetch(`https://ric-api.sno.mba/${endpointToLoad}`, {signal: controller.signal});
+                if (!response.ok) throw new Error(`RIC API returned ${response.status}`);
 
                 const json = await response.text();
                 const data: SearchResults = JSONbig({
@@ -251,13 +231,11 @@ export default function SearchResults({
 
                 if (endpointToLoad === "macros.json") {
                     const stdMacros = await stdlib_macros();
-
                     const macroMap = new Map<string, SearchEntry>();
 
                     // Standard-library macros win over API macros.
                     for (const [name, macro] of stdMacros) {
                         const safeName = String(name ?? "").trim();
-
                         if (!safeName) continue;
 
                         const key = safeName.toLowerCase();
@@ -274,11 +252,9 @@ export default function SearchResults({
                     // Add API macros only if they aren't already present.
                     for (const [name, macro] of Object.entries(data)) {
                         const safeName = String(name ?? "").trim();
-
                         if (!safeName) continue;
 
                         const key = safeName.toLowerCase();
-
                         if (macroMap.has(key)) continue;
 
                         macroMap.set(key, [
@@ -306,12 +282,8 @@ export default function SearchResults({
                     });
                 }
             } catch (error: unknown) {
-                if ((error as Error).name !== "AbortError") {
-                    console.error(
-                        "Could not load RIC search results.",
-                        error,
-                    );
-                }
+                if ((error as Error).name !== "AbortError")
+                    console.error("Could not load RIC search results.", error);
             }
         }
 
@@ -323,7 +295,6 @@ export default function SearchResults({
         if (!isVisible || mode !== "palettes") return;
 
         const cacheKey = "palettes";
-
         const cached = cachedPalettes.get(cacheKey);
 
         if (cached) {
@@ -339,16 +310,9 @@ export default function SearchResults({
         async function load() {
             try {
                 const response = await fetch("/api/palettes");
+                if (!response.ok) throw new Error(`Palette API returned ${response.status}`);
 
-                if (!response.ok) {
-                    throw new Error(
-                        `Palette API returned ${response.status}`,
-                    );
-                }
-
-                const palettes: Palette =
-                    await response.json();
-
+                const palettes: Palette = await response.json();
                 if (cancelled) return;
 
                 cachedPalettes.set(cacheKey, palettes);
@@ -358,20 +322,13 @@ export default function SearchResults({
                     data: palettes,
                 });
             } catch (error) {
-                if (!cancelled) {
-                    console.error(
-                        "Could not load palette search results.",
-                        error,
-                    );
-                }
+                if (!cancelled) console.error("Could not load palette search results.", error);
             }
         }
 
         load();
 
-        return () => {
-            cancelled = true;
-        };
+        return () => {cancelled = true};
     }, [mode, isVisible]);
 
     const allEntries: SearchEntry[] = results
@@ -393,24 +350,22 @@ export default function SearchResults({
                             .map(term => term.trim())
                             .filter(Boolean) ?? []
                     : (mode === "flags" && isFlagRecord(data))
-                        ? data.syntax
-                            ?.match(/^\(([^)]*)\)|^([^=]*)(?:=?.*)?$/)?.[1]
-                            ?.split("|")
-                            .map(term => term.trim().replace(/^--?/, ""))
-                            .filter(Boolean) ?? []
-                        : [normalizedName];
+                    ? data.syntax
+                        ?.match(/^\(([^)]*)\)|^([^=]*)(?:=?.*)?$/)?.[1]
+                        ?.split("|")
+                        .map(term => term.trim().replace(/^--?/, ""))
+                        .filter(Boolean) ?? []
+                    : [normalizedName];
 
             if (useRegex) {
                 try {
                     const regex = new RegExp(searchQuery, "i");
-
                     if (!searchTerms.some(term => regex.test(term))) return false;
                 } catch {
                     return false;
                 }
             } else {
                 const query = searchQuery.toLowerCase();
-
                 if (!searchTerms.some(term => term.toLowerCase().includes(query))) return false;
             }
         }
@@ -519,14 +474,10 @@ export default function SearchResults({
         }
 
         const detailsKey = `${mode}:${detailsName}`;
-        if (restoredDetailsRef.current === detailsKey) {
-            return;
-        }
+        if (restoredDetailsRef.current === detailsKey) return;
 
         const matchingEntry = allEntries.find(([name]) => String(name ?? "").trim() === detailsName);
-        if (!matchingEntry) {
-            return;
-        }
+        if (!matchingEntry) return;
 
         const [name, data] = matchingEntry;
         const safeName = String(name ?? "").trim();
@@ -565,13 +516,10 @@ export default function SearchResults({
 
 
     function scheduleNextImage(delay: number) {
-        if (imageTimerRef.current) {
+        if (imageTimerRef.current)
             clearTimeout(imageTimerRef.current);
-        }
 
-        imageTimerRef.current = setTimeout(() => {
-            setImageAttempt((attempt) => attempt + 1);
-        }, delay);
+        imageTimerRef.current = setTimeout(() => setImageAttempt((attempt) => attempt + 1), delay);
     }
 
     function handleImageLoad(name: string) {
@@ -623,9 +571,8 @@ export default function SearchResults({
 
     useEffect(() => {
         return () => {
-            if (imageTimerRef.current) {
+            if (imageTimerRef.current)
                 clearTimeout(imageTimerRef.current);
-            }
         };
     }, []);
 
@@ -633,17 +580,13 @@ export default function SearchResults({
         const sentinel = loadMoreRef.current;
         const scrollArea = gridRef.current;
 
-        if (!sentinel || !scrollArea || !hasMore) {
-            return;
-        }
+        if (!sentinel || !scrollArea || !hasMore) return;
 
         loadingMoreRef.current = false;
 
         const observer = new IntersectionObserver(
             ([entry]) => {
-                if (!entry.isIntersecting || loadingMoreRef.current) {
-                    return;
-                }
+                if (!entry.isIntersecting || loadingMoreRef.current) return;
 
                 loadingMoreRef.current = true;
                 setVisibleCount((count) => count + BATCH_SIZE);
@@ -655,10 +598,7 @@ export default function SearchResults({
         );
 
         observer.observe(sentinel);
-
-        return () => {
-            observer.disconnect();
-        };
+        return () => observer.disconnect();;
     }, [hasMore, visibleCount]);
 
     useEffect(() => {
@@ -694,17 +634,14 @@ export default function SearchResults({
                             className="kill-styling search-item"
                             key={safeName || `tile-${index}`}
                             onClick={() => {
-                                if (isTileRecord(tile)) {
-                                    onSelect({ name: safeName, tile });
-                                }
+                                if (isTileRecord(tile)) onSelect({ name: safeName, tile });
                             }}
                         >
-                            {isBroken ? (
-                                <div className="search-item-tile search-item-tile-broken">
-                                    <div/><div/>
-                                </div>
-                            ) : canLoad ? (
-                                <img
+                            {
+                                isBroken
+                                ? <div className="search-item-tile search-item-tile-broken"><div/><div/></div>
+                                : canLoad
+                                ? <img
                                     key={`${safeName}-${imageAttempt}`}
                                     className="search-item-tile"
                                     src={imageUrl}
@@ -718,9 +655,8 @@ export default function SearchResults({
                                         settleImage(safeName);
                                     }}
                                 />
-                            ) : (
-                                <span className="search-item-tile pending" aria-hidden="true" />
-                            )}
+                                : <span className="search-item-tile pending" aria-hidden="true" />
+                            }
                             <span className="search-item-name">{safeName}</span>
                         </button>
                     );
@@ -742,9 +678,7 @@ export default function SearchResults({
                             className="kill-styling search-item"
                             key={safeName || `macro-${index}`}
                             onClick={() => {
-                                if (isMacroRecord(macro)) {
-                                    onSelect({ name: safeName, macro });
-                                }
+                                if (isMacroRecord(macro)) onSelect({ name: safeName, macro });
                             }}
                         >
                             <span
@@ -778,17 +712,14 @@ export default function SearchResults({
                             key={safeName || `filter-${index}`}
                             onClick={() => {
                                 console.log(filter);
-                                if (isFilterRecord(filter)) {
-                                    onSelect({ name: safeName, filter });
-                                }
+                                if (isFilterRecord(filter)) onSelect({ name: safeName, filter });
                             }}
                         >
-                            {isBroken ? (
-                                <div className="search-item-tile search-item-tile-broken">
-                                    <div></div><div></div>
-                                </div>
-                            ) : canLoad ? (
-                                <img
+                            {
+                                isBroken 
+                                ? <div className="search-item-tile search-item-tile-broken"><div/><div/></div>
+                                : canLoad
+                                ? <img
                                     key={`${safeName}-${imageAttempt}`}
                                     className="search-item-tile"
                                     src={imageUrl}
@@ -799,9 +730,8 @@ export default function SearchResults({
                                     onLoad={() => handleImageLoad(safeName)}
                                     onError={() => handleImageError(safeName)}
                                 />
-                            ) : (
-                                <span className="search-item-tile pending" aria-hidden="true" />
-                            )}
+                                : <span className="search-item-tile pending" aria-hidden="true" />
+                            }
                             <span className="search-item-name">{safeName}</span>
                         </button>
                     );
@@ -822,9 +752,7 @@ export default function SearchResults({
                             className="kill-styling search-item"
                             key={safeName || `value-${index}`}
                             onClick={() => {
-                                if (isVariantRecord(variant)) {
-                                    onSelect({ name: safeName, variant });
-                                }
+                                if (isVariantRecord(variant)) onSelect({ name: safeName, variant });
                             }}
                         >
                             <span
@@ -833,10 +761,8 @@ export default function SearchResults({
                             >
                                 <span className="variant-name">:</span>
                                 {name !== "m_syntax_shim"
-                                    ?
-                                    <span className="variant-name name">{name}</span>
-                                    :
-                                    <s className="variant-name name">{name}</s>
+                                    ? <span className="variant-name name">{name}</span>
+                                    : <s className="variant-name name">{name}</s>
                                 }
                             </span>
                         </button>

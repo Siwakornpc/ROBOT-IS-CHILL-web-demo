@@ -27,9 +27,7 @@ export const combinedHighlighter = (text) => {
     let cursor = 0;
 
     for (const [start, end] of brackets) {
-        if (start > cursor) {
-            result += renderHighlighter(text.slice(cursor, start));
-        }
+        if (start > cursor) result += renderHighlighter(text.slice(cursor, start));
 
         result += segments
             .filter((seg) => seg.start >= start && seg.end <= end + 1)
@@ -39,9 +37,7 @@ export const combinedHighlighter = (text) => {
         cursor = end + 1;
     }
 
-    if (cursor < text.length) {
-        result += renderHighlighter(text.slice(cursor));
-    }
+    if (cursor < text.length) result += renderHighlighter(text.slice(cursor));
 
     return result;
 };

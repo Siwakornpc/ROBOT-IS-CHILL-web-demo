@@ -8,9 +8,7 @@ const sourceUrls = {
 };
 
 export async function loadFlags() {
-    if (typeof window === "undefined") {
-        return;
-    }
+    if (typeof window === "undefined") return;
 
     const flagsSource = await fetch(sourceUrls.flags).then((response) => response.text());
 
@@ -18,9 +16,8 @@ export async function loadFlags() {
         ...flagsSource.matchAll(/--[\w-]+|-[\w-]+/g),
         ...flagsSource.matchAll(/@flags\.register\(match=r"([^"]+)"/g),
     ].flatMap((match) => {
-        if (match[0].startsWith("@flags.register")) {
+        if (match[0].startsWith("@flags.register"))
             return match[1].split("|").map((part) => part.trim()).filter(Boolean);
-        }
 
         return [match[0]];
     });
@@ -29,9 +26,7 @@ export async function loadFlags() {
 }
 
 export async function loadVariantData() {
-    if (typeof window === "undefined") {
-        return [];
-    }
+    if (typeof window === "undefined") return [];
 
     variants = await loadVariants();
     return variants;
@@ -60,9 +55,8 @@ function findLongestVariant(rawValue, variantNames) {
         if (
             rawValue.startsWith(variant) &&
             (!match || variant.length > match.length)
-        ) {
+        )
             match = variant;
-        }
     }
 
     return match;
@@ -96,11 +90,10 @@ export function highlightText(
 
             const isKnownFlag = flagNames.some(flag => flag.startsWith(name));
 
-            if (isKnownFlag) {
+            if (isKnownFlag)
                 result += createSpan("flag-name", name);
-            } else {
+            else
                 result += escapeHtml(name);
-            }
 
             index += name.length;
 
@@ -115,9 +108,9 @@ export function highlightText(
                         .split("/")
                         .map(part => createSpan("flag-value", part))
                         .join("/");
-                } else {
+                } else
                     result += escapeHtml(value);
-                }
+
                 index += value.length;
             }
             continue;
@@ -157,5 +150,4 @@ export function highlightText(
     return result;
 }
 
-export const renderHighlighter = (text) =>
-    highlightText(text, variants, flags);
+export const renderHighlighter = (text) => highlightText(text, variants, flags);

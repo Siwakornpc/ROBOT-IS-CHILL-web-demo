@@ -52,22 +52,14 @@ function getIdentifierClass(
     before,
     after
 ) {
-    if (keywords.has(token)) {
+    if (keywords.has(token))
         return "type-keyword";
-    }
-
-    if (identifiers.has(token)) {
+    if (identifiers.has(token))
         return "type-identifier";
-    }
-
-    if (/^\s*\(/.test(after)) {
+    if (/^\s*\(/.test(after))
         return "type-function";
-    }
-
-    if (/\d+/.test(after)) {
+    if (/\d+/.test(after))
         return "type-number";
-    }
-
     return "type-variable";
 }
 
@@ -79,10 +71,8 @@ function getIdentifierClass(
  */
 function tokenizeValue(text, start, end) {
     const tokens = [];
-
     const tokenPattern =
         /"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\b\d+(?:\.\d+)?\b|[A-Za-z_$][\w$]*|[()[\]{}.,:|]|[+\-*/%=<>]|[\s]+|./g;
-
     const value = text.slice(start, end);
 
     let match;
@@ -93,25 +83,16 @@ function tokenizeValue(text, start, end) {
         const pos = start + localPos;
 
         const before = value.slice(0, localPos);
-        const after = value.slice(
-            localPos + token.length
-        );
+        const after = value.slice(localPos + token.length);
 
 
         /*
          * String
          */
-        if (
-            token.startsWith("'") ||
-            token.startsWith('"')
-        ) {
+        if (token.startsWith("'") || token.startsWith('"')) {
             tokens.push({
                 type: "html",
-                html: span(
-                    "type-string",
-                    token,
-                    pos
-                ),
+                html: span("type-string", token, pos),
             });
 
             continue;
@@ -124,11 +105,7 @@ function tokenizeValue(text, start, end) {
         if (/^\d+(?:\.\d+)?$/.test(token)) {
             tokens.push({
                 type: "html",
-                html: span(
-                    "type-number",
-                    token,
-                    pos
-                ),
+                html: span("type-number", token, pos),
             });
 
             continue;
@@ -139,19 +116,11 @@ function tokenizeValue(text, start, end) {
          * Identifier
          */
         if (/^[A-Za-z_$][\w$]*$/.test(token)) {
-            const className = getIdentifierClass(
-                token,
-                before,
-                after
-            );
+            const className = getIdentifierClass(token, before, after);
 
             tokens.push({
                 type: "html",
-                html: span(
-                    className,
-                    token,
-                    pos
-                ),
+                html: span(className, token, pos),
             });
 
             continue;
@@ -164,11 +133,7 @@ function tokenizeValue(text, start, end) {
         if (/^[()[\]{}]$/.test(token)) {
             tokens.push({
                 type: "html",
-                html: span(
-                    "type-brackets",
-                    token,
-                    pos
-                ),
+                html: span("type-brackets", token, pos),
             });
 
             continue;
@@ -181,11 +146,7 @@ function tokenizeValue(text, start, end) {
         if (/^[+\-*/%=<>]$/.test(token)) {
             tokens.push({
                 type: "html",
-                html: span(
-                    "type-operator",
-                    token,
-                    pos
-                ),
+                html: span("type-operator", token, pos),
             });
 
             continue;
@@ -198,11 +159,7 @@ function tokenizeValue(text, start, end) {
         if (/^[.,:|]$/.test(token)) {
             tokens.push({
                 type: "html",
-                html: span(
-                    "type-punctuation",
-                    token,
-                    pos
-                ),
+                html: span("type-punctuation", token, pos),
             });
 
             continue;
@@ -233,9 +190,7 @@ function parseVariantNames(text, start) {
         .slice(start)
         .match(/^<([^:>]+)>/);
 
-    if (!match) {
-        return null;
-    }
+    if (!match) return null;
 
     const contents = match[1];
     const names = contents.split("|");
@@ -247,11 +202,7 @@ function parseVariantNames(text, start) {
      */
     tokens.push({
         type: "html",
-        html: span(
-            "type-encapsulated",
-            "<",
-            start
-        ),
+        html: span("type-encapsulated", "<", start),
     });
 
     let pos = start + 1;
@@ -264,11 +215,7 @@ function parseVariantNames(text, start) {
          */
         tokens.push({
             type: "html",
-            html: span(
-                "type-variantname",
-                name,
-                pos
-            ),
+            html: span("type-variantname", name, pos),
         });
 
         pos += name.length;
@@ -293,22 +240,14 @@ function parseVariantNames(text, start) {
      */
     tokens.push({
         type: "html",
-        html: span(
-            "type-encapsulated",
-            ">",
-            pos
-        ),
+        html: span("type-encapsulated", ">", pos),
     });
 
-    return {
-        tokens,
-        end: pos,
-    };
+    return { tokens, end: pos };
 }
 
 function parseFlagNames(text, start) {
     const slice = text.slice(start);
-
     const flagPattern = /-{1,2}(?:[\w-]+|\[[^\]]+\])/g;
 
     let pos = start;
@@ -320,11 +259,7 @@ function parseFlagNames(text, start) {
     if (text[pos] === "(") {
         tokens.push({
             type: "html",
-            html: span(
-                "type-encapsulated",
-                "(",
-                pos
-            ),
+            html: span("type-encapsulated", "(", pos),
         });
 
         pos++;
@@ -348,9 +283,7 @@ function parseFlagNames(text, start) {
          */
         const between = text.slice(pos, flagStart);
 
-        if (!/^\s*(?:\|\s*)?$/.test(between)) {
-            break;
-        }
+        if (!/^\s*(?:\|\s*)?$/.test(between)) break;
 
         /*
          * Preserve whitespace before the flag.
@@ -369,11 +302,7 @@ function parseFlagNames(text, start) {
          */
         tokens.push({
             type: "html",
-            html: span(
-                "type-flagname",
-                flag,
-                flagStart
-            ),
+            html: span("type-flagname", flag, flagStart),
         });
 
         pos = flagStart + flag.length;
@@ -381,21 +310,15 @@ function parseFlagNames(text, start) {
         /*
          * Continue to the next flag.
          */
-        const next = slice.slice(
-            flagStart - start + flag.length
-        );
+        const next = slice.slice(flagStart - start + flag.length);
 
-        if (!/^\s*\|/.test(next)) {
-            break;
-        }
+        if (!/^\s*\|/.test(next)) break;
 
         /*
          * The next loop will consume the separator's
          * whitespace and '|'.
          */
-        const separatorMatch = next.match(
-            /^(\s*\|\s*)/
-        );
+        const separatorMatch = next.match(/^(\s*\|\s*)/);
 
         if (separatorMatch) {
             tokens.push({
@@ -406,8 +329,7 @@ function parseFlagNames(text, start) {
             });
 
             pos += separatorMatch[1].length;
-            flagPattern.lastIndex =
-                pos - start;
+            flagPattern.lastIndex = pos - start;
         }
     }
 
@@ -417,11 +339,7 @@ function parseFlagNames(text, start) {
     if (text[pos] === ")") {
         tokens.push({
             type: "html",
-            html: span(
-                "type-encapsulated",
-                ")",
-                pos
-            ),
+            html: span("type-encapsulated", ")", pos),
         });
 
         pos++;
@@ -437,14 +355,9 @@ function parseFlagNames(text, start) {
             token.html.includes("type-flag")
     );
 
-    if (!hasFlag) {
-        return null;
-    }
+    if (!hasFlag) return null;
 
-    return {
-        tokens,
-        end: pos,
-    };
+    return { tokens, end: pos };
 }
 
 /*
@@ -491,16 +404,15 @@ function parseNamedValue(text, start) {
                 valueEnd = pos;
                 break;
             }
-        } else if (char === '[') depthSquare++;
+        }
+        else if (char === '[') depthSquare++;
         else if (char === ']') depthSquare--;
     }
 
     if (valueEnd === -1) valueEnd = text.length;
 
     const valueStart = colonPos + 1;
-    if (valueStart < valueEnd) {
-        tokens.push(...tokenizeValue(text, valueStart, valueEnd));
-    }
+    if (valueStart < valueEnd) tokens.push(...tokenizeValue(text, valueStart, valueEnd));
 
     // Closing '>'
     if (valueEnd < text.length) {
@@ -566,9 +478,7 @@ function parseBracketed(text, start) {
     }
 
     // Tokenize everything inside the outer brackets up to closing ]
-    if (valueStart < endPos) {
-        tokens.push(...tokenizeValue(text, valueStart, endPos));
-    }
+    if (valueStart < endPos) tokens.push(...tokenizeValue(text, valueStart, endPos));
 
     if (endPos < text.length) {
         tokens.push({
@@ -739,19 +649,14 @@ function buildFlagTokens(text) {
  * Convert tokens to HTML
  */
 const tokenHtml = (token) => {
-    if (token.type === "html") {
-        return token.html;
-    }
+    if (token.type === "html") return token.html;
 
-    if (token.text.includes("\n")) {
+    if (token.text.includes("\n"))
         return escapeHtml(token.text)
             .replace(/\n/g, "<br>");
-    }
 
-    if (!token.className) {
-        return escapeHtml(token.text);
-    }
-
+    if (!token.className) return escapeHtml(token.text);
+    
     return span(
         token.className,
         token.text,

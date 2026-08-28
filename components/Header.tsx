@@ -13,9 +13,7 @@ export function Header() {
             </button>
 
             <Link href="/" className="title-name">
-                <span id="name-1">ROBOT IS CHILL</span>
-                &nbsp;
-                <span id="name-2">web demo</span>
+                <span id="name-1">ROBOT IS CHILL</span>&nbsp;<span id="name-2">web demo</span>
             </Link>
         </div>
     );
