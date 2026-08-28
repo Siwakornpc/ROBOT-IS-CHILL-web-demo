@@ -262,19 +262,18 @@ export function FilterPanel({
                 );
 
             case "mode":
-                const isAbsolute = value === "true";
                 return (
                     <div className="cbtn-group small">
                         <button
                             type="button"
-                            className={`cbtn ${isAbsolute ? "selected" : ""}`}
+                            className={`cbtn ${value === "true" ? "selected" : ""}`}
                             onClick={() => handleValueChange(type, index, "true")}
                         >Absolute
                         </button>
                         
                         <button
                             type="button"
-                            className={`cbtn ${!isAbsolute ? "selected" : ""}`}
+                            className={`cbtn ${value === "false" ? "selected" : ""}`}
                             onClick={() => handleValueChange(type, index, "false")}
                         >Relative
                         </button>
@@ -286,7 +285,7 @@ export function FilterPanel({
                     <div style={{display: "flex"}}>
                         <MenuSelect
                             id={`date-mode-select-${index}`}
-                            value={value[0]}
+                            value={value.split(";")[0]}
                             options={[
                                 { value: "before", label: "Before" },
                                 { value: "on", label: "On" },
@@ -298,7 +297,7 @@ export function FilterPanel({
                             <input
                                 type="text"
                                 placeholder="Filter..."
-                                value={value[1]}
+                                value={value.split(";")[1]}
                                 onChange={(e) => handleValueChange(type, index, `${value[0]};${e.target.value}`)}
                                 autoComplete="off"
                             />
