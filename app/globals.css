@@ -2124,8 +2124,10 @@ hr {
 
 :is(.search-details-macro-name, .search-item-macro).builtin .macro-name,
 :is(
-    :is(.search-details-flag-name, .search-item-flag) .flag-name,
-    :is(.search-details-variant-name, .search-item-variant) .variant-name
+    .search-details-flag-name,
+    .search-item-flag,
+    .search-details-variant-name,
+    .search-item-variant,
 ) > :is(span, s) {
     font-weight: bold;
 }
