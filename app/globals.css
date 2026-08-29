@@ -2476,6 +2476,9 @@ tr:nth-child(odd) td {
     font-style: italic;
     color: var(--empty) !important;
 }
+.before {
+    opacity: 0.5;
+}
 
 /*
     before results

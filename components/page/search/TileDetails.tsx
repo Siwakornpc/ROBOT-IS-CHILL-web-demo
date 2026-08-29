@@ -515,14 +515,14 @@ export function Details({ selected }: DetailsProps) {
                             {getPaletteColorData
                                 ?
                                 <>
-                                    <td>
+                                    <td className="before">
                                         <span
                                             className="palette-color-display"
                                             style={{ "--this-palette-color": getPaletteColorData.color } as React.CSSProperties}    
                                         />
                                         {`${getPaletteColorData.x}, ${getPaletteColorData.y}`}
                                     </td>
-                                    <td className="discord-markdown">
+                                    <td className="discord-markdown before">
                                         <code className="discord-inline-code">
                                             {getPaletteColorData.color?.toUpperCase()}
                                         </code>
