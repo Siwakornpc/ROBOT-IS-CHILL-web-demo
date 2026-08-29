@@ -370,6 +370,14 @@ ul {
     height: var(--scrollbar-inset-size, 8px);
 }
 
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/*
+    stuff
+*/
+
 ::selection,
 .selection {
     background: var(--selection);
@@ -421,6 +429,10 @@ hr {
 .hidden {
     display: none !important;
 }
+
+/*
+    apply overflow fade (can-overflow)
+*/
 
 @property --fade-top {
   syntax: '<length-percentage>';
@@ -2249,6 +2261,9 @@ hr {
     margin-top: -4px;
 
     color: var(--contrast, --normal);
+
+
+    user-select: none;
 }
 
 /* end frame index label*/

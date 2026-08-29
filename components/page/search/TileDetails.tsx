@@ -126,7 +126,9 @@ export function Details({ selected }: DetailsProps) {
             <p className="text-label search-details-name">{selected.name}</p>
 
             {selected.tile.tiling !== "none"
-                ? <><div
+                ?
+                <>
+                    <div
                         ref={(el) => applyOverflowFade(el, "x")}
                         className="search-details-image-wrapper ascroll-x"
                     >
@@ -416,7 +418,10 @@ export function Details({ selected }: DetailsProps) {
         return (<>
             <p className="text-label search-details-name">{selected.name}</p>
 
-            <div className="search-details-palette-wrapper ascroll-x ascroll-y">
+            <div
+                ref={(el) => applyOverflowFade(el, "xy")}
+                className="search-details-palette-wrapper ascroll-x ascroll-y"
+            >
                 <div className="search-details-palette-wrapper-asize">
                     <div className="search-details-palette-element">
                         {selected.palette.colors.map((row, i) =>
@@ -485,12 +490,14 @@ export function Details({ selected }: DetailsProps) {
                         )
                     )} */}
                     {
-                        <td
-                            colSpan={2}
-                            className="placeholder"
-                        >
-                            Hover to see the Hex Code,<br />Select to get the Hex Code.
-                        </td>
+                        <tr>
+                            <td
+                                colSpan={2}
+                                className="placeholder"
+                            >
+                                Hover to see the Hex Code,<br />Select to get the Hex Code.
+                            </td>
+                        </tr>
                     }
                 </tbody>
             </table>
