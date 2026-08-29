@@ -1303,6 +1303,15 @@ hr {
 .ascroll-y.ascroll-y {
     overflow-y: auto;
 }
+.scroll-xy, .ascroll-xy {
+    overflow: hidden;
+}
+.scroll-xy.scroll-xy {
+    overflow: scroll;
+}
+.ascroll-xy.ascroll-xy {
+    overflow: auto;
+}
 
 .emph {
     font-weight: bold;
@@ -2275,6 +2284,15 @@ hr {
     border-radius: 16px;
     border: 1px solid var(--editor-outline);
 }
+.search-details-palette-wrapper {
+    position: relative;
+
+    width: 100%;
+    height: 258px;
+    margin: 12px auto;
+    border-radius: 16px;
+    border: 1px solid var(--editor-outline);
+}
 
 .search-details-contents-flexbox {
     padding-top: 8px;
@@ -2311,6 +2329,22 @@ hr {
     margin: 0;
 }
 
+.palette-color-display {
+    display: inline-block;
+
+    position: relative;
+    top: 3px;
+
+    background: var(--this-palette-color);
+    width: 18px;
+    height: 18px;
+
+    margin-right: 10px;
+
+    outline: 1px solid var(--editor-outline);
+    border-radius: 4px;
+}
+
 table {
     width: -webkit-fill-available;
     width: -moz-available;
@@ -2329,14 +2363,14 @@ table {
 th, td {
     padding: 6px 12px;
     word-wrap: anywhere;
+    vertical-align: top;
 }
 
-th:not(:first-child) {
-    border-inline-start: 1px solid rgb(var(--md-color-outline));
+th:not(:last-child) {
+    border-inline-end: 1px solid rgb(var(--md-color-outline));
 }
-td:not(:first-child),
-.tab-btn:not(:first-child) {
-    border-inline-start: 1px solid var(--editor-outline);
+td:not(:last-child) {
+    border-inline-end: 1px solid var(--editor-outline);
 }
 
 th {

@@ -112,7 +112,8 @@ export function Details({ selected }: DetailsProps) {
                         className="search-details-image-wrapper ascroll-x"
                     >
                         {select === "one_tile"
-                            ? <div className="search-details-image-asize" data-frame={currentIndex}>
+                            ?
+                            <div className="search-details-image-asize" data-frame={currentIndex}>
                                 <img
                                     alt={selected.name}
                                     className="search-details-image"
@@ -395,6 +396,61 @@ export function Details({ selected }: DetailsProps) {
                     {selected.flag.syntax}
                 </div>
             </div>
+        </>);
+    }
+
+    // Details for Palettes
+
+    if ("palette" in selected) {
+        return (<>
+            <p className="text-label search-details-name">{selected.name}</p>
+
+            <div className="search-details-palette-wrapper ascroll-xy">
+
+            </div>
+
+            <hr />
+
+            <table>
+                <tbody>
+                    <tr>
+                        <th className="table-description">Description</th>
+                        <th colSpan={2}>Label</th>
+                    </tr>
+                    <tr>
+                        <td>Source</td>
+                        <td>{selected.palette.source}</td>
+                    </tr>
+                    <tr>
+                        <td rowSpan={selected.palette.colors.flat().length + 1}>Colors</td>
+                        <td>Index</td>
+                        <td>Hex Code</td>
+                    </tr>
+                    {
+                        // Will change to a Click to get Hex code + pos
+                    }
+                    {selected.palette.colors.map((row, index) =>
+                        row.map((color, jndex) => 
+                            <tr
+                                key={`palette-${selected.name}-color-${index}-${jndex}`}
+                            >
+                                <td>
+                                    <span
+                                        className="palette-color-display"
+                                        style={{ "--this-palette-color": color } as React.CSSProperties}    
+                                    />
+                                    {`${index}, ${jndex}`}
+                                </td>
+                                <td className="discord-markdown">
+                                    <code className="discord-inline-code">
+                                        {color?.toUpperCase()}
+                                    </code>
+                                </td>
+                            </tr>
+                        )
+                    )}
+                </tbody>
+            </table>
         </>);
     }
 }
