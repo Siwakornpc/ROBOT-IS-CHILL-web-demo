@@ -634,9 +634,7 @@ export default function SearchResults({
                             className="kill-styling search-item"
                             key={safeName || `tile-${index}`}
                             onClick={() => {
-                                if (isTileRecord(tile)) {
-                                    onSelect({ name: safeName, tile })
-                                };
+                                if (isTileRecord(tile)) onSelect({ name: safeName, tile });
                             }}
                         >
                             {

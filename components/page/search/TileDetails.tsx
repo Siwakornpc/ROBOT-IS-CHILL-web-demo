@@ -137,7 +137,8 @@ export function Details({ selected }: DetailsProps) {
                                                         alt={`${selected.name}-frame-${index}`}
                                                         src={img[j]}
                                                     />
-                                                </div> : <span key={j} aria-hidden="true"/>
+                                                </div>
+                                                : <span key={j} aria-hidden="true"/>
                                             )}
                                         </div>
                                     ))}
@@ -332,10 +333,8 @@ export function Details({ selected }: DetailsProps) {
                 <p className={`search-details-variant-name`}>
                     <span className="variant-name">:</span>
                     {selected.name !== "m_syntax_shim"
-                        ? 
-                        <span className="variant-name name">{selected.name}</span>
-                        :
-                        <s className="variant-name name">{selected.name}</s>
+                        ? <span className="variant-name name">{selected.name}</span>
+                        : <s className="variant-name name">{selected.name}</s>
                     }
                 </p>
             </div>
@@ -358,8 +357,7 @@ export function Details({ selected }: DetailsProps) {
                     <div
                         ref={variantElementRef}
                         className="search-details-detailbox variant" id="description"
-                    >
-                        {selected.variant.syntax}
+                    >{selected.variant.syntax}
                     </div>
                 </>)}
             </div>
@@ -392,8 +390,7 @@ export function Details({ selected }: DetailsProps) {
                 <div
                     ref={flagElementRef}
                     className="search-details-detailbox flag" id="description"
-                >
-                    {selected.flag.syntax}
+                >{selected.flag.syntax}
                 </div>
             </div>
         </>);
@@ -405,8 +402,7 @@ export function Details({ selected }: DetailsProps) {
         return (<>
             <p className="text-label search-details-name">{selected.name}</p>
 
-            <div className="search-details-palette-wrapper ascroll-xy">
-
+            <div className="search-details-palette-wrapper ascroll-x ascroll-y">
             </div>
 
             <hr />

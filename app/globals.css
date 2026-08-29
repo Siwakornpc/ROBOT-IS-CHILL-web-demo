@@ -1303,15 +1303,6 @@ hr {
 .ascroll-y.ascroll-y {
     overflow-y: auto;
 }
-.scroll-xy, .ascroll-xy {
-    overflow: hidden;
-}
-.scroll-xy.scroll-xy {
-    overflow: scroll;
-}
-.ascroll-xy.ascroll-xy {
-    overflow: auto;
-}
 
 .emph {
     font-weight: bold;
