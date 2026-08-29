@@ -757,13 +757,8 @@ export default function SearchResults({
                         >
                             <span
                                 ref={(el) => applyOverflowFade(el, "y")}
-                                className={`search-item-variant`}
-                            >
-                                <span className="variant-name">:</span>
-                                {name !== "m_syntax_shim"
-                                    ? <span className="variant-name name">{name}</span>
-                                    : <s className="variant-name name">{name}</s>
-                                }
+                                className="search-item-variant variant-name"
+                            >:{name !== "m_syntax_shim" ? <span>{name}</span> : <s>{name}</s>}
                             </span>
                         </button>
                     );
@@ -784,17 +779,13 @@ export default function SearchResults({
                             className="kill-styling search-item"
                             key={safeName || `flag-${index}`}
                             onClick={() => {
-                                if (isFlagRecord(flag)) {
-                                    onSelect({ name: safeName, flag });
-                                }
+                                if (isFlagRecord(flag)) onSelect({ name: safeName, flag });
                             }}
                         >
                             <span
                                 ref={(el) => applyOverflowFade(el, "y")}
-                                className={`search-item-flag`}
-                            >
-                                <span className="flag-name">--</span>
-                                <span className="flag-name name">{name}</span>
+                                className="search-item-flag flag-name"
+                            >--<span>{name}</span>
                             </span>
                         </button>
                     );
@@ -815,9 +806,7 @@ export default function SearchResults({
                             className="kill-styling search-item"
                             key={safeName || `palette-${index}`}
                             onClick={() => {
-                                if (isPaletteRecord(palette)) {
-                                    onSelect({ name: safeName, palette });
-                                }
+                                if (isPaletteRecord(palette)) onSelect({ name: safeName, palette });
                             }}
                         >
                             <div className="search-item-palette">
@@ -839,10 +828,7 @@ export default function SearchResults({
                                     : ""
                                 }
                             </div>
-
-                            <span className="search-item-name">
-                                {safeName}
-                            </span>
+                            <span className="search-item-name">{safeName}</span>
                         </button>
                     );
                 })

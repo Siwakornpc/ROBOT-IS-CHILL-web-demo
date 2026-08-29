@@ -330,12 +330,8 @@ export function Details({ selected }: DetailsProps) {
                 ref={(el) => applyOverflowFade(el, "y")}
                 className="search-details-variant ascroll-y"
             >
-                <p className={`search-details-variant-name`}>
-                    <span className="variant-name">:</span>
-                    {selected.name !== "m_syntax_shim"
-                        ? <span className="variant-name name">{selected.name}</span>
-                        : <s className="variant-name name">{selected.name}</s>
-                    }
+                <p className="search-details-variant-name variant-name">
+                    :{selected.name !== "m_syntax_shim" ? <span>{selected.name}</span> : <s>{selected.name}</s>}
                 </p>
             </div>
 
@@ -372,9 +368,8 @@ export function Details({ selected }: DetailsProps) {
                 ref={(el) => applyOverflowFade(el, "y")}
                 className="search-details-flag ascroll-y"
             >
-                <p className={`search-details-flag-name`}>
-                    <span className="flag-name">--</span>
-                    <span className="flag-name name">{selected.name}</span>
+                <p className="search-details-flag-name flag-name">
+                    --<span>{selected.name}</span>
                 </p>
             </div>
 
@@ -415,7 +410,7 @@ export function Details({ selected }: DetailsProps) {
                     </tr>
                     <tr>
                         <td>Source</td>
-                        <td>{selected.palette.source}</td>
+                        <td colSpan={2}>{selected.palette.source}</td>
                     </tr>
                     <tr>
                         <td rowSpan={selected.palette.colors.flat().length + 1}>Colors</td>
