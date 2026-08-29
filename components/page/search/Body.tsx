@@ -235,6 +235,7 @@ export function FilterPanel({
                     <MenuSelect
                         value={value}
                         options={tilingOptions}
+                        anchor="t"
                         onChange={(newValue) => {
                             handleValueChange(type, index, newValue);
                             const matched = tilingOptions.find((opt) => opt.value === newValue);
@@ -257,7 +258,6 @@ export function FilterPanel({
                                 />
                             </label>
                         )}
-                        anchor="t"
                     />
                 );
 

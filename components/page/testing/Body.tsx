@@ -123,6 +123,7 @@ export default function Body() {
                 <MenuSelect
                     value={textFieldSelected}
                     options={filteredOptions}
+                    anchor="t"
                     onChange={(newValue) => {
                         setTextFieldSelected(newValue);
                         const matched = options.find((opt) => opt.value === newValue);
@@ -145,7 +146,6 @@ export default function Body() {
                             />
                         </label>
                     )}
-                    anchor="t"
                 />
 
                 <hr />
