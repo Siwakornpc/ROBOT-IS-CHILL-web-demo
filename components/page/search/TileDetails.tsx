@@ -25,6 +25,25 @@ const getImageSize = (url: string): Promise<string> => {
     });
 };
 
+function getContrastColor(hex: string | null) {
+    if (!hex) return;
+
+    hex = hex.replace("#", "");
+
+    const fullHex = hex.length === 3 
+        ? hex.split('').map(char => char + char).join('') 
+        : hex;
+
+    const r = parseInt(fullHex.substring(0, 2), 16);
+    const g = parseInt(fullHex.substring(2, 4), 16);
+    const b = parseInt(fullHex.substring(4, 6), 16);
+    
+    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+    
+    return yiq >= 128 ? "black" : "";
+}
+
+
 export function Details({ selected }: DetailsProps) {
     const macroElementRef = useRef<HTMLDivElement>(null);
     const variantElementRef = useRef<HTMLDivElement>(null);
@@ -398,6 +417,31 @@ export function Details({ selected }: DetailsProps) {
             <p className="text-label search-details-name">{selected.name}</p>
 
             <div className="search-details-palette-wrapper ascroll-x ascroll-y">
+                <div className="search-details-palette-wrapper-asize">
+                    <div className="search-details-palette-element">
+                        {selected.palette.colors.map((row, i) =>
+                            <div
+                                key={`palette-${selected.name}-row-${i}`}
+                                className="search-details-palette-these-colors-row"
+                            > 
+                                {row.map((color, j) => 
+                                    <div
+                                        key={`palette-${selected.name}-row-${i}-column-${j}-color-${color}`}
+                                        className="search-details-palette-this-color"
+                                        style={{ "--this-palette-color": color } as React.CSSProperties}
+                                    >
+                                        <span
+                                            className="palette-index-label"
+                                            style={{ "--contrast": getContrastColor(color) } as React.CSSProperties}
+                                        >
+                                            {`${i},${j}`}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
 
             <hr />
@@ -420,7 +464,7 @@ export function Details({ selected }: DetailsProps) {
                     {
                         // Will change to a Click to get Hex code + pos
                     }
-                    {selected.palette.colors.map((row, index) =>
+                    {/* {selected.palette.colors.map((row, index) =>
                         row.map((color, jndex) => 
                             <tr
                                 key={`palette-${selected.name}-color-${index}-${jndex}`}
@@ -439,7 +483,15 @@ export function Details({ selected }: DetailsProps) {
                                 </td>
                             </tr>
                         )
-                    )}
+                    )} */}
+                    {
+                        <td
+                            colSpan={2}
+                            className="placeholder"
+                        >
+                            Hover to see the Hex Code,<br />Select to get the Hex Code.
+                        </td>
+                    }
                 </tbody>
             </table>
         </>);

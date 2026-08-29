@@ -38,6 +38,7 @@
     --selection: rgb(var(--md-color-primary), .16);
     --label: rgb(var(--md-color-on-surface-variant));
     --description: rgb(var(--md-color-on-surface-variant));
+    --empty: rgb(var(--md-color-outline));
 
     --bracket-outline: rgb(var(--md-color-on-tertiary-container), .32);
 
@@ -1420,6 +1421,8 @@ hr {
     height: 48px;
     border-radius: 28px;
     color: rgb(var(--md-color-on-surface-variant));
+
+    user-select: none;
 }
 .nav-btn:hover {
     background: var(--surface-hovered);
@@ -1983,8 +1986,8 @@ hr {
 }
 
 .search-item-tile {
-    width: 64px;
-    height: 64px;
+    width: 72px; /* make it pixel perfect for 24x sprites please */
+    height: 72px;
     image-rendering: pixelated;
     object-fit: contain;
     filter: var(--f-elevation-5);
@@ -2140,6 +2143,10 @@ hr {
     filter: var(--f-elevation-5);
 }
 
+.search-details-image-tiled {
+    filter: var(--f-elevation-2);
+}
+
 .search-details-image-e {
     width: 100%;
     min-width: unset;
@@ -2218,10 +2225,6 @@ hr {
     z-index: 10000;
 }
 
-.search-details-image-tiled {
-    filter: var(--f-elevation-2);
-}
-
 .search-details-image-tiled:hover
 .tiling-index-label:not(:hover)::after {
     opacity: 0;
@@ -2235,6 +2238,17 @@ hr {
 }
 .search-details-image-tiled:hover img:not(:hover) {
     opacity: 0.5;
+}
+
+.palette-index-label {
+    position: relative;
+    vertical-align: middle;
+    text-align: center;
+    font-family: var(--font-family-code);
+    font-size: 1.2em;
+    margin-top: -4px;
+
+    color: var(--contrast, --normal);
 }
 
 /* end frame index label*/
@@ -2273,6 +2287,34 @@ hr {
     margin: 12px auto;
     border-radius: 16px;
     border: 1px solid var(--editor-outline);
+}
+
+.search-details-palette-these-colors-row {
+    display: flex;
+}
+
+.search-details-palette-this-color {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    max-width: 40px;
+    aspect-ratio: 1 / 1;
+    width: 40px;
+    height: 40px;
+    background-color: var(--this-palette-color);
+}
+.search-details-palette-wrapper-asize {
+    display: flex;
+    width: fit-content;
+    height: max-content;
+    flex-direction: column;
+    margin: auto;
+    padding: 28px;
+}
+.search-details-palette-element {
+    filter: var(--f-elevation-5);
 }
 .search-details-palette-wrapper {
     position: relative;
@@ -2371,6 +2413,40 @@ tr:nth-child(odd) td {
     background: rgb(var(--md-color-on-surface), 0.08);
 }
 
+.placeholder {
+    font-style: italic;
+    color: var(--empty) !important;
+}
+
+/*
+    before results
+*/
+
+.before-results {
+    color: var(--editor-outline);
+}
+.search-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    animation: sit-loading 1s linear infinite;
+}
+.search-loading-spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: search-loading-spin 0.7s linear infinite;
+}
+
+@keyframes search-loading-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
 /*
 *
 *       FLEXIBILITY

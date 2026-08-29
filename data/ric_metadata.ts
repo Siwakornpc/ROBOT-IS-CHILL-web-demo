@@ -10,11 +10,16 @@ const SOURCES = {
 
     constants:
         "https://raw.githubusercontent.com/ROBOT-IS-CHILL/robot-is-chill/main/src/constants.py",
-
-    fonts:
-        "https://api.github.com/repos/ROBOT-IS-CHILL/robot-is-chill/contents/data/fonts",
 } as const;
 
+const FONT_NAMES = [
+    "04b03",
+    "bytesized",
+    "icon",
+    "monospace",
+    "offset",
+    "ui",
+] as const;
 
 export interface Variant {
     description: string;
@@ -34,13 +39,6 @@ export interface RobotIsChillMetadata {
     variants: Variants;
     flags: Flags;
 }
-
-
-interface GitHubDirectoryEntry {
-    name: string;
-    type: string;
-}
-
 
 export const sampleVariants: Variants = {
     crop: {
@@ -406,55 +404,12 @@ function extractStringSequence(
 
 
 /*
- * Load the actual font names used by:
- *
- * Path(f).stem
- * for f in glob.glob('data/fonts/*.ttf')
- *
- * Example:
- *
- * 04b03.ttf -> 04b03
- */
-async function loadFontNames(): Promise<string[]> {
-    const response = await fetch(
-        SOURCES.fonts,
-    );
-
-    if (!response.ok) {
-        throw new Error(
-            `fonts directory HTTP ${response.status}`,
-        );
-    }
-
-    const entries =
-        (await response.json()) as GitHubDirectoryEntry[];
-
-    return entries
-        .filter(
-            entry =>
-                entry.type === "file" &&
-                entry.name
-                    .toLowerCase()
-                    .endsWith(".ttf"),
-        )
-        .map(
-            entry =>
-                entry.name.slice(
-                    0,
-                    -".ttf".length,
-                ),
-        );
-}
-
-
-/*
  * Resolve dynamic Literal expressions used
  * by Robot Is Chill.
  */
 function resolveLiteralAnnotation(
     annotation: string,
     constantsSource: string,
-    fontNames: string[],
 ): string {
     const normalized = annotation
         .replace(/\s+/g, " ")
@@ -531,7 +486,7 @@ function resolveLiteralAnnotation(
             "Path(f).stem for f in glob.glob('data/fonts/*.ttf')",
         )
     ) {
-        return `Literal[${fontNames
+        return `Literal[${FONT_NAMES
             .map(name => `'${name}'`)
             .join(", ")}]`;
     }
@@ -543,7 +498,6 @@ function resolveLiteralAnnotation(
 function pythonParameterText(
     parameter: string,
     constantsSource: string,
-    fontNames: string[],
 ): string {
     const colonIndex =
         parameter.indexOf(":");
@@ -585,7 +539,6 @@ function pythonParameterText(
         resolveLiteralAnnotation(
             annotation,
             constantsSource,
-            fontNames,
         );
 
     return (
@@ -603,7 +556,6 @@ function makeVariantSyntax(
     names: string[] | null,
     params: string[],
     constantsSource: string,
-    fontNames: string[],
 ): string {
     const prefix =
         names === null
@@ -618,7 +570,6 @@ function makeVariantSyntax(
                     pythonParameterText(
                         parameter,
                         constantsSource,
-                        fontNames,
                     );
 
                 return text.includes("=")
@@ -633,7 +584,6 @@ function makeVariantSyntax(
 function parseVariants(
     source: string,
     constantsSource: string,
-    fontNames: string[],
 ): Variants {
     const result: Variants = {};
 
@@ -743,7 +693,6 @@ function parseVariants(
                 names,
                 params,
                 constantsSource,
-                fontNames,
             ),
 
             applied:
@@ -789,7 +738,6 @@ export async function loadUpstream(): Promise<RobotIsChillMetadata> {
         variantsSource,
         flagsSource,
         constantsSource,
-        fontNames,
     ] = await Promise.all([
         /*
          * Kept because this is part of the upstream
@@ -842,15 +790,12 @@ export async function loadUpstream(): Promise<RobotIsChillMetadata> {
                 return response.text();
             },
         ),
-
-        loadFontNames(),
     ]);
 
     return {
         variants: parseVariants(
             variantsSource,
             constantsSource,
-            fontNames,
         ),
 
         flags: parseFlags(
@@ -864,7 +809,6 @@ export async function loadVariants(): Promise<Variants> {
     const [
         variantsSource,
         constantsSource,
-        fontNames,
     ] = await Promise.all([
         fetch(SOURCES.variants).then(
             response => {
@@ -890,13 +834,11 @@ export async function loadVariants(): Promise<Variants> {
             },
         ),
 
-        loadFontNames(),
     ]);
 
     return parseVariants(
         variantsSource,
         constantsSource,
-        fontNames,
     );
 }
 
