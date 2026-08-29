@@ -2289,6 +2289,31 @@ hr {
     right: 0;
 }
 
+.search-details-palette-element,
+.search-details-palette-this-color,
+.palette-index-label {
+    transform: scale(1);
+    transition: 0.2s ease;
+}
+.search-details-palette-this-color:hover {
+    transform: scale(1.4);
+    border-radius: 20px;
+    z-index: 10;
+}
+.search-details-palette-this-color:hover
+.palette-index-label {
+    transform: scale(0.95);
+}
+.search-details-palette-element:hover
+.search-details-palette-this-color:not(:hover) {
+    opacity: 0.5;
+}
+.search-details-palette-element:hover
+.search-details-palette-this-color:not(:hover)
+.palette-index-label {
+    opacity: 0;
+}
+
 /* end frame index label*/
 
 .search-details-image-asize {
