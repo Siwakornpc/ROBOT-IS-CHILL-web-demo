@@ -137,8 +137,7 @@ export function Details({ selected }: DetailsProps) {
             <p className="text-label search-details-name">{selected.name}</p>
 
             {selected.tile.tiling !== "none"
-                ?
-                <>
+                ? <>
                     <div
                         ref={(el) => applyOverflowFade(el, "x")}
                         className="search-details-image-wrapper ascroll-x"
@@ -451,10 +450,12 @@ export function Details({ selected }: DetailsProps) {
                                             style={{ "--contrast": getContrastColor(color), marginTop: (i >= 10) || (j >= 10) ? "0" : "" } as React.CSSProperties}
                                             onMouseEnter={() => handlePaletteOnHover({ x: i, y: j, color })}
                                             onMouseLeave={() => handlePaletteOnHover()}
+                                            onClick={() => {}}
                                         >
-                                            {(i >= 10) || (j >= 10)
-                                                ? 
-                                                <>
+                                            {color
+                                                ? ""
+                                                : (i >= 10) || (j >= 10)
+                                                ? <>
                                                     <span className="index-x">{i}</span>
                                                     <span className="index-sep"/>
                                                     <span className="index-y">{j}</span>
@@ -513,8 +514,7 @@ export function Details({ selected }: DetailsProps) {
                     {
                         <tr>
                             {getPaletteColorData
-                                ?
-                                <>
+                                ? <>
                                     <td className="before">
                                         <span
                                             className="palette-color-display"
@@ -523,18 +523,15 @@ export function Details({ selected }: DetailsProps) {
                                         {`${getPaletteColorData.x}, ${getPaletteColorData.y}`}
                                     </td>
                                     <td className="discord-markdown before">
-                                        <code className="discord-inline-code">
-                                            {getPaletteColorData.color?.toUpperCase()}
-                                        </code>
+                                        <code className="discord-inline-code">{getPaletteColorData.color?.toUpperCase()}</code>
                                     </td>
                                 </>
-                                :
-                                <td
+                                : <td
                                     colSpan={2}
                                     className="placeholder"
-                                >
-                                        
-                                    Hover to see the Hex Code,<br />Select to get the Hex Code.
+                                >  
+                                    Hover to see the Hex Code,<br />
+                                    Select to get the Hex Code.
                                 </td>
                             }
                         </tr>

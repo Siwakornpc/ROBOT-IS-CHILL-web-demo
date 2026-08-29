@@ -619,15 +619,11 @@ export default function SearchResults({
             {!results ? (
                 <div className="before-results">
                     {filteredEntries.length === 0
-                        ?
-                        <span className="search-loading" role="status">
+                        ? <span className="search-loading" role="status">
                             <span className="search-loading-spinner" aria-hidden="true" />
                             <span>Loading</span>
                         </span>
-                        : 
-                        <span>
-                            No results found
-                        </span>
+                        : <span>No results found</span>
                     }
                 </div>
             ) : ""}

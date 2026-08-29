@@ -2420,20 +2420,19 @@ hr {
     margin: 0;
 }
 
+td:has(.palette-color-display) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
 .palette-color-display {
     display: inline-block;
-
     position: relative;
-    top: 3px;
-
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
     background: var(--this-palette-color);
-    width: 18px;
-    height: 18px;
-
-    margin-right: 10px;
-
-    outline: 1px solid var(--editor-outline);
-    border-radius: 4px;
+    box-shadow: var(--elevation-1);
 }
 
 table {
