@@ -16,6 +16,12 @@ type DetailsProps = {
     selected: SelectedSearchResult;
 };
 
+type PaletteColorData = {
+    x: number;
+    y: number;
+    color: string | null;
+};
+
 const getImageSize = (url: string): Promise<string> => {
     return new Promise((resolve) => {
         const img = new Image();
@@ -43,14 +49,14 @@ function getContrastColor(hex: string | null) {
     return yiq >= 128 ? "black" : "";
 }
 
-
 export function Details({ selected }: DetailsProps) {
     const macroElementRef = useRef<HTMLDivElement>(null);
     const variantElementRef = useRef<HTMLDivElement>(null);
     const flagElementRef = useRef<HTMLDivElement>(null);
     const [tilingFrame, setTilingFrame] = useState(0);
     const [select, setSelect] = useState<string | null>("one_tile");
-    console.log(selected);
+
+    const [getPaletteColorData, setPaletteColorData] = useState<PaletteColorData | null>();
 
     // syntaxes
     useEffect(() => {
@@ -111,6 +117,11 @@ export function Details({ selected }: DetailsProps) {
     function handleSelect(e: React.MouseEvent<HTMLButtonElement>) {
         const value = e.currentTarget.dataset.tab_action;
         if (value !== undefined)  setSelect(value)
+    }
+
+    // [isPaletteColorHover, setPaletteColorHover]
+    function handlePaletteOnHover(data: PaletteColorData | null = null) {
+        setPaletteColorData(data);
     }
 
     // Details for Tiles
@@ -438,6 +449,8 @@ export function Details({ selected }: DetailsProps) {
                                         <span
                                             className="palette-index-label"
                                             style={{ "--contrast": getContrastColor(color), marginTop: (i >= 10) || (j >= 10) ? "0" : "" } as React.CSSProperties}
+                                            onMouseEnter={() => handlePaletteOnHover({ x: i, y: j, color })}
+                                            onMouseLeave={() => handlePaletteOnHover()}
                                         >
                                             {(i >= 10) || (j >= 10)
                                                 ? 
@@ -499,12 +512,31 @@ export function Details({ selected }: DetailsProps) {
                     )} */}
                     {
                         <tr>
-                            <td
-                                colSpan={2}
-                                className="placeholder"
-                            >
-                                Hover to see the Hex Code,<br />Select to get the Hex Code.
-                            </td>
+                            {getPaletteColorData
+                                ?
+                                <>
+                                    <td>
+                                        <span
+                                            className="palette-color-display"
+                                            style={{ "--this-palette-color": getPaletteColorData.color } as React.CSSProperties}    
+                                        />
+                                        {`${getPaletteColorData.x}, ${getPaletteColorData.y}`}
+                                    </td>
+                                    <td className="discord-markdown">
+                                        <code className="discord-inline-code">
+                                            {getPaletteColorData.color?.toUpperCase()}
+                                        </code>
+                                    </td>
+                                </>
+                                :
+                                <td
+                                    colSpan={2}
+                                    className="placeholder"
+                                >
+                                        
+                                    Hover to see the Hex Code,<br />Select to get the Hex Code.
+                                </td>
+                            }
                         </tr>
                     }
                 </tbody>
