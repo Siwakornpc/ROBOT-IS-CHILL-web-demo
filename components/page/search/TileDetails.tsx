@@ -437,9 +437,17 @@ export function Details({ selected }: DetailsProps) {
                                     >
                                         <span
                                             className="palette-index-label"
-                                            style={{ "--contrast": getContrastColor(color) } as React.CSSProperties}
+                                            style={{ "--contrast": getContrastColor(color), marginTop: (i >= 10) || (j >= 10) ? "0" : "" } as React.CSSProperties}
                                         >
-                                            {`${i},${j}`}
+                                            {(i >= 10) || (j >= 10)
+                                                ? 
+                                                <>
+                                                    <span className="index-x">{i}</span>
+                                                    <span className="index-sep"/>
+                                                    <span className="index-y">{j}</span>
+                                                </>
+                                                : `${i},${j}`
+                                            }
                                         </span>
                                     </div>
                                 )}

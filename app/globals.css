@@ -2253,17 +2253,40 @@ hr {
 }
 
 .palette-index-label {
+    width: stretch;
+    height: stretch;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
     position: relative;
-    vertical-align: middle;
     text-align: center;
     font-family: var(--font-family-code);
     font-size: 1.2em;
     margin-top: -4px;
 
-    color: var(--contrast, --normal);
-
+    color: var(--contrast, var(--normal));
 
     user-select: none;
+}
+
+.palette-index-label .index-x {
+    position: absolute;
+    top: -6px;
+    left: 0;
+}
+.palette-index-label .index-sep {
+    width: 2px;
+    height: 10px;
+    transform: rotate(45deg);
+    background: var(--contrast, var(--normal));
+}
+.palette-index-label .index-y {
+    position: absolute;
+    bottom: -6px;
+    right: 0;
 }
 
 /* end frame index label*/
@@ -2309,10 +2332,6 @@ hr {
 }
 
 .search-details-palette-this-color {
-    display: flex;
-
-    justify-content: center;
-    align-items: center;
 
     max-width: 40px;
     aspect-ratio: 1 / 1;
