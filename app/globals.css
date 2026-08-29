@@ -1954,6 +1954,10 @@ hr {
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 }
 
+.search-results.palettes {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
 .search-item {
     display: flex;
     flex-direction: column;
@@ -2061,19 +2065,18 @@ hr {
 .search-item-palette {
     max-width: 140px;
     max-height: 180px;
+    width: 100%;
+    height: 100%;
 
     display: flex;
     flex-direction: column;
-}
-.search-item-palette-this-color {
-    --this-palette-color: grey;
 }
 .search-item-palette-this-color {
     width: 20px;
     aspect-ratio: 1 / 1;
     background: var(--this-palette-color);
 }
-.search-item-palette-these-color-row {
+.search-item-palette-these-colors-row {
     display: flex;
 }
 

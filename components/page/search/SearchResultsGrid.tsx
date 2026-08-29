@@ -634,7 +634,9 @@ export default function SearchResults({
                             className="kill-styling search-item"
                             key={safeName || `tile-${index}`}
                             onClick={() => {
-                                if (isTileRecord(tile)) onSelect({ name: safeName, tile });
+                                if (isTileRecord(tile)) {
+                                    onSelect({ name: safeName, tile })
+                                };
                             }}
                         >
                             {
@@ -816,29 +818,29 @@ export default function SearchResults({
                             key={safeName || `palette-${index}`}
                             onClick={() => {
                                 if (isPaletteRecord(palette)) {
-                                    onSelect({
-                                        name: safeName,
-                                        palette,
-                                    });
+                                    onSelect({ name: safeName, palette });
                                 }
                             }}
                         >
-                            {isPaletteRecord(palette) && (
-                                <div className="search-item-palette">
-                                    {palette.colors.flatMap((row, y) =>
-                                        row.map((color, x) => (
-                                            <span
-                                                key={`${y}-${x}`}
-                                                className="search-item-palette-color"
-                                                style={{
-                                                    backgroundColor:
-                                                        color ?? "transparent",
-                                                }}
-                                            />
-                                        ))
-                                    )}
-                                </div>
-                            )}
+                            <div className="search-item-palette">
+                                {isPaletteRecord(palette)
+                                    ? palette.colors.map((row, index) =>
+                                        <div
+                                            key={`palette-row-${safeName ?? "unidentified"}-${index}`}
+                                            className="search-item-palette-these-colors-row"
+                                        >
+                                            {row.map((color, jndex) =>
+                                                <div
+                                                    key={`palette-this-color-${safeName ?? "unidentified"}-${color}-${jndex}`}
+                                                    className="search-item-palette-this-color"
+                                                    style={{ "--this-palette-color": color } as React.CSSProperties}
+                                                />
+                                            )}
+                                        </div>
+                                    )
+                                    : ""
+                                }
+                            </div>
 
                             <span className="search-item-name">
                                 {safeName}
