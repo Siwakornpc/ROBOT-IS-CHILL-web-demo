@@ -448,17 +448,17 @@ export function Details({ selected }: DetailsProps) {
                                         <span
                                             className="palette-index-label"
                                             style={{ "--contrast": getContrastColor(color), marginTop: (i >= 10) || (j >= 10) ? "0" : "" } as React.CSSProperties}
-                                            onMouseEnter={() => handlePaletteOnHover({ x: i, y: j, color })}
+                                            onMouseEnter={() => handlePaletteOnHover({ x: j, y: i, color })}
                                             onMouseLeave={() => handlePaletteOnHover()}
                                             onClick={() => {}}
                                         >
                                             {(i >= 10) || (j >= 10)
                                                 ? <>
-                                                    <span className="index-x">{i}</span>
+                                                    <span className="index-x">{j}</span>
                                                     <span className="index-sep"/>
-                                                    <span className="index-y">{j}</span>
+                                                    <span className="index-y">{i}</span>
                                                 </>
-                                                : `${i},${j}`
+                                                : `${j},${i}`
                                             }
                                         </span>
                                     </div>
@@ -516,14 +516,14 @@ export function Details({ selected }: DetailsProps) {
                     {selected.palette.colors.map((row, index) =>
                         row.map((color, jndex) => 
                             <tr
-                                key={`palette-${selected.name}-color-${index}-${jndex}`}
+                                key={`palette-${selected.name}-color-${jndex}-${index}`}
                             >
                                 <td>
                                     <span
                                         className="palette-color-display"
                                         style={{ "--this-palette-color": color } as React.CSSProperties}    
                                     />
-                                    {`${index}, ${jndex}`}
+                                    {`${jndex}, ${index}`}
                                 </td>
                                 <td className="discord-markdown">
                                     <code className="discord-inline-code">
