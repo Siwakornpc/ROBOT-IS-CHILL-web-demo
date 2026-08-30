@@ -452,7 +452,7 @@ export function Details({ selected }: DetailsProps) {
                                             onMouseLeave={() => handlePaletteOnHover()}
                                             onClick={() => {}}
                                         >
-                                            {color
+                                            {!color
                                                 ? ""
                                                 : (i >= 10) || (j >= 10)
                                                 ? <>
