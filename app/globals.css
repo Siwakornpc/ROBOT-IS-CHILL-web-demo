@@ -2435,6 +2435,10 @@ td:has(.palette-color-display) {
     box-shadow: var(--elevation-1);
 }
 
+.before:has(.palette-color-display:not([style*="--this-palette-color"])) + .discord-markdown .discord-inline-code::before {
+    content: "None";
+}
+
 table {
     width: -webkit-fill-available;
     width: -moz-available;
@@ -2484,7 +2488,7 @@ tr:nth-child(odd) td {
 */
 
 .before-results {
-    color: var(--editor-outline);
+    color: var(--variant);
 }
 .search-loading {
     display: flex;
