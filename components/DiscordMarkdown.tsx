@@ -1425,13 +1425,13 @@ function renderNode(
             }
 
             return (
-                <span key={key}>
+                <p key={key}>
                     {renderChildren(
                         node.children,
                         key,
                         context
                     )}
-                </span>
+                </p>
             );
         }
 
