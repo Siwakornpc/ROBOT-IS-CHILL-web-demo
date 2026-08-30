@@ -1957,7 +1957,8 @@ hr {
     justify-items: center;
 }
 
-.search-results.tiles {
+.search-results.tiles,
+.search-results.overlays {
     grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
 }
 .search-results.macros,
@@ -1996,7 +1997,8 @@ hr {
     text-align: center;
 }
 
-.search-item-tile {
+.search-item-tile,
+.search-item-overlay {
     width: 72px; /* make it pixel perfect for 24x sprites please */
     height: 72px;
     image-rendering: pixelated;
@@ -2146,7 +2148,8 @@ hr {
     font-weight: bold;
 }
 
-.search-details-image {
+.search-details-image,
+.search-details-overlay {
     width: 192px;
     height: 192px;
     object-fit: contain;
@@ -2315,7 +2318,8 @@ hr {
 
 /* end frame index label*/
 
-.search-details-image-asize {
+.search-details-image-asize,
+.search-details-overlay-asize {
     max-width: calc(8 * 24px);
     max-height: calc(8 * 24px);
     margin: 2em auto;
@@ -2341,7 +2345,8 @@ hr {
     image-rendering: pixelated;
 }
 
-.search-details-image-wrapper {
+.search-details-image-wrapper,
+.search-details-overlay-wrapper {
     position: relative;
 
     width: 100%;

@@ -976,7 +976,7 @@ function renderToken(
             };
 
             return (
-                <p
+                <span
                     key={key}
                     className="discord-subtext"
                 >
@@ -985,7 +985,7 @@ function renderToken(
                         `${key}-subtext`,
                         nestedContext
                     )}
-                </p>
+                </span>
             );
         }
 

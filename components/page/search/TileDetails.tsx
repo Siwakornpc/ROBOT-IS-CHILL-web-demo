@@ -489,9 +489,6 @@ export function Details({ selected }: DetailsProps) {
                         <td>Hex Code</td>
                     </tr>
                     {
-                        // Will change to a Click to get Hex code + pos
-                    }
-                    {
                         <tr>
                             {getPaletteColorData
                                 ? <>
@@ -536,6 +533,40 @@ export function Details({ selected }: DetailsProps) {
                     )}
                 </tbody>
             </table>
+        </>);
+    }
+
+    if ("overlay" in selected) {
+        return (<>
+            <p className="text-label search-details-name">{selected.name}</p>
+
+            <div className="search-details-overlay-wrapper">
+                <div className="search-details-image-asize">
+                    <img
+                        alt={selected.name}
+                        className="search-details-image"
+                        src={selected.overlay.url}
+                    />
+                </div>
+            </div>
+
+            <p className="search-details-label">Description</p>
+            <div className="search-details-detailbox placeholder" id="description">
+                <p>
+                    This is an overlay called "{selected.name}", which do not have any author or date recorded in the actual source.
+                </p>
+                <p className="discord-markdown">
+                    The only source that has been converted into a data in a form of JSON Object is: 
+                    <pre className="discord-code-block">
+                        <code>{`{
+    "${selected.name}": {
+        "url": ${selected.overlay.url}
+    }
+}`
+                        }</code>
+                    </pre>
+                </p>
+            </div>
         </>);
     }
 }

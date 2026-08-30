@@ -5,7 +5,7 @@ import { type SearchMode } from "./SearchSelect";
 import stdlib_macros from "./stdlib_macros";
 import JSONbig from "json-bigint";
 import applyOverflowFade from "@/components/OverflowFade";
-import { loadUpstream } from "@/data/ric_metadata";
+import { loadUpstream, getOverlays, type Overlay } from "@/data/ric_metadata";
 import { type Palette } from "@/data/palette_colors";
 
 const BATCH_SIZE = 32;
@@ -14,6 +14,8 @@ const IMAGE_ERROR_DELAY = 2000;
 const MAX_IMAGE_RETRIES = 4;
 
 const {variants, flags} = await loadUpstream();
+
+const overlays = getOverlays();
 
 const endpoints: Partial<Record<SearchMode, string>> = {
     tiles: "tiles.json",
@@ -75,6 +77,10 @@ export type SelectedFlag = {
     name: string;
     flag: FlagRecord
 }
+export type SelectedOverlay = {
+    name: string;
+    overlay: Overlay;
+}
 
 export type SelectedSearchResult =
     SelectedTile
@@ -82,10 +88,12 @@ export type SelectedSearchResult =
     | SelectedFilter
     | SelectedVariant
     | SelectedFlag
-    | SelectedPalette;
+    | SelectedPalette
+    | SelectedOverlay;
 
 const variantEntries: SearchEntry[] = Object.entries(variants);
 const flagEntries: SearchEntry[] = Object.entries(flags);
+const overlayEntries: SearchEntry[] = Object.entries(overlays);
 
 type SearchEntry = [string, unknown];
 type SearchResults = Record<string, unknown> | SearchEntry[];
@@ -126,7 +134,6 @@ function isVariantRecord(value: unknown): value is VariantRecord {
         && "description" in value
         && "applied" in value;
 }
-
 function isFlagRecord(value: unknown): value is FlagRecord {
     return typeof value === "object"
         && value !== null
@@ -139,6 +146,12 @@ function isPaletteRecord(value: unknown): value is Palette {
         && value !== null
         && "source" in value
         && "colors" in value;
+}
+
+function isOverlayRecord(value: unknown): value is Overlay {
+    return typeof value === "object"
+        && value !== null
+        && "url" in value;
 }
 
 export default function SearchResults({
@@ -170,6 +183,8 @@ export default function SearchResults({
         ? flagEntries
         : mode === "palettes"
         ? cachedPalettes.get("palettes") ?? null
+        : mode === "overlays"
+        ? overlayEntries
         : null;
 
     const loadMoreRef = useRef<HTMLDivElement>(null);
@@ -605,7 +620,13 @@ export default function SearchResults({
         loadingMoreRef.current = false;
     }, [visibleCount]);
 
-    // returning states
+    /*  
+    *   ==========================
+    *
+    *       RETURNING STATES
+    * 
+    *   ==========================
+    */  
 
     return (
         <div
@@ -850,6 +871,42 @@ export default function SearchResults({
                     );
                 })
             }
+
+            {mode === "overlays" &&
+                entries.map(([name, overlay], index) => {
+                    const safeName = String(name ?? "").trim();
+
+                    if (!isOverlayRecord(overlay)) {
+                        return null;
+                    }
+
+                    return (
+                        <button
+                            type="button"
+                            className="kill-styling search-item"
+                            key={safeName || `overlay-${index}`}
+                            onClick={() => {
+                                onSelect({
+                                    name: safeName,
+                                    overlay,
+                                });
+                            }}
+                        >
+                            <img
+                                className="search-item-overlay"
+                                src={overlay.url}
+                                alt=""
+                                aria-hidden="true"
+                            />
+
+                            <span className="search-item-name">
+                                {safeName}
+                            </span>
+                        </button>
+                    );
+                })
+            }
+
             {hasMore && <div ref={loadMoreRef} />}
         </div>
     );

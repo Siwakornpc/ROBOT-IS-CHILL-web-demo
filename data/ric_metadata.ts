@@ -858,3 +858,54 @@ export async function loadFlags(): Promise<Flags> {
         await response.text(),
     );
 }
+
+const OVERLAYS = [
+    "ace",
+    "aro",
+    "babgay",
+    "bi",
+    "bigender",
+    "candycane",
+    "debug",
+    "enby",
+    "fbm",
+    "fluid",
+    "frozen",
+    "gay",
+    "groupproject",
+    "it",
+    "lesbian",
+    "missing",
+    "missing2",
+    "missing3",
+    "mlm",
+    "omni",
+    "pan",
+    "pold",
+    "poly",
+    "space",
+    "test",
+    "trans",
+    "uwbo",
+    "vibe",
+] as const; // There wasn't going to be any changes, but I'm not sure after this has been uploaded.
+
+export type Overlay = {
+    url: string;
+};
+
+export type Overlays = Record<string, Overlay>;
+
+const OVERLAY_BASE =
+    "https://raw.githubusercontent.com/ROBOT-IS-CHILL/robot-is-chill/main/data/overlays";
+
+export function getOverlays(): Overlays {
+    return Object.fromEntries(
+        OVERLAYS.map(name => [
+            name,
+            {
+                url: `${OVERLAY_BASE}/${name}.png`,
+            },
+        ])
+    );
+}
