@@ -623,10 +623,16 @@ export default function SearchResults({
                             <span className="search-loading-spinner" aria-hidden="true" />
                             <span>Loading</span>
                         </span>
-                        : <span>No results found</span>
+                        : ""
                     }
                 </div>
-            ) : ""}
+            ) : filteredEntries.length === 0
+                ? 
+                <div className="before-results">
+                    <span>No results found</span>
+                </div>
+                : ""
+            }
 
             {
                 // Tiles

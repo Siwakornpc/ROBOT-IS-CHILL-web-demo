@@ -52,6 +52,7 @@ export function FilterPanel({
     const filteredSourceOptions = sourceOptions.filter((option) =>
         option.label.toLowerCase().includes(sourceSearchQuery.toLowerCase())
     );
+    const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
         sourcesPromise.then(setSourceOptions);
@@ -218,8 +219,6 @@ export function FilterPanel({
                 );
 
             case "tiling":
-                const [searchQuery, setSearchQuery] = useState("");
-
                 const tilingOptions = [
                     { value: "none", label: "None" },
                     { value: "static", label: "Static" },
