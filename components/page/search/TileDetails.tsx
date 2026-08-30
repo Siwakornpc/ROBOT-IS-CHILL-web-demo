@@ -452,10 +452,12 @@ export function Details({ selected }: DetailsProps) {
                                             onMouseLeave={() => handlePaletteOnHover()}
                                             onClick={() => {}}
                                         >
-                                            {(i >= 10) || (j >= 10)
+                                            {color
+                                                ? ""
+                                                : (i >= 10) || (j >= 10)
                                                 ? <>
                                                     <span className="index-x">{j}</span>
-                                                    <span className="index-sep"/>
+                                                    <div className="index-sep"/>
                                                     <span className="index-y">{i}</span>
                                                 </>
                                                 : `${j},${i}`
@@ -507,8 +509,7 @@ export function Details({ selected }: DetailsProps) {
                                 : <td
                                     colSpan={2}
                                     className="placeholder"
-                                >  
-                                    Hover to get the current color.
+                                >Hover to get the current color.
                                 </td>
                             }
                         </tr>
@@ -519,7 +520,7 @@ export function Details({ selected }: DetailsProps) {
                                 key={`palette-${selected.name}-color-${jndex}-${index}`}
                             >
                                 <td>
-                                    <span
+                                    <div
                                         className="palette-color-display"
                                         style={{ "--this-palette-color": color } as React.CSSProperties}    
                                     />

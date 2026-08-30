@@ -5,7 +5,6 @@ export async function GET(
     { params }: { params: Promise<{ name: string }> },
 ) {
     const { name } = await params;
-
     const upstreamUrl = `https://ric-api.sno.mba/filters/${encodeURIComponent(name)}.png`;
 
     try {

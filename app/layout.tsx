@@ -1,9 +1,6 @@
 import { Header } from "@/components/Header";
 import type { Metadata } from "next";
-import {
-    IBM_Plex_Mono,
-    Nunito_Sans,
-} from "next/font/google";
+import { IBM_Plex_Mono, Nunito_Sans } from "next/font/google";
 import "./globals.css";
 import ThemeScript from '@/components/themescript';
 import { MenuProvider } from '@/components/MenuContext';
