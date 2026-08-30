@@ -503,7 +503,7 @@ export function Details({ selected }: DetailsProps) {
                                         {`${getPaletteColorData.x}, ${getPaletteColorData.y}`}
                                     </td>
                                     <td className="discord-markdown before">
-                                        <code className="discord-inline-code">{getPaletteColorData.color?.toUpperCase()}</code>
+                                        <code className="discord-inline-code">{getPaletteColorData.color?.toUpperCase() ?? "None"}</code>
                                     </td>
                                 </>
                                 : <td
@@ -528,7 +528,7 @@ export function Details({ selected }: DetailsProps) {
                                 </td>
                                 <td className="discord-markdown">
                                     <code className="discord-inline-code">
-                                        {color?.toUpperCase()}
+                                        {color?.toUpperCase() ?? "None"}
                                     </code>
                                 </td>
                             </tr>
