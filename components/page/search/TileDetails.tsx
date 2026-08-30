@@ -452,9 +452,7 @@ export function Details({ selected }: DetailsProps) {
                                             onMouseLeave={() => handlePaletteOnHover()}
                                             onClick={() => {}}
                                         >
-                                            {color
-                                                ? ""
-                                                : (i >= 10) || (j >= 10)
+                                            {(i >= 10) || (j >= 10)
                                                 ? <>
                                                     <span className="index-x">{i}</span>
                                                     <span className="index-sep"/>
@@ -484,33 +482,13 @@ export function Details({ selected }: DetailsProps) {
                         <td colSpan={2}>{selected.palette.source}</td>
                     </tr>
                     <tr>
-                        <td rowSpan={selected.palette.colors.flat().length + 1}>Colors</td>
+                        <td rowSpan={selected.palette.colors.flat().length + 2}>Colors</td>
                         <td>Index</td>
                         <td>Hex Code</td>
                     </tr>
                     {
                         // Will change to a Click to get Hex code + pos
                     }
-                    {/* {selected.palette.colors.map((row, index) =>
-                        row.map((color, jndex) => 
-                            <tr
-                                key={`palette-${selected.name}-color-${index}-${jndex}`}
-                            >
-                                <td>
-                                    <span
-                                        className="palette-color-display"
-                                        style={{ "--this-palette-color": color } as React.CSSProperties}    
-                                    />
-                                    {`${index}, ${jndex}`}
-                                </td>
-                                <td className="discord-markdown">
-                                    <code className="discord-inline-code">
-                                        {color?.toUpperCase()}
-                                    </code>
-                                </td>
-                            </tr>
-                        )
-                    )} */}
                     {
                         <tr>
                             {getPaletteColorData
@@ -530,12 +508,31 @@ export function Details({ selected }: DetailsProps) {
                                     colSpan={2}
                                     className="placeholder"
                                 >  
-                                    Hover to see the Hex Code,<br />
-                                    Select to get the Hex Code.
+                                    Hover to get the current color.
                                 </td>
                             }
                         </tr>
                     }
+                    {selected.palette.colors.map((row, index) =>
+                        row.map((color, jndex) => 
+                            <tr
+                                key={`palette-${selected.name}-color-${index}-${jndex}`}
+                            >
+                                <td>
+                                    <span
+                                        className="palette-color-display"
+                                        style={{ "--this-palette-color": color } as React.CSSProperties}    
+                                    />
+                                    {`${index}, ${jndex}`}
+                                </td>
+                                <td className="discord-markdown">
+                                    <code className="discord-inline-code">
+                                        {color?.toUpperCase()}
+                                    </code>
+                                </td>
+                            </tr>
+                        )
+                    )}
                 </tbody>
             </table>
         </>);
