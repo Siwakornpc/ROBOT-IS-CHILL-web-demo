@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 import remarkParse from "remark-parse";
 import type { ReactNode } from "react";
 import type { Root } from "mdast";
+import { useDiscordUser } from './DiscordUser';
 
 /*
  * --------------------------------------------------------------------------
@@ -75,7 +76,7 @@ export type DiscordMarkdownProps = {
      * #123456789
      * @123456789
      */
-    resolveUser?: (id: string) => string | undefined;
+    resolveUser?: (id: string) => ReactNode;
     resolveRole?: (id: string) => string | undefined;
     resolveChannel?: (id: string) => string | undefined;
 
@@ -895,6 +896,25 @@ function formatDiscordTimestamp(
     }
 }
 
+/**
+ * --------------------------------------------------------------------------
+ * Format Discord User mention
+ * --------------------------------------------------------------------------
+ */
+
+function DiscordUserMention({ id }: { id: string }) {
+    const user = useDiscordUser(id);
+
+    return (
+        <span
+            className="discord-mention discord-mention-user"
+            data-id={id}
+        >
+            @{user?.username ?? id}
+        </span>
+    );
+}
+
 /*
  * --------------------------------------------------------------------------
  * Renderer context
@@ -907,7 +927,7 @@ type RenderContext = {
 
     resolveUser?: (
         id: string
-    ) => string | undefined;
+    ) => ReactNode;
 
     resolveRole?: (
         id: string
@@ -992,12 +1012,10 @@ function renderToken(
         case "user": {
             const name = context.resolveUser?.(token.id) ?? token.id;
             return (
-                <span
+                <DiscordUserMention
                     key={key}
-                    className="discord-mention discord-mention-user"
-                    data-id={token.id}
-                >@{name}
-                </span>
+                    id={token.id}
+                />
             );
         }
 
