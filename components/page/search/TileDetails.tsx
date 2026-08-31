@@ -55,6 +55,7 @@ export function Details({ selected }: DetailsProps) {
     const flagElementRef = useRef<HTMLDivElement>(null);
     const [tilingFrame, setTilingFrame] = useState(0);
     const [select, setSelect] = useState<string | null>("one_tile");
+    const [displaySize, setDisplaySize] = useState<string>("Loading...");
 
     const [getPaletteColorData, setPaletteColorData] = useState<PaletteColorData | null>();
 
@@ -123,6 +124,22 @@ export function Details({ selected }: DetailsProps) {
     function handlePaletteOnHover(data: PaletteColorData | null = null) {
         setPaletteColorData(data);
     }
+
+    // [displaySize, setDisplaySize]
+    useEffect(() => {
+        if ("filter" in selected) {
+            getImageSize(
+                `https://ric-api.sno.mba/filters/${encodeURIComponent(selected.name)}.png`
+            ).then(setDisplaySize);
+        } else if ("overlay" in selected) {
+            getImageSize(
+                `https://raw.githubusercontent.com/ROBOT-IS-CHILL/robot-is-chill/main/data/overlays/${selected.name}.png`
+            ).then(setDisplaySize);
+        } else {
+            setDisplaySize("Loading...");
+        }
+    }, [selected]);
+
 
     // Details for Tiles
 
@@ -286,14 +303,25 @@ export function Details({ selected }: DetailsProps) {
                     <DiscordMarkdown>{selected.macro.description}</DiscordMarkdown>
                 </div>
 
-                {!isBuiltin && (<>
+                {!isBuiltin ? (<>
                     <p className="search-details-label">Value</p>
                     <div
                         ref={macroElementRef}
                         className="search-details-detailbox macro"
                     >{selected.macro.value}
                     </div>
-                </>)}
+                </>) : (
+                    <span className="discord-markdown">
+                        <a href="" target="_blank" rel="noopener noreferrer">
+                            <span className="discord-text-part">
+                                Learn More
+                                {
+                                    // they don't do anything yet
+                                }
+                            </span>
+                        </a>
+                    </span>
+                )}
             </div>
         </>);
     }
@@ -301,15 +329,6 @@ export function Details({ selected }: DetailsProps) {
     // Details for Filters
 
     if ("filter" in selected) {
-        const [displaySize, setDisplaySize] = useState<string>("Loading...");
-
-        useEffect(() => {
-            if (selected?.name) {
-                getImageSize(`https://ric-api.sno.mba/filters/${encodeURIComponent(selected.name)}.png`).then(setDisplaySize);
-            }
-        }, [selected?.name]);
-
-        console.log (selected.filter.upload_time);
         return (<>
             <p className="text-label search-details-name">{selected.name}</p>
             
@@ -539,14 +558,6 @@ export function Details({ selected }: DetailsProps) {
     }
 
     if ("overlay" in selected) {
-        const [displaySize, setDisplaySize] = useState<string>("Loading...");
-
-        useEffect(() => {
-            if (selected?.name) {
-                getImageSize(`https://raw.githubusercontent.com/ROBOT-IS-CHILL/robot-is-chill/main/data/overlays/${selected.name}.png`).then(setDisplaySize);
-            }
-        }, [selected?.name]);
-
         return (<>
             <p className="text-label search-details-name">{selected.name}</p>
 
@@ -560,6 +571,7 @@ export function Details({ selected }: DetailsProps) {
                 </div>
             </div>
 
+            <hr />
 
             <table>
                 <tbody>
@@ -585,10 +597,10 @@ export function Details({ selected }: DetailsProps) {
                     <span className="discord-markdown">
                         <pre className="discord-code-block">
                             <code>{`{
-        "${selected.name}": {
-            "url": ${selected.overlay.url}
-        }
-    }`
+    "${selected.name}": {
+        "url": ${selected.overlay.url}
+    }
+}`
                             }</code>
                         </pre>
                     </span>
