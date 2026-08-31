@@ -102,23 +102,47 @@ export async function loadPaletteFiles(
     const url = `${GITHUB_BASE}/${encodeURIComponent(paletteName)}`;
 
     const response = await fetch(url);
-    if (!response.ok) throw new Error(`Failed to load palette "${paletteName}": ${response.status}`);
+
+    if (!response.ok) {
+        throw new Error(
+            `Failed to load palette "${paletteName}": ${response.status}`
+        );
+    }
 
     const html = await response.text();
-    const files = [...html.matchAll(/href="\/ROBOT-IS-CHILL\/robot-is-chill\/blob\/main\/data\/palettes\/[^"]+\/([^"]+\.png)"/gi)];
-    const uniqueNames = new Set(files.map(match => match[1]));
 
-    return Promise.all(
+    const files = [
+        ...html.matchAll(
+            /href="\/ROBOT-IS-CHILL\/robot-is-chill\/blob\/main\/data\/palettes\/[^"]+\/([^"]+\.png)"/gi
+        ),
+    ];
+
+    const uniqueNames = new Set(
+        files.map(match => match[1])
+    );
+
+    const results = await Promise.all(
         [...uniqueNames].map(async name => {
             try {
                 return {
                     name: name.replace(/\.png$/i, ""),
-                    colors: await extractColors(`${RAW_BASE}/${encodeURIComponent(paletteName)}/${encodeURIComponent(name)}`),
+                    colors: await extractColors(
+                        `${RAW_BASE}/${encodeURIComponent(paletteName)}/${encodeURIComponent(name)}`
+                    ),
                 };
             } catch (error) {
-                throw new Error(`Palette: ${paletteName}\nFile: ${name}\n\n${error}`);
+                console.error(
+                    `Failed to load palette image: ${paletteName}/${name}`,
+                    error
+                );
+
+                return null;
             }
         })
+    );
+
+    return results.filter(
+        (file): file is PaletteFile => file !== null
     );
 }
 
