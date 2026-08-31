@@ -54,45 +54,49 @@ export function LeftBar() {
                 : ""
             }
             <div className={`sb-left ${isFlexibleMenu ? "sb-left-fxb" : ""} ${isMenuOpen ? "opened" : ""}`}>
-                <Link
-                    href="../macrosia"
-                    className="nav-btn has-tooltip"
-                    aria-label="Macrosia"
-                    onClick={(e) => navigateWithCode(e, "/macrosia")}
-                >
-                    <i className="icon custom">macrosia</i>
-                    <span className="nav-btn-label">Macrosia</span>
-                </Link>
+                <div className="sb-wrapper-top">
+                    <Link
+                        href="../macrosia"
+                        className="nav-btn has-tooltip"
+                        aria-label="Macrosia"
+                        onClick={(e) => navigateWithCode(e, "/macrosia")}
+                    >
+                        <i className="icon custom">macrosia</i>
+                        <span className="nav-btn-label">Macrosia</span>
+                    </Link>
 
-                <Link
-                    href="../render"
-                    className="nav-btn has-tooltip"
-                    aria-label="Render"
-                    onClick={(e) => navigateWithCode(e, "/render")}
-                >
-                    <i className="icon custom">render</i>
-                    <span className="nav-btn-label">Render</span>
-                </Link>
+                    <Link
+                        href="../render"
+                        className="nav-btn has-tooltip"
+                        aria-label="Render"
+                        onClick={(e) => navigateWithCode(e, "/render")}
+                    >
+                        <i className="icon custom">render</i>
+                        <span className="nav-btn-label">Render</span>
+                    </Link>
 
-                <Link
-                    href="../search"
-                    className="nav-btn has-tooltip"
-                    aria-label="Search"
-                    onClick={(e) => navigateWithCode(e, "/search")}
-                >
-                    <i className="icon">search</i>
-                    <span className="nav-btn-label">Search</span>
-                </Link>
+                    <Link
+                        href="../search"
+                        className="nav-btn has-tooltip"
+                        aria-label="Search"
+                        onClick={(e) => navigateWithCode(e, "/search")}
+                    >
+                        <i className="icon">search</i>
+                        <span className="nav-btn-label">Search</span>
+                    </Link>
+                </div>
 
-                <Link
-                    href="../settings"
-                    className="nav-btn has-tooltip"
-                    aria-label="Settings"
-                    onClick={(e) => navigateWithCode(e, "/settings")}
-                >
-                    <i className="icon">settings</i>
-                    <span className="nav-btn-label">Settings</span>
-                </Link>
+                <div className="sb-wrapper-bottom">
+                    <Link
+                        href="../settings"
+                        className="nav-btn has-tooltip"
+                        aria-label="Settings"
+                        onClick={(e) => navigateWithCode(e, "/settings")}
+                    >
+                        <i className="icon">settings</i>
+                        <span className="nav-btn-label">Settings</span>
+                    </Link>
+                </div>
             </div>
         </>
     );

@@ -1411,16 +1411,23 @@ hr {
     height: calc(100vh - 56px);
     background: rgb(var(--md-color-surface-container));
     z-index: 92;
+    padding: 4px;
+    
+    justify-content: space-between;
 }
-.sb-left {
-    grid-area: nav;
+.sb-wrapper-top,
+.sb-wrapper-bottom  {
+    display: flex;
+    flex-direction: column;
     gap: 4px;
-    padding: 4px;
 }
-.sb-right {
+.sb-left.sb-wrapper-top,
+.sb-left.sb-wrapper-bottom {
+    grid-area: nav;
+}
+.sb-lrighteft.sb-wrapper-top,
+.sb-right.sb-wrapper-bottom {
     grid-area: details;
-    gap: 8px;
-    padding: 4px;
 }
 
 .nav-btn {
