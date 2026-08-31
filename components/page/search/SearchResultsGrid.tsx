@@ -892,7 +892,7 @@ export default function SearchResults({
                         >
                             <div
                                 className="search-item-overlay"
-                                style={{background: `url(${overlay.url});`}}
+                                style={{background: `url(${overlay.url})`}}
                                 aria-hidden="true"
                             />
                             <span className="search-item-name">{safeName}</span>
