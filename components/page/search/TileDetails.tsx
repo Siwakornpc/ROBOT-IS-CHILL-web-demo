@@ -524,9 +524,10 @@ export function Details({ selected }: DetailsProps) {
     // Details for Palettes
 
     if ("palette" in selected) {
+        const normalizedName = selected.name.replace(/^[^:]+:/, "");
         return (<>
             <p className="text-label search-details-name">
-                {selected.name}
+                {normalizedName}
                 <span className="search-details-subname">{` (${selected.palette.source})`}</span>
             </p>
 
