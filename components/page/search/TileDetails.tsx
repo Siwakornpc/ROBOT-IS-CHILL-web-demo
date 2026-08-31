@@ -59,6 +59,34 @@ export function Details({ selected }: DetailsProps) {
 
     const [getPaletteColorData, setPaletteColorData] = useState<PaletteColorData | null>();
 
+    const [copied, setCopied] = useState(false);
+    const [copiedPalette, setCopiedPalette] = useState<{ x: number; y: number } | null>(null);
+
+
+    const handleCopy = async (text: string) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+        } catch (err) {
+            console.error("Failed to copy text: ", err);
+        }
+    };
+
+    const handleCopyPalette = async (text: string, x: number, y: number) => {
+        try {
+            await navigator.clipboard.writeText(text);
+
+            setCopiedPalette({ x, y });
+
+            setTimeout(() => {
+                setCopiedPalette(null);
+            }, 1500);
+        } catch (err) {
+            console.error("Failed to copy text: ", err);
+        }
+    };
+
     // syntaxes
     useEffect(() => {
         if (!("macro" in selected)) return;
@@ -465,20 +493,24 @@ export function Details({ selected }: DetailsProps) {
                                         key={`palette-${selected.name}-row-${i}-column-${j}-color-${color}`}
                                         className="search-details-palette-this-color"
                                         style={{ "--this-palette-color": color } as React.CSSProperties}
+                                        onClick={() => color && handleCopyPalette(color, j, i)}
                                     >
                                         <span
-                                            className="palette-index-label"
+                                            className={`palette-index-label ${
+                                                copiedPalette?.x === j && copiedPalette?.y === i ? "copied" : ""
+                                            }`}
                                             style={{ "--contrast": getContrastColor(color), marginTop: (i >= 10) || (j >= 10) ? "0" : "" } as React.CSSProperties}
                                             onMouseEnter={() => handlePaletteOnHover({ x: j, y: i, color })}
                                             onMouseLeave={() => handlePaletteOnHover()}
-                                            onClick={() => {}}
                                         >
                                             {!color
+                                                ? ""
+                                                : copiedPalette?.x === j && copiedPalette?.y === i
                                                 ? ""
                                                 : (i >= 10) || (j >= 10)
                                                 ? <>
                                                     <span className="index-x">{j}</span>
-                                                    <div className="index-sep"/>
+                                                    <div className="index-sep" />
                                                     <span className="index-y">{i}</span>
                                                 </>
                                                 : `${j},${i}`
@@ -527,7 +559,8 @@ export function Details({ selected }: DetailsProps) {
                                 : <td
                                     colSpan={2}
                                     className="placeholder"
-                                >Hover to get the current color.
+                                >Hover to get the current color.<br/>
+                                Click to copy the current color.
                                 </td>
                             }
                         </tr>
