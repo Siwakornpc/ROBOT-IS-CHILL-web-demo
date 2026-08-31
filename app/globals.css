@@ -2441,6 +2441,27 @@ hr {
     margin: 0;
 }
 
+.search-details-user {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.search-details-user .user-profile {
+    width: 24px;
+    height: 24px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--elevation-1);
+}
+.search-details-user .display-name,
+.search-details-user .username {
+    margin-bottom: -2px;
+}
+.search-details-user .username {
+    font-size: 0.875rem;
+    color: var(--variant);
+}
+
 td:has(.palette-color-display) {
     display: flex;
     align-items: center;

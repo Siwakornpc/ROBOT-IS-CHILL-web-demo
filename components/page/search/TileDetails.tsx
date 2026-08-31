@@ -11,6 +11,7 @@ import { DiscordMarkdown } from "@/components/DiscordMarkdown";
 import applyOverflowFade from "@/components/OverflowFade";
 import { mapTiling } from "@/image_tiling";
 import "@/types/string.extentions";
+import { DiscordUser } from '../../DiscordUser';
 
 type DetailsProps = {
     selected: SelectedSearchResult;
@@ -341,7 +342,39 @@ export function Details({ selected }: DetailsProps) {
             <div className="search-details-contents-flexbox">
                 <hr />
 
-                {selected.macro.creator && <p className="search-details-label">{selected.macro.creator}</p>}
+                {/* {discordUser ? (
+                    <div className="search-details-label">
+                        <img
+                            src={discordUser.profile}
+                            alt=""
+                            width={32}
+                            height={32}
+                        />
+                        <span>
+                            {discordUser.display_name ?? discordUser.username}
+                        </span>
+                    </div>
+                ) : "Loading..."} */}
+                {/* {selected.macro.creator && 
+                    discordUser ? (
+                        <div className="search-details-creator">
+                            <span className="search-details-user">
+                                <img
+                                    src={discordUser.profile}
+                                    alt=""
+                                    width={32}
+                                    height={32}
+                                />
+                            </span>
+                            <span>
+                                {discordUser.display_name ?? discordUser.username}
+                            </span>
+                        </div>
+                    ) : !isBuiltin ? "Loading..." : ""
+                } */}
+                {selected.macro.creator && (
+                    <DiscordUser id={selected.macro.creator} />
+                )}
 
                 <p className="search-details-label">Description</p>
                 <div className="search-details-detailbox" id="description">
@@ -390,7 +423,9 @@ export function Details({ selected }: DetailsProps) {
             <div className="search-details-contents-flexbox">
                 <hr />
 
-                {selected.filter.author && <p className="search-details-label">{selected.filter.author}</p>}
+                {selected.filter.author && (
+                    <DiscordUser id={selected.filter.author} />
+                )}
 
                 <table>
                     <tbody>

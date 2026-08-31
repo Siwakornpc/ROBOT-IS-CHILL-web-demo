@@ -1,11 +1,27 @@
-import { loadPalettes } from "@/data/palette_colors";
+"use client";
 
-export default async function TestPage() {
-    const palettes = await loadPalettes();
+import { useState } from "react";
+
+export default function TestingPage() {
+    const [username, setUsername] = useState(null);
+
+    async function test() {
+        const response = await fetch(
+            "/api/username?id=842018963248513074"
+        );
+
+        const data = await response.json();
+
+        setUsername(data.username);
+    }
+
+    test();
 
     return (
-        <pre>
-            {JSON.stringify(palettes, null, 2)}
-        </pre>
+        <div>
+            {username && (
+                <p>Username: {username}</p>
+            )}
+        </div>
     );
 }
