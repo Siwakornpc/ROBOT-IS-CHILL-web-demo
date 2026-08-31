@@ -22,8 +22,6 @@ export async function getUser(id: string) {
     return {
         username: user.username,
         display_name: user.globalName,
-        profile: user.displayAvatarURL({
-            size: 256
-        })
+        profile: user.displayAvatarURL({size: 256})
     };
 }

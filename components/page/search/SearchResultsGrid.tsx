@@ -876,9 +876,7 @@ export default function SearchResults({
                 entries.map(([name, overlay], index) => {
                     const safeName = String(name ?? "").trim();
 
-                    if (!isOverlayRecord(overlay)) {
-                        return null;
-                    }
+                    if (!isOverlayRecord(overlay)) return null;
 
                     return (
                         <button
@@ -892,16 +890,12 @@ export default function SearchResults({
                                 });
                             }}
                         >
-                            <img
+                            <div
                                 className="search-item-overlay"
-                                src={overlay.url}
-                                alt=""
+                                style={{background: `url(${overlay.url});`}}
                                 aria-hidden="true"
                             />
-
-                            <span className="search-item-name">
-                                {safeName}
-                            </span>
+                            <span className="search-item-name">{safeName}</span>
                         </button>
                     );
                 })

@@ -1,15 +1,8 @@
 const SOURCES = {
-    variantTypes:
-        "https://raw.githubusercontent.com/ROBOT-IS-CHILL/robot-is-chill/main/src/variant_types.py",
-
-    variants:
-        "https://raw.githubusercontent.com/ROBOT-IS-CHILL/robot-is-chill/main/src/cogs/variants.py",
-
-    flags:
-        "https://raw.githubusercontent.com/ROBOT-IS-CHILL/robot-is-chill/main/src/cogs/flags.py",
-
-    constants:
-        "https://raw.githubusercontent.com/ROBOT-IS-CHILL/robot-is-chill/main/src/constants.py",
+    variantTypes: "https://raw.githubusercontent.com/ROBOT-IS-CHILL/robot-is-chill/main/src/variant_types.py",
+    variants: "https://raw.githubusercontent.com/ROBOT-IS-CHILL/robot-is-chill/main/src/cogs/variants.py",
+    flags: "https://raw.githubusercontent.com/ROBOT-IS-CHILL/robot-is-chill/main/src/cogs/flags.py",
+    constants: "https://raw.githubusercontent.com/ROBOT-IS-CHILL/robot-is-chill/main/src/constants.py",
 } as const;
 
 const FONT_NAMES = [
@@ -115,37 +108,27 @@ function splitTopLevel(text: string): string[] {
         const c = text[i];
 
         if (quote) {
-            if (escaped) {
-                escaped = false;
-            } else if (c === "\\") {
-                escaped = true;
-            } else if (c === quote) {
-                quote = null;
-            }
+            if (escaped) escaped = false;
+            else if (c === "\\") escaped = true;
+            else if (c === quote) quote = null;
 
             continue;
         }
 
-        if (c === "'" || c === '"') {
-            quote = c;
-        } else if ("([{".includes(c)) {
-            depth++;
-        } else if (")]}" .includes(c)) {
-            depth--;
-        } else if (c === "," && depth === 0) {
-            out.push(
-                text.slice(start, i).trim(),
-            );
+        if (c === "'" || c === '"') quote = c
 
+        else if ("([{".includes(c)) depth++
+
+        else if (")]}" .includes(c)) depth--
+
+        else if (c === "," && depth === 0) {
+            out.push(text.slice(start, i).trim());
             start = i + 1;
         }
     }
 
     const last = text.slice(start).trim();
-
-    if (last) {
-        out.push(last);
-    }
+    if (last) out.push(last);
 
     return out;
 }
@@ -215,13 +198,9 @@ function extractDocstring(
 
     const match = rest.match(re);
 
-    if (!match) {
-        return "";
-    }
+    if (!match) return "";
 
-    return normalizeDocstring(
-        match[1] ?? match[2],
-    );
+    return normalizeDocstring(match[1] ?? match[2]);
 }
 
 
@@ -241,27 +220,18 @@ function findMatchingParen(
         const c = source[i];
 
         if (quote) {
-            if (escaped) {
-                escaped = false;
-            } else if (c === "\\") {
-                escaped = true;
-            } else if (c === quote) {
-                quote = null;
-            }
+            if (escaped) escaped = false;
+            else if (c === "\\") escaped = true;
+            else if (c === quote) quote = null;
 
             continue;
         }
 
-        if (c === "'" || c === '"') {
-            quote = c;
-        } else if (c === "(") {
-            depth++;
-        } else if (
-            c === ")" &&
-            --depth === 0
-        ) {
-            return i;
-        }
+        if (c === "'" || c === '"') quote = c;
+
+        else if (c === "(") depth++;
+
+        else if (c === ")" && --depth === 0) return i;
     }
 
     return -1;
@@ -303,15 +273,9 @@ function extractDictionaryKeys(
     );
 
     const match = source.match(declaration);
+    if (!match || match.index === undefined) return null;
 
-    if (!match || match.index === undefined) {
-        return null;
-    }
-
-    const open =
-        match.index +
-        match[0].length -
-        1;
+    const open = match.index + match[0].length - 1;
 
     let depth = 0;
     let quote: string | null = null;
@@ -326,22 +290,20 @@ function extractDictionaryKeys(
         const c = source[i];
 
         if (quote) {
-            if (escaped) {
-                escaped = false;
-            } else if (c === "\\") {
-                escaped = true;
-            } else if (c === quote) {
-                quote = null;
-            }
+            if (escaped)  escaped = false;
+
+            else if (c === "\\") escaped = true;
+            
+            else if (c === quote) quote = null;
 
             continue;
         }
 
-        if (c === "'" || c === '"') {
-            quote = c;
-        } else if (c === "{") {
-            depth++;
-        } else if (c === "}") {
+        if (c === "'" || c === '"') quote = c;
+        
+        else if (c === "{") depth++;
+
+        else if (c === "}") {
             depth--;
 
             if (depth === 0) {
@@ -351,9 +313,7 @@ function extractDictionaryKeys(
         }
     }
 
-    if (close < 0) {
-        return null;
-    }
+    if (close < 0) return null;
 
     const body = source.slice(
         open + 1,
@@ -391,9 +351,7 @@ function extractStringSequence(
 
     const match = source.match(re);
 
-    if (!match) {
-        return null;
-    }
+    if (!match) return null;
 
     return [
         ...match[1].matchAll(
@@ -423,13 +381,9 @@ function resolveLiteralAnnotation(
      * as well as expressions where the dynamic value is
      * contained inside a larger Literal[...] expression.
      */
-    const literalMatch = normalized.match(
-        /^Literal\[(.*)\]$/,
-    );
+    const literalMatch = normalized.match(/^Literal\[(.*)\]$/);
 
-    if (!literalMatch) {
-        return annotation;
-    }
+    if (!literalMatch) return annotation;
 
     let contents = literalMatch[1];
 
@@ -481,11 +435,7 @@ function resolveLiteralAnnotation(
      *     for f in glob.glob('data/fonts/*.ttf')
      * )]
      */
-    if (
-        contents.includes(
-            "Path(f).stem for f in glob.glob('data/fonts/*.ttf')",
-        )
-    ) {
+    if (contents.includes("Path(f).stem for f in glob.glob('data/fonts/*.ttf')")) {
         return `Literal[${FONT_NAMES
             .map(name => `'${name}'`)
             .join(", ")}]`;
@@ -626,9 +576,7 @@ function parseVariants(
                 signatureOpen,
             );
 
-        if (signatureClose < 0) {
-            continue;
-        }
+        if (signatureClose < 0) continue;
 
         const params =
             splitTopLevel(
@@ -651,21 +599,18 @@ function parseVariants(
             const raw =
                 namesMatch[1].trim();
 
-            if (raw === "None") {
-                names = null;
-            } else if (
-                raw.startsWith("[")
-            ) {
+            if (raw === "None") names = null;
+            
+            else if (raw.startsWith("[")) {
                 names = [
                     ...raw.matchAll(
                         /["']([^"']+)["']/g,
                     ),
                 ].map(match => match[1]);
-            } else {
-                names = [
-                    raw.slice(1, -1),
-                ];
+
             }
+            
+            else names = [raw.slice(1, -1)];
         }
 
         /*
@@ -679,12 +624,7 @@ function parseVariants(
             );
 
         const description =
-            bodyStart >= 0
-                ? extractDocstring(
-                      source,
-                      bodyStart + 1,
-                  )
-                : "";
+            bodyStart >= 0 ? extractDocstring(source, bodyStart + 1) : "";
 
         result[name] = {
             description,
@@ -745,48 +685,28 @@ export async function loadUpstream(): Promise<RobotIsChillMetadata> {
          */
         fetch(SOURCES.variantTypes).then(
             response => {
-                if (!response.ok) {
-                    throw new Error(
-                        `variant_types.py HTTP ${response.status}`,
-                    );
-                }
-
+                if (!response.ok) throw new Error(`variant_types.py HTTP ${response.status}`);
                 return response.text();
             },
         ),
 
         fetch(SOURCES.variants).then(
             response => {
-                if (!response.ok) {
-                    throw new Error(
-                        `variants.py HTTP ${response.status}`,
-                    );
-                }
-
+                if (!response.ok) throw new Error(`variants.py HTTP ${response.status}`);
                 return response.text();
             },
         ),
 
         fetch(SOURCES.flags).then(
             response => {
-                if (!response.ok) {
-                    throw new Error(
-                        `flags.py HTTP ${response.status}`,
-                    );
-                }
-
+                if (!response.ok) throw new Error(`flags.py HTTP ${response.status}`);
                 return response.text();
             },
         ),
 
         fetch(SOURCES.constants).then(
             response => {
-                if (!response.ok) {
-                    throw new Error(
-                        `constants.py HTTP ${response.status}`,
-                    );
-                }
-
+                if (!response.ok) throw new Error(`constants.py HTTP ${response.status}`);
                 return response.text();
             },
         ),
@@ -812,24 +732,14 @@ export async function loadVariants(): Promise<Variants> {
     ] = await Promise.all([
         fetch(SOURCES.variants).then(
             response => {
-                if (!response.ok) {
-                    throw new Error(
-                        `variants.py HTTP ${response.status}`,
-                    );
-                }
-
+                if (!response.ok) throw new Error(`variants.py HTTP ${response.status}`);
                 return response.text();
             },
         ),
 
         fetch(SOURCES.constants).then(
             response => {
-                if (!response.ok) {
-                    throw new Error(
-                        `constants.py HTTP ${response.status}`,
-                    );
-                }
-
+                if (!response.ok) throw new Error(`constants.py HTTP ${response.status}`);
                 return response.text();
             },
         ),
@@ -844,19 +754,10 @@ export async function loadVariants(): Promise<Variants> {
 
 
 export async function loadFlags(): Promise<Flags> {
-    const response = await fetch(
-        SOURCES.flags,
-    );
+    const response = await fetch(SOURCES.flags);
+    if (!response.ok) throw new Error(`flags.py HTTP ${response.status}`);
 
-    if (!response.ok) {
-        throw new Error(
-            `flags.py HTTP ${response.status}`,
-        );
-    }
-
-    return parseFlags(
-        await response.text(),
-    );
+    return parseFlags(await response.text());
 }
 
 const OVERLAYS = [
@@ -904,9 +805,7 @@ export function getOverlays(): Overlays {
     return Object.fromEntries(
         OVERLAYS.map(name => [
             name,
-            {
-                url: `${OVERLAY_BASE}/${name}.png${name === "fbm" ? "~" : ""}`,
-            },
+            {url: `${OVERLAY_BASE}/${name}.png${name === "fbm" ? "~" : ""}`},
         ])
     );
 }
