@@ -1422,11 +1422,13 @@ hr {
     gap: 4px;
 }
 .sb-left.sb-wrapper-top,
-.sb-left.sb-wrapper-bottom {
+.sb-left.sb-wrapper-bottom,
+.sb-left {
     grid-area: nav;
 }
-.sb-lrighteft.sb-wrapper-top,
-.sb-right.sb-wrapper-bottom {
+.sb-right.sb-wrapper-top,
+.sb-right.sb-wrapper-bottom,
+.sb-right {
     grid-area: details;
 }
 
