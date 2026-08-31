@@ -28,18 +28,14 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
                 toggleMenu,
                 closeMenu,
             }}
-        >
-            {children}
+        >{children}
         </MenuContext.Provider>
     );
 }
 
 export function useMenu() {
     const context = useContext(MenuContext);
-
-    if (!context) {
-        throw new Error("useMenu must be used inside MenuProvider");
-    }
+    if (!context) throw new Error("useMenu must be used inside MenuProvider");
 
     return context;
 }
