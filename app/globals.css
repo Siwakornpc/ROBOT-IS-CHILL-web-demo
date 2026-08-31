@@ -1960,7 +1960,7 @@ hr {
 
     width: stretch;
     height: calc(100vh - 153px);
-    padding: 8px 12px;
+    padding: 8px 12px 64px;
     display: grid;
     position: relative;
 
