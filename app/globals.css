@@ -2451,6 +2451,9 @@ hr {
     gap: 10px;
     align-items: center;
 }
+.search-details-user:hover {
+    text-decoration: underline;
+}
 .search-details-user .user-profile {
     width: 24px;
     height: 24px;

@@ -620,6 +620,36 @@ export default function SearchResults({
         loadingMoreRef.current = false;
     }, [visibleCount]);
 
+    // discord emojis
+
+    
+
+    const resolveDiscordEmojis = (text: string) => {
+        const parts = text.split(/(<a?:\w+:\d+>)/g);
+
+        return parts.map((part, index) => {
+            const match = part.match(/^<(a?):(\w+):(\d+)>$/);
+
+            if (!match) {
+                return part;
+            }
+
+            const [, animated, name, id] = match;
+
+            return (
+                <span key={id} className="discord-markdown">
+                    <img
+                        key={index}
+                        src={`https://cdn.discordapp.com/emojis/${id}.${animated ? "gif" : "png"}`}
+                        alt={`:${name}:`}
+                        draggable={false}
+                        className="discord-emoji discord-custom-emoji"
+                    />
+                </span>
+            );
+        });
+    };
+
     /*  
     *   ==========================
     *
@@ -724,7 +754,7 @@ export default function SearchResults({
                                 className={`search-item-macro ${isBuiltin}`}
                             >
                                 <span className="macro-brackets">[</span>
-                                <span className="macro-name">{name}</span>
+                                <span className="macro-name">{resolveDiscordEmojis(safeName)}</span>
                                 <span className="macro-brackets">]</span>
                             </span>
                         </button>

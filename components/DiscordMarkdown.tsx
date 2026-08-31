@@ -908,7 +908,8 @@ function DiscordUserMention({ id }: { id: string }) {
     return (
         <a
             className="discord-mention discord-mention-user"
-            href={id}
+            target="_blank"
+            href={`https://discord.com/users/${id}`}
         >@{user?.username ?? id}
         </a>
     );

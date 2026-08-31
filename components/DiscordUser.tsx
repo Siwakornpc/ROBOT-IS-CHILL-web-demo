@@ -37,6 +37,7 @@ export function DiscordUser({ id }: DiscordUserProps) {
     return (
         <a
             className="search-details-user"
+            target="_blank"
             href={`https://discord.com/users/${id}`}
         >
             <span className="user-profile"><img src={user.profile} alt=""/></span>

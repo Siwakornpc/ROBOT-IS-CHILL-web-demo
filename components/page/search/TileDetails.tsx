@@ -186,6 +186,34 @@ export function Details({ selected }: DetailsProps) {
         }
     }, [selected]);
 
+    // Discord Emojis
+
+    const resolveDiscordEmojis = (text: string) => {
+        const parts = text.split(/(<a?:\w+:\d+>)/g);
+
+        return parts.map((part, index) => {
+            const match = part.match(/^<(a?):(\w+):(\d+)>$/);
+
+            if (!match) {
+                return part;
+            }
+
+            const [, animated, name, id] = match;
+
+            return (
+                <span key={id} className="discord-markdown">
+                    <img
+                        key={index}
+                        src={`https://cdn.discordapp.com/emojis/${id}.${animated ? "gif" : "png"}`}
+                        alt={`:${name}:`}
+                        draggable={false}
+                        className="discord-emoji discord-custom-emoji"
+                    />
+                </span>
+            );
+        });
+    };
+
 
     // Details for Tiles
 
@@ -333,7 +361,7 @@ export function Details({ selected }: DetailsProps) {
             >
                 <p className={`search-details-macro-name ${isBuiltin}`}>
                     <span className="macro-brackets">[</span>
-                    <span className="macro-name">{selected.name}</span>
+                    <span className="macro-name">{resolveDiscordEmojis(selected.name)}</span>
                     <span className="macro-brackets">]</span>
                 </p>
                 {isBuiltin && <p className="search-details-macro-name-builtin-indicator">Built-in</p>}
@@ -342,36 +370,6 @@ export function Details({ selected }: DetailsProps) {
             <div className="search-details-contents-flexbox">
                 <hr />
 
-                {/* {discordUser ? (
-                    <div className="search-details-label">
-                        <img
-                            src={discordUser.profile}
-                            alt=""
-                            width={32}
-                            height={32}
-                        />
-                        <span>
-                            {discordUser.display_name ?? discordUser.username}
-                        </span>
-                    </div>
-                ) : "Loading..."} */}
-                {/* {selected.macro.creator && 
-                    discordUser ? (
-                        <div className="search-details-creator">
-                            <span className="search-details-user">
-                                <img
-                                    src={discordUser.profile}
-                                    alt=""
-                                    width={32}
-                                    height={32}
-                                />
-                            </span>
-                            <span>
-                                {discordUser.display_name ?? discordUser.username}
-                            </span>
-                        </div>
-                    ) : !isBuiltin ? "Loading..." : ""
-                } */}
                 {selected.macro.creator && (
                     <DiscordUser id={selected.macro.creator} />
                 )}
