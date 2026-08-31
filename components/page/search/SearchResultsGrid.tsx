@@ -423,7 +423,7 @@ export default function SearchResults({
                     if (!hasTag) return false;
                 }
 
-                if (filterKey === "source") {
+                if (filterKey === "tile:source") {
                     const [sourceDir] = data.sprite;
                     if (!validValues.some((val) => sourceDir.toLowerCase().includes(val.toLowerCase()))) return false;
                 }
