@@ -524,12 +524,10 @@ export function Details({ selected }: DetailsProps) {
     // Details for Palettes
 
     if ("palette" in selected) {
-        const paletteName = selected.name.replace(/^[^:]+:/, "");
-        const sourceName = selected.name.replace(/:.+$/, "");
         return (<>
             <p className="text-label search-details-name">
-                {paletteName}
-                <span className="search-details-subname">{` (${sourceName})`}</span>
+                {selected.name}
+                <span className="search-details-subname">{` (${selected.palette.source})`}</span>
             </p>
 
             <div

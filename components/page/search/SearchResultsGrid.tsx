@@ -872,9 +872,6 @@ export default function SearchResults({
                 entries.map(([name, palette], index) => {
                     const safeName = String(name ?? "").trim();
 
-                    const mainName = safeName.replace(/^[^:]+:/, "");
-                    const subName = safeName.replace(/:.+$/, "");
-
                     return (
                         <button
                             type="button"
@@ -904,8 +901,8 @@ export default function SearchResults({
                                 }
                             </div>
                             <span className="search-item-grouped-name">
-                                <span className="search-item-name">{mainName}</span>
-                                <span className="search-item-subname">{`(${subName})`}</span>
+                                <span className="search-item-name">{safeName}</span>
+                                <span className="search-item-subname">{`(${isPaletteRecord(palette) ? palette.source : ""})`}</span>
                             </span>
                         </button>
                     );
