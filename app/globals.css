@@ -333,7 +333,7 @@ ul {
     border-radius: 4px;
 }
 
-.discord-markdown a {
+.discord-markdown a:not(.discord-mention) {
     padding: 0 2px;
     margin: -2px;
     border-radius: 4px;
@@ -342,6 +342,9 @@ ul {
 .discord-markdown a:hover {
     text-decoration: underline;
     background: rgb(var(--md-color-primary), .08);
+}
+.discord-markdown a.discord-mention:hover {
+    background: rgb(var(--md-color-tertiary-container));
 }
 
 /*
