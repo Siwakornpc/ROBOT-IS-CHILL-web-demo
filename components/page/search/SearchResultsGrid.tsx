@@ -929,21 +929,11 @@ export default function SearchResults({
                                 });
                             }}
                         >
-                            <div key={`${safeName}`} className="search-item-overlay">
-                                <img
-                                    key={`${safeName}-${imageAttempt}`}
-                                    src={overlay.url}
-                                    alt=""
-                                    aria-hidden="true"
-                                    loading="lazy"
-                                    decoding="async"
-                                    onLoad={() => settleImage(safeName)}
-                                    onError={() => {
-                                        handleImageError(safeName);
-                                        settleImage(safeName);
-                                    }}
-                                />
-                            </div>
+                            <div
+                                className="search-item-overlay"
+                                style={{background: `url(${overlay.url})`}}
+                                aria-hidden="true"
+                            />
                             <span className="search-item-name">{safeName}</span>
                         </button>
                     );
