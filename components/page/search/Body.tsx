@@ -60,7 +60,7 @@ export function FilterPanel({
     
     const filterOptions = {
         tiles: [
-            { value: "source", label: "Source" },
+            { value: "tile:source", label: "Source" },
             { value: "color", label: "Active Color" },
             { value: "iacolor", label: "Inactive Color" },
             { value: "tiling", label: "Tiling" },
@@ -86,6 +86,7 @@ export function FilterPanel({
         levels: [],
         palettes: [
             { value: "palettes:source", label: "Source" },
+            { value: "hascolor", label: "Has Color" },
         ],
         overlays: [],
     } as const;
@@ -193,7 +194,7 @@ export function FilterPanel({
                     </label>
                 );
 
-            case "source":
+            case "tile:source":
                 return (
                     <MenuSelect
                         id={`source-select-${index}`}
