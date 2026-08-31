@@ -559,7 +559,7 @@ export function Details({ selected }: DetailsProps) {
                                 : <td
                                     colSpan={2}
                                     className="placeholder"
-                                >Hover to get the current color.<br/>
+                                >Hover to see the current color.<br/>
                                 Click to copy the current color.
                                 </td>
                             }
