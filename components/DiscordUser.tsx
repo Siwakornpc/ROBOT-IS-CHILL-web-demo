@@ -35,11 +35,14 @@ export function DiscordUser({ id }: DiscordUserProps) {
     if (!user) return null;
 
     return (
-        <div className="search-details-user">
+        <a
+            className="search-details-user"
+            href={`https://discord.com/users/1045881057158897724`}
+        >
             <span className="user-profile"><img src={user.profile} alt=""/></span>
             <span className="display-name">{user.display_name}</span>
             <span className="username">{user.username}</span>
-        </div>
+        </a>
     );
 }
 

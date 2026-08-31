@@ -906,12 +906,11 @@ function DiscordUserMention({ id }: { id: string }) {
     const user = useDiscordUser(id);
 
     return (
-        <span
+        <a
             className="discord-mention discord-mention-user"
-            data-id={id}
-        >
-            @{user?.username ?? id}
-        </span>
+            href={id}
+        >@{user?.username ?? id}
+        </a>
     );
 }
 
