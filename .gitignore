@@ -36,12 +36,6 @@ yarn-error.log*
 # vercel
 .vercel
 
-# discord
-/lib/discord*.ts
-
-# api
-*/api*
-
 # typescript
 *.tsbuildinfo
 next-env.d.ts
