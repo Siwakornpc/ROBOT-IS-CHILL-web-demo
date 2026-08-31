@@ -545,7 +545,7 @@ export function Details({ selected }: DetailsProps) {
             if (selected?.name) {
                 getImageSize(`https://raw.githubusercontent.com/ROBOT-IS-CHILL/robot-is-chill/main/data/overlays/${selected.name}.png`).then(setDisplaySize);
             }
-        }, []);
+        }, [selected?.name]);
 
         return (<>
             <p className="text-label search-details-name">{selected.name}</p>
