@@ -60,3 +60,43 @@ export function DiscordUser({ id }: DiscordUserProps) {
         </div>
     );
 }
+
+export function useDiscordUser(id: string) {
+    const [user, setUser] = useState<DiscordUserData | null>(null);
+
+    useEffect(() => {
+        let cancelled = false;
+
+        fetch(`/api/discord-user?id=${encodeURIComponent(id)}`)
+            .then(async (response) => {
+                if (!response.ok) {
+                    throw new Error(
+                        `Failed to fetch user (${response.status})`
+                    );
+                }
+
+                return response.json();
+            })
+            .then((data) => {
+                if (!cancelled) {
+                    setUser(data);
+                }
+            })
+            .catch((error) => {
+                console.error(
+                    "Failed to fetch Discord user:",
+                    error
+                );
+
+                if (!cancelled) {
+                    setUser(null);
+                }
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [id]);
+
+    return user;
+}
