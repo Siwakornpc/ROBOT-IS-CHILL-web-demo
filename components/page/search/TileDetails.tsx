@@ -62,12 +62,23 @@ export function Details({ selected }: DetailsProps) {
     const [copied, setCopied] = useState(false);
     const [copiedPalette, setCopiedPalette] = useState<{ x: number; y: number } | null>(null);
 
+    const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const paletteTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const handleCopy = async (text: string) => {
         try {
             await navigator.clipboard.writeText(text);
+
+            if (copyTimeoutRef.current) {
+                clearTimeout(copyTimeoutRef.current);
+            }
+
             setCopied(true);
-            setTimeout(() => setCopied(false), 1500);
+
+            copyTimeoutRef.current = setTimeout(() => {
+                setCopied(false);
+                copyTimeoutRef.current = null;
+            }, 1500);
         } catch (err) {
             console.error("Failed to copy text: ", err);
         }
@@ -77,15 +88,21 @@ export function Details({ selected }: DetailsProps) {
         try {
             await navigator.clipboard.writeText(text);
 
+            if (paletteTimeoutRef.current) {
+                clearTimeout(paletteTimeoutRef.current);
+            }
+
             setCopiedPalette({ x, y });
 
-            setTimeout(() => {
+            paletteTimeoutRef.current = setTimeout(() => {
                 setCopiedPalette(null);
+                paletteTimeoutRef.current = null;
             }, 1500);
         } catch (err) {
             console.error("Failed to copy text: ", err);
         }
     };
+
 
     // syntaxes
     useEffect(() => {
