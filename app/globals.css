@@ -2008,6 +2008,17 @@ hr {
     word-wrap: anywhere;
     text-align: center;
 }
+.search-item-subname {
+    font-size: 12px;
+    color: var(--empty);
+    text-align: center;
+}
+
+.search-item-grouped-name {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
 
 .search-item-tile,
 .search-item-overlay {
@@ -2100,6 +2111,7 @@ hr {
 
     display: flex;
     flex-direction: column;
+    filter: var(--f-elevation-5);
 }
 .search-item-palette-this-color {
     width: 20px;
@@ -2130,6 +2142,11 @@ hr {
     line-height: 28px;
     word-wrap: break-word;
     margin-inline-end: 56px;
+}
+
+.search-details-subname {
+    font-size: 18px;
+    color: var(--empty);
 }
 
 .search-details-macro,

@@ -84,7 +84,9 @@ export function FilterPanel({
             { value: "date", label: "Upload Date" },
         ],
         levels: [],
-        palettes: [],
+        palettes: [
+            { value: "palettes:source", label: "Source" },
+        ],
         overlays: [],
     } as const;
 

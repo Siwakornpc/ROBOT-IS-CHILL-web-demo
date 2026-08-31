@@ -154,7 +154,9 @@ export async function loadPalettes(): Promise<PaletteRecord> {
         const files = await loadPaletteFiles(paletteName);
 
         for (const file of files) {
-            palettes[file.name] = {
+            const key = `${paletteName}:${file.name}`;
+
+            palettes[key] = {
                 source: paletteName,
                 colors: file.colors,
             };
