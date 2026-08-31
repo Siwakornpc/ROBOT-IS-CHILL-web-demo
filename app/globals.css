@@ -2014,7 +2014,7 @@ hr {
     animation: sit-pending 1s ease-in-out infinite;
 }
 .search-item .search-item-tile.pending {
-    height: 64px;
+    height: 72px;
 }
 .search-item-tile-broken {
     display: grid;

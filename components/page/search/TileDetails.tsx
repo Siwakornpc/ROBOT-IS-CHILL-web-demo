@@ -304,7 +304,9 @@ export function Details({ selected }: DetailsProps) {
         const [displaySize, setDisplaySize] = useState<string>("Loading...");
 
         useEffect(() => {
-        if (selected?.name) getImageSize(`https://ric-api.sno.mba/filters/${encodeURIComponent(selected.name)}.png`).then(setDisplaySize);
+            if (selected?.name) {
+                getImageSize(`https://ric-api.sno.mba/filters/${encodeURIComponent(selected.name)}.png`).then(setDisplaySize);
+            }
         }, [selected?.name]);
 
         console.log (selected.filter.upload_time);
@@ -537,6 +539,14 @@ export function Details({ selected }: DetailsProps) {
     }
 
     if ("overlay" in selected) {
+        const [displaySize, setDisplaySize] = useState<string>("Loading...");
+
+        useEffect(() => {
+            if (selected?.name) {
+                getImageSize(`https://raw.githubusercontent.com/ROBOT-IS-CHILL/robot-is-chill/main/data/overlays/${selected.name}.png`).then(setDisplaySize);
+            }
+        }, []);
+
         return (<>
             <p className="text-label search-details-name">{selected.name}</p>
 
@@ -550,22 +560,39 @@ export function Details({ selected }: DetailsProps) {
                 </div>
             </div>
 
-            <p className="search-details-label">Description</p>
-            <div className="search-details-detailbox placeholder" id="description">
-                <p>
-                    This is an overlay called "{selected.name}", which do not have any author or date recorded in the actual source.
-                </p>
-                <p className="discord-markdown">
-                    The only source that has been converted into a data in a form of JSON Object is: 
-                    <pre className="discord-code-block">
-                        <code>{`{
-    "${selected.name}": {
-        "url": ${selected.overlay.url}
-    }
-}`
-                        }</code>
-                    </pre>
-                </p>
+
+            <table>
+                <tbody>
+                    <tr>
+                        <th className="table-description">Description</th>
+                        <th>Label</th>
+                    </tr>
+                    <tr>
+                        <td>Size</td>
+                        <td>{displaySize}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div className="search-details-contents-flexbox">
+                <div className="search-details-detailbox placeholder" id="description">
+                    <p>
+                        This is an overlay called "{selected.name}", which do not have any author or date recorded in the actual source.
+                    </p>
+                    <p>
+                        The only source that has been converted into a data in a form of JSON Object is: 
+                    </p>
+                    <span className="discord-markdown">
+                        <pre className="discord-code-block">
+                            <code>{`{
+        "${selected.name}": {
+            "url": ${selected.overlay.url}
+        }
+    }`
+                            }</code>
+                        </pre>
+                    </span>
+                </div>
             </div>
         </>);
     }
