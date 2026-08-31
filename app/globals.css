@@ -2020,14 +2020,28 @@ hr {
     justify-content: center;
 }
 
-.search-item-tile,
-.search-item-overlay {
+.search-item-tile {
     width: 72px; /* make it pixel perfect for 24x sprites please */
     height: 72px;
     image-rendering: pixelated;
     object-fit: contain;
     filter: var(--f-elevation-5);
 }
+
+.search-item-overlay {
+    max-width: 72px; /* make it pixel perfect for 24x sprites please */
+    max-height: 72px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.search-item-overlay img {
+    image-rendering: pixelated;
+    object-fit: contain;
+    filter: var(--f-elevation-5);
+}
+
 .search-results.filters .search-item-tile {
     width: 100px;
     height: 100px;
