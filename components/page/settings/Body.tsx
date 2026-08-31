@@ -9,7 +9,7 @@ export default function Body() {
             <div className="main-body">
                 <p className="text-label">Settings</p>
                 <hr />
-                <EditorScreen />
+                <p>Font</p>
             </div>
         </main>
     );
