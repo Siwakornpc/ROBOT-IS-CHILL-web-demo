@@ -861,6 +861,7 @@ export async function loadFlags(): Promise<Flags> {
 
 const OVERLAYS = [
     "ace",
+    "fbm",
     "aro",
     "babgay",
     "bi",
@@ -904,7 +905,7 @@ export function getOverlays(): Overlays {
         OVERLAYS.map(name => [
             name,
             {
-                url: `${OVERLAY_BASE}/${name}.png`,
+                url: `${OVERLAY_BASE}/${name}.png${name === "fbm" ? "~" : ""}`,
             },
         ])
     );
