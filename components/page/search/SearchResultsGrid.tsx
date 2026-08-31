@@ -478,6 +478,24 @@ export default function SearchResults({
                     if (!matches) return false;
                 }
             }
+
+            // -- PALETTES FILTERS --
+            if (mode === "palettes" && isPaletteRecord(data)) {
+                if (filterKey === "palettes:source") {
+                    const sourceDir = data.source;
+                    if (!validValues.some((val) => sourceDir.toLowerCase().includes(val.toLowerCase()))) return false;
+                }
+                if (filterKey === "hascolor") {
+                    const colors = data.colors.flat();
+
+                    const matches = validValues.some((val) =>
+                        colors.some((color) =>
+                            color?.toLowerCase().includes(val.toLowerCase())
+                        )
+                    );
+                    if (!matches) return false;
+                }
+            }
         }
 
         return true;
