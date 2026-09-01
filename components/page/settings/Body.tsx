@@ -8,7 +8,7 @@ import MenuSelect from "@/components/MenuSelect";
 interface ThemeState {
     color: string;
     scheme: 'light' | 'dark' | 'system';
-    contrast: 'normal' | 'mc' | 'hc';
+    contrast: 'normal' | 'mc' | 'hc' | 'system';
 }
 
 const DEFAULT_THEME: ThemeState = {
@@ -106,6 +106,7 @@ export default function Body() {
                         options={[
                             { value: "light", label: "Light" },
                             { value: "dark", label: "Dark" },
+                            { value: "system", label: "System" },
                         ]}
                         onChange={(newValue) => updateTheme({ scheme: newValue })}
                     />
@@ -117,6 +118,7 @@ export default function Body() {
                             { value: "normal", label: "Normal" },
                             { value: "mc", label: "Medium Contrast" },
                             { value: "hc", label: "High Contrast" },
+                            { value: "system", label: "System" },
                         ]}
                         onChange={(newValue) => updateTheme({ contrast: newValue })}
                     />

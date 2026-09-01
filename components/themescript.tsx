@@ -27,7 +27,7 @@ const customThemeColors = {
 export interface ThemeState {
     color: string;
     scheme: 'light' | 'dark' | 'system';
-    contrast: 'normal' | 'mc' | 'hc';
+    contrast: 'normal' | 'mc' | 'hc' | 'system';
 }
 
 export const DEFAULT_THEME: ThemeState = {
@@ -35,25 +35,6 @@ export const DEFAULT_THEME: ThemeState = {
     scheme: 'light',
     contrast: 'normal',
 };
-
-export function getResolvedVariant(scheme: ThemeState['scheme'], contrast: ThemeState['contrast']): string {
-    let isDark = false;
-    if (scheme === 'system') {
-        isDark = typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    } else {
-        isDark = scheme === 'dark';
-    }
-
-    let resolvedContrast = contrast;
-    if (scheme === 'system' && contrast === 'normal') {
-        const wantsMoreContrast = typeof window !== 'undefined' && window.matchMedia('(prefers-contrast: more)').matches;
-        if (wantsMoreContrast) resolvedContrast = 'hc';
-    }
-
-    const baseMode = isDark ? 'dark' : 'light';
-    if (resolvedContrast === 'normal') return baseMode;
-    return `${baseMode}-${resolvedContrast}`;
-}
 
 export default function ThemeScript() {
     useEffect(() => {
@@ -70,8 +51,18 @@ export default function ThemeScript() {
             const hct = MCU.Hct.fromInt(sourceArgb);
             const target = document.documentElement;
 
-            const isDark = scheme === 'dark';
+            let isDark = false;
+            if (scheme === 'system') {
+                isDark = typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            } else {
+                isDark = scheme === 'dark';
+            }
             let contrastLevel = 0.0;
+            let resolvedContrast = contrast;
+            if (scheme === 'system' && contrast === 'normal') {
+                const wantsMoreContrast = typeof window !== 'undefined' && window.matchMedia('(prefers-contrast: more)').matches;
+                if (wantsMoreContrast) resolvedContrast = 'hc';
+            }
             if (contrast === 'mc') contrastLevel = 0.5;
             if (contrast === 'hc') contrastLevel = 1.0;
 
