@@ -3,9 +3,6 @@
 import { useEffect } from 'react';
 import * as MCU from '@material/material-color-utilities';
 
-const variant = 'dark'; // 'light', 'light-mc', 'light-hc', 'dark', 'dark-mc', 'dark-hc'
-const color = '#2a36e5';
-
 const customThemeColors = {
     success: '#84cc7b',
     syntaxName: '#72a5e7',
@@ -14,6 +11,7 @@ const customThemeColors = {
     syntaxBracketLayer0: { color: '#f1f363', blend: false }, 
     syntaxBracketLayer1: { color: '#c85acc', blend: false }, 
     syntaxBracketLayer2: { color: '#5f94f5', blend: false },
+
     renderFlagName: '#8bd1ec',
     renderFlagValue: '#84cc7b',
     renderVariantName: '#c06ed4',
@@ -26,6 +24,21 @@ const customThemeColors = {
     typeNumber: '#a6ee9d',
 };
 
+export interface ThemeState {
+    color: string;
+    variant: 'light'
+    | 'light-mc'
+    | 'light-hc'
+    | 'dark'
+    | 'dark-mc'
+    | 'dark-hc';
+}
+
+export const DEFAULT_THEME: ThemeState = {
+    color: '#6750A4',
+    variant: 'light',
+};
+
 export default function ThemeScript() {
     useEffect(() => {
         const toKebab = (str: string) =>
@@ -34,7 +47,7 @@ export default function ThemeScript() {
         const rgbStr = (argb: number) =>
             `${MCU.redFromArgb(argb)}, ${MCU.greenFromArgb(argb)}, ${MCU.blueFromArgb(argb)}`;
 
-        function setTheme(sourceColor: string, variant = 'dark') {
+        function setTheme(sourceColor: string, variant = 'light') {
             document.documentElement.setAttribute('data-theme-variant', variant);
             
             const sourceArgb = MCU.argbFromHex(sourceColor);
@@ -156,8 +169,14 @@ export default function ThemeScript() {
             });
         }
 
+        const savedThemeRaw = localStorage.getItem("theme");
+        const savedTheme = savedThemeRaw ? JSON.parse(savedThemeRaw) : null;
+
         (window as any).setTheme = setTheme;
-        setTheme(color, variant);
+        setTheme(
+            savedTheme.color ?? DEFAULT_THEME.color,
+            savedTheme.variant ?? DEFAULT_THEME.variant
+        );
     }, []);
 
     return null;

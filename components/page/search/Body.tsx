@@ -3,11 +3,10 @@ import SearchResults from "./SearchResultsGrid";
 import { type SelectedSearchResult } from "./SearchResultsGrid";
 import SearchSelect, { type SearchMode } from "./SearchSelect";
 import MenuSelect from "@/components/MenuSelect";
+import ColorPicker from "@/components/ColorPicker";
 import PaletteColorPicker from "@/components/PaletteColorPicker";
 import { useMenu } from "@/components/MenuContext";
 import applyOverflowFade from "@/components/OverflowFade";
-
-import ColorPicker from "@/components/page/search/ColorPicker";
 
 // cache sprite sources
 const tilesSourcePromise: Promise<{ value: string; label: string }[]> = fetch(
@@ -181,9 +180,8 @@ export function FilterPanel({
                     ? value
                         .split(";")
                         .map((pair) => pair.split(",").map(Number))
-                        .filter(
-                            (coords): coords is [number, number] =>
-                                coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])
+                        .filter((coords): coords is [number, number] =>
+                            coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])
                         )
                     : [];
 

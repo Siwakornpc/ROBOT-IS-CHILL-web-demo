@@ -33,14 +33,11 @@ function hsvToHex(h: number, s: number, v: number): string {
     }
 
     return (
-        "#" +
-        [r, g, b]
-            .map((channel) =>
-                Math.round((channel + m) * 255)
-                    .toString(16)
-                    .padStart(2, "0")
-            )
-            .join("")
+        "#" + [r, g, b].map((channel) =>
+            Math.round((channel + m) * 255)
+                .toString(16)
+                .padStart(2, "0")
+        ).join("")
     );
 }
 
@@ -105,11 +102,9 @@ export function ColorPicker({
         onChange(newColor);
 
         const hsv = hexToHsv(newColor);
-
         if (!hsv) return;
 
         const [h, s, v] = hsv;
-
         setHue(h);
         setPosition([s, 1 - v]);
     };
@@ -118,19 +113,13 @@ export function ColorPicker({
 
     useEffect(() => {
         const newColor = value || "#ffffff";
-
         setColor(newColor);
-
-        if (newColor.toLowerCase() === "null") {
-            return;
-        }
+        if (newColor.toLowerCase() === "null") return;
 
         const hsv = hexToHsv(newColor);
-
         if (!hsv) return;
 
         const [h, s, v] = hsv;
-
         setHue(h);
         setPosition([s, 1 - v]);
     }, [value]);
@@ -140,17 +129,8 @@ export function ColorPicker({
         if (!container) return;
 
         const rect = container.getBoundingClientRect();
-
-        const x = Math.min(
-            1,
-            Math.max(0, (clientX - rect.left) / rect.width)
-        );
-
-        const y = Math.min(
-            1,
-            Math.max(0, (clientY - rect.top) / rect.height)
-        );
-
+        const x = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+        const y = Math.min(1, Math.max(0, (clientY - rect.top) / rect.height));
         setPosition([x, y]);
 
         const saturation = x;
@@ -171,12 +151,10 @@ export function ColorPicker({
             <div
                 ref={containerRef}
                 className="color-picker-container"
-                style={
-                    {
-                        "--color-picker-hue": hue,
-                        "--color-picker-alpha": 1,
-                    } as React.CSSProperties
-                }
+                style={{
+                    "--color-picker-hue": hue,
+                    "--color-picker-alpha": 1,
+                } as React.CSSProperties}
                 onPointerDown={(e) => {
                     e.currentTarget.setPointerCapture(e.pointerId);
                     updateColorFromPosition(e.clientX, e.clientY);
@@ -187,11 +165,12 @@ export function ColorPicker({
                     }
                 }}
             >
-                <span
+                <div
                     className="color-picker-thumb"
                     style={{
                         left: `${position[0] * 100}%`,
                         top: `${position[1] * 100}%`,
+                        background: `${color}`,
                     }}
                 />
             </div>
@@ -204,6 +183,7 @@ export function ColorPicker({
                         onChange={(e) => updateColorFromHex(e.target.value)}
                         autoComplete="off"
                         className="text-center"
+                        placeholder="#ffffff"
                     />
                 </label>
 
@@ -214,6 +194,7 @@ export function ColorPicker({
                             min={0}
                             max={255}
                             value={rgb?.[0] ?? ""}
+                            placeholder="255"
                         />
                     </label>
 
@@ -223,6 +204,7 @@ export function ColorPicker({
                             min={0}
                             max={255}
                             value={rgb?.[1] ?? ""}
+                            placeholder="255"
                         />
                     </label>
 
@@ -232,20 +214,10 @@ export function ColorPicker({
                             min={0}
                             max={255}
                             value={rgb?.[2] ?? ""}
+                            placeholder="255"
                         />
                     </label>
                 </div>
-
-                <button
-                    type="button"
-                    className="btn small btn-filled !w-full !justify-center"
-                    onClick={() => {
-                        setColor("null");
-                        onChange("null");
-                    }}
-                >
-                    None
-                </button>
             </div>
         </div>
     );
