@@ -32,8 +32,8 @@ export interface ThemeState {
 
 export const DEFAULT_THEME: ThemeState = {
     color: '#6750A4',
-    scheme: 'light',
-    contrast: 'normal',
+    scheme: 'system',
+    contrast: 'system',
 };
 
 function isValidHex(hex: string): boolean {
