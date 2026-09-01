@@ -2652,22 +2652,25 @@ tr:nth-child(odd) td {
     padding: 4px 0;
 }
 
-.drop-down {
+.dropdown-trigger {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     position: relative;
-
-    background: rgb(var(--md-color-surface-container-low));
-    padding: 4px 30px 4px 8px;
-    border-radius: 10px;
-    border: 1px solid rgb(var(--md-color-outline-variant));
     width: 200px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
     text-align: left;
     vertical-align: top;
+    padding: 12px;
+    border-radius: 12px;
+    background: rgb(var(--md-color-surface-container-low));
 }
-.drop-down::after {
+.dropdown-trigger:after {
     content: "arrow_drop_down";
-    position: absolute;
-    font-family: 'Material Symbols Outlined';
-    right: 8px;
+    font-family: Material Symbols Outlined;
+    font-size: 24px;
 }
 
 /*

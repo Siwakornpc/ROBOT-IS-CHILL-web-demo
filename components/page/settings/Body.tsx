@@ -59,21 +59,21 @@ export default function Body() {
                 <div className="box-hole">
                     <span className="row-group">
                         <p className="text-label text-main-name">Sans Serif Font</p>
-                        <button type="button" className="drop-down">
+                        <button type="button" className="dropdown-trigger">
                             PLACEHOLDER
                         </button>
                     </span>
 
                     <span className="row-group">
                         <p className="text-label text-main-name">Monospace Font</p>
-                        <button type="button" className="drop-down">
+                        <button type="button" className="dropdown-trigger">
                             PLACEHOLDER
                         </button>
                     </span>
 
                     <span className="row-group">
                         <p className="text-label text-main-name">Monospace Font Size</p>
-                        <button type="button" className="drop-down">
+                        <button type="button" className="dropdown-trigger">
                             PLACEHOLDER
                         </button>
                     </span>
