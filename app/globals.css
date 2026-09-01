@@ -2573,6 +2573,51 @@ tr:nth-child(odd) td {
         transform: rotate(360deg);
     }
 }
+
+/*
+    settings
+*/
+
+.text-main-name {
+    display :inline-block;
+    width: 180px;
+    border-right: 1px solid rgb(var(--md-color-surface-container));
+    padding-top: 4px;
+    padding-right: 10px;
+}
+.box-hole {
+    padding: 12px 20px;
+    background-color: rgb(var(--md-color-surface-container-lowest));
+    border-radius: 16px;
+    margin: 4px 0;
+
+    display: flex;
+    flex-direction: column;
+}
+.row-group {
+    display: flex;
+    gap: 10px;
+    padding: 4px 0;
+}
+
+.drop-down {
+    position: relative;
+
+    background: rgb(var(--md-color-surface-container-low));
+    padding: 4px 30px 4px 8px;
+    border-radius: 10px;
+    border: 1px solid rgb(var(--md-color-outline-variant));
+    width: 200px;
+    text-align: left;
+    vertical-align: top;
+}
+.drop-down::after {
+    content: "arrow_drop_down";
+    position: absolute;
+    font-family: 'Material Symbols Outlined';
+    right: 8px;
+}
+
 /*
 *
 *       FLEXIBILITY
