@@ -26,18 +26,34 @@ const customThemeColors = {
 
 export interface ThemeState {
     color: string;
-    variant: 'light'
-    | 'light-mc'
-    | 'light-hc'
-    | 'dark'
-    | 'dark-mc'
-    | 'dark-hc';
+    scheme: 'light' | 'dark' | 'system';
+    contrast: 'normal' | 'mc' | 'hc';
 }
 
 export const DEFAULT_THEME: ThemeState = {
     color: '#6750A4',
-    variant: 'light',
+    scheme: 'light',
+    contrast: 'normal',
 };
+
+export function getResolvedVariant(scheme: ThemeState['scheme'], contrast: ThemeState['contrast']): string {
+    let isDark = false;
+    if (scheme === 'system') {
+        isDark = typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    } else {
+        isDark = scheme === 'dark';
+    }
+
+    let resolvedContrast = contrast;
+    if (scheme === 'system' && contrast === 'normal') {
+        const wantsMoreContrast = typeof window !== 'undefined' && window.matchMedia('(prefers-contrast: more)').matches;
+        if (wantsMoreContrast) resolvedContrast = 'hc';
+    }
+
+    const baseMode = isDark ? 'dark' : 'light';
+    if (resolvedContrast === 'normal') return baseMode;
+    return `${baseMode}-${resolvedContrast}`;
+}
 
 export default function ThemeScript() {
     useEffect(() => {
@@ -47,19 +63,19 @@ export default function ThemeScript() {
         const rgbStr = (argb: number) =>
             `${MCU.redFromArgb(argb)}, ${MCU.greenFromArgb(argb)}, ${MCU.blueFromArgb(argb)}`;
 
-        function setTheme(sourceColor: string, variant = 'light') {
-            document.documentElement.setAttribute('data-theme-variant', variant);
+        function setTheme(sourceColor: string, scheme = 'light', contrast = 'normal') {
+            document.documentElement.setAttribute('data-theme-variant', scheme);
             
             const sourceArgb = MCU.argbFromHex(sourceColor);
             const hct = MCU.Hct.fromInt(sourceArgb);
             const target = document.documentElement;
 
-            const isDark = variant.startsWith('dark');
+            const isDark = scheme === 'dark';
             let contrastLevel = 0.0;
-            if (variant.endsWith('-mc')) contrastLevel = 0.5;
-            if (variant.endsWith('-hc')) contrastLevel = 1.0;
+            if (contrast === 'mc') contrastLevel = 0.5;
+            if (contrast === 'hc') contrastLevel = 1.0;
 
-            const scheme = new MCU.DynamicScheme({
+            const dynamicScheme = new MCU.DynamicScheme({
                 sourceColorHct: hct,
                 variant: MCU.Variant.VIBRANT,
                 isDark: isDark,
@@ -131,7 +147,7 @@ export default function ThemeScript() {
                 const camelToken = token.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
                 const dynamicColors = MCU.MaterialDynamicColors as Record<string, any>;
                 if (dynamicColors[camelToken]) {
-                    const argb = dynamicColors[camelToken].getArgb(scheme);
+                    const argb = dynamicColors[camelToken].getArgb(dynamicScheme);
                     target.style.setProperty(
                         `--md-color-${token}`,
                         rgbStr(argb)
@@ -174,7 +190,8 @@ export default function ThemeScript() {
         (window as any).setTheme = setTheme;
         setTheme(
             savedTheme.color ?? DEFAULT_THEME.color,
-            savedTheme.variant ?? DEFAULT_THEME.variant
+            savedTheme.scheme ?? DEFAULT_THEME.scheme,
+            savedTheme.contrast ?? DEFAULT_THEME.contrast
         );
     }, []);
 

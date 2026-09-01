@@ -7,17 +7,14 @@ import MenuSelect from "@/components/MenuSelect";
 
 interface ThemeState {
     color: string;
-    variant: 'light'
-    | 'light-mc'
-    | 'light-hc'
-    | 'dark'
-    | 'dark-mc'
-    | 'dark-hc';
+    scheme: 'light' | 'dark' | 'system';
+    contrast: 'normal' | 'mc' | 'hc';
 }
 
 const DEFAULT_THEME: ThemeState = {
     color: '#6750A4',
-    variant: 'light',
+    scheme: 'light',
+    contrast: 'normal',
 };
 
 export default function Body() {
@@ -30,7 +27,8 @@ export default function Body() {
                 const parsed = JSON.parse(savedThemeRaw);
                 setTheme({
                     color: parsed?.color ?? DEFAULT_THEME.color,
-                    variant: parsed?.variant ?? DEFAULT_THEME.variant,
+                    scheme: parsed?.scheme ?? DEFAULT_THEME.scheme,
+                    contrast: parsed?.contrast ?? DEFAULT_THEME.contrast,
                 });
             }
         } catch (e) {
@@ -104,16 +102,23 @@ export default function Body() {
                     <MenuSelect
                         id="theme-contrast"
                         className="dropdown-trigger"
-                        value={theme.variant}
+                        value={theme.scheme}
                         options={[
                             { value: "light", label: "Light" },
-                            { value: "light-mc", label: "Light Medium Contrast" },
-                            { value: "light-hc", label: "Light High Contrast" },
                             { value: "dark", label: "Dark" },
-                            { value: "dark-mc", label: "Dark Medium Contrast" },
-                            { value: "dark-hc", label: "Dark High Contrast" },
                         ]}
-                        onChange={(newValue) => updateTheme({ variant: newValue })}
+                        onChange={(newValue) => updateTheme({ scheme: newValue })}
+                    />
+                    <MenuSelect
+                        id="theme-contrast"
+                        className="dropdown-trigger"
+                        value={theme.contrast}
+                        options={[
+                            { value: "normal", label: "Normal" },
+                            { value: "mc", label: "Medium Contrast" },
+                            { value: "hc", label: "High Contrast" },
+                        ]}
+                        onChange={(newValue) => updateTheme({ contrast: newValue })}
                     />
                 </div>
             </div>
