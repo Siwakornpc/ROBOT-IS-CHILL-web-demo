@@ -169,8 +169,7 @@ export default function ThemeScript() {
             });
         }
 
-        const savedThemeRaw = localStorage.getItem("theme");
-        const savedTheme = savedThemeRaw ? JSON.parse(savedThemeRaw) : null;
+        const savedTheme = JSON.parse(localStorage.getItem("theme") || "{}");
 
         (window as any).setTheme = setTheme;
         setTheme(
