@@ -36,6 +36,10 @@ export const DEFAULT_THEME: ThemeState = {
     contrast: 'normal',
 };
 
+function isValidHex(hex: string): boolean {
+    return /^#?([0-9A-F]{3}|[0-9A-F]{6}|[0-9A-F]{8})$/i.test(hex);
+}
+
 export default function ThemeScript() {
     useEffect(() => {
         const toKebab = (str: string) =>
@@ -47,7 +51,16 @@ export default function ThemeScript() {
         function setTheme(sourceColor: string, scheme = 'light', contrast = 'normal') {
             document.documentElement.setAttribute('data-theme-variant', scheme);
             
-            const sourceArgb = MCU.argbFromHex(sourceColor);
+            // Fall back to default color if sourceColor is empty or invalid hex
+            const validColor = isValidHex(sourceColor) ? sourceColor : DEFAULT_THEME.color;
+            
+            let sourceArgb: number;
+            try {
+                sourceArgb = MCU.argbFromHex(validColor.startsWith('#') ? validColor : `#${validColor}`);
+            } catch {
+                sourceArgb = MCU.argbFromHex(DEFAULT_THEME.color);
+            }
+
             const hct = MCU.Hct.fromInt(sourceArgb);
             const target = document.documentElement;
 
@@ -176,13 +189,22 @@ export default function ThemeScript() {
             });
         }
 
-        const savedTheme = JSON.parse(localStorage.getItem("theme") || "{}");
+        let savedTheme: Partial<ThemeState> = {};
+        try {
+            savedTheme = JSON.parse(localStorage.getItem("theme") || "{}");
+        } catch {
+            savedTheme = {};
+        }
+
+        const initialColor = savedTheme.color && isValidHex(savedTheme.color) 
+            ? savedTheme.color 
+            : DEFAULT_THEME.color;
 
         (window as any).setTheme = setTheme;
         setTheme(
-            savedTheme.color ?? DEFAULT_THEME.color,
-            savedTheme.scheme ?? DEFAULT_THEME.scheme,
-            savedTheme.contrast ?? DEFAULT_THEME.contrast
+            initialColor,
+            savedTheme.scheme || DEFAULT_THEME.scheme,
+            savedTheme.contrast || DEFAULT_THEME.contrast
         );
     }, []);
 

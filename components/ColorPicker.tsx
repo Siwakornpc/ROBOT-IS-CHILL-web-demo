@@ -84,7 +84,7 @@ function hexToRgb(hex: string): [number, number, number] | null {
     ];
 }
 
-export function ColorPicker({
+export default function ColorPicker({
     value,
     onChange,
 }: {
@@ -222,5 +222,3 @@ export function ColorPicker({
         </div>
     );
 }
-
-export default ColorPicker;
