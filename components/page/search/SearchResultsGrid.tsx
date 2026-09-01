@@ -425,7 +425,7 @@ export default function SearchResults({
 
                 if (filterKey === "tile:source") {
                     const [sourceDir] = data.sprite;
-                    if (!validValues.some((val) => sourceDir.toLowerCase().includes(val.toLowerCase()))) return false;
+                    if (!validValues.some((val) => sourceDir.toLowerCase() === val.toLowerCase())) return false;
                 }
             }
 
@@ -481,19 +481,15 @@ export default function SearchResults({
 
             // -- PALETTES FILTERS --
             if (mode === "palettes" && isPaletteRecord(data)) {
-                if (filterKey === "palettes:source") {
-                    const sourceDir = data.source;
-                    if (!validValues.some((val) => sourceDir.toLowerCase().includes(val.toLowerCase()))) return false;
+                if (filterKey === "palette:source") {
+                    const source = data.source;
+                    if (!validValues.some((val) => source.toLowerCase() === val.toLowerCase())) return false; // explicit source filtering
                 }
-                if (filterKey === "hascolor") {
-                    const colors = data.colors.flat();
 
-                    const matches = validValues.some((val) =>
-                        colors.some((color) =>
-                            color?.toLowerCase().includes(val.toLowerCase())
-                        )
-                    );
-                    if (!matches) return false;
+                if (filterKey === "hascolor") {
+                    const colors = data.colors.flat().filter((color): color is string => color !== null);
+
+                    if (!validValues.some((val) => colors.some((color) => color.toLowerCase() === val.toLowerCase()))) return false;
                 }
             }
         }

@@ -1843,6 +1843,57 @@ hr {
 }
 
 /*
+    color picker container
+*/
+
+/* stripped from https://www.jscolorpicker.com/ */
+
+.color-picker-container {
+    width: stretch;
+    aspect-ratio: 7 / 5;
+
+    background:
+        linear-gradient(
+            to top,
+            rgba(0, 0, 0, var(--color-picker-alpha)), transparent
+        ),
+        linear-gradient(
+            to left,
+            hsla(
+                var(--color-picker-hue),
+                100%, 50%,
+                var(--color-picker-alpha)
+            ),
+            rgba(
+                255, 255, 255,
+                var(--color-picker-alpha)
+            )
+        ),
+        var(--color-picker-bg-checker);
+}
+
+.color-picker-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.color-picker-rgb {
+    display: flex;
+    gap: 8px;
+}
+
+.color-picker-thumb {
+    position: absolute;
+    display: block;
+    pointer-events: none;
+    width: 12px;
+    height: 12px;
+    outline: 2px solid white;
+    border-radius: 6px;
+    box-shadow: var(--elevation-2);
+}
+
+/*
     search elements
 */
 

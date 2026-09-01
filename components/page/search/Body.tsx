@@ -7,8 +7,10 @@ import PaletteColorPicker from "@/components/PaletteColorPicker";
 import { useMenu } from "@/components/MenuContext";
 import applyOverflowFade from "@/components/OverflowFade";
 
+import ColorPicker from "@/components/page/search/ColorPicker";
+
 // cache sprite sources
-const sourcesPromise: Promise<{ value: string; label: string }[]> = fetch(
+const tilesSourcePromise: Promise<{ value: string; label: string }[]> = fetch(
     "https://ric-api.sno.mba/tiles.json"
 )
     .then((res) => (res.ok ? res.json() : {}))
@@ -30,6 +32,31 @@ const sourcesPromise: Promise<{ value: string; label: string }[]> = fetch(
         return [];
     });
 
+const paletteSourcePromise: Promise<{ value: string; label: string }[]> = fetch(
+    "/api/palettes"
+)
+    .then((res) => (res.ok ? res.json() : {}))
+    .then((data: Record<string, { source?: string; colors?: (string | null)[][] }>) => {
+        const uniqueSources = new Set<string>();
+
+        Object.values(data).forEach((palette) => {
+            if (palette.source) {
+                uniqueSources.add(palette.source);
+            }
+        });
+
+        return Array.from(uniqueSources)
+            .sort()
+            .map((source) => ({
+                value: source,
+                label: source,
+            }));
+    })
+    .catch((err) => {
+        console.error("Failed to load palette sources from API:", err);
+        return [];
+    });
+
 // --- MAIN FILTER PANEL ---
 
 export function FilterPanel({
@@ -47,15 +74,20 @@ export function FilterPanel({
     onToggleFilter: () => void;
     showMenu: boolean;
 }) {
-    const [sourceOptions, setSourceOptions] = useState<{ value: string; label: string }[]>([]);
+    const [tileSourceOptions, setTileSourceOptions] = useState<{ value: string; label: string }[]>([]);
+    const [paletteSourceOptions, setPaletteSourceOptions] = useState<{ value: string; label: string }[]>([]);
     const [sourceSearchQuery, setSourceSearchQuery] = useState("");
-    const filteredSourceOptions = sourceOptions.filter((option) =>
+    const filteredTileSourceOptions = tileSourceOptions.filter((option) =>
+        option.label.toLowerCase().includes(sourceSearchQuery.toLowerCase())
+    );
+    const filteredPaletteSourceOptions = paletteSourceOptions.filter((option) =>
         option.label.toLowerCase().includes(sourceSearchQuery.toLowerCase())
     );
     const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
-        sourcesPromise.then(setSourceOptions);
+        tilesSourcePromise.then(setTileSourceOptions);
+        paletteSourcePromise.then(setPaletteSourceOptions);
     }, []);
     
     const filterOptions = {
@@ -85,7 +117,7 @@ export function FilterPanel({
         ],
         levels: [],
         palettes: [
-            { value: "palettes:source", label: "Source" },
+            { value: "palette:source", label: "Source" },
             { value: "hascolor", label: "Has Color" },
         ],
         overlays: [],
@@ -197,9 +229,36 @@ export function FilterPanel({
             case "tile:source":
                 return (
                     <MenuSelect
-                        id={`source-select-${index}`}
+                        id={`tile-source-select-${index}`}
                         value={value}
-                        options={filteredSourceOptions}
+                        options={filteredTileSourceOptions}
+                        onChange={(newValue) => handleValueChange(type, index, newValue)}
+                        trigger={({ getInputProps }) => (
+                            <label className="text-field small has-placeholder">
+                                <input
+                                    {...getInputProps({
+                                        type: "text",
+                                        placeholder: "Search source...",
+                                        value: value,
+                                        onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                                            setSourceSearchQuery(e.target.value);
+                                            handleValueChange(type, index, e.target.value);
+                                        },
+                                        autoComplete: "off",
+                                    })}
+                                />
+                            </label>
+                        )}
+                        anchor="t"
+                    />
+                );
+
+            case "palette:source":
+                return (
+                    <MenuSelect
+                        id={`palette-source-select-${index}`}
+                        value={value}
+                        options={filteredPaletteSourceOptions}
                         onChange={(newValue) => handleValueChange(type, index, newValue)}
                         trigger={({ getInputProps }) => (
                             <label className="text-field small has-placeholder">
@@ -308,6 +367,16 @@ export function FilterPanel({
                         </label>
                     </div>
                 )
+            
+            case "hascolor":
+                return (
+                    <ColorPicker
+                        value={value}
+                        onChange={(color) =>
+                            handleValueChange(type, index, color)
+                        }
+                    />
+                );
 
             default:
                 return (
