@@ -108,7 +108,7 @@ export default function Body() {
     const variantElementRef = useRef<HTMLDivElement>(null);
 
     const [sliderValue, setSliderValue] = useState(50);
-
+    const [sliderValue2, setSliderValue2] = useState(50);
     useEffect(() => {
         const element = variantElementRef.current;
 
@@ -184,11 +184,11 @@ export default function Body() {
                     }}
                 />
                 <Slider
-                    value={sliderValue}
+                    value={sliderValue2}
                     min={-100}
                     max={100}
                     onChange={(value) => {
-                        setSliderValue(value);
+                        setSliderValue2(value);
                         console.log("Slider Value:", value);
                     }}
                 />
