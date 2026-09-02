@@ -253,7 +253,6 @@ export function FilterPanel({
                                 />
                             </label>
                         )}
-                        anchor="t"
                     />
                 );
 
@@ -280,7 +279,6 @@ export function FilterPanel({
                                 />
                             </label>
                         )}
-                        anchor="t"
                     />
                 );
 
@@ -298,7 +296,6 @@ export function FilterPanel({
                             { value: "tiling", label: "Tiling" },
                             { value: "diagonal_tiling", label: "Diagonal Tiling" },
                         ]}
-                        anchor="t"
                         onChange={(newValue) => handleValueChange(type, index, newValue)}
                     />
                 );

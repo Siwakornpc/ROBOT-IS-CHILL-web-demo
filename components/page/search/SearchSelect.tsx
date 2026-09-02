@@ -29,7 +29,6 @@ export default function SearchSelect({
             options={options}
             onChange={onChange}
             className="btn small btn-filled !w-20 !justify-center"
-            anchor="et"
             style={{ zIndex: "1" }}
         />
     );
