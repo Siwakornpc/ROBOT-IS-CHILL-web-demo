@@ -693,7 +693,7 @@ hr {
 .btn.xlarge:active {
     border-radius: 16px !important;
 }
-.btn.xlarge.square, .btn.large:has(input[type="checkbox"]:checked) {
+.btn.xlarge.square, .btn.xlarge:has(input[type="checkbox"]:checked) {
     border-radius: 28px;
 }
 .btn.xlarge.square:has(input[type="checkbox"]:checked) {
@@ -1004,38 +1004,39 @@ hr {
 .submenu-popout.anchor-l,
 .submenu-popout.anchor-tl,
 .submenu-popout.anchor-bl {
-    left: 100%;
-    margin: -4px 0;
+    right: 100%;
+    margin-block: -4px;
 }
 .submenu-popout.anchor-r,
 .submenu-popout.anchor-tr,
 .submenu-popout.anchor-br {
-    right: 100%;
-    margin: -4px 0;
+    left: 100%;
+    margin-block: -4px;
 }
 .submenu-popout.anchor-s,
 .submenu-popout.anchor-st,
 .submenu-popout.anchor-sb {
-    inset-inline-start: 100%;
-    margin-inline-start: 4px;
+    inset-inline-end: 100%;
+    margin-inline: 4px;
 }
 .submenu-popout.anchor-e,
 .submenu-popout.anchor-et,
 .submenu-popout.anchor-eb {
-    inset-inline-end: 100%;
-    margin-inline-end: 4px;
+    inset-inline-start: 100%;
+    margin-inline: 4px;
 }
 
 @supports (anchor-name: --a) {
-    .submenu-popout.anchor-st { position-area: end top; }
-    .submenu-popout.anchor-sb { position-area: end bottom; }
-    .submenu-popout.anchor-et { position-area: start top; }
-    .submenu-popout.anchor-eb { position-area: start bottom; }
+    .submenu-popout.anchor-st { position-area: start top; }
+    .submenu-popout.anchor-sb { position-area: start bottom; }
+    .submenu-popout.anchor-et { position-area: end top; }
+    .submenu-popout.anchor-eb { position-area: end bottom; }
 }
 
 .menu-option-wrapper {
     display: flex;
     flex-direction: column;
+    position: relative;
     padding-inline: 4px;
 }
 
@@ -2707,14 +2708,12 @@ tr:nth-child(odd) td {
 }
 .dropdown-trigger:after {
     content: "arrow_drop_down";
-    font-family: Material Symbols Outlined;
+    font-family: "Material Symbols Outlined";
     font-size: 24px;
 }
-
 .dropdown-trigger:hover {
     background: rgb(var(--md-color-surface-container))
 }
-
 .dropdown-trigger:active {
     background: rgb(var(--md-color-surface-container-high))
 }

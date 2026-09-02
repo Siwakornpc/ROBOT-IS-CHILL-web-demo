@@ -55,7 +55,7 @@ function MenuItem<T extends string>({
     onCloseAll,
     closeSignal,
     optionIcon,
-    submenuAnchor = "st",
+    submenuAnchor = "et",
 }: MenuItemProps<T>) {
     const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
     const submenuRef = useRef<HTMLDivElement>(null);
@@ -206,7 +206,7 @@ export default function MenuSelect<T extends string>({
     className = "",
     style,
     anchor = "eb",
-    submenuAnchor = "eb",
+    submenuAnchor = "et",
     pageMargin = 12,
 }: MenuSelectProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
@@ -260,7 +260,7 @@ export default function MenuSelect<T extends string>({
                 toggle: toggleMenu,
                 open: openMenu,
                 close: closeMenu,
-                setIsOpen: (open: boolean) => open ? openMenu() : closeMenu(),
+                setIsOpen: (open: boolean) => (open ? openMenu() : closeMenu()),
                 selectedOption,
                 getInputProps,
             })
@@ -270,7 +270,7 @@ export default function MenuSelect<T extends string>({
                 aria-expanded={isOpen}
                 className={`menu-trigger ${className || "dropdown-trigger"} ${id || ""} ${isOpen ? "clicked" : ""}`}
                 onClick={toggleMenu}
-                style={anchorNameStyle}
+                style={{ ...anchorNameStyle, ...style }}
             >{triggerValue ? triggerValue(selectedOption) : <span>{selectedOption.label}</span>}
             </button>
         }
