@@ -335,7 +335,7 @@ function MenuItem<T extends string>({
                 {hasChildren && <i className="icon menu-option-menu-icon">arrow_right</i>}
             </div>
 
-            {hasChildren && (
+            {hasChildren &&
                 <div
                     ref={submenuRef}
                     role="menu"
@@ -349,13 +349,8 @@ function MenuItem<T extends string>({
                     style={submenuStyle}
                     onMouseLeave={(event) => {
                         if (isCoarsePointer) return;
-
                         const related = event.relatedTarget as Node | null;
-                        if (
-                            triggerRef.current &&
-                            related &&
-                            triggerRef.current.contains(related)
-                        ) return;
+                        if (triggerRef.current && related && triggerRef.current.contains(related)) return;
                         setIsSubmenuOpen(false);
                     }}
                 >
@@ -374,7 +369,7 @@ function MenuItem<T extends string>({
                         />
                     )}
                 </div>
-            )}
+            }
         </div>
     );
 }
@@ -387,9 +382,7 @@ interface MenuSelectProps<T extends string> {
     id?: string;
     title?: string;
     value: T;
-    options:
-        | readonly MenuOption<T>[]
-        | MenuOption<T>[];
+    options: readonly MenuOption<T>[] | MenuOption<T>[];
     onChange: (value: T) => void;
     triggerValue?: (selectedOption: MenuOption<T>) => ReactNode;
     trigger?: (props: {
@@ -416,9 +409,7 @@ interface MenuSelectProps<T extends string> {
    MenuSelect
 -------------- */
 
-export default function MenuSelect<
-    T extends string
->({
+export default function MenuSelect<T extends string>({
     id,
     title,
     value,
@@ -435,6 +426,7 @@ export default function MenuSelect<
     menuGap = 4,
 }: MenuSelectProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
     const [menuStyle, setMenuStyle] = useState<CSSProperties>({
         position: "fixed",
         visibility: "hidden",
@@ -573,6 +565,8 @@ export default function MenuSelect<
     };
 
     useEffect(() => {
+        setIsMounted(true);
+
         if (!isOpen) return;
 
         const handlePointerDown = (event: PointerEvent) => {
@@ -623,7 +617,7 @@ export default function MenuSelect<
             </button>
         }
 
-        {createPortal(
+        {isMounted && createPortal(
             <div
                 ref={menuRef}
                 role="menu"
@@ -652,7 +646,7 @@ export default function MenuSelect<
                         menuGap={menuGap}
                     />
                 ))}
-            </div>, window.document.body
+            </div>, document.body
         )}
     </>);
 }
