@@ -60,8 +60,10 @@ function calculateMenuPosition(
     {placement, margin, gap}: PositionOptions
 ): PositionResult {
     const el = document.querySelector("body > main.align-layout") as HTMLElement;
-    const containerWidth = el ? el.offsetWidth : window.innerWidth;
-    const containerHeight = el ? el.offsetHeight : window.innerHeight;
+    
+    // Use window dimensions or fallback to container bounds safely including scroll positions
+    const containerWidth = window.innerWidth;
+    const containerHeight = window.innerHeight;
 
     const spaceAbove = triggerRect.top - margin - gap;
     const spaceBelow = containerHeight - triggerRect.bottom - margin - gap;
@@ -83,22 +85,22 @@ function calculateMenuPosition(
         case "bottom-start":
             left = triggerRect.left;
             top = triggerRect.bottom + gap;
-            maxHeight = spaceBelow;
+            maxHeight = Math.min(menuRect.height, spaceBelow);
             break;
         case "bottom-end":
             left = triggerRect.right - menuRect.width;
             top = triggerRect.bottom + gap;
-            maxHeight = spaceBelow;
+            maxHeight = Math.min(menuRect.height, spaceBelow);
             break;
         case "top-start":
             left = triggerRect.left;
-            maxHeight = spaceAbove;
-            top = triggerRect.top - Math.min(menuRect.height, maxHeight) - gap;
+            maxHeight = Math.min(menuRect.height, spaceAbove);
+            top = triggerRect.top - maxHeight - gap;
             break;
         case "top-end":
             left = triggerRect.right - menuRect.width;
-            maxHeight = spaceAbove;
-            top = triggerRect.top - Math.min(menuRect.height, maxHeight) - gap;
+            maxHeight = Math.min(menuRect.height, spaceAbove);
+            top = triggerRect.top - maxHeight - gap;
             break;
         case "right-start":
         case "right-center":
@@ -124,7 +126,7 @@ function calculateMenuPosition(
     return {
         left: Math.round(left),
         top: Math.round(top),
-        maxHeight: Math.max(0, Math.round(maxHeight)),
+        maxHeight: Math.max(60, Math.round(maxHeight)),
         actualPlacement: activePlacement,
     };
 }
@@ -453,11 +455,11 @@ export default function MenuSelect<T extends string>({
         };
 
         window.addEventListener("resize", handleUpdate);
-        window.addEventListener("scroll", handleUpdate, { passive: true, capture: true });
+        window.addEventListener("scroll", handleUpdate, { passive: true });
 
         return () => {
             window.removeEventListener("resize", handleUpdate);
-            window.removeEventListener("scroll", handleUpdate, true);
+            window.removeEventListener("scroll", handleUpdate);
             cancelAnimationFrame(rafId);
         };
     }, [isOpen, placement, pageMargin, menuGap, style]);
