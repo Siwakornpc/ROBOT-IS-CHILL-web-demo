@@ -89,9 +89,11 @@ function hexToRgb(hex: string): [number, number, number] | null {
 export default function ColorPicker({
     value,
     onChange,
+    hasNone,
 }: {
     value: string | null;
     onChange: (color: string | null) => void;
+    hasNone: boolean;
 }) {
     const [color, setColor] = useState(value ?? "#ffffff");
 
@@ -662,16 +664,17 @@ export default function ColorPicker({
                         />
                     </label>
                 </div>
-
-                <button
-                    type="button"
-                    className={`btn small btn-filled !w-full !justify-center${
-                        value === null ? " active" : ""
-                    }`}
-                    onClick={handleNone}
-                >
-                    None
-                </button>
+                {hasNone &&
+                    <button
+                        type="button"
+                        className={`btn small btn-filled !w-full !justify-center${
+                            value === null ? " active" : ""
+                        }`}
+                        onClick={handleNone}
+                    >
+                        None
+                    </button>
+                }
             </div>
         </div>
     );
