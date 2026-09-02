@@ -954,7 +954,7 @@ hr {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    position: absolute;
+    position: fixed;
     pointer-events: none;
     width: 240px;
     padding-block: 4px;
@@ -963,9 +963,12 @@ hr {
     box-shadow: var(--elevation-3);
     transform: scale(.95);
     opacity: 0;
-    z-index: 1;
+    z-index: 86 !important;
     transition: all .2s, top, left;
     color: var(--normal);
+}
+.menu.menu {
+    z-index: 86 !important;
 }
 .menu.menu.visible {
     opacity: 1;
