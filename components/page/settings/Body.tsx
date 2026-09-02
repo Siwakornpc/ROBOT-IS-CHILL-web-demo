@@ -55,15 +55,36 @@ export default function Body() {
         if (!loaded) return;
 
         const applyTheme = (window as any).setTheme;
+        if (typeof applyTheme !== "function") return;
 
-        if (typeof applyTheme === "function") {
+        const triggerThemeUpdate = (currentScheme: 'light' | 'dark' | 'system') => {
             applyTheme(
                 theme.color,
-                theme.scheme,
+                currentScheme,
                 theme.contrast
             );
+        };
+
+        if (theme.scheme !== 'system') {
+            triggerThemeUpdate(theme.scheme);
+            return;
         }
+
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        
+        triggerThemeUpdate('system');
+
+        const handleChange = () => {
+            triggerThemeUpdate('system');
+        };
+
+        mediaQuery.addEventListener('change', handleChange);
+
+        return () => {
+            mediaQuery.removeEventListener('change', handleChange);
+        };
     }, [theme, loaded]);
+
 
     return (
         <main
