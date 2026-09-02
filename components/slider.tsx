@@ -109,10 +109,9 @@ export default function Slider({
                         }}
                     />
                     <div
-                        className="slider-track slider-mid-track"
+                        className="slider-track slider-mid-track slider-track-filled"
                         style={{
                             flex: `${ratio - zeroRatio} 1 0%`,
-                            background: "rgb(var(--md-color-primary))",
                         }}
                     />
                     <div
@@ -145,10 +144,9 @@ export default function Slider({
                         }}
                     />
                     <div
-                        className="slider-track slider-mid-track"
+                        className="slider-track slider-mid-track slider-track-filled"
                         style={{
                             flex: `${zeroRatio - ratio} 1 0%`,
-                            background: "rgb(var(--md-color-primary))",
                         }}
                     />
                     <div
@@ -161,10 +159,9 @@ export default function Slider({
             : <>
                 {/* NO ZERO: [Track 1: min->thumb] [Thumb] [Track 2: thumb->max] */}
                 <div
-                    className="slider-track slider-start-track"
+                    className="slider-track slider-start-track slider-track-filled"
                     style={{
                         flex: `${ratio} 1 0%`,
-                        background: "rgb(var(--md-color-primary))",
                     }}
                 />
                 <div
