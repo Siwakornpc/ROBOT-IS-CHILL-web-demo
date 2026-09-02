@@ -143,24 +143,24 @@ function calculateMenuPosition(
     let actualPlacement = placement;
 
     const shouldFlipUp =
-        placement.startsWith("bottom") &&
-        spaceBelow < elementHeight &&
-        spaceAbove > spaceBelow;
+        placement.startsWith("bottom")
+        && spaceBelow < elementHeight
+        && spaceAbove > spaceBelow;
 
     const shouldFlipDown =
-        placement.startsWith("top") &&
-        spaceAbove < elementHeight &&
-        spaceBelow > spaceAbove;
+        placement.startsWith("top")
+        && spaceAbove < elementHeight
+        && spaceBelow > spaceAbove;
 
     const shouldFlipRight =
-        placement.startsWith("left") &&
-        spaceLeft < elementWidth &&
-        spaceRight > spaceLeft;
+        placement.startsWith("left")
+        && spaceLeft < elementWidth
+        && spaceRight > spaceLeft;
 
     const shouldFlipLeft =
-        placement.startsWith("right") &&
-        spaceRight < elementWidth &&
-        spaceLeft > spaceRight;
+        placement.startsWith("right")
+        && spaceRight < elementWidth
+        && spaceLeft > spaceRight;
 
     if (shouldFlipUp) {
         actualPlacement = placement.replace("bottom", "top") as MenuPlacement;
@@ -233,15 +233,9 @@ function calculateMenuPosition(
      * This part only prevents the menu from overflowing horizontally
      * or vertically.
      */
-    left = Math.max(
-        margin,
-        Math.min(left, viewportWidth - elementWidth - margin)
-    );
+    left = Math.max(margin,  Math.min(left, viewportWidth - elementWidth - margin));
 
-    top = Math.max(
-        margin,
-        Math.min(top, viewportHeight - margin)
-    );
+    top = Math.max(margin, Math.min(top, viewportHeight - margin));
 
     return {
         left: Math.round(left),
@@ -295,9 +289,7 @@ function MenuItem<T extends string>({
     const hasChildren = Boolean(item.children?.length);
     const isSelected = item.value === selectedValue;
 
-    const rawIcon = optionIcon
-        ? optionIcon(item)
-        : item.icon;
+    const rawIcon = optionIcon ? optionIcon(item) : item.icon;
 
     /* ---------------------------------------------------------------------- */
     /* Submenu positioning                                                    */
@@ -307,9 +299,7 @@ function MenuItem<T extends string>({
         const box = triggerRef.current;
         const submenu = submenuRef.current;
 
-        if (!box || !submenu) {
-            return;
-        }
+        if (!box || !submenu) return null;
 
         const boxRect = box.getBoundingClientRect();
         const elementRect = measureElement(submenu);
@@ -390,9 +380,7 @@ function MenuItem<T extends string>({
         event.preventDefault();
         event.stopPropagation();
 
-        if (item.disabled) {
-            return;
-        }
+        if (item.disabled) return null;
 
         if (hasChildren) {
             setIsSubmenuOpen((open) => !open);
@@ -416,9 +404,7 @@ function MenuItem<T extends string>({
             );
         }
 
-        if (!rawIcon) {
-            return null;
-        }
+        if (!rawIcon) return null;
 
         if (typeof rawIcon === "string") {
             return (
@@ -432,9 +418,7 @@ function MenuItem<T extends string>({
             className: [
                 (rawIcon as any).props?.className,
                 "menu-option-icon",
-            ]
-                .filter(Boolean)
-                .join(" "),
+            ].filter(Boolean).join(" "),
         });
     };
 
@@ -452,20 +436,15 @@ function MenuItem<T extends string>({
                 }
             }}
             onMouseLeave={(event) => {
-                if (isCoarsePointer || !hasChildren) {
-                    return;
-                }
+                if (isCoarsePointer || !hasChildren) return;
 
-                const relatedTarget =
-                    event.relatedTarget as Node | null;
+                const relatedTarget = event.relatedTarget as Node | null;
 
                 if (
                     submenuRef.current &&
                     relatedTarget &&
                     submenuRef.current.contains(relatedTarget)
-                ) {
-                    return;
-                }
+                ) return;
 
                 setIsSubmenuOpen(false);
             }}
@@ -473,32 +452,18 @@ function MenuItem<T extends string>({
             <div
                 role={hasChildren ? "menuitem" : "menuitemradio"}
                 aria-haspopup={hasChildren || undefined}
-                aria-expanded={
-                    hasChildren
-                        ? isSubmenuOpen
-                        : undefined
-                }
-                aria-checked={
-                    !hasChildren
-                        ? isSelected
-                        : undefined
-                }
-                aria-disabled={
-                    item.disabled || undefined
-                }
+                aria-expanded={hasChildren ? isSubmenuOpen : undefined}
+                aria-checked={!hasChildren ? isSelected : undefined}
+                aria-disabled={item.disabled || undefined}
                 tabIndex={item.disabled ? -1 : 0}
-                onMouseDown={(event) => {
-                    event.preventDefault();
-                }}
+                onMouseDown={(event) => event.preventDefault()}
                 onClick={handleItemClick}
                 className={[
                     "menu-option",
                     isSelected ? "selected" : "",
                     isSubmenuOpen ? "hover-active" : "",
                     item.disabled ? "disabled" : "",
-                ]
-                    .filter(Boolean)
-                    .join(" ")}
+                ].filter(Boolean).join(" ")}
             >
                 {renderIcon()}
 
@@ -532,14 +497,10 @@ function MenuItem<T extends string>({
                         "ascroll-y",
                         "inset-scrollbar",
                         isSubmenuOpen ? "visible" : "",
-                    ]
-                        .filter(Boolean)
-                        .join(" ")}
+                    ].filter(Boolean).join(" ")}
                     style={submenuStyle}
                     onMouseLeave={(event) => {
-                        if (isCoarsePointer) {
-                            return;
-                        }
+                        if (isCoarsePointer)  return;
 
                         const relatedTarget =
                             event.relatedTarget as Node | null;
@@ -547,12 +508,8 @@ function MenuItem<T extends string>({
                         if (
                             triggerRef.current &&
                             relatedTarget &&
-                            triggerRef.current.contains(
-                                relatedTarget
-                            )
-                        ) {
-                            return;
-                        }
+                            triggerRef.current.contains(relatedTarget)
+                        ) return;
 
                         setIsSubmenuOpen(false);
                     }}
@@ -587,13 +544,9 @@ interface MenuSelectProps<T extends string> {
     value: T;
     options: readonly MenuOption<T>[] | MenuOption<T>[];
     onChange: (value: T) => void;
-    triggerValue?: (
-        selectedOption: MenuOption<T>
-    ) => ReactNode;
+    triggerValue?: (selectedOption: MenuOption<T>) => ReactNode;
     trigger?: (props: any) => ReactNode;
-    optionIcon?: (
-        option: MenuOption<T>
-    ) => ReactNode;
+    optionIcon?: (option: MenuOption<T>) => ReactNode;
     className?: string;
     style?: CSSProperties;
     placement?: MenuPlacement;
@@ -642,9 +595,7 @@ export default function MenuSelect<T extends string>({
         const box = triggerRef.current;
         const menu = menuRef.current;
 
-        if (!box || !menu) {
-            return;
-        }
+        if (!box || !menu) return;
 
         const boxRect = box.getBoundingClientRect();
         const elementRect = measureElement(menu);
@@ -675,9 +626,7 @@ export default function MenuSelect<T extends string>({
     };
 
     useLayoutEffect(() => {
-        if (!isOpen) {
-            return;
-        }
+        if (!isOpen) return;
 
         updateMenuPosition();
 
@@ -721,23 +670,16 @@ export default function MenuSelect<T extends string>({
         setIsOpen(true);
     };
 
-    const toggleMenu = () => {
-        if (isOpen) {
-            closeMenu();
-        } else {
-            openMenu();
-        }
-    };
+    const toggleMenu = () => {isOpen ? closeMenu() : openMenu()};
 
     /* ---------------------------------------------------------------------- */
     /* Selected option                                                        */
     /* ---------------------------------------------------------------------- */
 
-    const selectedOption = useMemo(
-        () =>
-            options.find(
-                (item) => item.value === value
-            ) ?? options[0],
+    const selectedOption = useMemo(() =>
+        options.find(
+            (item) => item.value === value
+        ) ?? options[0],
         [options, value]
     );
 
@@ -745,9 +687,7 @@ export default function MenuSelect<T extends string>({
     /* Trigger props                                                          */
     /* ---------------------------------------------------------------------- */
 
-    const getInputProps = (
-        customProps: Record<string, any> = {}
-    ) => {
+    const getInputProps = (customProps: Record<string, any> = {}) => {
         const {
             onFocus,
             onClick,
@@ -769,20 +709,14 @@ export default function MenuSelect<T extends string>({
                 }
             },
 
-            style: {
-                ...customStyle,
-            },
+            style: { ...customStyle },
 
-            onFocus: (
-                event: FocusEvent<HTMLInputElement>
-            ) => {
+            onFocus: (event: FocusEvent<HTMLInputElement>) => {
                 openMenu();
                 onFocus?.(event);
             },
 
-            onClick: (
-                event: ReactMouseEvent<HTMLInputElement>
-            ) => {
+            onClick: (event: ReactMouseEvent<HTMLInputElement>) => {
                 openMenu();
                 onClick?.(event);
             },
@@ -798,36 +732,21 @@ export default function MenuSelect<T extends string>({
     }, []);
 
     useEffect(() => {
-        if (!isOpen) {
-            return;
-        }
+        if (!isOpen) return;
 
-        const handlePointerDown = (
-            event: PointerEvent
-        ) => {
+        const handlePointerDown = (event: PointerEvent) => {
             const target = event.target as Node;
 
-            if (menuRef.current?.contains(target)) {
-                return;
-            }
-
-            if (triggerRef.current?.contains(target)) {
-                return;
-            }
+            if (menuRef.current?.contains(target)) return;
+            if (triggerRef.current?.contains(target)) return;
 
             closeMenu();
         };
 
-        document.addEventListener(
-            "pointerdown",
-            handlePointerDown
-        );
+        document.addEventListener("pointerdown", handlePointerDown);
 
         return () => {
-            document.removeEventListener(
-                "pointerdown",
-                handlePointerDown
-            );
+            document.removeEventListener("pointerdown", handlePointerDown);
         };
     }, [isOpen]);
 
@@ -837,27 +756,17 @@ export default function MenuSelect<T extends string>({
 
     const triggerElement = trigger
         ? trigger({
-              isOpen,
-              toggle: toggleMenu,
-              open: openMenu,
-              close: closeMenu,
-              setIsOpen: (
-                  open: boolean
-              ) => {
-                  if (open) {
-                      openMenu();
-                  } else {
-                      closeMenu();
-                  }
-              },
-              selectedOption,
-              getInputProps,
-          })
+            isOpen,
+            toggle: toggleMenu,
+            open: openMenu,
+            close: closeMenu,
+            setIsOpen: (open: boolean) => {open ? openMenu() : closeMenu()},
+            selectedOption,
+            getInputProps,
+        })
         : (
             <button
-                ref={
-                    triggerRef as React.RefObject<HTMLButtonElement>
-                }
+                ref={triggerRef as React.RefObject<HTMLButtonElement>}
                 type="button"
                 aria-haspopup="menu"
                 aria-expanded={isOpen}
@@ -866,9 +775,7 @@ export default function MenuSelect<T extends string>({
                     className || "dropdown-trigger",
                     id || "",
                     isOpen ? "clicked" : "",
-                ]
-                    .filter(Boolean)
-                    .join(" ")}
+                ].filter(Boolean).join(" ")}
                 onClick={toggleMenu}
                 style={style}
             >
@@ -878,7 +785,8 @@ export default function MenuSelect<T extends string>({
                         <span>
                             {selectedOption.label}
                         </span>
-                    )}
+                    )
+                }
             </button>
         );
 
@@ -897,12 +805,8 @@ export default function MenuSelect<T extends string>({
                             "ascroll-y",
                             "inset-scrollbar",
                             isOpen ? "visible" : "",
-                            id
-                                ? `${id}-options`
-                                : "",
-                        ]
-                            .filter(Boolean)
-                            .join(" ")}
+                            id ? `${id}-options` : "",
+                        ].filter(Boolean).join(" ")}
                         style={menuStyle}
                         onMouseDown={(event) => {
                             event.stopPropagation();
