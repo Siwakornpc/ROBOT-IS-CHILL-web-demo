@@ -135,6 +135,7 @@ export default function Body() {
                                 if (color !== null) updateTheme({ color });
                             }}
                             hasNone={false}
+                            orientation="horizontal"
                         />
                     </div>
 

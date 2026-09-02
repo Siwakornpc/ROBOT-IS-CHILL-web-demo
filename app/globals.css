@@ -1857,16 +1857,21 @@ main:has(.main-body) {
 
 /* stripped from https://www.jscolorpicker.com/ */
 
+.color-picker {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+}
+
 .color-picker-container {
     position: relative;
     touch-action: none;
     user-select: none;
-    
+
     width: stretch;
     aspect-ratio: 7 / 5;
-
     border-radius: 4px;
-
     background:
         linear-gradient(
             to top,
@@ -1890,7 +1895,7 @@ main:has(.main-body) {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    margin-top: 8px;
+    min-width: 200px;
 }
 .color-picker-rgb {
     display: flex;
@@ -1900,8 +1905,6 @@ main:has(.main-body) {
 .color-picker-thumb {
     display: block;
     position: absolute;
-    transform: translate(-50%, -50%);
-
     width: 12px;
     height: 12px;
     outline: 2px solid white;
@@ -1916,9 +1919,11 @@ main:has(.main-body) {
 }
 
 .color-picker-hue-slider {
-    position: relative;
     display: flex;
-    width: stretch;
+    flex-direction: column;
+    align-items: stretch;
+    flex-shrink: 0;
+    position: relative;
     height: 1.75em;
     border-radius: 4px;
     background: linear-gradient(
@@ -1934,10 +1939,45 @@ main:has(.main-body) {
     touch-action: none;
 }
 .color-picker-hue-slider-thumb {
-    width: 2px;
-    background: white;
     position: relative;
+    width: 4px;
+    margin: -2px;
+    border-radius: 2px;
+    background: white;
 }
+
+.color-picker.horizontal {
+    flex-direction: row;
+}
+.color-picker.horizontal .color-picker-container {
+    aspect-ratio: 1/1;
+}
+.color-picker.horizontal .color-picker-hue-slider {
+    flex-direction: column;
+    width: 1.75em;
+    height: unset;
+    background: linear-gradient(
+        to bottom,
+        #ff0000 0%,
+        #ffff00 17%,
+        #00ff00 33%,
+        #00ffff 50%,
+        #0000ff 67%,
+        #ff00ff 83%,
+        #ff0000 100%
+    );
+}
+.color-picker.horizontal .color-picker-hue-slider-thumb {
+    width: unset;
+    height: 4px;
+}
+.color-picker.horizontal .color-picker-panel {
+    min-width: 120px;
+}
+.color-picker.horizontal .color-picker-rgb {
+    flex-direction: column;
+}
+
 /*
     search elements
 */
