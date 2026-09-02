@@ -1865,6 +1865,8 @@ main:has(.main-body) {
     width: stretch;
     aspect-ratio: 7 / 5;
 
+    border-radius: 4px;
+
     background:
         linear-gradient(
             to top,
@@ -1918,7 +1920,7 @@ main:has(.main-body) {
     display: flex;
     width: stretch;
     height: 1.75em;
-
+    border-radius: 4px;
     background: linear-gradient(
         to right,
         #ff0000 0%,
@@ -2709,18 +2711,21 @@ tr:nth-child(odd) td {
     border-radius: 12px;
     background: rgb(var(--md-color-surface-container-low));
 }
-.dropdown-trigger:after {
-    content: "arrow_drop_down";
-    font-family: Material Symbols Outlined;
-    font-size: 24px;
-}
-
 .dropdown-trigger:hover {
     background: rgb(var(--md-color-surface-container))
 }
-
 .dropdown-trigger:active {
     background: rgb(var(--md-color-surface-container-high))
+}
+
+.dropdown-trigger::after {
+    content: "arrow_drop_down";
+    font-family: "Material Symbols Outlined";
+    font-size: 24px;
+    transition: 0.2s ease;
+}
+.dropdown-trigger.clicked::after {
+    rotate: 180deg;
 }
 
 /*
