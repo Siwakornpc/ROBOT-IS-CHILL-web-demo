@@ -185,43 +185,43 @@ function calculateMenuPosition(
 
         case "bottom-end":
             left = boxRect.right - elementWidth;
-            top = boxRect.bottom + gap;
+            top = boxRect.bottom + gap + (margin * 2);
             maxHeight = Math.max(60, spaceBelow);
             break;
 
         case "top-start":
             left = boxRect.left;
-            top = boxRect.top - elementHeight - gap;
+            top = boxRect.top - elementHeight - gap - (margin * 2);
             maxHeight = Math.max(60, spaceAbove);
             break;
 
         case "top-end":
             left = boxRect.right - elementWidth;
-            top = boxRect.top - elementHeight - gap;
+            top = boxRect.top - elementHeight - gap - (margin * 2);
             maxHeight = Math.max(60, spaceAbove);
             break;
 
         case "right-start":
             left = boxRect.right + gap;
-            top = boxRect.top;
+            top = boxRect.top + (margin * 2);
             maxHeight = Math.max(60, viewportHeight - boxRect.top - margin);
             break;
 
         case "right-center":
             left = boxRect.right + gap;
-            top = boxRect.top + (boxHeight - elementHeight) / 2;
+            top = boxRect.top + (boxHeight - elementHeight) / 2 + (margin * 2);
             maxHeight = Math.max(60, viewportHeight - margin * 2);
             break;
 
         case "left-start":
             left = boxRect.left - elementWidth - gap;
-            top = boxRect.top;
+            top = boxRect.top + (margin * 2);
             maxHeight = Math.max(60, viewportHeight - boxRect.top - margin);
             break;
 
         case "left-center":
             left = boxRect.left - elementWidth - gap;
-            top = boxRect.top + (boxHeight - elementHeight) / 2;
+            top = boxRect.top + (boxHeight - elementHeight) / 2 + (margin * 2);
             maxHeight = Math.max(60, viewportHeight - margin * 2);
             break;
     }
