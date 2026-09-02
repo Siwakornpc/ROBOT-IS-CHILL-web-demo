@@ -145,21 +145,21 @@ export default function Slider({
             <div
                 className="slider-track slider-start-track"
                 style={{
-                    flex: `${Math.max(0.0001, leftRatio)} 1 0%`,
+                    display: leftRatio === 0 ? "none" : undefined,
+                    flex: `${leftRatio} 1 0%`,
                     height: currentSize.trackHeight,
                     backgroundColor: leftColor,
                     borderRadius: "2px",
                 }}
             />
-
             <div
                 className="slider-track slider-mid-track"
                 style={{
-                    flex: `${Math.max(0.0001, midRatio)} 1 0%`,
+                    display: midRatio === 0 ? "none" : undefined,
+                    flex: `${midRatio} 1 0%`,
                     height: currentSize.trackHeight,
                     backgroundColor: midColor,
                     borderRadius: "2px",
-                    display: midRatio === 0 ? "none" : undefined,
                 }}
             />
 
@@ -181,7 +181,8 @@ export default function Slider({
             <div
                 className="slider-track slider-end-track"
                 style={{
-                    flex: `${Math.max(0.0001, rightRatio)} 1 0%`,
+                    display: rightRatio === 0 ? "none" : undefined,
+                    flex: `${rightRatio} 1 0%`,
                     height: currentSize.trackHeight,
                     backgroundColor: rightColor,
                     borderRadius: "2px",
