@@ -957,6 +957,7 @@ hr {
     position: fixed;
     pointer-events: none;
     width: 240px;
+    height: max-content;
     padding-block: 4px;
     border-radius: 16px;
     background: rgb(var(--md-color-surface-container-low));
