@@ -92,7 +92,6 @@ export default function Slider({
             style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "4px",
                 position: "relative",
                 touchAction: "none",
                 cursor: "pointer",
@@ -107,8 +106,8 @@ export default function Slider({
                 dragRef.current = false;
                 setIsPressed(false);
             }}
-        >
-            {hasZero ? (
+        >{
+            hasZero ?
                 ratio >= zeroRatio
                 ? <>
                     {/* POSITIVE OR ZERO: [Track 1: min->0] [Track 2: 0->thumb] [Thumb] [Track 3: thumb->max] */}
@@ -122,6 +121,7 @@ export default function Slider({
                             borderRadius: "2px",
                             borderStartStartRadius: currentSize.trackRadius,
                             borderEndStartRadius: currentSize.trackRadius,
+                            marginInlineEnd: "2px",
                             pointerEvents: "none",
                         }}
                     />
@@ -133,6 +133,8 @@ export default function Slider({
                             height: currentSize.trackHeight,
                             backgroundColor: "rgb(var(--md-color-primary))",
                             borderRadius: "2px",
+                            marginInlineStart: zeroRatio === 0 ? undefined : "2px",
+                            marginRight: "2px",
                             pointerEvents: "none",
                         }}
                     />
@@ -160,6 +162,7 @@ export default function Slider({
                             borderRadius: "2px",
                             borderStartEndRadius: currentSize.trackRadius,
                             borderEndEndRadius: currentSize.trackRadius,
+                            marginInlineStart: "2px",
                             pointerEvents: "none",
                         }}
                     />
@@ -176,6 +179,7 @@ export default function Slider({
                             borderRadius: "2px",
                             borderStartStartRadius: currentSize.trackRadius,
                             borderEndStartRadius: currentSize.trackRadius,
+                            marginInlineEnd: "2px",
                             pointerEvents: "none",
                         }}
                     />
@@ -201,6 +205,8 @@ export default function Slider({
                             height: currentSize.trackHeight,
                             backgroundColor: "rgb(var(--md-color-primary))",
                             borderRadius: "2px",
+                            marginInlineStart: "2px",
+                            marginInlineEnd: "2px",
                             pointerEvents: "none",
                         }}
                     />
@@ -214,11 +220,11 @@ export default function Slider({
                             borderRadius: "2px",
                             borderStartEndRadius: currentSize.trackRadius,
                             borderEndEndRadius: currentSize.trackRadius,
+                            marginInlineStart: "2px",
                             pointerEvents: "none",
                         }}
                     />
                 </>
-            )
             : <>
                 {/* NO ZERO: [Track 1: min->thumb] [Thumb] [Track 2: thumb->max] */}
                 <div
@@ -231,6 +237,7 @@ export default function Slider({
                         borderRadius: "2px",
                         borderStartStartRadius: currentSize.trackRadius,
                         borderEndStartRadius: currentSize.trackRadius,
+                        marginInlineEnd: "2px",
                         pointerEvents: "none",
                     }}
                 />
@@ -258,10 +265,11 @@ export default function Slider({
                         borderRadius: "2px",
                         borderStartEndRadius: currentSize.trackRadius,
                         borderEndEndRadius: currentSize.trackRadius,
+                        marginInlineStart: "2px",
                         pointerEvents: "none",
                     }}
                 />
-            </>}
-        </div>
+            </>
+        }</div>
     );
 }
