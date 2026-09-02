@@ -14,11 +14,11 @@ interface SliderProps {
 }
 
 const SIZES = {
-    xsmall: { trackHeight: "16px", thumbHeight: "44px" },
-    small: { trackHeight: "24px", thumbHeight: "44px" },
-    medium: { trackHeight: "40px", thumbHeight: "52px" },
-    large: { trackHeight: "56px", thumbHeight: "68px" },
-    xlarge: { trackHeight: "96px", thumbHeight: "108px" },
+    xsmall: { thumbHeight: "44px", trackHeight: "16px", trackRadius: "8px" },
+    small: { thumbHeight: "44px", trackHeight: "24px", trackRadius: "8px" },
+    medium: { trackHeight: "40px", thumbHeight: "52px", trackRadius: "12px" },
+    large: { trackHeight: "56px", thumbHeight: "68px", trackRadius: "16px" },
+    xlarge: { trackHeight: "96px", thumbHeight: "108px", trackRadius: "28px" },
 };
 
 export default function Slider({
@@ -97,7 +97,7 @@ export default function Slider({
                 touchAction: "none",
                 cursor: "pointer",
                 width: "100%",
-                height: currentSize.trackHeight,
+                height: currentSize.thumbHeight,
                 ...style,
             }}
             onPointerDown={handlePointerDown}
@@ -120,6 +120,8 @@ export default function Slider({
                             height: currentSize.trackHeight,
                             backgroundColor: "rgb(var(--md-color-secondary-container))",
                             borderRadius: "2px",
+                            borderStartStartRadius: currentSize.trackRadius,
+                            borderStartEndRadius: currentSize.trackRadius,
                             pointerEvents: "none",
                         }}
                     />
@@ -156,6 +158,8 @@ export default function Slider({
                             height: currentSize.trackHeight,
                             backgroundColor: "rgb(var(--md-color-secondary-container))",
                             borderRadius: "2px",
+                            borderEndStartRadius: currentSize.trackRadius,
+                            borderEndEndRadius: currentSize.trackRadius,
                             pointerEvents: "none",
                         }}
                     />
@@ -170,6 +174,8 @@ export default function Slider({
                             height: currentSize.trackHeight,
                             backgroundColor: "rgb(var(--md-color-secondary-container))",
                             borderRadius: "2px",
+                            borderStartStartRadius: currentSize.trackRadius,
+                            borderStartEndRadius: currentSize.trackRadius,
                             pointerEvents: "none",
                         }}
                     />
@@ -206,6 +212,8 @@ export default function Slider({
                             height: currentSize.trackHeight,
                             backgroundColor: "rgb(var(--md-color-secondary-container))",
                             borderRadius: "2px",
+                            borderEndStartRadius: currentSize.trackRadius,
+                            borderEndEndRadius: currentSize.trackRadius,
                             pointerEvents: "none",
                         }}
                     />
@@ -221,6 +229,8 @@ export default function Slider({
                         height: currentSize.trackHeight,
                         backgroundColor: "rgb(var(--md-color-primary))",
                         borderRadius: "2px",
+                        borderStartStartRadius: currentSize.trackRadius,
+                        borderStartEndRadius: currentSize.trackRadius,
                         pointerEvents: "none",
                     }}
                 />
@@ -246,6 +256,8 @@ export default function Slider({
                         height: currentSize.trackHeight,
                         backgroundColor: "rgb(var(--md-color-secondary-container))",
                         borderRadius: "2px",
+                        borderEndStartRadius: currentSize.trackRadius,
+                        borderEndEndRadius: currentSize.trackRadius,
                         pointerEvents: "none",
                     }}
                 />
