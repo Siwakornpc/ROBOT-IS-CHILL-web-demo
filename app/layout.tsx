@@ -4,6 +4,7 @@ import { IBM_Plex_Mono, Nunito_Sans } from "next/font/google";
 import "./globals.css";
 import ThemeScript from '@/components/themescript';
 import { MenuProvider } from '@/components/MenuContext';
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const nunitoSans = Nunito_Sans({
     subsets: ["latin"],
@@ -40,8 +41,10 @@ export default function RootLayout({
             <body className="min-h-full flex flex-col bg-background text-foreground">
                 <ThemeScript />
                 <MenuProvider>
-                    <Header />
-                    {children}
+                    <ThemeProvider>
+                        <Header />
+                        {children}
+                    </ThemeProvider>
                 </MenuProvider>
             </body>
         </html>
