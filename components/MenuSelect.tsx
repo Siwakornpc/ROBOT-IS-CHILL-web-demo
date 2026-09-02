@@ -57,16 +57,23 @@ interface PositionResult {
 function calculateMenuPosition(
     triggerRect: DOMRect,
     menuRect: DOMRect,
-    {placement, margin, gap}: PositionOptions
+    { placement, margin, gap }: PositionOptions
 ): PositionResult {
-    const el = document.querySelector("body > main.align-layout") as HTMLElement;
-    
-    // Use window dimensions or fallback to container bounds safely including scroll positions
-    const containerWidth = window.innerWidth;
-    const containerHeight = window.innerHeight;
+    const layoutContainer = document.querySelector("body > main.align-layout") || document.body;
+    const containerRect = layoutContainer.getBoundingClientRect();
 
-    const spaceAbove = triggerRect.top - margin - gap;
-    const spaceBelow = containerHeight - triggerRect.bottom - margin - gap;
+    const containerWidth = containerRect.width || window.innerWidth;
+    const containerHeight = containerRect.height || window.innerHeight;
+    const containerLeft = containerRect.left || 0;
+    const containerTop = containerRect.top || 0;
+
+    const relativeTriggerTop = triggerRect.top - containerTop;
+    const relativeTriggerBottom = triggerRect.bottom - containerTop;
+    const relativeTriggerLeft = triggerRect.left - containerLeft;
+    const relativeTriggerRight = triggerRect.right - containerLeft;
+
+    const spaceAbove = relativeTriggerTop - margin - gap;
+    const spaceBelow = containerHeight - relativeTriggerBottom - margin - gap;
 
     let activePlacement = placement;
 
@@ -77,56 +84,57 @@ function calculateMenuPosition(
         activePlacement = activePlacement.replace("top", "bottom") as MenuPlacement;
     }
 
-    let left = triggerRect.left;
-    let top = triggerRect.bottom + gap;
+    let left = relativeTriggerLeft;
+    let top = relativeTriggerBottom + gap;
     let maxHeight = containerHeight - margin * 2;
 
     switch (activePlacement) {
         case "bottom-start":
-            left = triggerRect.left;
-            top = triggerRect.bottom + gap;
+            left = relativeTriggerLeft;
+            top = relativeTriggerBottom + gap;
             maxHeight = Math.min(menuRect.height, spaceBelow);
             break;
         case "bottom-end":
-            left = triggerRect.right - menuRect.width;
-            top = triggerRect.bottom + gap;
+            left = relativeTriggerRight - menuRect.width;
+            top = relativeTriggerBottom + gap;
             maxHeight = Math.min(menuRect.height, spaceBelow);
             break;
         case "top-start":
-            left = triggerRect.left;
+            left = relativeTriggerLeft;
             maxHeight = Math.min(menuRect.height, spaceAbove);
-            top = triggerRect.top - maxHeight - gap;
+            top = relativeTriggerTop - maxHeight - gap;
             break;
         case "top-end":
-            left = triggerRect.right - menuRect.width;
+            left = relativeTriggerRight - menuRect.width;
             maxHeight = Math.min(menuRect.height, spaceAbove);
-            top = triggerRect.top - maxHeight - gap;
+            top = relativeTriggerTop - maxHeight - gap;
             break;
         case "right-start":
         case "right-center":
-            left = triggerRect.right + gap;
-            top = activePlacement.includes("center") 
-                ? triggerRect.top + (triggerRect.height - menuRect.height) / 2 
-                : triggerRect.top;
-            maxHeight = containerHeight - triggerRect.top - margin;
+            left = relativeTriggerRight + gap;
+            top = activePlacement.includes("center")
+                ? relativeTriggerTop + (triggerRect.height - menuRect.height) / 2
+                : relativeTriggerTop;
+            maxHeight = containerHeight - relativeTriggerTop - margin;
             break;
         case "left-start":
         case "left-center":
-            left = triggerRect.left - menuRect.width - gap;
-            top = activePlacement.includes("center") 
-                ? triggerRect.top + (triggerRect.height - menuRect.height) / 2 
-                : triggerRect.top;
-            maxHeight = containerHeight - triggerRect.top - margin;
+            left = relativeTriggerLeft - menuRect.width - gap;
+            top = activePlacement.includes("center")
+                ? relativeTriggerTop + (triggerRect.height - menuRect.height) / 2
+                : relativeTriggerTop;
+            maxHeight = containerHeight - relativeTriggerTop - margin;
             break;
     }
 
-    left = Math.max(margin, Math.min(left, containerWidth - menuRect.width - margin));
-    top = Math.max(margin, Math.min(top, containerHeight - menuRect.height - margin));
+    // Convert back to absolute viewport positioning for position: fixed elements
+    left = containerLeft + Math.max(margin, Math.min(left, containerWidth - menuRect.width - margin));
+    top = containerTop + Math.max(margin, Math.min(top, containerHeight - menuRect.height - margin));
 
     return {
         left: Math.round(left),
         top: Math.round(top),
-        maxHeight: Math.max(60, Math.round(maxHeight)),
+        maxHeight: Math.max(148, Math.round(maxHeight)),
         actualPlacement: activePlacement,
     };
 }
@@ -324,40 +332,44 @@ function MenuItem<T extends string>({
             </div>
 
             {hasChildren &&
-                <div
-                    ref={submenuRef}
-                    role="menu"
-                    className={[
-                        "menu",
-                        "submenu-popout",
-                        placementClass,
-                        "ascroll-y",
-                        "inset-scrollbar",
-                        isSubmenuOpen ? "visible" : "",
-                    ].filter(Boolean).join(" ")}
-                    style={submenuStyle}
-                    onMouseLeave={(event) => {
-                        if (isCoarsePointer) return;
-                        const related = event.relatedTarget as Node | null;
-                        if (triggerRef.current && related && triggerRef.current.contains(related)) return;
-                        setIsSubmenuOpen(false);
-                    }}
-                >
-                    {item.children!.map((child) => 
-                        <MenuItem
-                            key={child.value}
-                            item={child}
-                            selectedValue={selectedValue}
-                            onChange={onChange}
-                            onCloseAll={onCloseAll}
-                            closeSignal={closeSignal}
-                            optionIcon={optionIcon}
-                            submenuPlacement={submenuPlacement}
-                            pageMargin={pageMargin}
-                            menuGap={menuGap}
-                        />
-                    )}
-                </div>
+                createPortal(
+                    <div
+                        ref={submenuRef}
+                        role="menu"
+                        className={[
+                            "menu",
+                            "submenu-popout",
+                            placementClass,
+                            "ascroll-y",
+                            "inset-scrollbar",
+                            isSubmenuOpen ? "visible" : "",
+                        ].filter(Boolean).join(" ")}
+                        style={submenuStyle}
+                        onMouseDown={(event) => event.stopPropagation()}
+                        onMouseLeave={(event) => {
+                            if (isCoarsePointer) return;
+                            const related = event.relatedTarget as Node | null;
+                            if (triggerRef.current && related && triggerRef.current.contains(related)) return;
+                            setIsSubmenuOpen(false);
+                        }}
+                    >
+                        {item.children!.map((child) => 
+                            <MenuItem
+                                key={child.value}
+                                item={child}
+                                selectedValue={selectedValue}
+                                onChange={onChange}
+                                onCloseAll={onCloseAll}
+                                closeSignal={closeSignal}
+                                optionIcon={optionIcon}
+                                submenuPlacement={submenuPlacement}
+                                pageMargin={pageMargin}
+                                menuGap={menuGap}
+                            />
+                        )}
+                    </div>,
+                    document.body.querySelector("body > main.align-layout") || document.body
+                )
             }
         </div>
     );
@@ -484,27 +496,6 @@ export default function MenuSelect<T extends string>({
         [options, value]
     );
 
-    const getInputProps = (customProps: Record<string, any> = {}) => {
-        const { onFocus, onClick, ref, style: customStyle, ...rest } = customProps;
-        return {
-            ...rest,
-            ref: (node: HTMLElement | null) => {
-                triggerRef.current = node;
-                if (typeof ref === "function") ref(node);
-                else if (ref) ref.current = node;
-            },
-            style: { ...customStyle },
-            onFocus: (event: FocusEvent<HTMLInputElement>) => {
-                openMenu();
-                onFocus?.(event);
-            },
-            onClick: (event: ReactMouseEvent<HTMLInputElement>) => {
-                openMenu();
-                onClick?.(event);
-            },
-        };
-    };
-
     useEffect(() => {
         setIsMounted(true);
         if (!isOpen) return;
@@ -529,7 +520,26 @@ export default function MenuSelect<T extends string>({
                 close: closeMenu,
                 setIsOpen: (open: boolean) => (open ? openMenu() : closeMenu()),
                 selectedOption,
-                getInputProps,
+                getInputProps: (customProps: Record<string, any> = {}) => {
+                    const { onFocus, onClick, ref, style: customStyle, ...rest } = customProps;
+                    return {
+                        ...rest,
+                        ref: (node: HTMLElement | null) => {
+                            triggerRef.current = node;
+                            if (typeof ref === "function") ref(node);
+                            else if (ref) ref.current = node;
+                        },
+                        style: { ...customStyle },
+                        onFocus: (event: FocusEvent<HTMLInputElement>) => {
+                            openMenu();
+                            onFocus?.(event);
+                        },
+                        onClick: (event: ReactMouseEvent<HTMLInputElement>) => {
+                            openMenu();
+                            onClick?.(event);
+                        },
+                    };
+                },
             })
             : <button
                 ref={triggerRef as React.RefObject<HTMLButtonElement>}
