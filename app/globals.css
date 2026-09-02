@@ -1956,6 +1956,7 @@ main:has(.main-body) {
 .color-picker.horizontal .color-picker-hue-slider {
     flex-direction: column;
     width: 1.75em;
+    height: unset;
     background: linear-gradient(
         to bottom,
         #ff0000 0%,
