@@ -981,9 +981,9 @@ hr {
     margin-inline: 2px;
     background: rgb(var(--md-color-primary));
     border-radius: 2px;
-    transition: "width 0.1s ease";
-    pointer-events: "none";
-    align-self: "center";
+    transition: width 0.1s ease;
+    pointer-events: none;
+    align-self: center;
 }
 .slider-thumb:active {
     width: 2px;
