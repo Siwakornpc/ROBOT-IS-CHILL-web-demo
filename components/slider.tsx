@@ -106,13 +106,13 @@ export default function Slider({
                         className="slider-track slider-start-track"
                         style={{
                             flex: `${zeroRatio} 1 0%`,
-                            background: "rgb(var(--md-color-primary))",
                         }}
                     />
                     <div
                         className="slider-track slider-mid-track"
                         style={{
                             flex: `${ratio - zeroRatio} 1 0%`,
+                            background: "rgb(var(--md-color-primary))",
                         }}
                     />
                     <div
