@@ -963,10 +963,10 @@ hr {
 }
 
 .slider-track {
-    pointer-events: "none";
-    margin-inline-end: "2px";
-    border-radius: "2px";
-    background: "rgb(var(--md-color-secondary-container))";
+    pointer-events: none;
+    margin-inline-end: 2px;
+    border-radius: 2px;
+    background: rgb(var(--md-color-secondary-container));
 }
 .slider-start-track, .slider-mid-track {
     margin-inline-end: "2px";
