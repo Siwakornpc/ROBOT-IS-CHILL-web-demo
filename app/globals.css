@@ -954,7 +954,7 @@ hr {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    position: absolute;
+    position: fixed;
     pointer-events: none;
     width: 240px;
     padding-block: 4px;
@@ -963,7 +963,7 @@ hr {
     box-shadow: var(--elevation-3);
     transform: scale(.95);
     opacity: 0;
-    z-index: 1;
+    z-index: 86 !important;
     transition: all .2s, top, left;
     color: var(--normal);
 }
@@ -1036,7 +1036,6 @@ hr {
 .menu-option-wrapper {
     display: flex;
     flex-direction: column;
-    position: relative;
     padding-inline: 4px;
 }
 
@@ -2708,12 +2707,14 @@ tr:nth-child(odd) td {
 }
 .dropdown-trigger:after {
     content: "arrow_drop_down";
-    font-family: "Material Symbols Outlined";
+    font-family: Material Symbols Outlined;
     font-size: 24px;
 }
+
 .dropdown-trigger:hover {
     background: rgb(var(--md-color-surface-container))
 }
+
 .dropdown-trigger:active {
     background: rgb(var(--md-color-surface-container-high))
 }

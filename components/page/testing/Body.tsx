@@ -123,7 +123,7 @@ export default function Body() {
                 <MenuSelect
                     value={textFieldSelected}
                     options={filteredOptions}
-                    anchor="t"
+                    placement="bottom-start"
                     onChange={(newValue) => {
                         setTextFieldSelected(newValue);
                         const matched = options.find((opt) => opt.value === newValue);
@@ -160,7 +160,7 @@ export default function Body() {
                     value={recurSelected}
                     options={sampleOptions}
                     onChange={handleSelect}
-                    anchor="s"
+                    placement="bottom-start"
                 />
 
                 <div
