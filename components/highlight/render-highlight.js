@@ -72,7 +72,7 @@ export function highlightText(
     // embedded newlines, which lets callers safely split the rendered HTML on "\n"
     // to get one chunk per source line without cutting a tag in half.
     const flagPattern = /^((?:--|-)(?:[^- >:;&=\n]+))(=)?([^ >:;&\n]+)?/;
-    const variantPattern = /^([:;])([^ >:;&\n]+)/;
+    const variantPattern = /^([:;]\.?)([^ >:;&\n]+)/;
 
     let result = "";
     let index = 0;
