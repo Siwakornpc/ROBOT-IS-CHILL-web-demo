@@ -971,7 +971,6 @@ hr {
     opacity: 1;
     transform: scale(1);
     pointer-events: auto;
-    height: max-content;
 }
 .menu.anchor-t,
 .menu.anchor-tl,
