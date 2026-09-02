@@ -107,6 +107,8 @@ export default function Body() {
     const variantText = '<wave><axis: Literal["x", "y"]>/<amplitude: int>/<offset: float>/<frequency: float>';
     const variantElementRef = useRef<HTMLDivElement>(null);
 
+    const [sliderValue, setSliderValue] = useState(50);
+
     useEffect(() => {
         const element = variantElementRef.current;
 
@@ -171,11 +173,14 @@ export default function Body() {
             </div>
 
             <Slider
-                value={50}
+                value={sliderValue}
                 min={0}
                 max={100}
                 step={1}
-                onChange={(value) => console.log("Slider Value:", value)}
+                onChange={(value) => {
+                    setSliderValue(value);
+                    console.log("Slider Value:", value);
+                }}
             />
         </main>
     );
