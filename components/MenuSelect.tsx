@@ -59,15 +59,26 @@ function calculateMenuPosition(
     {placement, margin, gap}: PositionOptions
 ): PositionResult {
     const el = document.querySelector("body > main.align-layout") as HTMLElement;
+    const containerWidth = el ? el.offsetWidth : window.innerWidth;
+    const containerHeight = el ? el.offsetHeight : window.innerHeight;
+
+    const spaceAbove = triggerRect.top - margin - gap;
+    const spaceBelow = containerHeight - triggerRect.bottom - margin - gap;
+
+    let activePlacement = placement;
+
+    // Auto-flip if not enough space below
+    if (activePlacement.startsWith("bottom") && spaceBelow < menuRect.height && spaceAbove > spaceBelow) {
+        activePlacement = activePlacement.replace("bottom", "top") as MenuPlacement;
+    } else if (activePlacement.startsWith("top") && spaceAbove < menuRect.height && spaceBelow > spaceAbove) {
+        activePlacement = activePlacement.replace("top", "bottom") as MenuPlacement;
+    }
 
     let left = triggerRect.left;
     let top = triggerRect.bottom + gap;
-    let maxHeight = el.offsetHeight - margin * 2;
-    
-    const spaceAbove = triggerRect.top - margin - gap;
-    const spaceBelow = el.offsetHeight - triggerRect.bottom - margin - gap;
+    let maxHeight = containerHeight - margin * 2;
 
-    switch (placement) {
+    switch (activePlacement) {
         case "bottom-start":
             left = triggerRect.left;
             top = triggerRect.bottom + gap;
@@ -89,30 +100,25 @@ function calculateMenuPosition(
             top = triggerRect.top - Math.min(menuRect.height, maxHeight) - gap;
             break;
         case "right-start":
-            left = triggerRect.right + gap;
-            top = triggerRect.top;
-            maxHeight = el.offsetHeight - triggerRect.top - margin;
-            break;
         case "right-center":
             left = triggerRect.right + gap;
-            top = triggerRect.top + (triggerRect.height - menuRect.height) / 2;
-            maxHeight = el.offsetHeight - margin * 2;
+            top = activePlacement.includes("center") 
+                ? triggerRect.top + (triggerRect.height - menuRect.height) / 2 
+                : triggerRect.top;
+            maxHeight = containerHeight - triggerRect.top - margin;
             break;
         case "left-start":
-            left = triggerRect.left - menuRect.width - gap;
-            top = triggerRect.top;
-            maxHeight = el.offsetHeight - triggerRect.top - margin;
-            break;
         case "left-center":
             left = triggerRect.left - menuRect.width - gap;
-            top = triggerRect.top + (triggerRect.height - menuRect.height) / 2;
-            maxHeight = el.offsetHeight - margin * 2;
+            top = activePlacement.includes("center") 
+                ? triggerRect.top + (triggerRect.height - menuRect.height) / 2 
+                : triggerRect.top;
+            maxHeight = containerHeight - triggerRect.top - margin;
             break;
     }
 
-    left = Math.max(margin, Math.min(left, el.offsetWidth - menuRect.width - margin));
-    if (placement.endsWith("center"))
-        top = Math.max(margin, Math.min(top, el.offsetHeight - menuRect.height - margin));
+    left = Math.max(margin, Math.min(left, containerWidth - menuRect.width - margin));
+    top = Math.max(margin, Math.min(top, containerHeight - menuRect.height - margin));
 
     return {
         left: Math.round(left),
@@ -467,30 +473,23 @@ export default function MenuSelect<T extends string>({
 
     useLayoutEffect(() => {
         if (!isOpen) return;
-
         updateMenuPosition();
 
-        const update = () => updateMenuPosition();
+        let rafId: number;
+        const handleUpdate = () => {
+            cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(() => updateMenuPosition());
+        };
 
-        window.addEventListener("resize", update);
-
-        /*
-         * Capture scrolling from window
-         * and nested scroll containers.
-         */
-        window.addEventListener("scroll", update, true);
+        window.addEventListener("resize", handleUpdate);
+        window.addEventListener("scroll", handleUpdate, { passive: true, capture: true });
 
         return () => {
-            window.removeEventListener("resize", update);
-            window.removeEventListener("scroll", update, true);
+            window.removeEventListener("resize", handleUpdate);
+            window.removeEventListener("scroll", handleUpdate, true);
+            cancelAnimationFrame(rafId);
         };
-    }, [
-        isOpen,
-        placement,
-        pageMargin,
-        menuGap,
-        style,
-    ]);
+    }, [isOpen, placement, pageMargin, menuGap, style]);
 
     /* -----------------
         Open / close
