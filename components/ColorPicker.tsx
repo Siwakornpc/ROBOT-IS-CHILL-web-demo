@@ -387,35 +387,35 @@ export default function ColorPicker({
                 />
             </div>
 
-            <div className="color-picker-panel">
+            <div
+                ref={hueSliderRef}
+                className="color-picker-hue-slider"
+                onPointerDown={(e) => {
+                    if (e.button !== 0) return;
+                    e.currentTarget.setPointerCapture(e.pointerId);
+                    hueDragRef.current = true;
+                    updateHueFromPosition(e.clientX);
+                }}
+                onPointerMove={(e) => {
+                    if (!hueDragRef.current) return;
+                    updateHueFromPosition( e.clientX);
+                }}
+                onPointerUp={handleHuePointerUp}
+                onPointerCancel={() => {
+                    hueDragRef.current = false;
+                    pendingColorRef.current = null;
+                }}
+            >
                 <div
-                    ref={hueSliderRef}
-                    className="color-picker-hue-slider"
-                    onPointerDown={(e) => {
-                        if (e.button !== 0) return;
-                        e.currentTarget.setPointerCapture(e.pointerId);
-                        hueDragRef.current = true;
-                        updateHueFromPosition(e.clientX);
+                    className="color-picker-hue-slider-thumb"
+                    style={{
+                        top: (orientation === "vertical" ? `${hueThumbPosition * 100}%` : "auto"),
+                        left: (orientation === "horizontal" ? `${hueThumbPosition * 100}%` : "auto")
                     }}
-                    onPointerMove={(e) => {
-                        if (!hueDragRef.current) return;
-                        updateHueFromPosition( e.clientX);
-                    }}
-                    onPointerUp={handleHuePointerUp}
-                    onPointerCancel={() => {
-                        hueDragRef.current = false;
-                        pendingColorRef.current = null;
-                    }}
-                >
-                    <div
-                        className="color-picker-hue-slider-thumb"
-                        style={{
-                            top: (orientation === "vertical" ? `${hueThumbPosition * 100}%` : "auto"),
-                            left: (orientation === "horizontal" ? `${hueThumbPosition * 100}%` : "auto")
-                        }}
-                    />
-                </div>
+                />
+            </div>
 
+            <div className="color-picker-panel">
                 <label className="text-field small has-placeholder">
                     <input
                         ref={hexInputRef}
