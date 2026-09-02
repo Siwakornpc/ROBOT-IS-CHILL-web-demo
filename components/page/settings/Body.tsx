@@ -140,9 +140,7 @@ export default function Body() {
                         <ColorPicker
                             value={theme.color}
                             onChange={(color) => {
-                                if (color !== null) {
-                                    updateTheme({ color });
-                                }
+                                if (color !== null) updateTheme({ color });
                             }}
                             hasNone={false}
                         />
@@ -153,7 +151,6 @@ export default function Body() {
 
                         <MenuSelect
                             id="theme-scheme"
-                            className="dropdown-trigger"
                             value={theme.scheme}
                             options={[
                                 { value: "system", label: "System" },
@@ -169,7 +166,6 @@ export default function Body() {
 
                         <MenuSelect
                             id="theme-contrast"
-                            className="dropdown-trigger"
                             value={theme.contrast}
                             options={[
                                 { value: "system", label: "System" },

@@ -264,11 +264,11 @@ export default function MenuSelect<T extends string>({
                 selectedOption,
                 getInputProps,
             })
-        : <button
+            : <button
                 type="button"
                 aria-haspopup="menu"
                 aria-expanded={isOpen}
-                className={`menu-trigger ${className} ${id || ""} ${isOpen ? "clicked" : ""}`}
+                className={`menu-trigger ${className || "dropdown-trigger"} ${id || ""} ${isOpen ? "clicked" : ""}`}
                 onClick={toggleMenu}
                 style={anchorNameStyle}
             >{triggerValue ? triggerValue(selectedOption) : <span>{selectedOption.label}</span>}

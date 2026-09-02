@@ -211,9 +211,7 @@ export function FilterPanel({
                         <input
                             type="checkbox"
                             checked={value === "true"}
-                            onChange={(e) =>
-                                handleValueChange(type, index, e.target.checked ? "true" : "false")
-                            }
+                            onChange={(e) => handleValueChange(type, index, e.target.checked ? "true" : "false")}
                         />
                         <span>Is Builtin</span>
                     </label>
@@ -287,44 +285,21 @@ export function FilterPanel({
                 );
 
             case "tiling":
-                const tilingOptions = [
-                    { value: "none", label: "None" },
-                    { value: "static", label: "Static" },
-                    { value: "animated", label: "Animated" },
-                    { value: "directional", label: "Directional" },
-                    { value: "animated_directional", label: " Animated Directional" },
-                    { value: "character", label: "Character" },
-                    { value: "tiling", label: "Tiling" },
-                    { value: "diagonal_tiling", label: "Diagonal Tiling" },
-                ];
-
                 return (
                     <MenuSelect
                         value={value}
-                        options={tilingOptions}
+                        options={[
+                            { value: "none", label: "None" },
+                            { value: "static", label: "Static" },
+                            { value: "animated", label: "Animated" },
+                            { value: "directional", label: "Directional" },
+                            { value: "animated_directional", label: " Animated Directional" },
+                            { value: "character", label: "Character" },
+                            { value: "tiling", label: "Tiling" },
+                            { value: "diagonal_tiling", label: "Diagonal Tiling" },
+                        ]}
                         anchor="t"
-                        onChange={(newValue) => {
-                            handleValueChange(type, index, newValue);
-                            const matched = tilingOptions.find((opt) => opt.value === newValue);
-                            if (matched) setSearchQuery(matched.label);
-                        }}
-                        trigger={({ getInputProps }) => (
-                            <label className="text-field">
-                                <span className="text-field-label">Tiling Mode</span>
-                                <input
-                                    {...getInputProps({
-                                        type: "text",
-                                        value: searchQuery,
-                                        placeholder: " ",
-                                        required: true,
-                                        autoComplete: "off",
-                                        onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-                                            setSearchQuery(e.target.value);
-                                        },
-                                    })}
-                                />
-                            </label>
-                        )}
+                        onChange={(newValue) => handleValueChange(type, index, newValue)}
                     />
                 );
 
@@ -352,7 +327,6 @@ export function FilterPanel({
                     <div style={{display: "flex", gap: "4px"}}>
                         <MenuSelect
                             id={`date-mode-select-${index}`}
-                            className="btn medium btn-tonal square"
                             value={value.split(";")[0]}
                             options={[
                                 { value: "before", label: "Before" },
@@ -378,9 +352,7 @@ export function FilterPanel({
                 return (
                     <ColorPicker
                         value={value}
-                        onChange={(color) =>
-                            handleValueChange(type, index, color ?? "None")
-                        }
+                        onChange={(color) => handleValueChange(type, index, color ?? "None")}
                         hasNone={true}
                     />
                 );
