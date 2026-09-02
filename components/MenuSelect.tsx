@@ -55,12 +55,9 @@ interface PositionResult {
 function calculateMenuPosition(
     triggerRect: DOMRect,
     menuRect: DOMRect,
-    {
-        placement,
-        margin,
-        gap,
-    }: PositionOptions
+    {placement, margin, gap}: PositionOptions
 ): PositionResult {
+    const el = document.querySelector(".align-layout") as HTMLElement;
     let left = triggerRect.left;
     let top = triggerRect.bottom + gap;
 
@@ -106,8 +103,8 @@ function calculateMenuPosition(
             break;
     }
 
-    left = Math.max(margin, Math.min(left, window.innerWidth - menuRect.width - margin));
-    top = Math.max(margin, Math.min(top,  window.innerHeight - menuRect.height - margin));
+    left = Math.max(margin, Math.min(left, el.offsetWidth - menuRect.width - margin));
+    top = Math.max(margin, Math.min(top,  el.offsetHeight - menuRect.height - margin));
 
     return {
         left: Math.round(left),
@@ -205,16 +202,11 @@ function MenuItem<T extends string>({
 
         const triggerRect = trigger.getBoundingClientRect();
         const menuRect = measureElement(submenu);
-        const position =
-            calculateMenuPosition(
-                triggerRect,
-                menuRect,
-                {
-                    placement: submenuPlacement,
-                    margin: pageMargin,
-                    gap: menuGap,
-                }
-            );
+        const position = calculateMenuPosition(triggerRect, menuRect, {
+            placement: submenuPlacement,
+            margin: pageMargin,
+            gap: menuGap,
+        });
 
         setSubmenuStyle({
             position: "fixed",
@@ -447,16 +439,11 @@ export default function MenuSelect<T extends string>({
 
         const triggerRect = trigger.getBoundingClientRect();
         const menuRect = measureElement(menu);
-        const position =
-            calculateMenuPosition(
-                triggerRect,
-                menuRect,
-                {
-                    placement,
-                    margin: pageMargin,
-                    gap: menuGap,
-                }
-            );
+        const position = calculateMenuPosition(triggerRect, menuRect, {
+            placement,
+            margin: pageMargin,
+            gap: menuGap,
+        });
 
         setMenuStyle({
             position: "fixed",
@@ -646,7 +633,7 @@ export default function MenuSelect<T extends string>({
                         menuGap={menuGap}
                     />
                 ))}
-            </div>, document.body
+            </div>, document.body.querySelector(".align-layout") as HTMLElement
         )}
     </>);
 }
