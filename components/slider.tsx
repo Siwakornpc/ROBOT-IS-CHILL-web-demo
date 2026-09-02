@@ -1,7 +1,5 @@
 "use client";
 
-// WIP slider component
-
 import { useRef, useState, useCallback, CSSProperties } from "react";
 
 interface SliderProps {
@@ -84,38 +82,6 @@ export default function Slider({
             e.currentTarget.releasePointerCapture(e.pointerId);
     };
 
-    // Calculate proportions for the 3 track segments relative to zero and thumb ratio
-    let leftRatio = 0;
-    let midRatio = 0;
-    let rightRatio = 0;
-    let leftColor = "rgb(var(--md-color-secondary-container))";
-    let midColor = "rgb(var(--md-color-primary))";
-    let rightColor = "rgb(var(--md-color-secondary-container))";
-
-    if (hasZero) {
-        if (ratio >= zeroRatio) {
-            leftRatio = zeroRatio;
-            leftColor = "rgb(var(--md-color-secondary-container))";
-            midRatio = ratio - zeroRatio;
-            midColor = "rgb(var(--md-color-primary))";
-            rightRatio = 1 - ratio;
-            rightColor = "rgb(var(--md-color-secondary-container))";
-        } else {
-            leftRatio = ratio;
-            leftColor = "rgb(var(--md-color-secondary-container))";
-            midRatio = zeroRatio - ratio;
-            midColor = "rgb(var(--md-color-primary))";
-            rightRatio = 1 - zeroRatio;
-            rightColor = "rgb(var(--md-color-secondary-container))";
-        }
-    } else {
-        leftRatio = ratio;
-        leftColor = "rgb(var(--md-color-primary))";
-        midRatio = 0;
-        rightRatio = 1 - ratio;
-        rightColor = "rgb(var(--md-color-secondary-container))";
-    }
-
     // Thumb width: 4px default, 2px when pressed
     const thumbWidth = isPressed ? 2 : 4;
 
@@ -131,7 +97,7 @@ export default function Slider({
                 touchAction: "none",
                 cursor: "pointer",
                 width: "100%",
-                height: currentSize.thumbHeight,
+                height: currentSize.trackHeight,
                 ...style,
             }}
             onPointerDown={handlePointerDown}
@@ -142,55 +108,148 @@ export default function Slider({
                 setIsPressed(false);
             }}
         >
-            <div
-                className="slider-track slider-start-track"
-                style={{
-                    display: leftRatio === 0 ? "none" : undefined,
-                    flex: `${leftRatio} 1 0%`,
-                    pointerEvents: "none",
-                    height: currentSize.trackHeight,
-                    backgroundColor: leftColor,
-                    borderRadius: "2px",
-                }}
-            />
-            <div
-                className="slider-track slider-mid-track"
-                style={{
-                    display: midRatio === 0 ? "none" : undefined,
-                    flex: `${midRatio} 1 0%`,
-                    pointerEvents: "none",
-                    height: currentSize.trackHeight,
-                    backgroundColor: midColor,
-                    borderRadius: "2px",
-                }}
-            />
-
-            <div
-                className="slider-thumb"
-                style={{
-                    flex: `0 0 ${thumbWidth}px`,
-                    pointerEvents: "none",
-                    width: `${thumbWidth}px`,
-                    height: currentSize.thumbHeight,
-                    marginInline: "2px",
-                    backgroundColor: "rgb(var(--md-color-primary))",
-                    borderRadius: "2px",
-                    transition: "width 0.1s ease",
-                    alignSelf: "center",
-                }}
-            />
-
-            <div
-                className="slider-track slider-end-track"
-                style={{
-                    display: rightRatio === 0 ? "none" : undefined,
-                    flex: `${rightRatio} 1 0%`,
-                    pointerEvents: "none",
-                    height: currentSize.trackHeight,
-                    backgroundColor: rightColor,
-                    borderRadius: "2px",
-                }}
-            />
+            {hasZero ? (
+                ratio >= zeroRatio
+                ? <>
+                    {/* POSITIVE OR ZERO: [Track 1: min->0] [Track 2: 0->thumb] [Thumb] [Track 3: thumb->max] */}
+                    <div
+                        className="slider-track slider-start-track"
+                        style={{
+                            display: zeroRatio === 0 ? "none" : undefined,
+                            flex: `${zeroRatio} 1 0%`,
+                            height: currentSize.trackHeight,
+                            backgroundColor: "rgb(var(--md-color-secondary-container))",
+                            borderRadius: "2px",
+                            pointerEvents: "none",
+                        }}
+                    />
+                    <div
+                        className="slider-track slider-mid-track"
+                        style={{
+                            display: ratio - zeroRatio === 0 ? "none" : undefined,
+                            flex: `${ratio - zeroRatio} 1 0%`,
+                            height: currentSize.trackHeight,
+                            backgroundColor: "rgb(var(--md-color-primary))",
+                            borderRadius: "2px",
+                            pointerEvents: "none",
+                        }}
+                    />
+                    <div
+                        className="slider-thumb"
+                        style={{
+                            flex: `0 0 ${thumbWidth}px`,
+                            width: `${thumbWidth}px`,
+                            height: currentSize.thumbHeight,
+                            marginInline: "2px",
+                            backgroundColor: "rgb(var(--md-color-primary))",
+                            borderRadius: "2px",
+                            transition: "width 0.1s ease",
+                            pointerEvents: "none",
+                            alignSelf: "center",
+                        }}
+                    />
+                    <div
+                        className="slider-track slider-end-track"
+                        style={{
+                            display: 1 - ratio === 0 ? "none" : undefined,
+                            flex: `${Math.max(0.0001, 1 - ratio)} 1 0%`,
+                            height: currentSize.trackHeight,
+                            backgroundColor: "rgb(var(--md-color-secondary-container))",
+                            borderRadius: "2px",
+                            pointerEvents: "none",
+                        }}
+                    />
+                </>
+                : <>
+                    {/* NEGATIVE: [Track 1: min->thumb] [Thumb] [Track 2: thumb->0] [Track 3: 0->max] */}
+                    <div
+                        className="slider-track slider-start-track"
+                        style={{
+                            display: ratio === 0 ? "none" : undefined,
+                            flex: `${Math.max(0.0001, ratio)} 1 0%`,
+                            height: currentSize.trackHeight,
+                            backgroundColor: "rgb(var(--md-color-secondary-container))",
+                            borderRadius: "2px",
+                            pointerEvents: "none",
+                        }}
+                    />
+                    <div
+                        className="slider-thumb"
+                        style={{
+                            flex: `0 0 ${thumbWidth}px`,
+                            width: `${thumbWidth}px`,
+                            height: currentSize.thumbHeight,
+                            marginInline: "2px",
+                            backgroundColor: "rgb(var(--md-color-primary))",
+                            borderRadius: "2px",
+                            transition: "width 0.1s ease",
+                            pointerEvents: "none",
+                            alignSelf: "center",
+                        }}
+                    />
+                    <div
+                        className="slider-track slider-mid-track"
+                        style={{
+                            display: zeroRatio - ratio === 0 ? "none" : undefined,
+                            flex: `${zeroRatio - ratio} 1 0%`,
+                            height: currentSize.trackHeight,
+                            backgroundColor: "rgb(var(--md-color-primary))",
+                            borderRadius: "2px",
+                            pointerEvents: "none",
+                        }}
+                    />
+                    <div
+                        className="slider-track slider-end-track"
+                        style={{
+                            display: 1 - zeroRatio === 0 ? "none" : undefined,
+                            flex: `${Math.max(0.0001, 1 - zeroRatio)} 1 0%`,
+                            height: currentSize.trackHeight,
+                            backgroundColor: "rgb(var(--md-color-secondary-container))",
+                            borderRadius: "2px",
+                            pointerEvents: "none",
+                        }}
+                    />
+                </>
+            )
+            : <>
+                {/* NO ZERO: [Track 1: min->thumb] [Thumb] [Track 2: thumb->max] */}
+                <div
+                    className="slider-track slider-start-track"
+                    style={{
+                        display: ratio === 0 ? "none" : undefined,
+                        flex: `${ratio} 1 0%`,
+                        height: currentSize.trackHeight,
+                        backgroundColor: "rgb(var(--md-color-primary))",
+                        borderRadius: "2px",
+                        pointerEvents: "none",
+                    }}
+                />
+                <div
+                    className="slider-thumb"
+                    style={{
+                        flex: `0 0 ${thumbWidth}px`,
+                        width: `${thumbWidth}px`,
+                        height: currentSize.thumbHeight,
+                        marginInline: "2px",
+                        backgroundColor: "rgb(var(--md-color-primary))",
+                        borderRadius: "2px",
+                        transition: "width 0.1s ease",
+                        pointerEvents: "none",
+                        alignSelf: "center",
+                    }}
+                />
+                <div
+                    className="slider-track slider-end-track"
+                    style={{
+                        display: 1 - ratio === 0 ? "none" : undefined,
+                        flex: `${1 - ratio} 1 0%`,
+                        height: currentSize.trackHeight,
+                        backgroundColor: "rgb(var(--md-color-secondary-container))",
+                        borderRadius: "2px",
+                        pointerEvents: "none",
+                    }}
+                />
+            </>}
         </div>
     );
 }
