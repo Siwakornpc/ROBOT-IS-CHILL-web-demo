@@ -302,14 +302,16 @@ export default function ColorPicker({
         });
     };
 
-    const updateHueFromPosition = (clientX: number) => {
+    const updateHueFromPosition = (clientX: number, clientY: number) => {
         const slider = hueSliderRef.current;
         if (!slider) return;
 
         const rect = slider.getBoundingClientRect();
 
-        const x = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-        const newHue = x * 360;
+        let pos = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+        if (orientation === "horizontal")
+            pos = Math.min(1, Math.max(0, (clientY - rect.top) / rect.height));
+        const newHue = pos * 360;
         const [saturation, y] = positionRef.current;
         const brightness = 1 - y;
         const newColor = hsvToHex(newHue, saturation, brightness);
@@ -318,7 +320,7 @@ export default function ColorPicker({
         colorRef.current = newColor;
         hexValueRef.current = newColor;
 
-        setHueThumbPosition(x);
+        setHueThumbPosition(pos);
         setHue(newHue);
         setColor(newColor);
 
@@ -394,11 +396,11 @@ export default function ColorPicker({
                     if (e.button !== 0) return;
                     e.currentTarget.setPointerCapture(e.pointerId);
                     hueDragRef.current = true;
-                    updateHueFromPosition(e.clientX);
+                    updateHueFromPosition(e.clientX, e.clientY);
                 }}
                 onPointerMove={(e) => {
                     if (!hueDragRef.current) return;
-                    updateHueFromPosition( e.clientX);
+                    updateHueFromPosition(e.clientX, e.clientY);
                 }}
                 onPointerUp={handleHuePointerUp}
                 onPointerCancel={() => {
@@ -409,8 +411,8 @@ export default function ColorPicker({
                 <div
                     className="color-picker-hue-slider-thumb"
                     style={{
-                        top: (orientation === "vertical" ? `${hueThumbPosition * 100}%` : "auto"),
-                        left: (orientation === "horizontal" ? `${hueThumbPosition * 100}%` : "auto")
+                        top: (orientation === "horizontal" ? `${hueThumbPosition * 100}%` : "auto"),
+                        left: (orientation === "vertical" ? `${hueThumbPosition * 100}%` : "auto")
                     }}
                 />
             </div>
