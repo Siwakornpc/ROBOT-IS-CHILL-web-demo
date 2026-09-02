@@ -164,8 +164,6 @@ export function FilterPanel({
     ) => {
         const updatedList = [...(filters[filterType] ?? [])];
 
-        if (!newValue) return;
-
         updatedList[indexToUpdate] = newValue;
 
         const updatedFilters = {
