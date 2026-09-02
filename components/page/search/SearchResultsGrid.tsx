@@ -487,7 +487,9 @@ export default function SearchResults({
                 }
 
                 if (filterKey === "hascolor") {
-                    const colors = data.colors.flat().filter((color): color is string => color !== null);
+                    const colors = data.colors.flat().map((color) => color === null ? "None" : color);
+
+                    console.log(colors);
 
                     if (!validValues.some((val) => colors.some((color) => color.toLowerCase() === val.toLowerCase()))) return false;
                 }

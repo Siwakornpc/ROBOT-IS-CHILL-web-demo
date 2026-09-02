@@ -31,7 +31,7 @@ export interface ThemeState {
 }
 
 export const DEFAULT_THEME: ThemeState = {
-    color: '#6750A4',
+    color: '#3024db',
     scheme: 'system',
     contrast: 'system',
 };

@@ -12,13 +12,14 @@ interface ThemeState {
 }
 
 const DEFAULT_THEME: ThemeState = {
-    color: '#6750A4',
-    scheme: 'light',
+    color: '#3024db',
+    scheme: 'system',   // it's better to use System as default as most devices.
     contrast: 'normal',
 };
 
 export default function Body() {
     const [theme, setTheme] = useState<ThemeState>(DEFAULT_THEME);
+    const [loaded, setLoaded] = useState(false);
 
     useEffect(() => {
         try {
@@ -33,6 +34,8 @@ export default function Body() {
             }
         } catch (e) {
             console.error("Failed to parse theme from localStorage", e);
+        } finally {
+            setLoaded(true);
         }
     }, []);
 
@@ -43,6 +46,16 @@ export default function Body() {
             return updated;
         });
     };
+
+    useEffect(() => {
+        if (!loaded) return;
+
+        const setTheme = (window as any).setTheme;
+
+        if (typeof setTheme === "function") {
+            setTheme(theme.color, theme.scheme, theme.contrast);
+        }
+    }, [theme, loaded]);
 
     return (
         <main style={{ width: "stretch" }}>
@@ -104,9 +117,9 @@ export default function Body() {
                         className="dropdown-trigger"
                         value={theme.scheme}
                         options={[
+                            { value: "system", label: "System" },
                             { value: "light", label: "Light" },
                             { value: "dark", label: "Dark" },
-                            { value: "system", label: "System" },
                         ]}
                         onChange={(newValue) => updateTheme({ scheme: newValue })}
                     />
@@ -115,10 +128,10 @@ export default function Body() {
                         className="dropdown-trigger"
                         value={theme.contrast}
                         options={[
+                            { value: "system", label: "System" },
                             { value: "normal", label: "Normal" },
                             { value: "mc", label: "Medium Contrast" },
                             { value: "hc", label: "High Contrast" },
-                            { value: "system", label: "System" },
                         ]}
                         onChange={(newValue) => updateTheme({ contrast: newValue })}
                     />

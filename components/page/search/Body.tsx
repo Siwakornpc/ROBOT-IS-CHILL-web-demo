@@ -157,14 +157,22 @@ export function FilterPanel({
         onFiltersChange(updatedFilters);
     };
 
-    const handleValueChange = (filterType: string, indexToUpdate: number, newValue: string) => {
+    const handleValueChange = (
+        filterType: string,
+        indexToUpdate: number,
+        newValue: string
+    ) => {
         const updatedList = [...(filters[filterType] ?? [])];
+
+        if (!newValue) return;
+
         updatedList[indexToUpdate] = newValue;
 
         const updatedFilters = {
             ...filters,
             [filterType]: updatedList,
         };
+
         onFiltersChange(updatedFilters);
     };
 
@@ -371,7 +379,7 @@ export function FilterPanel({
                     <ColorPicker
                         value={value}
                         onChange={(color) =>
-                            handleValueChange(type, index, color)
+                            handleValueChange(type, index, color ?? "None")
                         }
                     />
                 );

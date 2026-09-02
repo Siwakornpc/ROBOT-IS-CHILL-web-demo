@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 
-
 function hsvToHex(h: number, s: number, v: number): string {
     const c = v * s;
     const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
@@ -33,11 +32,14 @@ function hsvToHex(h: number, s: number, v: number): string {
     }
 
     return (
-        "#" + [r, g, b].map((channel) =>
-            Math.round((channel + m) * 255)
-                .toString(16)
-                .padStart(2, "0")
-        ).join("")
+        "#" +
+        [r, g, b]
+            .map((channel) =>
+                Math.round((channel + m) * 255)
+                    .toString(16)
+                    .padStart(2, "0")
+            )
+            .join("")
     );
 }
 
@@ -88,99 +90,494 @@ export default function ColorPicker({
     value,
     onChange,
 }: {
-    value: string;
-    onChange: (color: string) => void;
+    value: string | null;
+    onChange: (color: string | null) => void;
 }) {
-    const [color, setColor] = useState(value || "#ffffff");
-    const [position, setPosition] = useState<[number, number]>([1, 0]);
+    const [color, setColor] = useState(value ?? "#ffffff");
+
+    const [position, setPosition] =
+        useState<[number, number]>([1, 0]);
+
+    const [thumbPosition, setThumbPosition] =
+        useState<[number, number]>([1, 0]);
+
     const [hue, setHue] = useState(0);
+    const [hueThumbPosition, setHueThumbPosition] =
+        useState(0);
 
     const containerRef = useRef<HTMLDivElement>(null);
+    const hueSliderRef = useRef<HTMLDivElement>(null);
+
+    const dragRef = useRef(false);
+    const hueDragRef = useRef(false);
+
+    /*
+     * Keep the latest local values in refs so pointer handlers
+     * never have to wait for React state to update.
+     */
+    const colorRef = useRef(color);
+    const positionRef = useRef(position);
+    const hueRef = useRef(hue);
+
+    /*
+     * The color that should be committed to the parent when
+     * the current interaction finishes.
+     */
+    const pendingColorRef = useRef<string | null>(null);
+
+    const frameRef = useRef<number | null>(null);
+    const pendingPointRef =
+        useRef<[number, number] | null>(null);
+
+    const updateLocalColor = (
+        newColor: string,
+        newPosition: [number, number],
+        newHue: number
+    ) => {
+        colorRef.current = newColor;
+        positionRef.current = newPosition;
+        hueRef.current = newHue;
+
+        setColor(newColor);
+        setPosition(newPosition);
+        setThumbPosition(newPosition);
+        setHue(newHue);
+    };
+
+    /*
+     * Parent → picker synchronization.
+     *
+     * This only happens when we are NOT interacting.
+     *
+     * Most importantly, this effect does not participate in the
+     * pointer movement loop.
+     */
+    useEffect(() => {
+        if (value === null) return;
+
+        if (dragRef.current || hueDragRef.current) {
+            return;
+        }
+
+        const newColor = value || "#ffffff";
+        const hsv = hexToHsv(newColor);
+
+        if (!hsv) return;
+
+        const [incomingHue, saturation, brightness] = hsv;
+
+        /*
+         * Grayscale has no meaningful hue.
+         * Keep the currently selected hue.
+         */
+        const nextHue =
+            saturation === 0
+                ? hueRef.current
+                : incomingHue;
+
+        const newPosition: [number, number] = [
+            saturation,
+            1 - brightness,
+        ];
+
+        /*
+         * Avoid unnecessary state updates.
+         */
+        if (colorRef.current !== newColor) {
+            colorRef.current = newColor;
+            setColor(newColor);
+        }
+
+        positionRef.current = newPosition;
+        setPosition(newPosition);
+        setThumbPosition(newPosition);
+
+        hueRef.current = nextHue;
+        setHue(nextHue);
+
+        /*
+         * Don't reset the hue slider when the color is grayscale.
+         */
+        if (saturation !== 0) {
+            setHueThumbPosition(nextHue / 360);
+        }
+    }, [value]);
+
+    /*
+     * Commit the locally selected color to the parent.
+     *
+     * This is intentionally NOT called during every pointer move.
+     */
+    const commitColor = () => {
+        const pendingColor = pendingColorRef.current;
+
+        if (pendingColor !== null) {
+            pendingColorRef.current = null;
+            onChange(pendingColor);
+        }
+    };
 
     const updateColorFromHex = (newColor: string) => {
         setColor(newColor);
+        colorRef.current = newColor;
+
+        const hsv = hexToHsv(newColor);
+
+        if (!hsv) {
+            onChange(newColor);
+            return;
+        }
+
+        const [incomingHue, saturation, brightness] = hsv;
+
+        /*
+         * Don't change hue when entering a grayscale color.
+         */
+        const nextHue =
+            saturation === 0
+                ? hueRef.current
+                : incomingHue;
+
+        const newPosition: [number, number] = [
+            saturation,
+            1 - brightness,
+        ];
+
+        positionRef.current = newPosition;
+        hueRef.current = nextHue;
+
+        setPosition(newPosition);
+        setThumbPosition(newPosition);
+        setHue(nextHue);
+
+        /*
+         * Text input is an explicit change, so this one DOES
+         * immediately update the parent.
+         */
         onChange(newColor);
 
-        const hsv = hexToHsv(newColor);
-        if (!hsv) return;
-
-        const [h, s, v] = hsv;
-        setHue(h);
-        setPosition([s, 1 - v]);
+        /*
+         * Only move hue slider for colors that have hue.
+         */
+        if (saturation !== 0) {
+            setHueThumbPosition(nextHue / 360);
+        }
     };
 
-    const rgb = hexToRgb(color);
+    const updateColorFromRgb = (
+        channel: 0 | 1 | 2,
+        inputValue: string
+    ) => {
+        if (inputValue === "") return;
 
-    useEffect(() => {
-        const newColor = value || "#ffffff";
-        setColor(newColor);
-        if (newColor.toLowerCase() === "null") return;
+        const currentRgb =
+            hexToRgb(colorRef.current) ?? [
+                255,
+                255,
+                255,
+            ];
+
+        const channelValue = Math.min(
+            255,
+            Math.max(0, Number(inputValue))
+        );
+
+        if (!Number.isFinite(channelValue)) return;
+
+        const newRgb: [number, number, number] = [
+            ...currentRgb,
+        ];
+
+        newRgb[channel] = channelValue;
+
+        const newColor =
+            "#" +
+            newRgb
+                .map((channel) =>
+                    channel
+                        .toString(16)
+                        .padStart(2, "0")
+                )
+                .join("");
 
         const hsv = hexToHsv(newColor);
+
         if (!hsv) return;
 
-        const [h, s, v] = hsv;
-        setHue(h);
-        setPosition([s, 1 - v]);
-    }, [value]);
+        const [incomingHue, saturation, brightness] = hsv;
 
-    const updateColorFromPosition = (clientX: number, clientY: number) => {
+        const nextHue =
+            saturation === 0
+                ? hueRef.current
+                : incomingHue;
+
+        const newPosition: [number, number] = [
+            saturation,
+            1 - brightness,
+        ];
+
+        colorRef.current = newColor;
+        positionRef.current = newPosition;
+        hueRef.current = nextHue;
+
+        setColor(newColor);
+        setPosition(newPosition);
+        setThumbPosition(newPosition);
+        setHue(nextHue);
+
+        onChange(newColor);
+
+        if (saturation !== 0) {
+            setHueThumbPosition(nextHue / 360);
+        }
+    };
+
+    const updateColorFromPosition = (
+        clientX: number,
+        clientY: number
+    ) => {
         const container = containerRef.current;
         if (!container) return;
 
         const rect = container.getBoundingClientRect();
-        const x = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-        const y = Math.min(1, Math.max(0, (clientY - rect.top) / rect.height));
-        setPosition([x, y]);
 
-        const saturation = x;
+        const x = Math.min(
+            1,
+            Math.max(
+                0,
+                (clientX - rect.left) / rect.width
+            )
+        );
+
+        const y = Math.min(
+            1,
+            Math.max(
+                0,
+                (clientY - rect.top) / rect.height
+            )
+        );
+
+        pendingPointRef.current = [x, y];
+
+        if (frameRef.current !== null) return;
+
+        frameRef.current = requestAnimationFrame(() => {
+            frameRef.current = null;
+
+            const point = pendingPointRef.current;
+            if (!point) return;
+
+            const [x, y] = point;
+
+            const saturation = x;
+            const brightness = 1 - y;
+
+            const newColor = hsvToHex(
+                hueRef.current,
+                saturation,
+                brightness
+            );
+
+            const newPosition: [number, number] = [
+                x,
+                y,
+            ];
+
+            /*
+             * ONLY update local state here.
+             */
+            colorRef.current = newColor;
+            positionRef.current = newPosition;
+
+            setColor(newColor);
+            setPosition(newPosition);
+            setThumbPosition(newPosition);
+
+            /*
+             * Save for pointerup.
+             */
+            pendingColorRef.current = newColor;
+        });
+    };
+
+    const updateHueFromPosition = (clientX: number) => {
+        const slider = hueSliderRef.current;
+        if (!slider) return;
+
+        const rect = slider.getBoundingClientRect();
+
+        const x = Math.min(
+            1,
+            Math.max(
+                0,
+                (clientX - rect.left) / rect.width
+            )
+        );
+
+        const newHue = x * 360;
+
+        const [saturation, y] =
+            positionRef.current;
+
         const brightness = 1 - y;
 
         const newColor = hsvToHex(
-            hue,
+            newHue,
             saturation,
             brightness
         );
 
+        /*
+         * Update the slider immediately.
+         */
+        hueRef.current = newHue;
+        colorRef.current = newColor;
+
+        setHueThumbPosition(x);
+        setHue(newHue);
         setColor(newColor);
-        onChange(newColor);
+
+        /*
+         * Do not call parent here.
+         */
+        pendingColorRef.current = newColor;
     };
+
+    const handleColorPointerUp = (
+        e: React.PointerEvent<HTMLDivElement>
+    ) => {
+        dragRef.current = false;
+
+        if (
+            e.currentTarget.hasPointerCapture(
+                e.pointerId
+            )
+        ) {
+            e.currentTarget.releasePointerCapture(
+                e.pointerId
+            );
+        }
+
+        commitColor();
+    };
+
+    const handleHuePointerUp = (
+        e: React.PointerEvent<HTMLDivElement>
+    ) => {
+        hueDragRef.current = false;
+
+        if (
+            e.currentTarget.hasPointerCapture(
+                e.pointerId
+            )
+        ) {
+            e.currentTarget.releasePointerCapture(
+                e.pointerId
+            );
+        }
+
+        commitColor();
+    };
+
+    const rgb = hexToRgb(color);
 
     return (
         <div className="color-picker">
             <div
                 ref={containerRef}
                 className="color-picker-container"
-                style={{
-                    "--color-picker-hue": hue,
-                    "--color-picker-alpha": 1,
-                } as React.CSSProperties}
+                style={
+                    {
+                        "--color-picker-hue": hue,
+                        "--color-picker-alpha": 1,
+                        "--color-picker-primary": color,
+                    } as React.CSSProperties
+                }
                 onPointerDown={(e) => {
-                    e.currentTarget.setPointerCapture(e.pointerId);
-                    updateColorFromPosition(e.clientX, e.clientY);
+                    if (e.button !== 0) return;
+
+                    e.currentTarget.setPointerCapture(
+                        e.pointerId
+                    );
+
+                    dragRef.current = true;
+
+                    updateColorFromPosition(
+                        e.clientX,
+                        e.clientY
+                    );
                 }}
                 onPointerMove={(e) => {
-                    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-                        updateColorFromPosition(e.clientX, e.clientY);
-                    }
+                    if (!dragRef.current) return;
+
+                    updateColorFromPosition(
+                        e.clientX,
+                        e.clientY
+                    );
+                }}
+                onPointerUp={handleColorPointerUp}
+                onPointerCancel={() => {
+                    dragRef.current = false;
+                    pendingColorRef.current = null;
                 }}
             >
                 <div
                     className="color-picker-thumb"
                     style={{
-                        left: `${position[0] * 100}%`,
-                        top: `${position[1] * 100}%`,
-                        background: `${color}`,
+                        left: `${thumbPosition[0] * 100}%`,
+                        top: `${thumbPosition[1] * 100}%`,
+                        background: color,
                     }}
                 />
             </div>
 
             <div className="color-picker-panel">
+                <div
+                    ref={hueSliderRef}
+                    className="color-picker-hue-slider"
+                    onPointerDown={(e) => {
+                        if (e.button !== 0) return;
+
+                        e.currentTarget.setPointerCapture(
+                            e.pointerId
+                        );
+
+                        hueDragRef.current = true;
+
+                        updateHueFromPosition(
+                            e.clientX
+                        );
+                    }}
+                    onPointerMove={(e) => {
+                        if (!hueDragRef.current) return;
+
+                        updateHueFromPosition(
+                            e.clientX
+                        );
+                    }}
+                    onPointerUp={handleHuePointerUp}
+                    onPointerCancel={() => {
+                        hueDragRef.current = false;
+                        pendingColorRef.current = null;
+                    }}
+                >
+                    <div
+                        className="color-picker-hue-slider-thumb"
+                        style={{
+                            left: `calc(${hueThumbPosition * 100}% - 1px)`,
+                        }}
+                    />
+                </div>
+
                 <label className="text-field small has-placeholder">
                     <input
                         type="text"
                         value={color}
-                        onChange={(e) => updateColorFromHex(e.target.value)}
+                        onChange={(e) =>
+                            updateColorFromHex(
+                                e.target.value
+                            )
+                        }
                         autoComplete="off"
                         className="text-center"
                         placeholder="#ffffff"
@@ -195,6 +592,12 @@ export default function ColorPicker({
                             max={255}
                             value={rgb?.[0] ?? ""}
                             placeholder="255"
+                            onChange={(e) =>
+                                updateColorFromRgb(
+                                    0,
+                                    e.target.value
+                                )
+                            }
                         />
                     </label>
 
@@ -205,6 +608,12 @@ export default function ColorPicker({
                             max={255}
                             value={rgb?.[1] ?? ""}
                             placeholder="255"
+                            onChange={(e) =>
+                                updateColorFromRgb(
+                                    1,
+                                    e.target.value
+                                )
+                            }
                         />
                     </label>
 
@@ -215,9 +624,25 @@ export default function ColorPicker({
                             max={255}
                             value={rgb?.[2] ?? ""}
                             placeholder="255"
+                            onChange={(e) =>
+                                updateColorFromRgb(
+                                    2,
+                                    e.target.value
+                                )
+                            }
                         />
                     </label>
                 </div>
+
+                <button
+                    type="button"
+                    className={`btn small btn-filled !w-full !justify-center${
+                        value === null ? " active" : ""
+                    }`}
+                    onClick={() => onChange(null)}
+                >
+                    None
+                </button>
             </div>
         </div>
     );
