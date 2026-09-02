@@ -205,8 +205,8 @@ export default function MenuSelect<T extends string>({
     optionIcon,
     className = "",
     style,
-    anchor = "st",
-    submenuAnchor = "st",
+    anchor = "eb",
+    submenuAnchor = "eb",
     pageMargin = 12,
 }: MenuSelectProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
