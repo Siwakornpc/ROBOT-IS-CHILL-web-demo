@@ -50,6 +50,7 @@ interface PositionOptions {
 interface PositionResult {
     left: number;
     top: number;
+    maxHeight: number;
 }
 
 function calculateMenuPosition(
@@ -57,58 +58,66 @@ function calculateMenuPosition(
     menuRect: DOMRect,
     {placement, margin, gap}: PositionOptions
 ): PositionResult {
-    const el = document.querySelector(".align-layout") as HTMLElement;
+    const el = document.querySelector("body > main.align-layout") as HTMLElement;
+
     let left = triggerRect.left;
     let top = triggerRect.bottom + gap;
+    let maxHeight = el.offsetHeight - margin * 2;
+    
+    const spaceAbove = triggerRect.top - margin - gap;
+    const spaceBelow = el.offsetHeight - triggerRect.bottom - margin - gap;
 
     switch (placement) {
         case "bottom-start":
             left = triggerRect.left;
             top = triggerRect.bottom + gap;
+            maxHeight = spaceBelow;
             break;
-
         case "bottom-end":
             left = triggerRect.right - menuRect.width;
             top = triggerRect.bottom + gap;
+            maxHeight = spaceBelow;
             break;
-
         case "top-start":
             left = triggerRect.left;
-            top = triggerRect.top - menuRect.height - gap;
+            maxHeight = spaceAbove;
+            top = triggerRect.top - Math.min(menuRect.height, maxHeight) - gap;
             break;
-
         case "top-end":
             left = triggerRect.right - menuRect.width;
-            top = triggerRect.top - menuRect.height - gap;
+            maxHeight = spaceAbove;
+            top = triggerRect.top - Math.min(menuRect.height, maxHeight) - gap;
             break;
-
         case "right-start":
             left = triggerRect.right + gap;
             top = triggerRect.top;
+            maxHeight = el.offsetHeight - triggerRect.top - margin;
             break;
-
         case "right-center":
             left = triggerRect.right + gap;
             top = triggerRect.top + (triggerRect.height - menuRect.height) / 2;
+            maxHeight = el.offsetHeight - margin * 2;
             break;
-
         case "left-start":
             left = triggerRect.left - menuRect.width - gap;
             top = triggerRect.top;
+            maxHeight = el.offsetHeight - triggerRect.top - margin;
             break;
-
         case "left-center":
             left = triggerRect.left - menuRect.width - gap;
             top = triggerRect.top + (triggerRect.height - menuRect.height) / 2;
+            maxHeight = el.offsetHeight - margin * 2;
             break;
     }
 
     left = Math.max(margin, Math.min(left, el.offsetWidth - menuRect.width - margin));
-    top = Math.max(margin, Math.min(top,  el.offsetHeight - menuRect.height - margin));
+    if (placement.endsWith("center"))
+        top = Math.max(margin, Math.min(top, el.offsetHeight - menuRect.height - margin));
 
     return {
         left: Math.round(left),
         top: Math.round(top),
+        maxHeight: Math.max(0, Math.round(maxHeight)),
     };
 }
 
@@ -212,6 +221,7 @@ function MenuItem<T extends string>({
             position: "fixed",
             left: position.left,
             top: position.top,
+            maxHeight: position.maxHeight,
             visibility: "visible",
         });
     };
@@ -449,6 +459,7 @@ export default function MenuSelect<T extends string>({
             position: "fixed",
             left: position.left,
             top: position.top,
+            maxHeight: position.maxHeight,
             visibility: "visible",
             ...style,
         });
