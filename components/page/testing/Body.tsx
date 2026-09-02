@@ -170,18 +170,29 @@ export default function Body() {
                     ref={variantElementRef}
                     className="search-details-detailbox variant"
                 />
-            </div>
 
-            <Slider
-                value={sliderValue}
-                min={0}
-                max={100}
-                step={1}
-                onChange={(value) => {
-                    setSliderValue(value);
-                    console.log("Slider Value:", value);
-                }}
-            />
+                <hr />
+                
+                <Slider
+                    value={sliderValue}
+                    min={0}
+                    max={100}
+                    step={1}
+                    onChange={(value) => {
+                        setSliderValue(value);
+                        console.log("Slider Value:", value);
+                    }}
+                />
+                <Slider
+                    value={sliderValue}
+                    min={-100}
+                    max={100}
+                    onChange={(value) => {
+                        setSliderValue(value);
+                        console.log("Slider Value:", value);
+                    }}
+                />
+            </div>
         </main>
     );
 }

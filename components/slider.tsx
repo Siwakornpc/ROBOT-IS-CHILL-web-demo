@@ -131,7 +131,7 @@ export default function Slider({
                 touchAction: "none",
                 cursor: "pointer",
                 width: "100%",
-                height: currentSize.trackHeight,
+                height: currentSize.thumbHeight,
                 ...style,
             }}
             onPointerDown={handlePointerDown}
@@ -147,6 +147,7 @@ export default function Slider({
                 style={{
                     display: leftRatio === 0 ? "none" : undefined,
                     flex: `${leftRatio} 1 0%`,
+                    pointerEvents: "none",
                     height: currentSize.trackHeight,
                     backgroundColor: leftColor,
                     borderRadius: "2px",
@@ -157,6 +158,7 @@ export default function Slider({
                 style={{
                     display: midRatio === 0 ? "none" : undefined,
                     flex: `${midRatio} 1 0%`,
+                    pointerEvents: "none",
                     height: currentSize.trackHeight,
                     backgroundColor: midColor,
                     borderRadius: "2px",
@@ -167,13 +169,13 @@ export default function Slider({
                 className="slider-thumb"
                 style={{
                     flex: `0 0 ${thumbWidth}px`,
+                    pointerEvents: "none",
                     width: `${thumbWidth}px`,
                     height: currentSize.thumbHeight,
                     marginInline: "2px",
                     backgroundColor: "rgb(var(--md-color-primary))",
                     borderRadius: "2px",
                     transition: "width 0.1s ease",
-                    pointerEvents: "none",
                     alignSelf: "center",
                 }}
             />
@@ -183,6 +185,7 @@ export default function Slider({
                 style={{
                     display: rightRatio === 0 ? "none" : undefined,
                     flex: `${rightRatio} 1 0%`,
+                    pointerEvents: "none",
                     height: currentSize.trackHeight,
                     backgroundColor: rightColor,
                     borderRadius: "2px",
