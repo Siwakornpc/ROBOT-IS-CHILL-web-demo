@@ -121,7 +121,7 @@ export default function Slider({
                             backgroundColor: "rgb(var(--md-color-secondary-container))",
                             borderRadius: "2px",
                             borderStartStartRadius: currentSize.trackRadius,
-                            borderStartEndRadius: currentSize.trackRadius,
+                            borderEndStartRadius: currentSize.trackRadius,
                             pointerEvents: "none",
                         }}
                     />
@@ -158,7 +158,7 @@ export default function Slider({
                             height: currentSize.trackHeight,
                             backgroundColor: "rgb(var(--md-color-secondary-container))",
                             borderRadius: "2px",
-                            borderEndStartRadius: currentSize.trackRadius,
+                            borderStartEndRadius: currentSize.trackRadius,
                             borderEndEndRadius: currentSize.trackRadius,
                             pointerEvents: "none",
                         }}
@@ -175,7 +175,7 @@ export default function Slider({
                             backgroundColor: "rgb(var(--md-color-secondary-container))",
                             borderRadius: "2px",
                             borderStartStartRadius: currentSize.trackRadius,
-                            borderStartEndRadius: currentSize.trackRadius,
+                            borderEndStartRadius: currentSize.trackRadius,
                             pointerEvents: "none",
                         }}
                     />
@@ -212,7 +212,7 @@ export default function Slider({
                             height: currentSize.trackHeight,
                             backgroundColor: "rgb(var(--md-color-secondary-container))",
                             borderRadius: "2px",
-                            borderEndStartRadius: currentSize.trackRadius,
+                            borderStartEndRadius: currentSize.trackRadius,
                             borderEndEndRadius: currentSize.trackRadius,
                             pointerEvents: "none",
                         }}
@@ -230,7 +230,7 @@ export default function Slider({
                         backgroundColor: "rgb(var(--md-color-primary))",
                         borderRadius: "2px",
                         borderStartStartRadius: currentSize.trackRadius,
-                        borderStartEndRadius: currentSize.trackRadius,
+                        borderEndStartRadius: currentSize.trackRadius,
                         pointerEvents: "none",
                     }}
                 />
@@ -256,7 +256,7 @@ export default function Slider({
                         height: currentSize.trackHeight,
                         backgroundColor: "rgb(var(--md-color-secondary-container))",
                         borderRadius: "2px",
-                        borderEndStartRadius: currentSize.trackRadius,
+                        borderStartEndRadius: currentSize.trackRadius,
                         borderEndEndRadius: currentSize.trackRadius,
                         pointerEvents: "none",
                     }}

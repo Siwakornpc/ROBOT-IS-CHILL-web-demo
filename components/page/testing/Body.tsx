@@ -109,6 +109,7 @@ export default function Body() {
 
     const [sliderValue, setSliderValue] = useState(50);
     const [sliderValue2, setSliderValue2] = useState(50);
+    const [sliderValue3, setSliderValue3] = useState(-50);
     useEffect(() => {
         const element = variantElementRef.current;
 
@@ -189,6 +190,15 @@ export default function Body() {
                     max={100}
                     onChange={(value) => {
                         setSliderValue2(value);
+                        console.log("Slider Value:", value);
+                    }}
+                />
+                <Slider
+                    value={sliderValue3}
+                    min={-100}
+                    max={-50}
+                    onChange={(value) => {
+                        setSliderValue3(value);
                         console.log("Slider Value:", value);
                     }}
                 />
