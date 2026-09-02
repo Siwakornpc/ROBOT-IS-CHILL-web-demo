@@ -40,7 +40,7 @@ export default function Slider({
     const clampedValue = Math.min(Math.max(value, min), max);
     const ratio = (clampedValue - min) / (max - min);
 
-    const hasZero = min <= 0 && max >= 0;
+    const hasZero = min < 0 && max > 0;
     const zeroRatio = hasZero ? (0 - min) / (max - min) : 0;
 
     const updateValueFromPosition = useCallback(
