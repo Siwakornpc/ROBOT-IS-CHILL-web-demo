@@ -192,6 +192,7 @@ export default function Body() {
                         setSliderValue2(value);
                         console.log("Slider Value:", value);
                     }}
+                    size="small"
                 />
                 <Slider
                     value={sliderValue3}
@@ -201,6 +202,7 @@ export default function Body() {
                         setSliderValue3(value);
                         console.log("Slider Value:", value);
                     }}
+                    size="large"
                 />
             </div>
         </main>
