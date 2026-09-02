@@ -78,7 +78,7 @@ function calculateMenuPosition(
     let activePlacement = placement;
 
     // Auto-flip if not enough space below
-    if (activePlacement.startsWith("bottom") && spaceBelow < menuRect.height && spaceAbove > spaceBelow) {
+    if (activePlacement.startsWith("bottom") && spaceBelow < 148 && spaceAbove > spaceBelow)  {
         activePlacement = activePlacement.replace("bottom", "top") as MenuPlacement;
     } else if (activePlacement.startsWith("top") && spaceAbove < menuRect.height && spaceBelow > spaceAbove) {
         activePlacement = activePlacement.replace("top", "bottom") as MenuPlacement;
