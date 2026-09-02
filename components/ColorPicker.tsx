@@ -434,7 +434,7 @@ export default function ColorPicker({
             hexInputRef.current.value = newColor;
         }
 
-        pendingColorRef.current = newColor;
+        onChange(newColor);
     };
 
     const handleColorPointerUp = (
