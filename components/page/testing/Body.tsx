@@ -5,6 +5,7 @@ import { EditorScreen } from "@/components/editor/EditorScreen";
 import MenuSelect, { MenuOption } from "@/components/MenuSelect";
 
 import { updateVariantStaticHighlight } from "@/components/highlight/metadata-hightlight.js"
+import Slider from "@/components/slider";
 
 const options = [
     { value: "option1", label: "Option 1" },
@@ -168,6 +169,14 @@ export default function Body() {
                     className="search-details-detailbox variant"
                 />
             </div>
+
+            <Slider
+                value={50}
+                min={0}
+                max={100}
+                step={1}
+                onChange={(value) => console.log("Slider Value:", value)}
+            />
         </main>
     );
 }
