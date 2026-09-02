@@ -5,17 +5,9 @@ import { EditorScreen } from "@/components/editor/EditorScreen";
 import ColorPicker from "@/components/ColorPicker";
 import MenuSelect from "@/components/MenuSelect";
 
-interface ThemeState {
-    color: string;
-    scheme: 'light' | 'dark' | 'system';
-    contrast: 'normal' | 'mc' | 'hc' | 'system';
-}
+import { DEFAULT_THEME } from "@/components/themescript";
+import type { ThemeState } from "@/components/themescript";
 
-const DEFAULT_THEME: ThemeState = {
-    color: '#3024db',
-    scheme: 'system',   // it's better to use System as default as most devices.
-    contrast: 'normal',
-};
 
 export default function Body() {
     const [theme, setTheme] = useState<ThemeState>(DEFAULT_THEME);
