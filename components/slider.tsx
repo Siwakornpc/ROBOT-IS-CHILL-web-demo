@@ -114,7 +114,6 @@ export default function Slider({
                     <div
                         className="slider-track slider-start-track"
                         style={{
-                            display: zeroRatio === 0 ? "none" : undefined,
                             flex: `${zeroRatio} 1 0%`,
                             height: currentSize.trackHeight,
                             backgroundColor: "rgb(var(--md-color-secondary-container))",
@@ -128,13 +127,12 @@ export default function Slider({
                     <div
                         className="slider-track slider-mid-track"
                         style={{
-                            display: ratio - zeroRatio === 0 ? "none" : undefined,
                             flex: `${ratio - zeroRatio} 1 0%`,
                             height: currentSize.trackHeight,
                             backgroundColor: "rgb(var(--md-color-primary))",
                             borderRadius: "2px",
                             marginInlineStart: zeroRatio === 0 ? undefined : "2px",
-                            marginRight: "2px",
+                            marginInlineEnd: "2px",
                             pointerEvents: "none",
                         }}
                     />
@@ -155,7 +153,6 @@ export default function Slider({
                     <div
                         className="slider-track slider-end-track"
                         style={{
-                            display: 1 - ratio === 0 ? "none" : undefined,
                             flex: `${Math.max(0.0001, 1 - ratio)} 1 0%`,
                             height: currentSize.trackHeight,
                             backgroundColor: "rgb(var(--md-color-secondary-container))",
@@ -172,7 +169,6 @@ export default function Slider({
                     <div
                         className="slider-track slider-start-track"
                         style={{
-                            display: ratio === 0 ? "none" : undefined,
                             flex: `${Math.max(0.0001, ratio)} 1 0%`,
                             height: currentSize.trackHeight,
                             backgroundColor: "rgb(var(--md-color-secondary-container))",
@@ -200,7 +196,6 @@ export default function Slider({
                     <div
                         className="slider-track slider-mid-track"
                         style={{
-                            display: zeroRatio - ratio === 0 ? "none" : undefined,
                             flex: `${zeroRatio - ratio} 1 0%`,
                             height: currentSize.trackHeight,
                             backgroundColor: "rgb(var(--md-color-primary))",
@@ -213,7 +208,6 @@ export default function Slider({
                     <div
                         className="slider-track slider-end-track"
                         style={{
-                            display: 1 - zeroRatio === 0 ? "none" : undefined,
                             flex: `${Math.max(0.0001, 1 - zeroRatio)} 1 0%`,
                             height: currentSize.trackHeight,
                             backgroundColor: "rgb(var(--md-color-secondary-container))",
@@ -230,7 +224,6 @@ export default function Slider({
                 <div
                     className="slider-track slider-start-track"
                     style={{
-                        display: ratio === 0 ? "none" : undefined,
                         flex: `${ratio} 1 0%`,
                         height: currentSize.trackHeight,
                         backgroundColor: "rgb(var(--md-color-primary))",
@@ -258,7 +251,6 @@ export default function Slider({
                 <div
                     className="slider-track slider-end-track"
                     style={{
-                        display: 1 - ratio === 0 ? "none" : undefined,
                         flex: `${1 - ratio} 1 0%`,
                         height: currentSize.trackHeight,
                         backgroundColor: "rgb(var(--md-color-secondary-container))",
