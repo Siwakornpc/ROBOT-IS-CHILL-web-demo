@@ -1226,15 +1226,15 @@ hr {
     transform-origin: var(--anchor-x, 50%) var(--anchor-y, 50%);
 }
 
-.anchor-b { bottom: 100%; }
-.anchor-l { left: 100%; }
-.anchor-r { right: 100%; }
-.anchor-s { inset-inline-start: 100%; }
-.anchor-e { inset-inline-end: 100%; }
-.anchor-tl, .anchor-bl { left: 0; }
-.anchor-tr, .anchor-br { right: 0; }
-.anchor-et, .anchor-eb { inset-inline-end: 0; }
-.anchor-bl, .anchor-br, .anchor-sb, .anchor-eb { bottom: 100%; }
+.anchor-t { bottom: 100%; }
+.anchor-r { left: 100%; }
+.anchor-l { right: 100%; }
+.anchor-e { inset-inline-start: 100%; }
+.anchor-s { inset-inline-end: 100%; }
+.anchor-tr, .anchor-bl { left: 0; }
+.anchor-tl, .anchor-br { right: 0; }
+.anchor-st, .anchor-sb { inset-inline-end: 0; }
+.anchor-tl, .anchor-tr, .anchor-st, .anchor-et { bottom: 100%; }
 .anchor-t, .anchor-b { justify-self: center; }
 .anchor-l, .anchor-r, .anchor-s, .anchor-e { align-self: center; }
 
@@ -1245,7 +1245,7 @@ hr {
 .anchor-st,
 .anchor-sb,
 [dir=rtl] :is(.anchor-e, .anchor-et, .anchor-eb) {
-    --anchor-x: 0;
+    --anchor-x: 100%;
 }
 .anchor-r,
 .anchor-tr,
@@ -1254,21 +1254,21 @@ hr {
 .anchor-et,
 .anchor-eb,
 [dir=rtl] :is(.anchor-s, .anchor-st, .anchor-sb) {
-    --anchor-x: 100%;
+    --anchor-x: 0;
 }
 .anchor-t,
 .anchor-tl,
 .anchor-tr,
 .anchor-st,
 .anchor-et {
-    --anchor-y: 0;
+    --anchor-y: 100%;
 }
 .anchor-b,
 .anchor-bl,
 .anchor-br,
 .anchor-sb,
 .anchor-eb {
-    --anchor-y: 100%;
+    --anchor-y: 0;
 }
 
 .menu[popover] {
@@ -1283,6 +1283,12 @@ hr {
         inset: auto;
         top: anchor(bottom);
         left: anchor(left);
+        
+        position-try-fallbacks: flip-block, flip-inline;
+        position-try-order: most-height;
+
+        max-height: calc(100vh - 24px);
+        max-width: calc(100vw - 24px);
     }
 
     .anchor-t  { position-area: top center; }
