@@ -381,6 +381,7 @@ export function FilterPanel({
                         onChange={(color) =>
                             handleValueChange(type, index, color ?? "None")
                         }
+                        hasNone={true}
                     />
                 );
 

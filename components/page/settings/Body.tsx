@@ -47,18 +47,50 @@ export default function Body() {
         });
     };
 
+    const handleDefault = () => {
+        updateTheme(DEFAULT_THEME);
+    };
+
     useEffect(() => {
         if (!loaded) return;
 
-        const setTheme = (window as any).setTheme;
+        const applyTheme = (window as any).setTheme;
+        if (typeof applyTheme !== "function") return;
 
-        if (typeof setTheme === "function") {
-            setTheme(theme.color, theme.scheme, theme.contrast);
+        const triggerThemeUpdate = (currentScheme: 'light' | 'dark' | 'system') => {
+            applyTheme(
+                theme.color,
+                currentScheme,
+                theme.contrast
+            );
+        };
+
+        if (theme.scheme !== 'system') {
+            triggerThemeUpdate(theme.scheme);
+            return;
         }
+
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        
+        triggerThemeUpdate('system');
+
+        const handleChange = () => {
+            triggerThemeUpdate('system');
+        };
+
+        mediaQuery.addEventListener('change', handleChange);
+
+        return () => {
+            mediaQuery.removeEventListener('change', handleChange);
+        };
     }, [theme, loaded]);
 
+
     return (
-        <main style={{ width: "stretch" }}>
+        <main
+            className="ascroll-y"
+            style={{ width: "stretch" }}
+        >
             <div className="main-body">
                 <p className="text-label">Settings</p>
                 <hr />
@@ -101,40 +133,60 @@ export default function Body() {
                 <p className="text-label text-xl">Theme</p>
 
                 <div className="box-hole">
-                    <label className="text-field">
-                        <span className="text-field-label">Color</span>
-                        <input
-                            type="text"
-                            placeholder=" "
+                    
+                    <div className="row-group">
+                        <p className="text-label text-main-name">Theme Color</p>
+
+                        <ColorPicker
                             value={theme.color}
-                            required={true}
-                            onChange={(e) => updateTheme({ color: e.target.value })}
-                            autoComplete="off"
+                            onChange={(color) => {
+                                if (color !== null) {
+                                    updateTheme({ color });
+                                }
+                            }}
+                            hasNone={false}
                         />
-                    </label>
-                    <MenuSelect
-                        id="theme-contrast"
-                        className="dropdown-trigger"
-                        value={theme.scheme}
-                        options={[
-                            { value: "system", label: "System" },
-                            { value: "light", label: "Light" },
-                            { value: "dark", label: "Dark" },
-                        ]}
-                        onChange={(newValue) => updateTheme({ scheme: newValue })}
-                    />
-                    <MenuSelect
-                        id="theme-contrast"
-                        className="dropdown-trigger"
-                        value={theme.contrast}
-                        options={[
-                            { value: "system", label: "System" },
-                            { value: "normal", label: "Normal" },
-                            { value: "mc", label: "Medium Contrast" },
-                            { value: "hc", label: "High Contrast" },
-                        ]}
-                        onChange={(newValue) => updateTheme({ contrast: newValue })}
-                    />
+                    </div>
+
+                    <div className="row-group">
+                        <p className="text-label text-main-name">Appearance</p>
+
+                        <MenuSelect
+                            id="theme-scheme"
+                            className="dropdown-trigger"
+                            value={theme.scheme}
+                            options={[
+                                { value: "system", label: "System" },
+                                { value: "light", label: "Light" },
+                                { value: "dark", label: "Dark" },
+                            ]}
+                            onChange={(newValue) => updateTheme({ scheme: newValue })}
+                        />
+                    </div>
+
+                    <div className="row-group">
+                        <p className="text-label text-main-name">Contrast</p>
+
+                        <MenuSelect
+                            id="theme-contrast"
+                            className="dropdown-trigger"
+                            value={theme.contrast}
+                            options={[
+                                { value: "system", label: "System" },
+                                { value: "normal", label: "Normal" },
+                                { value: "mc", label: "Medium Contrast" },
+                                { value: "hc", label: "High Contrast" },
+                            ]}
+                            onChange={(newValue) => updateTheme({ contrast: newValue })}
+                        />
+                    </div>
+                    <button
+                        type="button"
+                        className="btn small btn-filled !w-48 !justify-center"
+                        onClick={handleDefault}
+                    >
+                        Reset Default
+                    </button>
                 </div>
             </div>
         </main>

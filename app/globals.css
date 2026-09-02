@@ -1332,11 +1332,14 @@ hr {
 .main-body {
     display: flex;
     flex-direction: column;
-    height: calc(100% - 24px);
     gap: 8px;
     margin: 12px;
 
     position: relative;
+}
+
+main:has(.main-body) {
+    height: calc(100vh - 56px);
 }
 
 .align-layout {
