@@ -89,16 +89,7 @@ export default function Slider({
         <div
             ref={containerRef}
             className={`slider-container ${size} ${isPressed ? "pressed" : ""} ${className}`}
-            style={{
-                display: "flex",
-                alignItems: "center",
-                position: "relative",
-                touchAction: "none",
-                cursor: "pointer",
-                width: "100%",
-                height: currentSize.thumbHeight,
-                ...style,
-            }}
+            style={{...style}}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
@@ -115,25 +106,13 @@ export default function Slider({
                         className="slider-track slider-start-track"
                         style={{
                             flex: `${zeroRatio} 1 0%`,
-                            height: currentSize.trackHeight,
-                            backgroundColor: "rgb(var(--md-color-secondary-container))",
-                            borderRadius: "2px",
-                            borderStartStartRadius: currentSize.trackRadius,
-                            borderEndStartRadius: currentSize.trackRadius,
-                            marginInlineEnd: "2px",
-                            pointerEvents: "none",
+                            background: "rgb(var(--md-color-primary))",
                         }}
                     />
                     <div
                         className="slider-track slider-mid-track"
                         style={{
                             flex: `${ratio - zeroRatio} 1 0%`,
-                            height: currentSize.trackHeight,
-                            backgroundColor: "rgb(var(--md-color-primary))",
-                            borderRadius: "2px",
-                            marginInlineStart: zeroRatio === 0 ? undefined : "2px",
-                            marginInlineEnd: "2px",
-                            pointerEvents: "none",
                         }}
                     />
                     <div
@@ -141,26 +120,12 @@ export default function Slider({
                         style={{
                             flex: `0 0 ${thumbWidth}px`,
                             width: `${thumbWidth}px`,
-                            height: currentSize.thumbHeight,
-                            marginInline: "2px",
-                            backgroundColor: "rgb(var(--md-color-primary))",
-                            borderRadius: "2px",
-                            transition: "width 0.1s ease",
-                            pointerEvents: "none",
-                            alignSelf: "center",
                         }}
                     />
                     <div
                         className="slider-track slider-end-track"
                         style={{
                             flex: `${1 - ratio} 1 0%`,
-                            height: currentSize.trackHeight,
-                            backgroundColor: "rgb(var(--md-color-secondary-container))",
-                            borderRadius: "2px",
-                            borderStartEndRadius: currentSize.trackRadius,
-                            borderEndEndRadius: currentSize.trackRadius,
-                            marginInlineStart: "2px",
-                            pointerEvents: "none",
                         }}
                     />
                 </>
@@ -170,13 +135,6 @@ export default function Slider({
                         className="slider-track slider-start-track"
                         style={{
                             flex: `${ratio} 1 0%`,
-                            height: currentSize.trackHeight,
-                            backgroundColor: "rgb(var(--md-color-secondary-container))",
-                            borderRadius: "2px",
-                            borderStartStartRadius: currentSize.trackRadius,
-                            borderEndStartRadius: currentSize.trackRadius,
-                            marginInlineEnd: "2px",
-                            pointerEvents: "none",
                         }}
                     />
                     <div
@@ -184,38 +142,19 @@ export default function Slider({
                         style={{
                             flex: `0 0 ${thumbWidth}px`,
                             width: `${thumbWidth}px`,
-                            height: currentSize.thumbHeight,
-                            marginInline: "2px",
-                            backgroundColor: "rgb(var(--md-color-primary))",
-                            borderRadius: "2px",
-                            transition: "width 0.1s ease",
-                            pointerEvents: "none",
-                            alignSelf: "center",
                         }}
                     />
                     <div
                         className="slider-track slider-mid-track"
                         style={{
                             flex: `${zeroRatio - ratio} 1 0%`,
-                            height: currentSize.trackHeight,
-                            backgroundColor: "rgb(var(--md-color-primary))",
-                            borderRadius: "2px",
-                            marginInlineStart: "2px",
-                            marginInlineEnd: "2px",
-                            pointerEvents: "none",
+                            background: "rgb(var(--md-color-primary))",
                         }}
                     />
                     <div
                         className="slider-track slider-end-track"
                         style={{
                             flex: `${1 - zeroRatio} 1 0%`,
-                            height: currentSize.trackHeight,
-                            backgroundColor: "rgb(var(--md-color-secondary-container))",
-                            borderRadius: "2px",
-                            borderStartEndRadius: currentSize.trackRadius,
-                            borderEndEndRadius: currentSize.trackRadius,
-                            marginInlineStart: "2px",
-                            pointerEvents: "none",
                         }}
                     />
                 </>
@@ -225,13 +164,7 @@ export default function Slider({
                     className="slider-track slider-start-track"
                     style={{
                         flex: `${ratio} 1 0%`,
-                        height: currentSize.trackHeight,
-                        backgroundColor: "rgb(var(--md-color-primary))",
-                        borderRadius: "2px",
-                        borderStartStartRadius: currentSize.trackRadius,
-                        borderEndStartRadius: currentSize.trackRadius,
-                        marginInlineEnd: "2px",
-                        pointerEvents: "none",
+                        background: "rgb(var(--md-color-primary))",
                     }}
                 />
                 <div
@@ -239,26 +172,12 @@ export default function Slider({
                     style={{
                         flex: `0 0 ${thumbWidth}px`,
                         width: `${thumbWidth}px`,
-                        height: currentSize.thumbHeight,
-                        marginInline: "2px",
-                        backgroundColor: "rgb(var(--md-color-primary))",
-                        borderRadius: "2px",
-                        transition: "width 0.1s ease",
-                        pointerEvents: "none",
-                        alignSelf: "center",
                     }}
                 />
                 <div
                     className="slider-track slider-end-track"
                     style={{
                         flex: `${1 - ratio} 1 0%`,
-                        height: currentSize.trackHeight,
-                        backgroundColor: "rgb(var(--md-color-secondary-container))",
-                        borderRadius: "2px",
-                        borderStartEndRadius: currentSize.trackRadius,
-                        borderEndEndRadius: currentSize.trackRadius,
-                        marginInlineStart: "2px",
-                        pointerEvents: "none",
                     }}
                 />
             </>
