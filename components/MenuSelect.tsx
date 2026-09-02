@@ -1,22 +1,22 @@
 "use client";
 
 import {
-    useEffect,
-    useLayoutEffect,
-    useRef,
-    useState,
-    useMemo,
-    ReactNode,
     CSSProperties,
     FocusEvent,
     MouseEvent as ReactMouseEvent,
+    ReactNode,
     cloneElement,
+    useEffect,
+    useLayoutEffect,
+    useMemo,
+    useRef,
+    useState,
 } from "react";
-import { createPortal } from "react-dom";
+import {createPortal} from "react-dom";
 
-/* ----------
-    Types
----------- */
+/* -------------------------------------------------------------------------- */
+/* Types                                                                      */
+/* -------------------------------------------------------------------------- */
 
 export type MenuPlacement =
     | "bottom-start"
@@ -37,10 +37,6 @@ export interface MenuOption<T extends string = string> {
     children?: MenuOption<T>[];
 }
 
-/* -----------------------
-    Shared positioning
------------------------ */
-
 interface PositionOptions {
     placement: MenuPlacement;
     margin: number;
@@ -54,122 +50,210 @@ interface PositionResult {
     actualPlacement: MenuPlacement;
 }
 
-function calculateMenuPosition(
-    triggerRect: DOMRect,
-    menuRect: DOMRect,
-    { placement, margin, gap }: PositionOptions
-): PositionResult {
-    const layoutContainer = document.querySelector("body > main.align-layout") || document.body;
-    const containerRect = layoutContainer.getBoundingClientRect();
+/* -------------------------------------------------------------------------- */
+/* Pointer                                                                    */
+/* -------------------------------------------------------------------------- */
 
-    const containerWidth = containerRect.width || window.innerWidth;
-    const containerHeight = containerRect.height || window.innerHeight;
-    const containerLeft = containerRect.left || 0;
-    const containerTop = containerRect.top || 0;
+function useIsCoarsePointer() {
+    const [isCoarse, setIsCoarse] = useState(false);
 
-    const relativeTriggerTop = triggerRect.top - containerTop;
-    const relativeTriggerBottom = triggerRect.bottom - containerTop;
-    const relativeTriggerLeft = triggerRect.left - containerLeft;
-    const relativeTriggerRight = triggerRect.right - containerLeft;
+    useEffect(() => {
+        const mediaQuery = window.matchMedia("(pointer: coarse)");
 
-    const spaceAbove = relativeTriggerTop - margin - gap;
-    const spaceBelow = containerHeight - relativeTriggerBottom - margin - gap;
+        const update = () => {
+            setIsCoarse(mediaQuery.matches);
+        };
 
-    let activePlacement = placement;
+        update();
+        mediaQuery.addEventListener("change", update);
 
-    // Auto-flip if not enough space below
-    if (activePlacement.startsWith("bottom") && spaceBelow < menuRect.height && spaceAbove > spaceBelow) {
-        activePlacement = activePlacement.replace("bottom", "top") as MenuPlacement;
-    } else if (activePlacement.startsWith("top") && spaceAbove < menuRect.height && spaceBelow > spaceAbove) {
-        activePlacement = activePlacement.replace("top", "bottom") as MenuPlacement;
-    }
+        return () => {
+            mediaQuery.removeEventListener("change", update);
+        };
+    }, []);
 
-    let left = relativeTriggerLeft;
-    let top = relativeTriggerBottom + gap;
-    let maxHeight = containerHeight - margin * 2;
-
-    switch (activePlacement) {
-        case "bottom-start":
-            left = relativeTriggerLeft;
-            top = relativeTriggerBottom + gap;
-            maxHeight = Math.min(menuRect.height, spaceBelow);
-            break;
-        case "bottom-end":
-            left = relativeTriggerRight - menuRect.width;
-            top = relativeTriggerBottom + gap;
-            maxHeight = Math.min(menuRect.height, spaceBelow);
-            break;
-        case "top-start":
-            left = relativeTriggerLeft;
-            maxHeight = Math.min(menuRect.height, spaceAbove);
-            top = relativeTriggerTop - maxHeight - gap;
-            break;
-        case "top-end":
-            left = relativeTriggerRight - menuRect.width;
-            maxHeight = Math.min(menuRect.height, spaceAbove);
-            top = relativeTriggerTop - maxHeight - gap;
-            break;
-        case "right-start":
-        case "right-center":
-            left = relativeTriggerRight + gap;
-            top = activePlacement.includes("center")
-                ? relativeTriggerTop + (triggerRect.height - menuRect.height) / 2
-                : relativeTriggerTop;
-            maxHeight = containerHeight - relativeTriggerTop - margin;
-            break;
-        case "left-start":
-        case "left-center":
-            left = relativeTriggerLeft - menuRect.width - gap;
-            top = activePlacement.includes("center")
-                ? relativeTriggerTop + (triggerRect.height - menuRect.height) / 2
-                : relativeTriggerTop;
-            maxHeight = containerHeight - relativeTriggerTop - margin;
-            break;
-    }
-
-    // Convert back to absolute viewport positioning for position: fixed elements
-    left = containerLeft + Math.max(margin, Math.min(left, containerWidth - menuRect.width - margin));
-    top = containerTop + Math.max(margin, Math.min(top, containerHeight - menuRect.height - margin));
-
-    return {
-        left: Math.round(left),
-        top: Math.round(top),
-        maxHeight: Math.max(148, Math.round(maxHeight)),
-        actualPlacement: activePlacement,
-    };
+    return isCoarse;
 }
 
+/* -------------------------------------------------------------------------- */
+/* Measurement                                                                */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Measures an element without displaying it to the user.
+ *
+ * The menu is already in the DOM because it is rendered through a portal,
+ * so this gives us its natural size before positioning it.
+ */
 function measureElement(element: HTMLElement): DOMRect {
     const previousVisibility = element.style.visibility;
     const previousDisplay = element.style.display;
+
     element.style.visibility = "hidden";
     element.style.display = "block";
 
     const rect = element.getBoundingClientRect();
+
     element.style.visibility = previousVisibility;
     element.style.display = previousDisplay;
+
     return rect;
 }
 
-/* -------------------
-    Coarse pointer
-------------------- */
+/* -------------------------------------------------------------------------- */
+/* Positioning                                                                */
+/* -------------------------------------------------------------------------- */
 
-function useIsCoarsePointer() {
-    const [isCoarse, setIsCoarse] = useState(false);
-    useEffect(() => {
-        const mediaQuery = window.matchMedia("(pointer: coarse)");
-        setIsCoarse(mediaQuery.matches);
-        const handler = (event: MediaQueryListEvent) => setIsCoarse(event.matches);
-        mediaQuery.addEventListener("change", handler);
-        return () => mediaQuery.removeEventListener("change", handler);
-    }, []);
-    return isCoarse;
+function calculateMenuPosition(
+    boxRect: DOMRect,
+    elementRect: DOMRect,
+    {
+        placement,
+        margin,
+        gap,
+    }: PositionOptions
+): PositionResult {
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    const boxWidth = boxRect.width;
+    const boxHeight = boxRect.height;
+
+    const elementWidth = elementRect.width;
+    const elementHeight = elementRect.height;
+
+    /*
+     * Space available around the trigger box.
+     *
+     * These are deliberately expressed in terms of the box edges rather
+     * than using intermediate "top - bottom" style calculations.
+     */
+    const spaceAbove = boxRect.top - margin - gap;
+    const spaceBelow = viewportHeight - boxRect.bottom - margin - gap;
+
+    const spaceLeft = boxRect.left - margin - gap;
+    const spaceRight = viewportWidth - boxRect.right - margin - gap;
+
+    /*
+     * Decide whether the requested side should flip.
+     *
+     * A flip only happens when the requested side cannot contain the menu
+     * and the opposite side has more room.
+     */
+    let actualPlacement = placement;
+
+    const shouldFlipUp =
+        placement.startsWith("bottom") &&
+        spaceBelow < elementHeight &&
+        spaceAbove > spaceBelow;
+
+    const shouldFlipDown =
+        placement.startsWith("top") &&
+        spaceAbove < elementHeight &&
+        spaceBelow > spaceAbove;
+
+    const shouldFlipRight =
+        placement.startsWith("left") &&
+        spaceLeft < elementWidth &&
+        spaceRight > spaceLeft;
+
+    const shouldFlipLeft =
+        placement.startsWith("right") &&
+        spaceRight < elementWidth &&
+        spaceLeft > spaceRight;
+
+    if (shouldFlipUp) {
+        actualPlacement = placement.replace("bottom", "top") as MenuPlacement;
+    } else if (shouldFlipDown) {
+        actualPlacement = placement.replace("top", "bottom") as MenuPlacement;
+    } else if (shouldFlipRight) {
+        actualPlacement = placement.replace("left", "right") as MenuPlacement;
+    } else if (shouldFlipLeft) {
+        actualPlacement = placement.replace("right", "left") as MenuPlacement;
+    }
+
+    let left = boxRect.left;
+    let top = boxRect.bottom + gap;
+    let maxHeight = Math.max(60, spaceBelow);
+
+    switch (actualPlacement) {
+        case "bottom-start":
+            left = boxRect.left;
+            top = boxRect.bottom + gap;
+            maxHeight = Math.max(60, spaceBelow);
+            break;
+
+        case "bottom-end":
+            left = boxRect.right - elementWidth;
+            top = boxRect.bottom + gap;
+            maxHeight = Math.max(60, spaceBelow);
+            break;
+
+        case "top-start":
+            left = boxRect.left;
+            top = boxRect.top - elementHeight - gap;
+            maxHeight = Math.max(60, spaceAbove);
+            break;
+
+        case "top-end":
+            left = boxRect.right - elementWidth;
+            top = boxRect.top - elementHeight - gap;
+            maxHeight = Math.max(60, spaceAbove);
+            break;
+
+        case "right-start":
+            left = boxRect.right + gap;
+            top = boxRect.top;
+            maxHeight = Math.max(60, viewportHeight - boxRect.top - margin);
+            break;
+
+        case "right-center":
+            left = boxRect.right + gap;
+            top = boxRect.top + (boxHeight - elementHeight) / 2;
+            maxHeight = Math.max(60, viewportHeight - margin * 2);
+            break;
+
+        case "left-start":
+            left = boxRect.left - elementWidth - gap;
+            top = boxRect.top;
+            maxHeight = Math.max(60, viewportHeight - boxRect.top - margin);
+            break;
+
+        case "left-center":
+            left = boxRect.left - elementWidth - gap;
+            top = boxRect.top + (boxHeight - elementHeight) / 2;
+            maxHeight = Math.max(60, viewportHeight - margin * 2);
+            break;
+    }
+
+    /*
+     * Keep the menu inside the viewport.
+     *
+     * The placement calculation above decides which side to use.
+     * This part only prevents the menu from overflowing horizontally
+     * or vertically.
+     */
+    left = Math.max(
+        margin,
+        Math.min(left, viewportWidth - elementWidth - margin)
+    );
+
+    top = Math.max(
+        margin,
+        Math.min(top, viewportHeight - margin)
+    );
+
+    return {
+        left: Math.round(left),
+        top: Math.round(top),
+        maxHeight: Math.max(60, Math.round(maxHeight)),
+        actualPlacement,
+    };
 }
 
-/* -------------
-    MenuItem
-------------- */
+/* -------------------------------------------------------------------------- */
+/* MenuItem                                                                   */
+/* -------------------------------------------------------------------------- */
 
 interface MenuItemProps<T extends string> {
     item: MenuOption<T>;
@@ -195,41 +279,60 @@ function MenuItem<T extends string>({
     menuGap = 4,
 }: MenuItemProps<T>) {
     const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
+
     const [submenuStyle, setSubmenuStyle] = useState<CSSProperties>({
         position: "fixed",
         visibility: "hidden",
     });
+
     const [placementClass, setPlacementClass] = useState("anchor-tr");
 
     const triggerRef = useRef<HTMLDivElement>(null);
     const submenuRef = useRef<HTMLDivElement>(null);
+
     const isCoarsePointer = useIsCoarsePointer();
+
     const hasChildren = Boolean(item.children?.length);
     const isSelected = item.value === selectedValue;
-    const rawIcon = optionIcon ? optionIcon(item) : item.icon;
 
-    /* ------------------------
-        Submenu positioning                                                    
-    ------------------------ */
+    const rawIcon = optionIcon
+        ? optionIcon(item)
+        : item.icon;
+
+    /* ---------------------------------------------------------------------- */
+    /* Submenu positioning                                                    */
+    /* ---------------------------------------------------------------------- */
 
     const updateSubmenuPosition = () => {
-        const trigger = triggerRef.current;
+        const box = triggerRef.current;
         const submenu = submenuRef.current;
-        if (!trigger || !submenu) return;
 
-        const triggerRect = trigger.getBoundingClientRect();
-        const menuRect = measureElement(submenu);
-        const position = calculateMenuPosition(triggerRect, menuRect, {
-            placement: submenuPlacement,
-            margin: pageMargin,
-            gap: menuGap,
-        });
+        if (!box || !submenu) {
+            return;
+        }
 
-        // Map placement to CSS animation anchor classes
-        if (position.actualPlacement.startsWith("top")) setPlacementClass("anchor-br");
-        else if (position.actualPlacement.startsWith("right")) setPlacementClass("anchor-l");
-        else if (position.actualPlacement.startsWith("left")) setPlacementClass("anchor-r");
-        else setPlacementClass("anchor-tr");
+        const boxRect = box.getBoundingClientRect();
+        const elementRect = measureElement(submenu);
+
+        const position = calculateMenuPosition(
+            boxRect,
+            elementRect,
+            {
+                placement: submenuPlacement,
+                margin: pageMargin,
+                gap: menuGap,
+            }
+        );
+
+        if (position.actualPlacement.startsWith("top")) {
+            setPlacementClass("anchor-br");
+        } else if (position.actualPlacement.startsWith("right")) {
+            setPlacementClass("anchor-l");
+        } else if (position.actualPlacement.startsWith("left")) {
+            setPlacementClass("anchor-r");
+        } else {
+            setPlacementClass("anchor-tr");
+        }
 
         setSubmenuStyle({
             position: "fixed",
@@ -241,139 +344,242 @@ function MenuItem<T extends string>({
     };
 
     useLayoutEffect(() => {
-        if (!isSubmenuOpen) return;
+        if (!isSubmenuOpen) {
+            return;
+        }
+
         updateSubmenuPosition();
-        let rafId: number;
+
+        let animationFrame = 0;
+
         const update = () => {
-            cancelAnimationFrame(rafId);
-            rafId = requestAnimationFrame(updateSubmenuPosition);
+            cancelAnimationFrame(animationFrame);
+
+            animationFrame = requestAnimationFrame(() => {
+                updateSubmenuPosition();
+            });
         };
 
         window.addEventListener("resize", update);
-        window.addEventListener("scroll", update, { passive: true, capture: true });
+        window.addEventListener("scroll", update, {
+            passive: true,
+            capture: true,
+        });
+
         return () => {
             window.removeEventListener("resize", update);
             window.removeEventListener("scroll", update, true);
-            cancelAnimationFrame(rafId);
+            cancelAnimationFrame(animationFrame);
         };
-    }, [isSubmenuOpen, submenuPlacement, pageMargin, menuGap]);
+    }, [
+        isSubmenuOpen,
+        submenuPlacement,
+        pageMargin,
+        menuGap,
+    ]);
 
-    useEffect(() => setIsSubmenuOpen(false), [closeSignal]);
+    useEffect(() => {
+        setIsSubmenuOpen(false);
+    }, [closeSignal]);
 
-    /* -----------
-        Events
-    ----------- */
+    /* ---------------------------------------------------------------------- */
+    /* Events                                                                 */
+    /* ---------------------------------------------------------------------- */
 
     const handleItemClick = (event: ReactMouseEvent) => {
         event.preventDefault();
         event.stopPropagation();
-        if (item.disabled) return;
+
+        if (item.disabled) {
+            return;
+        }
+
         if (hasChildren) {
             setIsSubmenuOpen((open) => !open);
             return;
         }
+
         onChange(item.value);
         onCloseAll();
     };
 
-    /* ---------
-        Icon
-    --------- */
+    /* ---------------------------------------------------------------------- */
+    /* Icon                                                                    */
+    /* ---------------------------------------------------------------------- */
 
     const renderIcon = () => {
-        if (isSelected) return <i className="icon menu-option-icon">check</i>;
-        if (!rawIcon) return null;
-        if (typeof rawIcon === "string") return <i className="icon menu-option-icon">{rawIcon}</i>;
+        if (isSelected) {
+            return (
+                <i className="icon menu-option-icon">
+                    check
+                </i>
+            );
+        }
+
+        if (!rawIcon) {
+            return null;
+        }
+
+        if (typeof rawIcon === "string") {
+            return (
+                <i className="icon menu-option-icon">
+                    {rawIcon}
+                </i>
+            );
+        }
+
         return cloneElement(rawIcon as any, {
-            className: [(rawIcon as any).props?.className, "menu-option-icon"].filter(Boolean).join(" "),
+            className: [
+                (rawIcon as any).props?.className,
+                "menu-option-icon",
+            ]
+                .filter(Boolean)
+                .join(" "),
         });
     };
 
-    /* -----------
-        Render
-    ----------- */
+    /* ---------------------------------------------------------------------- */
+    /* Render                                                                  */
+    /* ---------------------------------------------------------------------- */
 
     return (
         <div
             ref={triggerRef}
             className="menu-option-wrapper"
             onMouseEnter={() => {
-                if (!isCoarsePointer && hasChildren) setIsSubmenuOpen(true);
+                if (!isCoarsePointer && hasChildren) {
+                    setIsSubmenuOpen(true);
+                }
             }}
             onMouseLeave={(event) => {
-                if (isCoarsePointer || !hasChildren) return;
-                const related = event.relatedTarget as Node | null;
-                if (submenuRef.current && related && submenuRef.current.contains(related)) return;
+                if (isCoarsePointer || !hasChildren) {
+                    return;
+                }
+
+                const relatedTarget =
+                    event.relatedTarget as Node | null;
+
+                if (
+                    submenuRef.current &&
+                    relatedTarget &&
+                    submenuRef.current.contains(relatedTarget)
+                ) {
+                    return;
+                }
+
                 setIsSubmenuOpen(false);
             }}
         >
             <div
                 role={hasChildren ? "menuitem" : "menuitemradio"}
                 aria-haspopup={hasChildren || undefined}
-                aria-expanded={hasChildren ? isSubmenuOpen : undefined}
-                aria-checked={!hasChildren ? isSelected : undefined}
-                aria-disabled={item.disabled || undefined}
+                aria-expanded={
+                    hasChildren
+                        ? isSubmenuOpen
+                        : undefined
+                }
+                aria-checked={
+                    !hasChildren
+                        ? isSelected
+                        : undefined
+                }
+                aria-disabled={
+                    item.disabled || undefined
+                }
                 tabIndex={item.disabled ? -1 : 0}
-                onMouseDown={(event) => event.preventDefault()}
+                onMouseDown={(event) => {
+                    event.preventDefault();
+                }}
                 onClick={handleItemClick}
                 className={[
                     "menu-option",
                     isSelected ? "selected" : "",
                     isSubmenuOpen ? "hover-active" : "",
                     item.disabled ? "disabled" : "",
-                ].filter(Boolean).join(" ")}
+                ]
+                    .filter(Boolean)
+                    .join(" ")}
             >
                 {renderIcon()}
+
                 <div>
-                    <div className="menu-option-label">{item.label}</div>
-                    {item.description && <div className="menu-option-desc">{item.description}</div>}
+                    <div className="menu-option-label">
+                        {item.label}
+                    </div>
+
+                    {item.description && (
+                        <div className="menu-option-desc">
+                            {item.description}
+                        </div>
+                    )}
                 </div>
-                {hasChildren && <i className="icon menu-option-menu-icon">arrow_right</i>}
+
+                {hasChildren && (
+                    <i className="icon menu-option-menu-icon">
+                        arrow_right
+                    </i>
+                )}
             </div>
 
-            {hasChildren &&
-                createPortal(
-                    <div
-                        ref={submenuRef}
-                        role="menu"
-                        className={[
-                            "menu",
-                            "submenu-popout",
-                            placementClass,
-                            "ascroll-y",
-                            "inset-scrollbar",
-                            isSubmenuOpen ? "visible" : "",
-                        ].filter(Boolean).join(" ")}
-                        style={submenuStyle}
-                        onMouseDown={(event) => event.stopPropagation()}
-                        onMouseLeave={(event) => {
-                            if (isCoarsePointer) return;
-                            const related = event.relatedTarget as Node | null;
-                            if (triggerRef.current && related && triggerRef.current.contains(related)) return;
-                            setIsSubmenuOpen(false);
-                        }}
-                    >
-                        {item.children!.map((child) => 
-                            <MenuItem
-                                key={child.value}
-                                item={child}
-                                selectedValue={selectedValue}
-                                onChange={onChange}
-                                onCloseAll={onCloseAll}
-                                closeSignal={closeSignal}
-                                optionIcon={optionIcon}
-                                submenuPlacement={submenuPlacement}
-                                pageMargin={pageMargin}
-                                menuGap={menuGap}
-                            />
-                        )}
-                    </div>,
-                    document.body.querySelector("body > main.align-layout") || document.body
-                )
-            }
+            {hasChildren && (
+                <div
+                    ref={submenuRef}
+                    role="menu"
+                    className={[
+                        "menu",
+                        "submenu-popout",
+                        placementClass,
+                        "ascroll-y",
+                        "inset-scrollbar",
+                        isSubmenuOpen ? "visible" : "",
+                    ]
+                        .filter(Boolean)
+                        .join(" ")}
+                    style={submenuStyle}
+                    onMouseLeave={(event) => {
+                        if (isCoarsePointer) {
+                            return;
+                        }
+
+                        const relatedTarget =
+                            event.relatedTarget as Node | null;
+
+                        if (
+                            triggerRef.current &&
+                            relatedTarget &&
+                            triggerRef.current.contains(
+                                relatedTarget
+                            )
+                        ) {
+                            return;
+                        }
+
+                        setIsSubmenuOpen(false);
+                    }}
+                >
+                    {item.children!.map((child) => (
+                        <MenuItem
+                            key={child.value}
+                            item={child}
+                            selectedValue={selectedValue}
+                            onChange={onChange}
+                            onCloseAll={onCloseAll}
+                            closeSignal={closeSignal}
+                            optionIcon={optionIcon}
+                            submenuPlacement={submenuPlacement}
+                            pageMargin={pageMargin}
+                            menuGap={menuGap}
+                        />
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
+
+/* -------------------------------------------------------------------------- */
+/* MenuSelect                                                                 */
+/* -------------------------------------------------------------------------- */
 
 interface MenuSelectProps<T extends string> {
     id?: string;
@@ -381,9 +587,13 @@ interface MenuSelectProps<T extends string> {
     value: T;
     options: readonly MenuOption<T>[] | MenuOption<T>[];
     onChange: (value: T) => void;
-    triggerValue?: (selectedOption: MenuOption<T>) => ReactNode;
+    triggerValue?: (
+        selectedOption: MenuOption<T>
+    ) => ReactNode;
     trigger?: (props: any) => ReactNode;
-    optionIcon?: (option: MenuOption<T>) => ReactNode;
+    optionIcon?: (
+        option: MenuOption<T>
+    ) => ReactNode;
     className?: string;
     style?: CSSProperties;
     placement?: MenuPlacement;
@@ -391,10 +601,6 @@ interface MenuSelectProps<T extends string> {
     pageMargin?: number;
     menuGap?: number;
 }
-
-/* --------------
-   MenuSelect
--------------- */
 
 export default function MenuSelect<T extends string>({
     id,
@@ -414,37 +620,50 @@ export default function MenuSelect<T extends string>({
 }: MenuSelectProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
+
     const [menuStyle, setMenuStyle] = useState<CSSProperties>({
         position: "fixed",
         visibility: "hidden",
     });
-    const [placementClass, setPlacementClass] = useState("anchor-bl");
+
+    const [placementClass, setPlacementClass] =
+        useState("anchor-bl");
 
     const [closeSignal, setCloseSignal] = useState(0);
+
     const menuRef = useRef<HTMLDivElement>(null);
     const triggerRef = useRef<HTMLElement>(null);
 
-    /* --------------------------
-        Main menu positioning
-    -------------------------- */
+    /* ---------------------------------------------------------------------- */
+    /* Menu positioning                                                       */
+    /* ---------------------------------------------------------------------- */
 
     const updateMenuPosition = () => {
-        const trigger = triggerRef.current;
+        const box = triggerRef.current;
         const menu = menuRef.current;
-        if (!trigger || !menu) return;
 
-        const triggerRect = trigger.getBoundingClientRect();
-        const menuRect = measureElement(menu);
-        const position = calculateMenuPosition(triggerRect, menuRect, {
-            placement,
-            margin: pageMargin,
-            gap: menuGap,
-        });
+        if (!box || !menu) {
+            return;
+        }
 
-        if (position.actualPlacement.startsWith("top"))
+        const boxRect = box.getBoundingClientRect();
+        const elementRect = measureElement(menu);
+
+        const position = calculateMenuPosition(
+            boxRect,
+            elementRect,
+            {
+                placement,
+                margin: pageMargin,
+                gap: menuGap,
+            }
+        );
+
+        if (position.actualPlacement.startsWith("top")) {
             setPlacementClass("anchor-bl");
-        else
+        } else {
             setPlacementClass("anchor-tl");
+        }
 
         setMenuStyle({
             position: "fixed",
@@ -452,97 +671,193 @@ export default function MenuSelect<T extends string>({
             top: position.top,
             maxHeight: position.maxHeight,
             visibility: "visible",
-            ...style,
         });
     };
 
     useLayoutEffect(() => {
-        if (!isOpen) return;
+        if (!isOpen) {
+            return;
+        }
+
         updateMenuPosition();
 
-        let rafId: number;
-        const handleUpdate = () => {
-            cancelAnimationFrame(rafId);
-            rafId = requestAnimationFrame(updateMenuPosition);
+        let animationFrame = 0;
+
+        const update = () => {
+            cancelAnimationFrame(animationFrame);
+
+            animationFrame = requestAnimationFrame(() => {
+                updateMenuPosition();
+            });
         };
 
-        window.addEventListener("resize", handleUpdate);
-        window.addEventListener("scroll", handleUpdate, { passive: true });
+        window.addEventListener("resize", update);
+        window.addEventListener("scroll", update, {
+            passive: true,
+        });
 
         return () => {
-            window.removeEventListener("resize", handleUpdate);
-            window.removeEventListener("scroll", handleUpdate);
-            cancelAnimationFrame(rafId);
+            window.removeEventListener("resize", update);
+            window.removeEventListener("scroll", update);
+            cancelAnimationFrame(animationFrame);
         };
-    }, [isOpen, placement, pageMargin, menuGap, style]);
+    }, [
+        isOpen,
+        placement,
+        pageMargin,
+        menuGap,
+    ]);
 
-    /* -----------------
-        Open / close
-    ----------------- */
+    /* ---------------------------------------------------------------------- */
+    /* Open / close                                                           */
+    /* ---------------------------------------------------------------------- */
 
     const closeMenu = () => {
         setIsOpen(false);
         setCloseSignal((signal) => signal + 1);
     };
-    const openMenu = () => setIsOpen(true);
-    const toggleMenu = () => isOpen ? closeMenu() : openMenu();
 
-    /* --------------------
-        Selected option
-    -------------------- */
+    const openMenu = () => {
+        setIsOpen(true);
+    };
+
+    const toggleMenu = () => {
+        if (isOpen) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
+    };
+
+    /* ---------------------------------------------------------------------- */
+    /* Selected option                                                        */
+    /* ---------------------------------------------------------------------- */
 
     const selectedOption = useMemo(
-        () => options.find((item) => item.value === value) ?? options[0],
+        () =>
+            options.find(
+                (item) => item.value === value
+            ) ?? options[0],
         [options, value]
     );
 
+    /* ---------------------------------------------------------------------- */
+    /* Trigger props                                                          */
+    /* ---------------------------------------------------------------------- */
+
+    const getInputProps = (
+        customProps: Record<string, any> = {}
+    ) => {
+        const {
+            onFocus,
+            onClick,
+            ref,
+            style: customStyle,
+            ...rest
+        } = customProps;
+
+        return {
+            ...rest,
+
+            ref: (node: HTMLElement | null) => {
+                triggerRef.current = node;
+
+                if (typeof ref === "function") {
+                    ref(node);
+                } else if (ref) {
+                    ref.current = node;
+                }
+            },
+
+            style: {
+                ...customStyle,
+            },
+
+            onFocus: (
+                event: FocusEvent<HTMLInputElement>
+            ) => {
+                openMenu();
+                onFocus?.(event);
+            },
+
+            onClick: (
+                event: ReactMouseEvent<HTMLInputElement>
+            ) => {
+                openMenu();
+                onClick?.(event);
+            },
+        };
+    };
+
+    /* ---------------------------------------------------------------------- */
+    /* Mount + outside click                                                  */
+    /* ---------------------------------------------------------------------- */
+
     useEffect(() => {
         setIsMounted(true);
-        if (!isOpen) return;
+    }, []);
 
-        const handlePointerDown = (event: PointerEvent) => {
+    useEffect(() => {
+        if (!isOpen) {
+            return;
+        }
+
+        const handlePointerDown = (
+            event: PointerEvent
+        ) => {
             const target = event.target as Node;
-            if (menuRef.current?.contains(target)) return;
-            if (triggerRef.current?.contains(target)) return;
+
+            if (menuRef.current?.contains(target)) {
+                return;
+            }
+
+            if (triggerRef.current?.contains(target)) {
+                return;
+            }
+
             closeMenu();
         };
 
-        document.addEventListener("pointerdown", handlePointerDown);
-        return () => document.removeEventListener("pointerdown", handlePointerDown);
+        document.addEventListener(
+            "pointerdown",
+            handlePointerDown
+        );
+
+        return () => {
+            document.removeEventListener(
+                "pointerdown",
+                handlePointerDown
+            );
+        };
     }, [isOpen]);
 
-    return (<>
-        {trigger
-            ? trigger({
-                isOpen,
-                toggle: toggleMenu,
-                open: openMenu,
-                close: closeMenu,
-                setIsOpen: (open: boolean) => (open ? openMenu() : closeMenu()),
-                selectedOption,
-                getInputProps: (customProps: Record<string, any> = {}) => {
-                    const { onFocus, onClick, ref, style: customStyle, ...rest } = customProps;
-                    return {
-                        ...rest,
-                        ref: (node: HTMLElement | null) => {
-                            triggerRef.current = node;
-                            if (typeof ref === "function") ref(node);
-                            else if (ref) ref.current = node;
-                        },
-                        style: { ...customStyle },
-                        onFocus: (event: FocusEvent<HTMLInputElement>) => {
-                            openMenu();
-                            onFocus?.(event);
-                        },
-                        onClick: (event: ReactMouseEvent<HTMLInputElement>) => {
-                            openMenu();
-                            onClick?.(event);
-                        },
-                    };
-                },
-            })
-            : <button
-                ref={triggerRef as React.RefObject<HTMLButtonElement>}
+    /* ---------------------------------------------------------------------- */
+    /* Render                                                                 */
+    /* ---------------------------------------------------------------------- */
+
+    const triggerElement = trigger
+        ? trigger({
+              isOpen,
+              toggle: toggleMenu,
+              open: openMenu,
+              close: closeMenu,
+              setIsOpen: (
+                  open: boolean
+              ) => {
+                  if (open) {
+                      openMenu();
+                  } else {
+                      closeMenu();
+                  }
+              },
+              selectedOption,
+              getInputProps,
+          })
+        : (
+            <button
+                ref={
+                    triggerRef as React.RefObject<HTMLButtonElement>
+                }
                 type="button"
                 aria-haspopup="menu"
                 aria-expanded={isOpen}
@@ -551,47 +866,73 @@ export default function MenuSelect<T extends string>({
                     className || "dropdown-trigger",
                     id || "",
                     isOpen ? "clicked" : "",
-                ].filter(Boolean).join(" ")}
+                ]
+                    .filter(Boolean)
+                    .join(" ")}
                 onClick={toggleMenu}
                 style={style}
-            >{triggerValue ? triggerValue(selectedOption) : <span>{selectedOption.label}</span>}
-            </button>
-        }
-
-        {isMounted &&
-            createPortal(
-                <div
-                    ref={menuRef}
-                    role="menu"
-                    className={[
-                        "menu",
-                        placementClass,
-                        "ascroll-y",
-                        "inset-scrollbar",
-                        isOpen ? "visible" : "",
-                        id ? `${id}-options` : "",
-                    ].filter(Boolean).join(" ")}
-                    style={menuStyle}
-                    onMouseDown={(event) => event.stopPropagation()}
-                >
-                    {title && <div className="menu-title">{title}</div>}
-                    {options.map((item) => 
-                        <MenuItem
-                            key={item.value}
-                            item={item}
-                            selectedValue={value}
-                            onChange={onChange}
-                            onCloseAll={closeMenu}
-                            closeSignal={closeSignal}
-                            optionIcon={optionIcon}
-                            submenuPlacement={submenuPlacement}
-                            pageMargin={pageMargin}
-                            menuGap={menuGap}
-                        />
+            >
+                {triggerValue
+                    ? triggerValue(selectedOption)
+                    : (
+                        <span>
+                            {selectedOption.label}
+                        </span>
                     )}
-                </div>,
-                document.body.querySelector("body > main.align-layout") || document.body
-            )
-        }
-    </>);
+            </button>
+        );
+
+    return (
+        <>
+            {triggerElement}
+
+            {isMounted &&
+                createPortal(
+                    <div
+                        ref={menuRef}
+                        role="menu"
+                        className={[
+                            "menu",
+                            placementClass,
+                            "ascroll-y",
+                            "inset-scrollbar",
+                            isOpen ? "visible" : "",
+                            id
+                                ? `${id}-options`
+                                : "",
+                        ]
+                            .filter(Boolean)
+                            .join(" ")}
+                        style={menuStyle}
+                        onMouseDown={(event) => {
+                            event.stopPropagation();
+                        }}
+                    >
+                        {title && (
+                            <div className="menu-title">
+                                {title}
+                            </div>
+                        )}
+
+                        {options.map((item) => (
+                            <MenuItem
+                                key={item.value}
+                                item={item}
+                                selectedValue={value}
+                                onChange={onChange}
+                                onCloseAll={closeMenu}
+                                closeSignal={closeSignal}
+                                optionIcon={optionIcon}
+                                submenuPlacement={
+                                    submenuPlacement
+                                }
+                                pageMargin={pageMargin}
+                                menuGap={menuGap}
+                            />
+                        ))}
+                    </div>,
+                    document.body
+                )}
+        </>
+    );
 }
