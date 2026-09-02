@@ -153,7 +153,7 @@ export default function Slider({
                     <div
                         className="slider-track slider-end-track"
                         style={{
-                            flex: `${Math.max(0.0001, 1 - ratio)} 1 0%`,
+                            flex: `${1 - ratio} 1 0%`,
                             height: currentSize.trackHeight,
                             backgroundColor: "rgb(var(--md-color-secondary-container))",
                             borderRadius: "2px",
@@ -169,7 +169,7 @@ export default function Slider({
                     <div
                         className="slider-track slider-start-track"
                         style={{
-                            flex: `${Math.max(0.0001, ratio)} 1 0%`,
+                            flex: `${ratio} 1 0%`,
                             height: currentSize.trackHeight,
                             backgroundColor: "rgb(var(--md-color-secondary-container))",
                             borderRadius: "2px",
@@ -208,7 +208,7 @@ export default function Slider({
                     <div
                         className="slider-track slider-end-track"
                         style={{
-                            flex: `${Math.max(0.0001, 1 - zeroRatio)} 1 0%`,
+                            flex: `${1 - zeroRatio} 1 0%`,
                             height: currentSize.trackHeight,
                             backgroundColor: "rgb(var(--md-color-secondary-container))",
                             borderRadius: "2px",
