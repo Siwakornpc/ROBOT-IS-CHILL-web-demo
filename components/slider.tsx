@@ -73,29 +73,17 @@ export default function Slider({
             if (val <= max) ticks.push(val);
         }
     }
-
-    const renderTrackTicks = (trackMin: number, trackMax: number, isFilled: boolean, isFirstTrack: boolean) => {
-        if (!showTicks || ticks.length === 0) return null;
-        return ticks
-            .filter((t) => (isFirstTrack ? t >= trackMin && t <= trackMax : t > trackMin && t <= trackMax))
-            .map((tickVal) => {
-                const span = trackMax - trackMin;
-                const localRatio = span === 0 ? 0 : (tickVal - trackMin) / span;
-                return (
-                    <div
-                        key={tickVal}
-                        className={`slider-tick ${isFilled ? "slider-tick-filled" : ""}`}
-                        style={{
-                            position: "absolute",
-                            left: `${localRatio * 100}%`,
-                            top: "50%",
-                            transform: "translate(-50%, -50%)",
-                            pointerEvents: "none",
-                            zIndex: 2,
-                        }}
-                    />
-                );
-            });
+    const isTickFilled = (tickVal: number) => {
+        if (hasZero) {
+            if (clampedValue >= 0)
+                return tickVal >= 0 && tickVal <= clampedValue;
+            else
+                return tickVal >= clampedValue && tickVal <= 0;
+        } else if (min >= 0) {
+            return tickVal <= clampedValue;
+        } else {
+            return tickVal >= clampedValue;
+        }
     };
 
     return (
@@ -112,61 +100,48 @@ export default function Slider({
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerCancel={() => dragRef.current = false}
-        >
-            {hasZero ?
-                clampedValue >= 0
+        >{hasZero
+            ? clampedValue >= 0
                 ? <>
-                    <div className="slider-track slider-start-track" style={{ flexGrow: zeroRatio, position: "relative" }}>
-                        {renderTrackTicks(min, 0, false, true)}
-                    </div>
-                    <div className="slider-track slider-mid-track slider-track-filled" style={{ flexGrow: ratio - zeroRatio, position: "relative" }}>
-                        {renderTrackTicks(0, clampedValue, true, false)}
-                    </div>
-                    <div className="slider-track slider-end-track" style={{ flexGrow: 1 - ratio, position: "relative" }}>
-                        {renderTrackTicks(clampedValue, max, false, false)}
-                    </div>
+                    <div className="slider-track slider-start-track" style={{ flexGrow: zeroRatio }} />
+                    <div className="slider-track slider-mid-track slider-track-filled" style={{ flexGrow: ratio - zeroRatio }} />
+                    <div className="slider-handle" style={{ margin: "0 -2px" }} />
+                    <div className="slider-track slider-end-track" style={{ flexGrow: 1 - ratio }} />
                 </>
                 : <>
-                    <div className="slider-track slider-start-track" style={{ flexGrow: ratio, position: "relative" }}>
-                        {renderTrackTicks(min, clampedValue, true, true)}
-                    </div>
-                    <div className="slider-track slider-mid-track slider-track-filled" style={{ flexGrow: zeroRatio - ratio, position: "relative" }}>
-                        {renderTrackTicks(clampedValue, 0, true, false)}
-                    </div>
-                    <div className="slider-track slider-end-track" style={{ flexGrow: 1 - zeroRatio, position: "relative" }}>
-                        {renderTrackTicks(0, max, false, false)}
-                    </div>
+                    <div className="slider-track slider-start-track" style={{ flexGrow: ratio }} />
+                    <div className="slider-handle" style={{ margin: "0 -2px" }} />
+                    <div className="slider-track slider-mid-track slider-track-filled" style={{ flexGrow: zeroRatio - ratio }} />
+                    <div className="slider-track slider-end-track" style={{ flexGrow: zeroRatio }} />
                 </>
             : min >= 0
                 ? <>
-                    <div className="slider-track slider-start-track slider-track-filled" style={{ flexGrow: ratio, position: "relative" }}>
-                        {renderTrackTicks(min, clampedValue, true, true)}
-                    </div>
-                    <div className="slider-track slider-end-track" style={{ flexGrow: 1 - ratio, position: "relative" }}>
-                        {renderTrackTicks(clampedValue, max, false, false)}
-                    </div>
+                    <div className="slider-track slider-start-track slider-track-filled" style={{ flexGrow: ratio }} />
+                    <div className="slider-handle" style={{ margin: "0 -2px" }} />
+                    <div className="slider-track slider-end-track" style={{ flexGrow: 1 - ratio }} />
                 </>
                 : <>
-                    <div className="slider-track slider-start-track" style={{ flexGrow: ratio, position: "relative" }}>
-                        {renderTrackTicks(min, clampedValue, true, true)}
-                    </div>
-                    <div className="slider-track slider-end-track slider-track-filled" style={{ flexGrow: 1 - ratio, position: "relative" }}>
-                        {renderTrackTicks(clampedValue, max, true, false)}
-                    </div>
+                    <div className="slider-track slider-start-track" style={{ flexGrow: ratio }} />
+                    <div className="slider-handle" style={{ margin: "0 -2px" }} />
+                    <div className="slider-track slider-end-track slider-track-filled" style={{ flexGrow: 1 - ratio }} />
                 </>
-            }
+        }
 
-            <div
-                className="slider-handle"
-                style={{
-                    position: "absolute",
-                    left: `calc(6px + ${ratio} * (100% - 12px))`,
-                    top: "50%",
-                    transform: "translate(-50%, -50%)",
-                    pointerEvents: "none",
-                    zIndex: 4,
-                }}
-            />
-        </div>
+        {showTicks && ticks.map((tickVal) => {
+            const tickRatio = (tickVal - min) / (max - min);
+            const filled = isTickFilled(tickVal);
+            return (
+                <div
+                    key={tickVal}
+                    style={{
+                        position: "absolute",
+                        insetInlineStart: `calc(6px + ${tickRatio} * (100% - 12px))`,
+                        zIndex: 2,
+                        pointerEvents: "none",
+                    }}
+                ><div className={`slider-tick ${filled ? "slider-tick-filled" : ""}`} />
+                </div>
+            );
+        })}</div>
     );
 }
