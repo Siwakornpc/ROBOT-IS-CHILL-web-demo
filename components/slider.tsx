@@ -2,6 +2,29 @@
 
 import { useRef, useCallback, CSSProperties } from "react";
 
+type PrecisionFormat = `${number}${"d" | "f"}` | number | null | undefined;
+
+function formatPrecision(value: number, precision: PrecisionFormat): string {
+    if (precision == null) return value.toString();
+    if (typeof precision === "number") return value.toPrecision(precision);
+
+    const match = precision.match(/^(\d+)([df])$/);
+    if (!match) {
+        const parsed = Number(precision);
+        return isNaN(parsed) ? value.toString() : value.toPrecision(parsed);
+    }
+
+    const count = parseInt(match[1], 10);
+    const type = match[2];
+
+    if (type === "d")
+        return value.toFixed(count);
+    else if (type === "f")
+        return value.toPrecision(count);
+
+    return value.toString();
+}
+
 interface SliderProps {
     value: number;
     min?: number;
@@ -13,6 +36,7 @@ interface SliderProps {
     className?: string;
     style?: CSSProperties;
     thumbLabel?: any;
+    precision?: PrecisionFormat;
 }
 
 export default function Slider({
@@ -25,7 +49,8 @@ export default function Slider({
     onChange,
     className = "",
     style,
-    thumbLabel = Math.fround(value),
+    precision = "3f",
+    thumbLabel = formatPrecision(value, precision),
 }: SliderProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const dragRef = useRef(false);
