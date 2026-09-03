@@ -967,6 +967,7 @@ hr {
     margin-inline-end: 2px;
     border-radius: 2px;
     background: rgb(var(--md-color-secondary-container));
+    overflow: hidden;
 }
 .slider-start-track, .slider-mid-track {
     margin-inline-end: 2px;
@@ -981,10 +982,21 @@ hr {
 .slider-start-track::after, .slider-end-track::after {
     content: "";
     display: block;
-    width: 2px;
-    height: 2px;
-    border-radius: 1px;
+    top: 50%;
+    width: 4px;
+    height: 4px;
+    margin: -2px;
+    border-radius: 2px;
     background: rgb(var(--md-color-on-secondary-container));
+}
+.slider-start-track::after {
+    inset-inline-start: 6px;
+}
+.slider-end-track::after {
+    inset-inline-end: 6px;
+}
+.slider-track-filled::after {
+    background: rgb(var(--md-color-on-primary));
 }
 
 .slider-thumb {
