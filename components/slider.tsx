@@ -98,27 +98,27 @@ export default function Slider({
         >{hasZero
             ? clampedValue >= 0
                 ? <>
-                    <div className="slider-track slider-start-track" style={{ flexGrow: zeroRatio }} />
-                    <div className="slider-track slider-mid-track slider-track-filled" style={{ flexGrow: ratio - zeroRatio }} />
-                    <div className="slider-thumb" />
-                    <div className="slider-track slider-end-track" style={{ flexGrow: 1 - ratio }} />
+                    <div className="slider-track slider-start-track" style={{ flex: `0 0 calc(${zeroRatio} * (100% - 16px))` }} />
+                    <div className="slider-track slider-mid-track slider-track-filled" style={{ flex: `0 0 calc((${ratio} - ${zeroRatio}) * (100% - 16px))` }} />
+                    <div className="slider-handle" style={{ flex: "0 0 4px" }} />
+                    <div className="slider-track slider-end-track" style={{ flex: `0 0 calc((1 - ${ratio}) * (100% - 16px))` }} />
                 </>
                 : <>
-                    <div className="slider-track slider-start-track" style={{ flexGrow: ratio }} />
-                    <div className="slider-thumb" />
-                    <div className="slider-track slider-mid-track slider-track-filled" style={{ flexGrow: zeroRatio - ratio }} />
-                    <div className="slider-track slider-end-track" style={{ flexGrow: zeroRatio }} />
+                    <div className="slider-track slider-start-track" style={{ flex: `0 0 calc(${ratio} * (100% - 16px))` }} />
+                    <div className="slider-handle" style={{ flex: "0 0 4px" }} />
+                    <div className="slider-track slider-mid-track slider-track-filled" style={{ flex: `0 0 calc((${zeroRatio} - ${ratio}) * (100% - 16px))` }} />
+                    <div className="slider-track slider-end-track" style={{ flex: `0 0 calc((1 - ${zeroRatio}) * (100% - 16px))` }} />
                 </>
             : min >= 0
                 ? <>
-                    <div className="slider-track slider-start-track slider-track-filled" style={{ flexGrow: ratio }} />
-                    <div className="slider-thumb" />
-                    <div className="slider-track slider-end-track" style={{ flexGrow: 1 - ratio }} />
+                    <div className="slider-track slider-start-track slider-track-filled" style={{ flex: `0 0 calc(${ratio} * (100% - 16px))` }} />
+                    <div className="slider-handle" style={{ flex: "0 0 4px" }} />
+                    <div className="slider-track slider-end-track" style={{ flex: `0 0 calc((1 - ${ratio}) * (100% - 16px))` }} />
                 </>
                 : <>
-                    <div className="slider-track slider-start-track" style={{ flexGrow: ratio }} />
-                    <div className="slider-thumb" />
-                    <div className="slider-track slider-end-track slider-track-filled" style={{ flexGrow: 1 - ratio }} />
+                    <div className="slider-track slider-start-track" style={{ flex: `0 0 calc(${ratio} * (100% - 16px))` }} />
+                    <div className="slider-handle" style={{ flex: "0 0 4px" }} />
+                    <div className="slider-track slider-end-track slider-track-filled" style={{ flex: `0 0 calc((1 - ${ratio}) * (100% - 16px))` }} />
                 </>
         }
 

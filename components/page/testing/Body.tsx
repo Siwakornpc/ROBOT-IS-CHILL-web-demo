@@ -120,7 +120,7 @@ export default function Body() {
     }, []);
 
     return (
-        <main style={{ width: "stretch" }}>
+        <main className="ascroll-y" style={{ width: "stretch" }}>
             <div className="main-body">
                 <p className="text-label">hi lol</p>
                 <hr />
