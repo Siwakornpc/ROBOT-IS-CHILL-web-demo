@@ -964,6 +964,7 @@ hr {
 }
 
 .slider-track {
+    flex-shrink: 1;
     position: relative;
     pointer-events: none;
     border-radius: 2px;
