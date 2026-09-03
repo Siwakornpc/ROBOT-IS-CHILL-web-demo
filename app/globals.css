@@ -995,16 +995,27 @@ hr {
 }
 
 .slider-thumb {
+    pointer-events: none;
+    align-self: center;
     width: 4px;
     height: stretch;
     background: rgb(var(--md-color-primary));
     border-radius: 2px;
-    transition: width 0.1s ease;
-    pointer-events: none;
-    align-self: center;
+    transition: all 0.1s ease;
 }
 .slider-container:active .slider-thumb {
     width: 2px;
+    margin-inline: 1px;
+}
+.slider-container:active .slider-thumb {
+    width: 2px;
+    margin-inline: 1px;
+}
+.slider-container:active .slider-thumb + .slider-track {
+    margin-inline-start: -1px;
+}
+.slider-container:active .slider-track:has(+ .slider-thumb) {
+    margin-inline-end: -1px;
 }
 
 .slider-container.xsmall {

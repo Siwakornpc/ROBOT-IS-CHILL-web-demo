@@ -86,32 +86,32 @@ export default function Slider({
                 ? <>
                     <div
                         className="slider-track slider-start-track"
-                        style={{width: `calc(${zeroRatio} * (100% - ${thumbWidth}))`}}
+                        style={{flex: `${zeroRatio} 1 0`}}
                     />
                     <div
                         className="slider-track slider-mid-track slider-track-filled"
-                        style={{width: `calc(${ratio - zeroRatio} * (100% - ${thumbWidth}))`}}
+                        style={{flex: `${ratio - zeroRatio} 1 0`}}
                     />
                     <div className="slider-thumb" />
                     <div
                         className="slider-track slider-end-track"
-                        style={{width: `calc(${1 - ratio} * (100% - ${thumbWidth}))`}}
+                        style={{flex: `${1 - ratio} 1 0`}}
                     />
                 </>
                 // negative value with zero
                 : <>
                     <div
                         className="slider-track slider-start-track"
-                        style={{width: `calc(${ratio} * (100% - ${thumbWidth}))`}}
+                        style={{flex: `${ratio} 1 0`}}
                     />
                     <div className="slider-thumb" />
                     <div
                         className="slider-track slider-mid-track slider-track-filled"
-                        style={{width: `calc(${zeroRatio - ratio} * (100% - ${thumbWidth}))`}}
+                        style={{flex: `${zeroRatio - ratio} 1 0`}}
                     />
                     <div
                         className="slider-track slider-end-track"
-                        style={{width: `calc(${1 - zeroRatio} * (100% - ${thumbWidth}))`}}
+                        style={{flex: `${1 - zeroRatio} 1 0`}}
                     />
                 </>
             : min >= 0
@@ -119,24 +119,24 @@ export default function Slider({
                 ? <>
                     <div
                         className="slider-track slider-start-track slider-track-filled"
-                        style={{width: `calc(${ratio} * (100% - ${thumbWidth}))`}}
+                        style={{flex: `${ratio} 1 0`}}
                     />
                     <div className="slider-thumb" />
                     <div
                         className="slider-track slider-end-track"
-                        style={{width: `calc(${1 - ratio} * (100% - ${thumbWidth}))`}}
+                        style={{flex: `${1 - ratio} 1 0`}}
                     />
                 </>
                 // negative slider
                 : <>
                     <div
                         className="slider-track slider-start-track"
-                        style={{width: `calc(${ratio} * (100% - ${thumbWidth}))`}}
+                        style={{flex: `${ratio} 1 0`}}
                     />
                     <div className="slider-thumb" />
                     <div
                         className="slider-track slider-end-track slider-track-filled"
-                        style={{width: `calc(${1 - ratio} * (100% - ${thumbWidth}))`}}
+                        style={{flex: `${1 - ratio} 1 0`}}
                     />
                 </>
         }</div>
