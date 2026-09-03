@@ -108,19 +108,13 @@ export default function Slider({
             ? <>
                 <div 
                     className="slider-track slider-start-track"
-                    style={{
-                        flexGrow: zeroRatio,
-                        width: `calc(${zeroRatio} * 100%)`,
-                    }}
+                    style={{flexGrow: clampedValue >= 0 ? zeroRatio : ratio}}
                 />
                 {clampedValue >= 0
                     ? <>
                         <div 
                             className="slider-track slider-mid-track slider-track-filled" 
-                            style={{ 
-                                flexGrow: ratio - zeroRatio, 
-                                width: `calc(${(ratio - zeroRatio)} * 100%)`,
-                            }} 
+                            style={{flexGrow: ratio - zeroRatio}} 
                         />
                         <div className="slider-handle" />
                     </>
@@ -128,37 +122,25 @@ export default function Slider({
                         <div className="slider-handle" />
                         <div 
                             className="slider-track slider-mid-track slider-track-filled" 
-                            style={{ 
-                                flexGrow: zeroRatio - ratio, 
-                                width: `calc(${(zeroRatio - ratio)} * 100%)`,
-                            }} 
+                            style={{flexGrow: zeroRatio - ratio}} 
                         />
                     </>
                 }
                 <div 
                     className="slider-track slider-end-track" 
-                    style={{ 
-                        flexGrow: 1 - ratio, 
-                        width: `calc(${(1 - ratio)} * 100%)`,
-                    }} 
+                    style={{flexGrow: 1 - clampedValue >= 0 ? ratio : zeroRatio}} 
                 />
             </>
-        : <>
-            <div 
-                className={`slider-track slider-start-track ${min >= 0 ? "slider-track-filled" : ""}`}
-                style={{ 
-                    flexGrow: ratio, 
-                    width: `calc(${ratio} * 100%)`,
-                }} 
-            />
-            <div className="slider-handle" />
-            <div 
-                className={`slider-track slider-end-track ${min >= 0 ? "" : "slider-track-filled"}`}
-                style={{ 
-                    flexGrow: 1 - ratio, 
-                    width: `calc(${(1 - ratio)} * 100%)`,
-                }} 
-            />
+            : <>
+                <div 
+                    className={`slider-track slider-start-track ${min >= 0 ? "slider-track-filled" : ""}`}
+                    style={{flexGrow: ratio}} 
+                />
+                <div className="slider-handle" />
+                <div 
+                    className={`slider-track slider-end-track ${min >= 0 ? "" : "slider-track-filled"}`}
+                    style={{flexGrow: 1 - ratio}} 
+                />
             </>}
 
             {showTicks && ticks.map((tickVal) => {
