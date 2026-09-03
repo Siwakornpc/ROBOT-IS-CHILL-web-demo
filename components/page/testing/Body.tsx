@@ -107,9 +107,10 @@ export default function Body() {
     const variantText = '<wave><axis: Literal["x", "y"]>/<amplitude: int>/<offset: float>/<frequency: float>';
     const variantElementRef = useRef<HTMLDivElement>(null);
 
-    const [sliderValue, setSliderValue] = useState(50);
-    const [sliderValue2, setSliderValue2] = useState(50);
-    const [sliderValue3, setSliderValue3] = useState(-50);
+    const [sliderValue, setSliderValue] = useState(5);
+    const [sliderValue2, setSliderValue2] = useState(5);
+    const [sliderValue3, setSliderValue3] = useState(0);
+    const [sliderValue4, setSliderValue4] = useState(-5);
     useEffect(() => {
         const element = variantElementRef.current;
 
@@ -177,7 +178,7 @@ export default function Body() {
                 <Slider
                     value={sliderValue}
                     min={0}
-                    max={100}
+                    max={10}
                     step={1}
                     onChange={(value) => {
                         setSliderValue(value);
@@ -186,23 +187,35 @@ export default function Body() {
                 />
                 <Slider
                     value={sliderValue2}
-                    min={-100}
-                    max={100}
+                    min={-10}
+                    max={10}
+                    step={1}
                     onChange={(value) => {
                         setSliderValue2(value);
                         console.log("Slider Value:", value);
                     }}
                     size="small"
+                    showTicks
                 />
                 <Slider
                     value={sliderValue3}
-                    min={-100}
-                    max={-50}
+                    min={-1}
+                    max={1}
                     onChange={(value) => {
                         setSliderValue3(value);
                         console.log("Slider Value:", value);
                     }}
-                    size="large"
+                    size="medium"
+                />
+                <Slider
+                    value={sliderValue4}
+                    min={-10}
+                    max={-1}
+                    onChange={(value) => {
+                        setSliderValue4(value);
+                        console.log("Slider Value:", value);
+                    }}
+                    size="xlarge"
                 />
             </div>
         </main>

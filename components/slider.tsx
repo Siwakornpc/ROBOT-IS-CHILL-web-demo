@@ -8,6 +8,7 @@ interface SliderProps {
     max?: number;
     step?: number;
     size?: "xsmall" | "small" | "medium" | "large" | "xlarge";
+    showTicks?: boolean;
     onChange: (value: number) => void;
     className?: string;
     style?: CSSProperties;
@@ -19,6 +20,7 @@ export default function Slider({
     max = 100,
     step,
     size = "xsmall",
+    showTicks = false,
     onChange,
     className = "",
     style,
@@ -63,6 +65,27 @@ export default function Slider({
             e.currentTarget.releasePointerCapture(e.pointerId);
     };
 
+    const ticks: number[] = [];
+    if (showTicks && step && step > 0) {
+        const count = Math.round((max - min) / step);
+        for (let i = 0; i <= count; i++) {
+            const val = Number((min + i * step).toFixed(10));
+            if (val <= max) ticks.push(val);
+        }
+    }
+    const isTickFilled = (tickVal: number) => {
+        if (hasZero) {
+            if (clampedValue >= 0)
+                return tickVal >= 0 && tickVal <= clampedValue;
+            else
+                return tickVal >= clampedValue && tickVal <= 0;
+        } else if (min >= 0) {
+            return tickVal <= clampedValue;
+        } else {
+            return tickVal >= clampedValue;
+        }
+    };
+
     return (
         <div
             ref={containerRef}
@@ -73,64 +96,43 @@ export default function Slider({
             onPointerUp={handlePointerUp}
             onPointerCancel={() => dragRef.current = false}
         >{hasZero
-            ? value >= 0
-                // positive value with zero
+            ? clampedValue >= 0
                 ? <>
-                    <div
-                        className="slider-track slider-start-track"
-                        style={{flexGrow: zeroRatio}}
-                    />
-                    <div
-                        className="slider-track slider-mid-track slider-track-filled"
-                        style={{flexGrow: ratio - zeroRatio}}
-                    />
+                    <div className="slider-track slider-start-track" style={{ flexGrow: zeroRatio }} />
+                    <div className="slider-track slider-mid-track slider-track-filled" style={{ flexGrow: ratio - zeroRatio }} />
                     <div className="slider-thumb" />
-                    <div
-                        className="slider-track slider-end-track"
-                        style={{flexGrow: 1 - ratio}}
-                    />
+                    <div className="slider-track slider-end-track" style={{ flexGrow: 1 - ratio }} />
                 </>
-                // negative value with zero
                 : <>
-                    <div
-                        className="slider-track slider-start-track"
-                        style={{flexGrow: ratio}}
-                    />
+                    <div className="slider-track slider-start-track" style={{ flexGrow: ratio }} />
                     <div className="slider-thumb" />
-                    <div
-                        className="slider-track slider-mid-track slider-track-filled"
-                        style={{flexGrow: zeroRatio - ratio}}
-                    />
-                    <div
-                        className="slider-track slider-end-track"
-                        style={{flexGrow: zeroRatio}}
-                    />
+                    <div className="slider-track slider-mid-track slider-track-filled" style={{ flexGrow: zeroRatio - ratio }} />
+                    <div className="slider-track slider-end-track" style={{ flexGrow: zeroRatio }} />
                 </>
             : min >= 0
-                // positive slider
                 ? <>
-                    <div
-                        className="slider-track slider-start-track slider-track-filled"
-                        style={{flexGrow: ratio}}
-                    />
+                    <div className="slider-track slider-start-track slider-track-filled" style={{ flexGrow: ratio }} />
                     <div className="slider-thumb" />
-                    <div
-                        className="slider-track slider-end-track"
-                        style={{flexGrow: 1 - ratio}}
-                    />
+                    <div className="slider-track slider-end-track" style={{ flexGrow: 1 - ratio }} />
                 </>
-                // negative slider
                 : <>
-                    <div
-                        className="slider-track slider-start-track"
-                        style={{flexGrow: ratio}}
-                    />
+                    <div className="slider-track slider-start-track" style={{ flexGrow: ratio }} />
                     <div className="slider-thumb" />
-                    <div
-                        className="slider-track slider-end-track slider-track-filled"
-                        style={{flexGrow: 1 - ratio}}
-                    />
+                    <div className="slider-track slider-end-track slider-track-filled" style={{ flexGrow: 1 - ratio }} />
                 </>
-        }</div>
+        }
+
+        {showTicks && ticks.map((tickVal) => {
+            const tickRatio = (tickVal - min) / (max - min);
+            return (
+                <div
+                    key={tickVal}
+                    className={`slider-tick ${isTickFilled(tickVal) ? "slider-tick-filled" : ""}`}
+                    style={{
+                        insetInlineStart: `calc(6px + ${tickRatio} * (100% - 12px))`
+                    }}
+                />
+            );
+        })}</div>
     );
 }

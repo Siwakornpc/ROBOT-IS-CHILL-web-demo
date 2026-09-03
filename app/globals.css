@@ -976,7 +976,7 @@ hr {
 .slider-track-filled {
     background: rgb(var(--md-color-primary));
 }
-.slider-start-track::after, .slider-end-track::after {
+.slider-tick, .slider-start-track::after, .slider-end-track::after {
     content: "";
     display: block;
     position: absolute;
@@ -993,7 +993,7 @@ hr {
 .slider-end-track::after {
     inset-inline-end: 6px;
 }
-.slider-track-filled::after {
+.slider-tick-filled, .slider-track-filled::after {
     background: rgb(var(--md-color-on-primary));
 }
 
