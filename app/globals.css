@@ -965,7 +965,6 @@ hr {
 .slider-track {
     position: relative;
     pointer-events: none;
-    margin-inline-end: 2px;
     border-radius: 2px;
     background: rgb(var(--md-color-secondary-container));
     overflow: hidden;

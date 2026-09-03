@@ -13,14 +13,6 @@ interface SliderProps {
     style?: CSSProperties;
 }
 
-const SIZES = {
-    xsmall: { thumbHeight: "44px", trackHeight: "16px", trackRadius: "8px" },
-    small: { thumbHeight: "44px", trackHeight: "24px", trackRadius: "8px" },
-    medium: { trackHeight: "40px", thumbHeight: "52px", trackRadius: "12px" },
-    large: { trackHeight: "56px", thumbHeight: "68px", trackRadius: "16px" },
-    xlarge: { trackHeight: "96px", thumbHeight: "108px", trackRadius: "28px" },
-};
-
 export default function Slider({
     value,
     min = 0,
@@ -34,8 +26,6 @@ export default function Slider({
     const [isPressed, setIsPressed] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const dragRef = useRef(false);
-
-    const currentSize = SIZES[size] || SIZES.xsmall;
 
     const clampedValue = Math.min(Math.max(value, min), max);
     const ratio = (clampedValue - min) / (max - min);
@@ -82,9 +72,6 @@ export default function Slider({
             e.currentTarget.releasePointerCapture(e.pointerId);
     };
 
-    // Thumb width: 4px default, 2px when pressed
-    const thumbWidth = isPressed ? 2 : 4;
-
     return (
         <div
             ref={containerRef}
@@ -97,62 +84,64 @@ export default function Slider({
                 dragRef.current = false;
                 setIsPressed(false);
             }}
-        >{
-            hasZero ?
-                ratio >= zeroRatio
+        >{hasZero
+            ? ratio >= zeroRatio
+                // POSITIVE OR ZERO: [Track 1: min->0] [Track 2: 0->thumb] [Thumb] [Track 3: thumb->max]
                 ? <>
-                    {/* POSITIVE OR ZERO: [Track 1: min->0] [Track 2: 0->thumb] [Thumb] [Track 3: thumb->max] */}
                     <div
                         className="slider-track slider-start-track"
-                        style={{flex: `${zeroRatio} 1 0%`}}
+                        style={{flex: `${zeroRatio} 1 0`}}
                     />
                     <div
                         className="slider-track slider-mid-track slider-track-filled"
-                        style={{flex: `${ratio - zeroRatio} 1 0%`}}
+                        style={{flex: `${ratio - zeroRatio} 1 0`}}
                     />
+                    <div className="slider-thumb" />
                     <div
-                        className="slider-thumb"
-                        style={{flex: `0 0 ${thumbWidth}px`}}
+                        className="slider-track slider-end-track"
+                        style={{flex: `${1 - ratio} 1 0`}}
+                    />
+                </>
+                // NEGATIVE: [Track 1: min->thumb] [Thumb] [Track 2: thumb->0] [Track 3: 0->max]
+                : <>
+                    <div
+                        className="slider-track slider-start-track"
+                        style={{flex: `${ratio} 1 0`}}
+                    />
+                    <div className="slider-thumb" />
+                    <div
+                        className="slider-track slider-mid-track slider-track-filled"
+                        style={{flex: `${zeroRatio - ratio} 1 0`}}
                     />
                     <div
                         className="slider-track slider-end-track"
-                        style={{flex: `${1 - ratio} 1 0%`}}
+                        style={{flex: `${1 - zeroRatio} 1 0`}}
+                    />
+                </>
+            : ratio >= zeroRatio
+                // NO ZERO: [Track 1: min->thumb] [Thumb] [Track 2: thumb->max]
+                ? <>
+                    <div
+                        className="slider-track slider-start-track slider-track-filled"
+                        style={{flex: `${ratio} 1 0`}}
+                    />
+                    <div className="slider-thumb" />
+                    <div
+                        className="slider-track slider-end-track"
+                        style={{flex: `${1 - ratio} 1 0`}}
                     />
                 </>
                 : <>
-                    {/* NEGATIVE: [Track 1: min->thumb] [Thumb] [Track 2: thumb->0] [Track 3: 0->max] */}
                     <div
                         className="slider-track slider-start-track"
-                        style={{flex: `${ratio} 1 0%`}}
+                        style={{flex: `${ratio} 1 0`}}
                     />
+                    <div className="slider-thumb" />
                     <div
-                        className="slider-thumb"
-                        style={{flex: `0 0 ${thumbWidth}px`}}
-                    />
-                    <div
-                        className="slider-track slider-mid-track slider-track-filled"
-                        style={{flex: `${zeroRatio - ratio} 1 0%`}}
-                    />
-                    <div
-                        className="slider-track slider-end-track"
-                        style={{flex: `${1 - zeroRatio} 1 0%`}}
+                        className="slider-track slider-end-track slider-track-filled"
+                        style={{flex: `${1 - ratio} 1 0`}}
                     />
                 </>
-            : <>
-                {/* NO ZERO: [Track 1: min->thumb] [Thumb] [Track 2: thumb->max] */}
-                <div
-                    className="slider-track slider-start-track slider-track-filled"
-                    style={{flex: `${ratio} 1 0%`}}
-                />
-                <div
-                    className="slider-thumb"
-                    style={{flex: `0 0 ${thumbWidth}px`}}
-                />
-                <div
-                    className="slider-track slider-end-track"
-                    style={{flex: `${1 - ratio} 1 0%`}}
-                />
-            </>
         }</div>
     );
 }
