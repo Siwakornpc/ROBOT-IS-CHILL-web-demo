@@ -1005,17 +1005,9 @@ hr {
 }
 .slider-container:active .slider-thumb {
     width: 2px;
-    margin-inline: 1px;
 }
-.slider-container:active .slider-thumb {
-    width: 2px;
-    margin-inline: 1px;
-}
-.slider-container:active .slider-thumb + .slider-track {
-    margin-inline-start: -1px;
-}
-.slider-container:active .slider-track:has(+ .slider-thumb) {
-    margin-inline-end: -1px;
+.slider-container:active .slider-thumb:is(+ .slider-track, :has(+ .slider-thumb)) {
+    flex-basis: 1px;
 }
 
 .slider-container.xsmall {
