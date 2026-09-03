@@ -2,25 +2,33 @@
 
 import { useRef, useCallback, CSSProperties } from "react";
 
-type PrecisionFormat = `${number}${"d" | "f"}` | number | null | undefined;
+type PrecisionFormat = `${"<" | ">" | ""}${number}${"d" | "f"}` | number | null | undefined;
 
 function formatPrecision(value: number, precision: PrecisionFormat): string {
     if (precision == null) return value.toString();
     if (typeof precision === "number") return value.toPrecision(precision);
 
-    const match = precision.match(/^(\d+)([df])$/);
+    const match = precision.match(/^([<>])?(\d+)([df])$/);
     if (!match) {
         const parsed = Number(precision);
         return isNaN(parsed) ? value.toString() : value.toPrecision(parsed);
     }
 
-    const count = parseInt(match[1], 10);
-    const type = match[2];
+    const direction = match[1] as "<" | ">" | undefined;
+    const count = parseInt(match[2], 10);
+    const type = match[3];
 
-    if (type === "d")
-        return value.toFixed(count);
-    else if (type === "f")
-        return value.toPrecision(count);
+    if (type === "d") {
+        const fixed = value.toFixed(count);
+        if (direction === "<") return Number(fixed).toString();
+        return fixed;
+    } 
+    
+    if (type === "f") {
+        const precise = value.toPrecision(count);
+        if (direction === "<") return Number(precise).toString();
+        return precise;
+    }
 
     return value.toString();
 }
@@ -49,7 +57,7 @@ export default function Slider({
     onChange,
     className = "",
     style,
-    precision = "3f",
+    precision = "<3f",
     thumbLabel = formatPrecision(value, precision),
 }: SliderProps) {
     const containerRef = useRef<HTMLDivElement>(null);
