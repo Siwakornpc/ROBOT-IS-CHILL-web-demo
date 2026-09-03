@@ -209,7 +209,6 @@ export function Details({ selected }: DetailsProps) {
     // [isPaletteColorHover, setPaletteColorHover]
     function handlePaletteOnHover(data: PaletteColorData | null = null) {
         setPaletteColorData(data);
-        console.log("test");
     }
 
     // [displaySize, setDisplaySize]
