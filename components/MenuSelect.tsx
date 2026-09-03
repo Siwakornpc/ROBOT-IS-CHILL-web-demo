@@ -676,35 +676,38 @@ export default function MenuSelect<T extends string>({
         Trigger props
     ------------------ */
 
-    const getInputProps = (customProps: Record<string, any> = {}) => {
-        const {
-            onFocus,
-            onClick,
-            ref,
-            style: customStyle,
-            ...rest
-        } = customProps;
+    const getInputProps = useMemo(() => {
+        return (customProps: Record<string, any> = {}) => {
+            const {
+                onFocus,
+                onClick,
+                ref,
+                style: customStyle,
+                ...rest
+            } = customProps;
 
-        return {
-            ...rest,
-            ref: (node: HTMLElement | null) => {
-                triggerRef.current = node;
-
-                if (typeof ref === "function") ref(node);
-                else if (ref) ref.current = node;
-            },
-
-            style: {...customStyle},
-            onFocus: (event: FocusEvent<HTMLInputElement>) => {
-                openMenu();
-                onFocus?.(event);
-            },
-            onClick: (event: ReactMouseEvent<HTMLInputElement>) => {
-                openMenu();
-                onClick?.(event);
-            },
+            return {
+                ...rest,
+                ref: (node: HTMLElement | null) => {
+                    if (node) triggerRef.current = node;
+                    
+                    if (typeof ref === "function")
+                        ref(node);
+                    else if (ref && typeof ref === "object")
+                        (ref as React.RefObject<any>).current = node;
+                },
+                style: { ...customStyle },
+                onFocus: (event: FocusEvent<HTMLInputElement>) => {
+                    openMenu();
+                    onFocus?.(event);
+                },
+                onClick: (event: ReactMouseEvent<HTMLInputElement>) => {
+                    openMenu();
+                    onClick?.(event);
+                },
+            };
         };
-    };
+    }, []); 
 
     /* --------------------------
         Mount + outside click
