@@ -57,7 +57,7 @@ export default function Slider({
     onChange,
     className = "",
     style,
-    precision = "<3f",
+    precision = "<2d",
     thumbLabel = formatPrecision(value, precision),
 }: SliderProps) {
     const containerRef = useRef<HTMLDivElement>(null);
