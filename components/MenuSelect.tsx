@@ -77,12 +77,6 @@ function useIsCoarsePointer() {
     Measurement
 ---------------- */
 
-/**
- * Measures an element without displaying it to the user.
- *
- * The menu is already in the DOM because it is rendered through a portal,
- * so this gives us its natural size before positioning it.
- */
 function measureElement(element: HTMLElement): DOMRect {
     const previousVisibility = element.style.visibility;
     const previousDisplay = element.style.display;
@@ -242,6 +236,24 @@ function calculateMenuPosition(
     };
 }
 
+/* ------------
+    Helpers
+------------ */
+
+function findNestedOption<T extends string>(
+    options: readonly MenuOption<T>[] | MenuOption<T>[],
+    value: T
+): MenuOption<T> | null {
+    for (const option of options) {
+        if (option.value === value) return option;
+        if (option.children && option.children.length > 0) {
+            const found = findNestedOption(option.children, value);
+            if (found) return found;
+        }
+    }
+    return null;
+}
+
 /* -------------
     MenuItem
 ------------- */
@@ -288,9 +300,7 @@ function MenuItem<T extends string>({
 
     const [isMounted, setIsMounted] = useState(false);
     
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
+    useEffect(() => setIsMounted(true), []);
 
     const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -309,7 +319,6 @@ function MenuItem<T extends string>({
         }, delay);
     };
 
-    // clean up on unmount
     useEffect(() => () => clearCloseTimer(), []);
 
     /* ------------------------
@@ -391,7 +400,6 @@ function MenuItem<T extends string>({
         event.stopPropagation();
 
         if (item.disabled) return;
-        onChange(item.value);
 
         if (hasChildren) {
             if (isCoarsePointer) {
@@ -402,12 +410,9 @@ function MenuItem<T extends string>({
             }
             return;
         }
+        onChange(item.value);
         if (closeOnSelect) onCloseAll();
     };
-
-    /* ---------
-        Icon
-    --------- */
 
     const renderIcon = () => {
         if (isSelected) return <i className="icon menu-option-icon">check</i>;
@@ -420,10 +425,6 @@ function MenuItem<T extends string>({
             ].filter(Boolean).join(" "),
         });
     };
-
-    /* -----------
-        Render
-    ----------- */
 
     return (
         <div
@@ -667,7 +668,7 @@ export default function MenuSelect<T extends string>({
     -------------------- */
 
     const selectedOption = useMemo(
-        () => options.find((item) => item.value === value) ?? options[0],
+        () => findNestedOption(options, value) ?? options[0],
         [options, value]
     );
 
