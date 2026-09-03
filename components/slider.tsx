@@ -85,7 +85,7 @@ export default function Slider({
                 setIsPressed(false);
             }}
         >{hasZero
-            ? value > 0
+            ? min >= 0
                 // POSITIVE OR ZERO: [Track 1: min->0] [Track 2: 0->thumb] [Thumb] [Track 3: thumb->max]
                 ? <>
                     <div
@@ -118,7 +118,7 @@ export default function Slider({
                         style={{flex: `${1 - zeroRatio} 1 0`}}
                     />
                 </>
-            : value > 0
+            : min >= 0
                 // NO ZERO: [Track 1: min->thumb] [Thumb] [Track 2: thumb->max]
                 ? <>
                     <div
