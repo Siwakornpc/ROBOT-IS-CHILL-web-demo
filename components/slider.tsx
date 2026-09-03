@@ -105,24 +105,24 @@ export default function Slider({
                 ? <>
                     <div className="slider-track slider-start-track" style={{ flexGrow: zeroRatio }} />
                     <div className="slider-track slider-mid-track slider-track-filled" style={{ flexGrow: ratio - zeroRatio }} />
-                    <div className="slider-handle" style={{ margin: "0 -2px" }} />
+                    <div className="slider-handle" />
                     <div className="slider-track slider-end-track" style={{ flexGrow: 1 - ratio }} />
                 </>
                 : <>
                     <div className="slider-track slider-start-track" style={{ flexGrow: ratio }} />
-                    <div className="slider-handle" style={{ margin: "0 -2px" }} />
+                    <div className="slider-handle" />
                     <div className="slider-track slider-mid-track slider-track-filled" style={{ flexGrow: zeroRatio - ratio }} />
                     <div className="slider-track slider-end-track" style={{ flexGrow: zeroRatio }} />
                 </>
             : min >= 0
                 ? <>
                     <div className="slider-track slider-start-track slider-track-filled" style={{ flexGrow: ratio }} />
-                    <div className="slider-handle" style={{ margin: "0 -2px" }} />
+                    <div className="slider-handle" />
                     <div className="slider-track slider-end-track" style={{ flexGrow: 1 - ratio }} />
                 </>
                 : <>
                     <div className="slider-track slider-start-track" style={{ flexGrow: ratio }} />
-                    <div className="slider-handle" style={{ margin: "0 -2px" }} />
+                    <div className="slider-handle" />
                     <div className="slider-track slider-end-track slider-track-filled" style={{ flexGrow: 1 - ratio }} />
                 </>
         }
