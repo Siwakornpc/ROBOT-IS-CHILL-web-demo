@@ -956,6 +956,7 @@ hr {
 .slider-container {
     display: flex;
     align-items: center;
+    gap: 4px;
     position: relative;
     touch-action: none;
     cursor: pointer;
@@ -968,12 +969,6 @@ hr {
     border-radius: 2px;
     background: rgb(var(--md-color-secondary-container));
     overflow: hidden;
-}
-.slider-start-track, .slider-mid-track {
-    margin-inline-end: 2px;
-}
-.slider-end-track, .slider-mid-track {
-    margin-inline-start: 2px;
 }
 .slider-track-filled {
     background: rgb(var(--md-color-primary));
@@ -1002,7 +997,6 @@ hr {
 .slider-thumb {
     width: 4px;
     height: stretch;
-    margin-inline: 2px;
     background: rgb(var(--md-color-primary));
     border-radius: 2px;
     transition: width 0.1s ease;
