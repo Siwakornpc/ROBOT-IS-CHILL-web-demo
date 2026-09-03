@@ -1020,8 +1020,31 @@ hr {
 .slider-container:active .slider-handle {
     width: 2px;
 }
-.slider-container:hover .slider-handle::after {
+.slider-handle::after {
     content: var(--slider-thumb-label);
+    display: block;
+    position: relative;
+    bottom: 100%;
+    left: 50%;
+    width: fit-content;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    padding: 12px 16px;
+    border-radius: 22px;
+    color: rgb(var(--md-color-inverse-on-surface));
+    background: rgb(var(--md-color-inverse-surface));
+    scale: .95;
+    opacity: 0;
+    translate: -50%;
+    transform-origin: bottom;
+    transition: all 150ms cubic-bezier(.31, .94, .34, 1), bottom .2s cubic-bezier(0, 0, 0, 1), scale .2s cubic-bezier(0, 0, 0, 1);
+    z-index: 1;
+}
+.slider-container:hover .slider-handle::after {
+    bottom: calc(100% + 4px);
+    scale: 1;
+    opacity: 1;
 }
 
 .slider-container.xsmall {
