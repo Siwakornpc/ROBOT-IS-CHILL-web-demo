@@ -272,7 +272,7 @@ function MenuItem<T extends string>({
     pageMargin = 12,
     menuGap = 4,
     instanceId,
-    closeOnSelect = false,
+    closeOnSelect = true,
 }: MenuItemProps<T>) {
     const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
     const [submenuStyle, setSubmenuStyle] = useState<CSSProperties>({
@@ -549,7 +549,7 @@ export default function MenuSelect<T extends string>({
     submenuPlacement = "right-start",
     pageMargin = 12,
     menuGap = 4,
-    closeOnSelect = false,
+    closeOnSelect = true,
 }: MenuSelectProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
