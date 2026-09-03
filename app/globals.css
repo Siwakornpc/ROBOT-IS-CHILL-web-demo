@@ -996,6 +996,9 @@ hr {
 .slider-tick-filled, .slider-track-filled::after {
     background: rgb(var(--md-color-on-primary));
 }
+.slider-start-track:not(:has(+ .slider-handle)), :not(.slider-handle) + .slider-end-track {
+    flex-basis: 12px;
+}
 
 .slider-handle {
     pointer-events: none;
@@ -1011,6 +1014,9 @@ hr {
 }
 .slider-container:active .slider-handle + .slider-track, .slider-container:active .slider-track:has(+ .slider-handle) {
     flex-basis: 1px;
+}
+.slider-container:active :is(.slider-start-track:not(:has(+ .slider-handle)), :not(.slider-handle) + .slider-end-track) {
+    flex-basis: 13px;
 }
 
 .slider-container.xsmall {
