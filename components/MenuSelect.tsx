@@ -176,43 +176,43 @@ function calculateMenuPosition(
 
         case "bottom-end":
             left = boxRect.right - elementWidth;
-            top = boxRect.bottom + gap + (margin * 2);
+            top = boxRect.bottom + gap;
             maxHeight = Math.max(60, spaceBelow);
             break;
 
         case "top-start":
             left = boxRect.left;
-            top = boxRect.top - elementHeight - gap - (margin * 2);
+            top = boxRect.top - elementHeight - gap;
             maxHeight = Math.max(60, spaceAbove);
             break;
 
         case "top-end":
             left = boxRect.right - elementWidth;
-            top = boxRect.top - elementHeight - gap - (margin * 2);
+            top = boxRect.top - elementHeight - gap;
             maxHeight = Math.max(60, spaceAbove);
             break;
 
         case "right-start":
             left = boxRect.right + gap;
-            top = boxRect.top + (margin * 2);
+            top = boxRect.top;
             maxHeight = Math.max(60, viewportHeight - boxRect.top - margin);
             break;
 
         case "right-center":
             left = boxRect.right + gap;
-            top = boxRect.top + (boxHeight - elementHeight) / 2 + (margin * 2);
+            top = boxRect.top + (boxHeight - elementHeight) / 2;
             maxHeight = Math.max(60, viewportHeight - margin * 2);
             break;
 
         case "left-start":
             left = boxRect.left - elementWidth - gap;
-            top = boxRect.top + (margin * 2);
+            top = boxRect.top;
             maxHeight = Math.max(60, viewportHeight - boxRect.top - margin);
             break;
 
         case "left-center":
             left = boxRect.left - elementWidth - gap;
-            top = boxRect.top + (boxHeight - elementHeight) / 2 + (margin * 2);
+            top = boxRect.top + (boxHeight - elementHeight) / 2;
             maxHeight = Math.max(60, viewportHeight - margin * 2);
             break;
     }
@@ -281,6 +281,32 @@ function MenuItem<T extends string>({
     const hasChildren = Boolean(item.children?.length);
     const isSelected = item.value === selectedValue;
     const rawIcon = optionIcon ? optionIcon(item) : item.icon;
+
+    const [isMounted, setIsMounted] = useState(false);
+    
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const clearCloseTimer = () => {
+        if (closeTimerRef.current) {
+            clearTimeout(closeTimerRef.current);
+            closeTimerRef.current = null;
+        }
+    };
+
+    const scheduleClose = (delay = 200) => {
+        clearCloseTimer();
+        closeTimerRef.current = setTimeout(() => {
+            setIsSubmenuOpen(false);
+            closeTimerRef.current = null;
+        }, delay);
+    };
+
+    // clean up on unmount
+    useEffect(() => () => clearCloseTimer(), []);
 
     /* ------------------------
         Submenu positioning
@@ -382,6 +408,11 @@ function MenuItem<T extends string>({
         });
     };
 
+    useEffect(() => {
+        setIsSubmenuOpen(false);
+        clearCloseTimer();
+    }, [closeSignal]);
+
     /* -----------
         Render
     ----------- */
@@ -391,18 +422,19 @@ function MenuItem<T extends string>({
             ref={triggerRef}
             className="menu-option-wrapper"
             onMouseEnter={() => {
-                if (!isCoarsePointer && hasChildren) setIsSubmenuOpen(true);
+                if (isCoarsePointer || !hasChildren) return;
+                clearCloseTimer();
+                setIsSubmenuOpen(true);
             }}
             onMouseLeave={(event) => {
                 if (isCoarsePointer || !hasChildren) return;
                 const relatedTarget = event.relatedTarget as Node | null;
-
                 if (
                     submenuRef.current &&
                     relatedTarget &&
                     submenuRef.current.contains(relatedTarget)
                 ) return;
-                setIsSubmenuOpen(false);
+                scheduleClose();
             }}
         >
             <div
@@ -429,7 +461,7 @@ function MenuItem<T extends string>({
                 {hasChildren && <i className="icon menu-option-menu-icon">arrow_right</i>}
             </div>
 
-            {hasChildren &&
+            {hasChildren && isMounted && createPortal(
                 <div
                     ref={submenuRef}
                     role="menu"
@@ -442,18 +474,19 @@ function MenuItem<T extends string>({
                         isSubmenuOpen ? "visible" : "",
                     ].filter(Boolean).join(" ")}
                     style={submenuStyle}
+                    onMouseEnter={clearCloseTimer}
                     onMouseLeave={(event) => {
                         if (isCoarsePointer) return;
                         const relatedTarget = event.relatedTarget as Node | null;
-
-                        if (triggerRef.current &&
+                        if (
+                            triggerRef.current &&
                             relatedTarget &&
                             triggerRef.current.contains(relatedTarget)
                         ) return;
-                        setIsSubmenuOpen(false);
+                        scheduleClose();
                     }}
                 >
-                    {item.children!.map((child) =>
+                    {item.children!.map((child) => (
                         <MenuItem
                             key={child.value}
                             item={child}
@@ -466,9 +499,9 @@ function MenuItem<T extends string>({
                             pageMargin={pageMargin}
                             menuGap={menuGap}
                         />
-                    )}
-                </div>
-            }
+                    ))}
+                </div>, document.body
+            )}
         </div>
     );
 }
