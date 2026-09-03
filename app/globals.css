@@ -1183,13 +1183,12 @@ hr {
     padding-inline: 4px;
 }
 
-.menu-option-wrapper:hover > .submenu-popout,
+/* .menu-option-wrapper:hover > .submenu-popout,
 .menu-option-wrapper:focus-within > .submenu-popout,
 .submenu-popout:hover {
-    display: block;
     opacity: 1;
     pointer-events: auto;
-}
+} */
 
 .menu-option-wrapper:has(:is(
     .submenu-popout.anchor-l,

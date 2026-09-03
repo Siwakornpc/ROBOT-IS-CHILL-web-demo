@@ -11,6 +11,7 @@ import {
     useMemo,
     useRef,
     useState,
+    useId,
 } from "react";
 import {createPortal} from "react-dom";
 
@@ -256,6 +257,8 @@ interface MenuItemProps<T extends string> {
     submenuPlacement?: MenuPlacement;
     pageMargin?: number;
     menuGap?: number;
+    instanceId: string;
+    closeOnSelect?: boolean;
 }
 
 function MenuItem<T extends string>({
@@ -268,6 +271,8 @@ function MenuItem<T extends string>({
     submenuPlacement = "right-start",
     pageMargin = 12,
     menuGap = 4,
+    instanceId,
+    closeOnSelect = false,
 }: MenuItemProps<T>) {
     const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
     const [submenuStyle, setSubmenuStyle] = useState<CSSProperties>({
@@ -345,7 +350,10 @@ function MenuItem<T extends string>({
     };
 
     useLayoutEffect(() => {
-        if (!isSubmenuOpen) return;
+        if (!isSubmenuOpen) {
+            setSubmenuStyle((prev) => ({...prev, visibility: "hidden"}));
+            return;
+        }
 
         updateSubmenuPosition();
         let animationFrame = 0;
@@ -355,24 +363,19 @@ function MenuItem<T extends string>({
         };
 
         window.addEventListener("resize", update);
-        window.addEventListener("scroll", update, {
-            passive: true,
-            capture: true,
-        });
+        window.addEventListener("scroll", update, { passive: true, capture: true });
 
         return () => {
             window.removeEventListener("resize", update);
             window.removeEventListener("scroll", update, true);
             cancelAnimationFrame(animationFrame);
         };
-    }, [
-        isSubmenuOpen,
-        submenuPlacement,
-        pageMargin,
-        menuGap,
-    ]);
+    }, [isSubmenuOpen, submenuPlacement, pageMargin, menuGap]);
 
-    useEffect(() => setIsSubmenuOpen(false), [closeSignal]);
+    useLayoutEffect(() => {
+        setIsSubmenuOpen(false);
+        clearCloseTimer();
+    }, [closeSignal]);
 
     /* -----------
         Events
@@ -385,11 +388,16 @@ function MenuItem<T extends string>({
         if (item.disabled) return;
 
         if (hasChildren) {
-            setIsSubmenuOpen((open) => !open);
+            if (isCoarsePointer) {
+                setIsSubmenuOpen((open) => !open);
+            } else {
+                clearCloseTimer();
+                setIsSubmenuOpen(true);
+            }
             return;
         }
         onChange(item.value);
-        onCloseAll();
+        if (closeOnSelect) onCloseAll();
     };
 
     /* ---------
@@ -407,11 +415,6 @@ function MenuItem<T extends string>({
             ].filter(Boolean).join(" "),
         });
     };
-
-    useEffect(() => {
-        setIsSubmenuOpen(false);
-        clearCloseTimer();
-    }, [closeSignal]);
 
     /* -----------
         Render
@@ -465,6 +468,7 @@ function MenuItem<T extends string>({
                 <div
                     ref={submenuRef}
                     role="menu"
+                    data-menu-instance={instanceId}
                     className={[
                         "menu",
                         "submenu-popout",
@@ -498,6 +502,8 @@ function MenuItem<T extends string>({
                             submenuPlacement={submenuPlacement}
                             pageMargin={pageMargin}
                             menuGap={menuGap}
+                            instanceId={instanceId}
+                            closeOnSelect={closeOnSelect}
                         />
                     ))}
                 </div>, document.body
@@ -525,6 +531,7 @@ interface MenuSelectProps<T extends string> {
     submenuPlacement?: MenuPlacement;
     pageMargin?: number;
     menuGap?: number;
+    closeOnSelect?: boolean;
 }
 
 export default function MenuSelect<T extends string>({
@@ -542,6 +549,7 @@ export default function MenuSelect<T extends string>({
     submenuPlacement = "right-start",
     pageMargin = 12,
     menuGap = 4,
+    closeOnSelect = false,
 }: MenuSelectProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
@@ -554,6 +562,8 @@ export default function MenuSelect<T extends string>({
     const [closeSignal, setCloseSignal] = useState(0);
     const menuRef = useRef<HTMLDivElement>(null);
     const triggerRef = useRef<HTMLElement>(null);
+
+    const instanceId = useId();
 
     /* ---------------------
         Menu positioning
@@ -588,7 +598,10 @@ export default function MenuSelect<T extends string>({
     };
 
     useLayoutEffect(() => {
-        if (!isOpen) return;
+        if (!isOpen) {
+            setMenuStyle((prev) => ({...prev, visibility: "hidden"}));
+            return;
+        }
 
         updateMenuPosition();
         let animationFrame = 0;
@@ -604,12 +617,7 @@ export default function MenuSelect<T extends string>({
             window.removeEventListener("scroll", update);
             cancelAnimationFrame(animationFrame);
         };
-    }, [
-        isOpen,
-        placement,
-        pageMargin,
-        menuGap,
-    ]);
+    }, [isOpen, placement, pageMargin, menuGap]);
 
     /* -----------------
         Open / close
@@ -682,6 +690,10 @@ export default function MenuSelect<T extends string>({
             const target = event.target as Node;
             if (menuRef.current?.contains(target)) return;
             if (triggerRef.current?.contains(target)) return;
+            if (
+                target instanceof Element &&
+                target.closest(`[data-menu-instance="${instanceId}"]`)
+            ) return;
             closeMenu();
         };
         document.addEventListener("pointerdown", handlePointerDown);
@@ -728,6 +740,7 @@ export default function MenuSelect<T extends string>({
                 <div
                     ref={menuRef}
                     role="menu"
+                    data-menu-instance={instanceId}
                     className={[
                         "menu",
                         placementClass,
@@ -752,6 +765,8 @@ export default function MenuSelect<T extends string>({
                             submenuPlacement={submenuPlacement}
                             pageMargin={pageMargin}
                             menuGap={menuGap}
+                            instanceId={instanceId}
+                            closeOnSelect={closeOnSelect}
                         />
                     )}
                 </div>,
