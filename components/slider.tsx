@@ -111,7 +111,6 @@ export default function Slider({
                     style={{
                         flexGrow: zeroRatio,
                         width: `calc(${zeroRatio} * 100%)`,
-                        marginRight: `calc(-6px * (1 - ${clampedValue >= 0 ? zeroRatio : ratio}))`,
                     }}
                 />
                 {clampedValue >= 0
@@ -121,7 +120,6 @@ export default function Slider({
                             style={{ 
                                 flexGrow: ratio - zeroRatio, 
                                 width: `calc(${(ratio - zeroRatio)} * 100%)`,
-                                marginInline: `calc(-6px * (1 - Math.abs(${ratio} - ${zeroRatio})))`,
                             }} 
                         />
                         <div className="slider-handle" />
@@ -133,7 +131,6 @@ export default function Slider({
                             style={{ 
                                 flexGrow: zeroRatio - ratio, 
                                 width: `calc(${(zeroRatio - ratio)} * 100%)`,
-                                marginInline: `calc(-6px * (1 - Math.abs(${zeroRatio} - ${ratio})))`,
                             }} 
                         />
                     </>
@@ -143,7 +140,6 @@ export default function Slider({
                     style={{ 
                         flexGrow: 1 - ratio, 
                         width: `calc(${(1 - ratio)} * 100%)`,
-                        marginLeft: `calc(-6px * ${clampedValue >= 0 ? ratio : zeroRatio})`,
                     }} 
                 />
             </>
@@ -153,7 +149,6 @@ export default function Slider({
                 style={{ 
                     flexGrow: ratio, 
                     width: `calc(${ratio} * 100%)`,
-                    marginRight: `calc(-6px * (1 - ${ratio}))`,
                 }} 
             />
             <div className="slider-handle" />
@@ -162,7 +157,6 @@ export default function Slider({
                 style={{ 
                     flexGrow: 1 - ratio, 
                     width: `calc(${(1 - ratio)} * 100%)`,
-                    marginLeft: `calc(-6px * ${ratio})`,
                 }} 
             />
             </>}
