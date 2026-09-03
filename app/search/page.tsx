@@ -129,8 +129,7 @@ export default function Home() {
                     <button
                         className="btn ibtn small btn-text search-close-btn"
                         onClick={handleCloseDetails}
-                    >
-                        <i className="icon">close</i>
+                    ><i className="icon">close</i>
                     </button>
                     <Details selected={selected} />
                 </RightBarSearch>

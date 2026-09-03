@@ -10,6 +10,8 @@ import type { ThemeState } from "@/components/themescript";
 
 
 export default function Body() {
+    const [fontSize, setFontSize] = useState(16);
+    const [monoFontSize, setMonoFontSize] = useState(14);
     const [theme, setTheme] = useState<ThemeState>(DEFAULT_THEME);
     const [loaded, setLoaded] = useState(false);
 
@@ -38,7 +40,6 @@ export default function Body() {
             return updated;
         });
     };
-
     const handleDefault = () => updateTheme(DEFAULT_THEME);
 
     useEffect(() => {
@@ -83,6 +84,30 @@ export default function Body() {
                 }
 
                 <p className="text-label text-xl">Fonts</p>
+
+                <div className="box-hole">
+                    <span className="row-group">
+                        <p className="text-label text-main-name">Font Size</p>
+                        <Slider
+                            value={fontSize}
+                            min={12}
+                            max={28}
+                            step={1}
+                            onChange={(value) => setFontSize(value)}
+                        />
+                    </span>
+
+                    <span className="row-group">
+                        <p className="text-label text-main-name">Monospace Font Size</p>
+                        <Slider
+                            value={monoFontSize}
+                            min={10}
+                            max={28}
+                            step={1}
+                            onChange={(value) => setMonoFontSize(value)}
+                        />
+                    </span>
+                </div>
 
                 <div className="box-hole">
                     <span className="row-group">
