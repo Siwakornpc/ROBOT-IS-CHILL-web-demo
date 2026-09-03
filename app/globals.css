@@ -956,6 +956,7 @@ hr {
 .slider-container {
     display: flex;
     align-items: center;
+    gap: 4px;
     position: relative;
     touch-action: none;
     cursor: pointer;
@@ -968,12 +969,6 @@ hr {
     border-radius: 2px;
     background: rgb(var(--md-color-secondary-container));
     overflow: hidden;
-}
-.slider-start-track, .slider-mid-track {
-    margin-inline-end: 2px;
-}
-.slider-end-track, .slider-mid-track {
-    margin-inline-start: 2px;
 }
 .slider-track-filled {
     background: rgb(var(--md-color-primary));
@@ -1000,17 +995,27 @@ hr {
 }
 
 .slider-thumb {
-    width: 4px;
-    height: stretch;
-    margin-inline: 2px;
-    background: rgb(var(--md-color-primary));
-    border-radius: 2px;
-    transition: width 0.1s ease;
     pointer-events: none;
     align-self: center;
+    width: 4px;
+    height: stretch;
+    background: rgb(var(--md-color-primary));
+    border-radius: 2px;
+    transition: width 200ms cubic-bezier(0.2, 0.0, 0, 1.0), margin 200ms cubic-bezier(0.2, 0.0, 0, 1.0);
 }
-.slider-thumb:active {
+.slider-container:active .slider-thumb {
     width: 2px;
+    margin-inline: 1px;
+}
+.slider-container:active .slider-thumb {
+    width: 2px;
+    margin-inline: 1px;
+}
+.slider-container:active .slider-thumb + .slider-track {
+    margin-inline-start: -1px;
+}
+.slider-container:active .slider-track:has(+ .slider-thumb) {
+    margin-inline-end: -1px;
 }
 
 .slider-container.xsmall {

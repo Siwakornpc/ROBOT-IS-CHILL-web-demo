@@ -23,13 +23,10 @@ export default function Slider({
     className = "",
     style,
 }: SliderProps) {
-    const [isPressed, setIsPressed] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const dragRef = useRef(false);
-
     const clampedValue = Math.min(Math.max(value, min), max);
     const ratio = (clampedValue - min) / (max - min);
-
     const hasZero = min < 0 && max > 0;
     const zeroRatio = hasZero ? (0 - min) / (max - min) : 0;
 
@@ -39,35 +36,29 @@ export default function Slider({
             if (!container) return;
 
             const rect = container.getBoundingClientRect();
-            const rawRatio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+            const rawRatio = Math.min(1, Math.max(0, (clientX - rect.left - 6) / (rect.width - 12)));
             let rawValue = min + rawRatio * (max - min);
 
             if (step && step > 0) {
                 const steppedValue = Math.round((rawValue - min) / step) * step + min;
                 rawValue = Math.min(max, Math.max(min, steppedValue));
             }
-
             onChange(rawValue);
         },
         [min, max, step, onChange]
     );
-
     const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
         if (e.button !== 0) return;
         e.currentTarget.setPointerCapture(e.pointerId);
         dragRef.current = true;
-        setIsPressed(true);
         updateValueFromPosition(e.clientX);
     };
-
     const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
         if (!dragRef.current) return;
         updateValueFromPosition(e.clientX);
     };
-
     const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
         dragRef.current = false;
-        setIsPressed(false);
         if (e.currentTarget.hasPointerCapture(e.pointerId))
             e.currentTarget.releasePointerCapture(e.pointerId);
     };
@@ -75,18 +66,15 @@ export default function Slider({
     return (
         <div
             ref={containerRef}
-            className={`slider-container ${size} ${isPressed ? "pressed" : ""} ${className}`}
+            className={`slider-container ${size} ${className}`}
             style={{...style}}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
-            onPointerCancel={() => {
-                dragRef.current = false;
-                setIsPressed(false);
-            }}
+            onPointerCancel={() => dragRef.current = false}
         >{hasZero
-            ? value > 0
-                // POSITIVE OR ZERO: [Track 1: min->0] [Track 2: 0->thumb] [Thumb] [Track 3: thumb->max]
+            ? value >= 0
+                // positive value with zero
                 ? <>
                     <div
                         className="slider-track slider-start-track"
@@ -102,7 +90,7 @@ export default function Slider({
                         style={{flex: `${1 - ratio} 1 0`}}
                     />
                 </>
-                // NEGATIVE: [Track 1: min->thumb] [Thumb] [Track 2: thumb->0] [Track 3: 0->max]
+                // negative value with zero
                 : <>
                     <div
                         className="slider-track slider-start-track"
@@ -118,8 +106,8 @@ export default function Slider({
                         style={{flex: `${1 - zeroRatio} 1 0`}}
                     />
                 </>
-            : value > 0
-                // NO ZERO: [Track 1: min->thumb] [Thumb] [Track 2: thumb->max]
+            : min >= 0
+                // positive slider
                 ? <>
                     <div
                         className="slider-track slider-start-track slider-track-filled"
@@ -131,6 +119,7 @@ export default function Slider({
                         style={{flex: `${1 - ratio} 1 0`}}
                     />
                 </>
+                // negative slider
                 : <>
                     <div
                         className="slider-track slider-start-track"
