@@ -78,32 +78,32 @@ export default function Slider({
                 ? <>
                     <div
                         className="slider-track slider-start-track"
-                        style={{flex: `${zeroRatio} 1 0`}}
+                        style={{flexGrow: zeroRatio}}
                     />
                     <div
                         className="slider-track slider-mid-track slider-track-filled"
-                        style={{flex: `${ratio - zeroRatio} 1 0`}}
+                        style={{flexGrow: ratio - zeroRatio}}
                     />
                     <div className="slider-thumb" />
                     <div
                         className="slider-track slider-end-track"
-                        style={{flex: `${1 - ratio} 1 0`}}
+                        style={{flexGrow: 1 - ratio}}
                     />
                 </>
                 // negative value with zero
                 : <>
                     <div
                         className="slider-track slider-start-track"
-                        style={{flex: `${ratio} 1 0`}}
+                        style={{flexGrow: ratio}}
                     />
                     <div className="slider-thumb" />
                     <div
                         className="slider-track slider-mid-track slider-track-filled"
-                        style={{flex: `${zeroRatio - ratio} 1 0`}}
+                        style={{flexGrow: zeroRatio - ratio}}
                     />
                     <div
                         className="slider-track slider-end-track"
-                        style={{flex: `${1 - zeroRatio} 1 0`}}
+                        style={{flexGrow: zeroRatio}}
                     />
                 </>
             : min >= 0
@@ -111,24 +111,24 @@ export default function Slider({
                 ? <>
                     <div
                         className="slider-track slider-start-track slider-track-filled"
-                        style={{flex: `${ratio} 1 0`}}
+                        style={{flexGrow: ratio}}
                     />
                     <div className="slider-thumb" />
                     <div
                         className="slider-track slider-end-track"
-                        style={{flex: `${1 - ratio} 1 0`}}
+                        style={{flexGrow: 1 - ratio}}
                     />
                 </>
                 // negative slider
                 : <>
                     <div
                         className="slider-track slider-start-track"
-                        style={{flex: `${ratio} 1 0`}}
+                        style={{flexGrow: ratio}}
                     />
                     <div className="slider-thumb" />
                     <div
                         className="slider-track slider-end-track slider-track-filled"
-                        style={{flex: `${1 - ratio} 1 0`}}
+                        style={{flexGrow: 1 - ratio}}
                     />
                 </>
         }</div>
