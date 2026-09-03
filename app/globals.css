@@ -1420,7 +1420,7 @@ hr {
         position-try-fallbacks: flip-block, flip-inline;
         position-try-order: most-height;
 
-        max-height: calc(100vh - 24px);
+        max-height: calc(100dvh - 24px);
         max-width: calc(100vw - 24px);
     }
 
@@ -1481,7 +1481,7 @@ hr {
 }
 
 main:has(.main-body) {
-    height: calc(100vh - 56px);
+    height: calc(100dvh - 56px);
 }
 
 .align-layout {
@@ -1552,7 +1552,7 @@ main:has(.main-body) {
     flex-direction: column;
     width: fit-content;
     min-width: fit-content;
-    height: calc(100vh - 56px);
+    height: calc(100dvh - 56px);
     background: rgb(var(--md-color-surface-container));
     z-index: 92;
     padding: 4px;
@@ -1854,7 +1854,7 @@ main:has(.main-body) {
     position: relative;
 
     width: stretch;
-    height: calc(100vh - 330px);
+    height: calc(100dvh - 330px);
     padding: 8px 12px;
 
     background: var(--editor-body);
@@ -2133,7 +2133,7 @@ main:has(.main-body) {
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
-    height: calc(100vh - 165px);
+    height: calc(100dvh - 165px);
 }
 
 .filter-item {
@@ -2226,7 +2226,7 @@ main:has(.main-body) {
     border-radius: 8px;
 
     width: stretch;
-    height: calc(100vh - 153px);
+    height: calc(100dvh - 153px);
     padding: 8px 12px 64px;
     display: grid;
     position: relative;
@@ -2965,7 +2965,7 @@ tr:nth-child(odd) td {
 .screen-blur {
     position: absolute;
     width: 100vw;
-    height: 100vh;
+    height: 100dvh;
     background: #00000000;
     pointer-events: none;
 
