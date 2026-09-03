@@ -1006,7 +1006,7 @@ hr {
 .slider-container:active .slider-thumb {
     width: 2px;
 }
-.slider-container:active .slider-thumb:is(+ .slider-track, :has(+ .slider-thumb)) {
+.slider-container:active .slider-thumb + .slider-track, .slider-container:active .slider-track:has(+ .slider-thumb) {
     flex-basis: 1px;
 }
 
