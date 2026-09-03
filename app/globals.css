@@ -1979,13 +1979,12 @@ main:has(.main-body) {
     cursor: pointer;
     background: var(--color);
     box-shadow: var(--elevation-0);
-    border: 2px solid #ffffff00;
-    outline: 2px dashed #ffffff00;
+    border: 2px solid rgb(var(--md-color-inverse-surface), 0);
     border-radius: 0px;
     transition: 0.2s ease;
 }
 .color-btn:not(.selected):hover {
-    border: 2px solid #ffffff80;
+    border: 2px solid rgb(var(--md-color-inverse-surface), .5);
 }
 .color-btn.selected {
     border-radius: 50%;
@@ -1993,6 +1992,13 @@ main:has(.main-body) {
     box-shadow: var(--elevation-2);
     opacity: 1;
     z-index: 1;
+}
+.color-grid:has(.color-btn.selected
+    ~ .color-btn.selected
+    ~ .color-btn.selected
+    ~ .color-btn.selected
+) .color-btn.selected {
+    margin: 0;
 }
 .color-grid:has(.color-btn.selected) .color-btn:not(.selected) {
     opacity: .4;
