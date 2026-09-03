@@ -2839,10 +2839,11 @@ tr:nth-child(odd) td {
 
 .text-main-name {
     display :inline-block;
+    align-content: center;
+    flex-shrink: 0;
     width: 180px;
-    border-right: 1px solid rgb(var(--md-color-surface-container));
-    padding-top: 8px;
-    padding-right: 10px;
+    padding-inline-end: 8px;
+    border-inline-end: 1px solid rgb(var(--md-color-surface-container));
 }
 .box-hole {
     padding: 12px 20px;
@@ -2856,7 +2857,7 @@ tr:nth-child(odd) td {
 }
 .row-group {
     display: flex;
-    gap: 10px;
+    gap: 8px;
 }
 
 .dropdown-trigger {

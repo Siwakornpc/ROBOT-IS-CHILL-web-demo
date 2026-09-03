@@ -98,8 +98,11 @@ export default function Slider({
                 display: "flex", 
                 alignItems: "center", 
                 position: "relative", 
+                "--slider-bound-min": min,
+                "--slider-bound-max": max,
+                "--slider-value": value,
                 ...style 
-            }}
+            } as CSSProperties}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
