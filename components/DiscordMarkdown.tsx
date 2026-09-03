@@ -158,6 +158,14 @@ function makeToken(
  * which gets normalized to standard nested Markdown.
  */
 
+function normalizeNewlines(source: string): string {
+    return source.replace(/\r\n?/g, "\n");
+}
+
+function getFence(line: string): RegExpMatchArray | null {
+    return line.match(/^ {0,3}(`{3,}|~{3,})(.*)$/);
+}
+
 function normalizeDiscordLists(source: string): string {
     /*
      * Discord's list syntax is normal Markdown indentation:
@@ -176,7 +184,7 @@ function normalizeDiscordLists(source: string): string {
      *
      * which means that the rest of the message is quoted.
      */
-    const lines = source.replace(/\r\n?/g, "\n").split("\n");
+    const lines = normalizeNewlines(source).split("\n");
     const output: string[] = [];
 
     let inFence = false;
@@ -185,9 +193,7 @@ function normalizeDiscordLists(source: string): string {
     let multiLineQuote = false;
 
     for (const line of lines) {
-        const fence = line.match(
-            /^ {0,3}(`{3,}|~{3,})(?:.*)?$/
-        );
+        const fence = getFence(line);
 
         if (fence) {
             if (!inFence) {
@@ -217,7 +223,7 @@ function normalizeDiscordLists(source: string): string {
             continue;
         }
 
-        if (line.startsWith(">>> ")) {
+        if (line.startsWith(">>>")) {
             multiLineQuote = true;
 
             const content = line.slice(3).replace(/^ /, "");
@@ -244,9 +250,6 @@ function protectDiscordSyntax(
     let result = "";
 
     let i = 0;
-    let inFence = false;
-    let fenceChar = "";
-    let fenceLength = 0;
 
     while (i < source.length) {
         /*
@@ -259,38 +262,25 @@ function protectDiscordSyntax(
          */
         if (i === 0 || source[i - 1] === "\n") {
             const rest = source.slice(i);
-
-            // ```lang\ncode``` — Discord (unlike CommonMark) allows the closing
-            // fence to sit on the same line as the last line of code, e.g.
-            //   ```js
-            //   code```
-            // remark won't recognize that as closed, so we extract the pieces
-            // ourselves and re-emit a fence with the closing marker forced onto
-            // its own line, which remark is guaranteed to parse correctly.
-            const fence = rest.match(
-                /^```(?:(\w+)\n)?([\s\S]*?)```/
-            );
+            const fence = rest.match(/^```([^\n]*)\n([\s\S]*?)```/);
 
             if (fence) {
-                const lang = fence[1] ?? "";
+                const language = fence[1].trim();
                 let content = fence[2];
 
-                // When there's no language token, the newline that terminates the
-                // opening ``` line ends up captured as a leading "\n" in content
-                // instead of being consumed separately — strip it back out.
-                if (!lang && content.startsWith("\n")) {
+                if (content.startsWith("\n")) {
                     content = content.slice(1);
                 }
 
-                const normalized =
-                    "```" +
-                    lang +
-                    "\n" +
-                    content +
-                    (content.endsWith("\n") ? "" : "\n") +
-                    "```";
+                result += "```";
+                result += language;
+                result += "\n";
+                result += content;
+                if (!content.endsWith("\n")) {
+                    result += "\n";
+                }
+                result += "```";
 
-                result += normalized;
                 i += fence[0].length;
                 continue;
             }
@@ -556,15 +546,14 @@ function protectUnsupportedGfmSyntax(source: string): string {
      * Escape only syntax that is unambiguously one of those unsupported
      * constructs, and leave ordinary text alone.
      */
-    const lines = source.replace(/\r\n?/g, "\n").split("\n");
+    const lines = normalizeNewlines(source).split("\n");
     const output = [...lines];
 
     let inFence = false;
     let fenceChar = "";
     let fenceLength = 0;
 
-    const isFence = (line: string) =>
-        line.match(/^ {0,3}(`{3,}|~{3,})(?:.*)?$/);
+    const isFence = getFence;
 
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
@@ -654,8 +643,9 @@ function prepareSource(
     source: string,
     tokens: DiscordTokenStore
 ): string {
+    const normalizedSource = normalizeNewlines(source);
     const normalized = protectUnsupportedGfmSyntax(
-        normalizeDiscordLists(source)
+        normalizeDiscordLists(normalizedSource)
     );
 
     const lines = normalized.split("\n");
@@ -667,7 +657,7 @@ function prepareSource(
      * Escapes any '>' at line start (with up to 3 leading spaces) that is NOT followed by a space, newline, or '>'.
      */
     const strictBlockquotes = lines.map((line) => {
-        const fence = line.match(/^ {0,3}(`{3,}|~{3,})/);
+        const fence = getFence(line);
 
         if (fence) {
             inFence = !inFence;
@@ -687,7 +677,7 @@ function prepareSource(
     inFence = false;
 
     const withSubtext = strictBlockquotes.map((line) => {
-        const fence = line.match(/^ {0,3}(`{3,}|~{3,})/);
+        const fence = getFence(line);
 
         if (fence) {
             inFence = !inFence;
@@ -902,15 +892,23 @@ function formatDiscordTimestamp(
  * --------------------------------------------------------------------------
  */
 
-function DiscordUserMention({ id }: { id: string }) {
+function DiscordUserMention({
+    id,
+    name,
+}: {
+    id: string;
+    name: ReactNode;
+}) {
     const user = useDiscordUser(id);
 
     return (
         <a
             className="discord-mention discord-mention-user"
             target="_blank"
+            rel="noopener noreferrer"
             href={`https://discord.com/users/${id}`}
-        >@{user?.username ?? id}
+        >
+            @{user?.username ?? name}
         </a>
     );
 }
@@ -1011,10 +1009,12 @@ function renderToken(
 
         case "user": {
             const name = context.resolveUser?.(token.id) ?? token.id;
+
             return (
                 <DiscordUserMention
                     key={key}
                     id={token.id}
+                    name={name}
                 />
             );
         }
@@ -1133,6 +1133,21 @@ function renderToken(
  * --------------------------------------------------------------------------
  */
 
+function renderPlainText(value: string, key: string): ReactNode {
+    const lines = value.split("\n");
+
+    if (lines.length === 1) {
+        return value;
+    }
+
+    return lines.map((line, index) => (
+        <span key={`${key}-${index}`}>
+            {index > 0 && <br />}
+            {line}
+        </span>
+    ));
+}
+
 function renderText(
     value: string,
     key: string,
@@ -1147,36 +1162,41 @@ function renderText(
 
     while ((match = tokenRegex.exec(value)) !== null) {
         if (match.index > lastIndex) {
-            parts.push(value.slice(lastIndex, match.index));
+            parts.push(
+                renderPlainText(
+                    value.slice(lastIndex, match.index),
+                    `${key}-${partIndex++}`
+                )
+            );
         }
 
-        const tokenIndex = Number(match[1]);
-        const token = context.tokens[tokenIndex];
+        const token = context.tokens[Number(match[1])];
 
         if (token) {
             parts.push(
                 renderToken(
                     token,
-                    `${key}-token-${partIndex}`,
+                    `${key}-${partIndex++}`,
                     context
                 )
             );
-        } else parts.push(match[0]);
+        } else {
+            parts.push(match[0]);
+        }
 
-        partIndex++;
         lastIndex = match.index + match[0].length;
     }
 
-    if (lastIndex < value.length) parts.push(value.slice(lastIndex));
-    if (parts.length === 0) return value;
+    if (lastIndex < value.length) {
+        parts.push(
+            renderPlainText(
+                value.slice(lastIndex),
+                `${key}-${partIndex}`
+            )
+        );
+    }
 
-    return parts.map((part, index) => (
-        <span
-            key={`${key}-${index}`}
-            className="discord-text-part"
-        >{part}
-        </span>
-    ));
+    return parts.length === 0 ? value : parts;
 }
 
 /*
