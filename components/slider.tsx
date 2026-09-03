@@ -128,7 +128,7 @@ export default function Slider({
                 }
                 <div 
                     className="slider-track slider-end-track" 
-                    style={{flexGrow: 1 - clampedValue >= 0 ? ratio : zeroRatio}} 
+                    style={{flexGrow: 1 - (clampedValue >= 0 ? ratio : zeroRatio)}} 
                 />
             </>
             : <>
