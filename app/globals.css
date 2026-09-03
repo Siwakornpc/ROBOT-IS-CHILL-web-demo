@@ -971,7 +971,6 @@ hr {
     border-radius: 2px;
     background: rgb(var(--md-color-secondary-container));
     overflow: hidden;
-    transition: flex-basis 200ms cubic-bezier(0.2, 0.0, 0, 1.0);
 }
 .slider-track-filled {
     background: rgb(var(--md-color-primary));
@@ -996,8 +995,17 @@ hr {
 .slider-tick-filled, .slider-track-filled::after {
     background: rgb(var(--md-color-on-primary));
 }
+.slider-handle + .slider-track, .slider-track:has(+ .slider-handle) {
+    transition: flex-basis 200ms cubic-bezier(0.2, 0.0, 0, 1.0);
+}
 .slider-start-track:not(:has(+ .slider-handle)), :not(.slider-handle) + .slider-end-track {
     flex-basis: 12px;
+}
+.slider-container:active .slider-handle + .slider-track, .slider-container:active .slider-track:has(+ .slider-handle) {
+    flex-basis: 1px;
+}
+.slider-container:active :is(.slider-start-track:not(:has(+ .slider-handle)), :not(.slider-handle) + .slider-end-track) {
+    flex-basis: 13px;
 }
 
 .slider-handle {
@@ -1012,11 +1020,8 @@ hr {
 .slider-container:active .slider-handle {
     width: 2px;
 }
-.slider-container:active .slider-handle + .slider-track, .slider-container:active .slider-track:has(+ .slider-handle) {
-    flex-basis: 1px;
-}
-.slider-container:active :is(.slider-start-track:not(:has(+ .slider-handle)), :not(.slider-handle) + .slider-end-track) {
-    flex-basis: 13px;
+.slider-container:hover .slider-handle::after {
+    content: var(--slider-thumb-label);
 }
 
 .slider-container.xsmall {

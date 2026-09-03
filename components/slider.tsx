@@ -12,6 +12,7 @@ interface SliderProps {
     onChange: (value: number) => void;
     className?: string;
     style?: CSSProperties;
+    thumbLabel?: any;
 }
 
 export default function Slider({
@@ -24,6 +25,7 @@ export default function Slider({
     onChange,
     className = "",
     style,
+    thumbLabel = value,
 }: SliderProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const dragRef = useRef(false);
@@ -97,10 +99,8 @@ export default function Slider({
             style={{ 
                 display: "flex", 
                 alignItems: "center", 
-                position: "relative", 
-                "--slider-bound-min": min,
-                "--slider-bound-max": max,
-                "--slider-value": value,
+                position: "relative",
+                "--slider-thumb-label": `"${thumbLabel}"`,
                 ...style 
             } as CSSProperties}
             onPointerDown={handlePointerDown}
