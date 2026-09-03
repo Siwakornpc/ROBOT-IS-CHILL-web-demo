@@ -1003,7 +1003,7 @@ hr {
     pointer-events: none;
     align-self: center;
 }
-.slider-thumb:active {
+.slider-container:active .slider-thumb {
     width: 2px;
 }
 
