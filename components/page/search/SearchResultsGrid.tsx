@@ -370,11 +370,13 @@ export default function SearchResults({
                             .filter(Boolean) ?? []
                     : (mode === "flags" && isFlagRecord(data))
                     ? data.syntax
-                        ?.match(/^\(([^)]*)\)|^([^=]*)(?:=?.*)?$/)?.[1]
+                        ?.match(/^(\((?:[^)]*)\)|^(?:[^=]*))(?:=?.*)?$/)?.[1]
                         ?.split("|")
                         .map(term => term.trim().replace(/^--?/, ""))
                         .filter(Boolean) ?? []
                     : [searchName];
+                    
+            console.log(searchTerms);
 
             if (useRegex) {
                 try {
