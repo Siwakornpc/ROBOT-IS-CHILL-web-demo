@@ -391,6 +391,7 @@ function MenuItem<T extends string>({
         event.stopPropagation();
 
         if (item.disabled) return;
+        onChange(item.value);
 
         if (hasChildren) {
             if (isCoarsePointer) {
@@ -401,7 +402,6 @@ function MenuItem<T extends string>({
             }
             return;
         }
-        onChange(item.value);
         if (closeOnSelect) onCloseAll();
     };
 
