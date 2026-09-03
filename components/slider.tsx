@@ -25,7 +25,7 @@ export default function Slider({
     onChange,
     className = "",
     style,
-    thumbLabel = value,
+    thumbLabel = Math.fround(value),
 }: SliderProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const dragRef = useRef(false);

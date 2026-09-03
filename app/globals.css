@@ -1023,9 +1023,8 @@ hr {
 .slider-handle::after {
     content: var(--slider-thumb-label);
     display: block;
-    position: relative;
+    position: absolute;
     bottom: 100%;
-    left: 50%;
     width: fit-content;
     font-size: 14px;
     font-weight: 500;
@@ -1036,15 +1035,18 @@ hr {
     background: rgb(var(--md-color-inverse-surface));
     scale: .95;
     opacity: 0;
-    translate: -50%;
+    translate: calc(2px - 50%);
     transform-origin: bottom;
-    transition: all 150ms cubic-bezier(.31, .94, .34, 1), bottom .2s cubic-bezier(0, 0, 0, 1), scale .2s cubic-bezier(0, 0, 0, 1);
-    z-index: 1;
+    transition: all .2s cubic-bezier(0, 0, 0, 1), opacity 150ms cubic-bezier(.31, .94, .34, 1);
+    z-index: 20;
 }
 .slider-container:hover .slider-handle::after {
     bottom: calc(100% + 4px);
     scale: 1;
     opacity: 1;
+}
+.slider-container:active .slider-handle:after {
+    translate: calc(1px - 50%);
 }
 
 .slider-container.xsmall {
