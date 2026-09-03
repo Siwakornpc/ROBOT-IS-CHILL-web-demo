@@ -65,6 +65,7 @@ export function Details({ selected }: DetailsProps) {
 
     const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const paletteTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const isCopiedMobileRef = useRef(false);
 
     const handleCopy = async (text: string) => {
         try {
@@ -104,6 +105,45 @@ export function Details({ selected }: DetailsProps) {
         }
     };
 
+    const handleCopyPaletteMobile = (text: string, x: number, y: number) => {
+        isCopiedMobileRef.current = false;
+
+        if (paletteTimeoutRef.current) {
+            clearTimeout(paletteTimeoutRef.current);
+        }
+
+        paletteTimeoutRef.current = setTimeout(async () => {
+            try {
+                await navigator.clipboard.writeText(text);
+
+                isCopiedMobileRef.current = true;
+                paletteTimeoutRef.current = null;
+
+                setCopiedPalette({ x, y });
+            } catch (err) {
+                console.error("Failed to copy text: ", err);
+                paletteTimeoutRef.current = null;
+            } finally {
+                paletteTimeoutRef.current = setTimeout(() => {
+                    setCopiedPalette(null);
+                    paletteTimeoutRef.current = null;
+                }, 1500);
+            }
+        }, 1000);
+    };
+
+    const handleAbortCopyPaletteMobile = () => {
+        if (isCopiedMobileRef.current) {
+            return;
+        }
+
+        if (paletteTimeoutRef.current) {
+            clearTimeout(paletteTimeoutRef.current);
+            paletteTimeoutRef.current = null;
+        }
+
+        setCopiedPalette(null);
+    };
 
     // syntaxes
     useEffect(() => {
@@ -169,6 +209,7 @@ export function Details({ selected }: DetailsProps) {
     // [isPaletteColorHover, setPaletteColorHover]
     function handlePaletteOnHover(data: PaletteColorData | null = null) {
         setPaletteColorData(data);
+        console.log("test");
     }
 
     // [displaySize, setDisplaySize]
@@ -525,6 +566,8 @@ export function Details({ selected }: DetailsProps) {
 
     if ("palette" in selected) {
         const normalizedName = selected.name.replace(/^[^:]+:/, "");
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
         return (<>
             <p className="text-label search-details-name">
                 {normalizedName}
@@ -547,15 +590,31 @@ export function Details({ selected }: DetailsProps) {
                                         key={`palette-${selected.name}-row-${i}-column-${j}-color-${color}`}
                                         className="search-details-palette-this-color"
                                         style={{ "--this-palette-color": color } as React.CSSProperties}
-                                        onClick={() => color && handleCopyPalette(color, j, i)}
+                                        // onClick={() => color && handleCopyPalette(color, j, i)}
+                                        {...(!isMobile
+                                            ? {
+                                                onClick: () => color && handleCopyPalette(color, j, i),
+                                            }
+                                            : {
+                                                onTouchStart: () => color && handleCopyPaletteMobile(color, j, i),
+                                                onTouchEnd: () => handleAbortCopyPaletteMobile(),
+                                            }
+                                        )}
                                     >
                                         <span
                                             className={`palette-index-label ${
                                                 copiedPalette?.x === j && copiedPalette?.y === i ? "copied" : ""
                                             }`}
                                             style={{ "--contrast": getContrastColor(color), marginTop: (i >= 10) || (j >= 10) ? "0" : "" } as React.CSSProperties}
-                                            onMouseEnter={() => handlePaletteOnHover({ x: j, y: i, color })}
-                                            onMouseLeave={() => handlePaletteOnHover()}
+                                            {...(!isMobile)
+                                                ? {
+                                                    onMouseEnter: () => handlePaletteOnHover({ x: j, y: i, color }),
+                                                    onMouseLeave: () => handlePaletteOnHover(),
+                                                }
+                                                : {
+                                                    onPointerDown: () => handlePaletteOnHover({ x: j, y: i, color }),
+                                                }
+                                            }
                                         >
                                             {!color
                                                 ? ""
@@ -613,8 +672,12 @@ export function Details({ selected }: DetailsProps) {
                                 : <td
                                     colSpan={2}
                                     className="placeholder"
-                                >Hover to see the current color.<br/>
-                                Click to copy the current color.
+                                > {!isMobile
+                                    ? <>Hover to see the current color.<br/>
+                                        Click to copy the current color.</>
+                                    : <>Tap on the color to see the current color.<br/>
+                                        Tap and hold on the color to copy the current color.</>
+                                }
                                 </td>
                             }
                         </tr>
