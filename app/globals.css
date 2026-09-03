@@ -963,6 +963,7 @@ hr {
 }
 
 .slider-track {
+    position: relative;
     pointer-events: none;
     margin-inline-end: 2px;
     border-radius: 2px;
@@ -978,10 +979,10 @@ hr {
 .slider-track-filled {
     background: rgb(var(--md-color-primary));
 }
-/*not done, dont do this yet*/
 .slider-start-track::after, .slider-end-track::after {
     content: "";
     display: block;
+    position: absolute;
     top: 50%;
     width: 4px;
     height: 4px;
