@@ -1122,7 +1122,6 @@ hr {
 .menu.anchor-tr,
 .menu.anchor-st,
 .menu.anchor-et {
-    margin-block: 4px;
     transform: translateY(-4px) scale(.95);
 }
 .menu.anchor-b,
@@ -1130,19 +1129,16 @@ hr {
 .menu.anchor-br,
 .menu.anchor-sb,
 .menu.anchor-eb {
-    margin-block: 4px;
     transform: translateY(4px) scale(.95);
 }
 .menu.anchor-l,
 .menu.anchor-s,
 [dir=rtl] .menu.anchor-e {
-    margin-inline: 4px;
     transform: translateX(-4px) scale(.95);
 }
 .menu.anchor-r,
 .menu.anchor-e,
 [dir=rtl] .menu.anchor-s {
-    margin-inline: 4px;
     transform: translateX(4px) scale(.95);
 }
 .submenu-popout.anchor-l,
@@ -1156,18 +1152,6 @@ hr {
 .submenu-popout.anchor-br {
     left: 100%;
     margin-block: -4px;
-}
-.submenu-popout.anchor-s,
-.submenu-popout.anchor-st,
-.submenu-popout.anchor-sb {
-    inset-inline-end: 100%;
-    margin-inline: 4px;
-}
-.submenu-popout.anchor-e,
-.submenu-popout.anchor-et,
-.submenu-popout.anchor-eb {
-    inset-inline-start: 100%;
-    margin-inline: 4px;
 }
 
 @supports (anchor-name: --a) {

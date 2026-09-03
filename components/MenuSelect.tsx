@@ -21,12 +21,14 @@ import {createPortal} from "react-dom";
 
 export type MenuPlacement =
     | "bottom-start"
+    | "bottom-center"
     | "bottom-end"
     | "top-start"
+    | "top-center"
     | "top-end"
-    | "right-start"
+    | "right-down"
     | "right-center"
-    | "left-start"
+    | "left-down"
     | "left-center";
 
 export interface MenuOption<T extends string = string> {
@@ -114,24 +116,12 @@ function calculateMenuPosition(
     const elementWidth = elementRect.width;
     const elementHeight = elementRect.height;
 
-    /*
-     * Space available around the trigger box.
-     *
-     * These are deliberately expressed in terms of the box edges rather
-     * than using intermediate "top - bottom" style calculations.
-     */
     const spaceAbove = boxRect.top - margin - gap;
     const spaceBelow = viewportHeight - boxRect.bottom - margin - gap;
 
     const spaceLeft = boxRect.left - margin - gap;
     const spaceRight = viewportWidth - boxRect.right - margin - gap;
 
-    /*
-     * Decide whether the requested side should flip.
-     *
-     * A flip only happens when the requested side cannot contain the menu
-     * and the opposite side has more room.
-     */
     let actualPlacement = placement;
 
     const shouldFlipUp =
@@ -154,66 +144,75 @@ function calculateMenuPosition(
         && spaceRight < elementWidth
         && spaceLeft > spaceRight;
 
-    if (shouldFlipUp) {
+    if (shouldFlipUp)
         actualPlacement = placement.replace("bottom", "top") as MenuPlacement;
-    } else if (shouldFlipDown) {
+    else if (shouldFlipDown)
         actualPlacement = placement.replace("top", "bottom") as MenuPlacement;
-    } else if (shouldFlipRight) {
+    else if (shouldFlipRight)
         actualPlacement = placement.replace("left", "right") as MenuPlacement;
-    } else if (shouldFlipLeft) {
+    else if (shouldFlipLeft)
         actualPlacement = placement.replace("right", "left") as MenuPlacement;
-    }
 
-    let left = boxRect.left;
     let top = boxRect.bottom + gap;
+    let left = boxRect.left;
     let maxHeight = Math.max(60, spaceBelow);
 
     switch (actualPlacement) {
         case "bottom-start":
-            left = boxRect.left;
             top = boxRect.bottom + gap;
-            maxHeight = Math.max(60, spaceBelow);
+            left = boxRect.left;
+            break;
+
+        case "bottom-center":
+            top = boxRect.bottom + gap;
+            left = boxRect.left + (boxWidth - elementWidth) / 2;
             break;
 
         case "bottom-end":
-            left = boxRect.right - elementWidth;
             top = boxRect.bottom + gap;
+            left = boxRect.right - elementWidth;
             maxHeight = Math.max(60, spaceBelow);
             break;
 
         case "top-start":
-            left = boxRect.left;
             top = boxRect.top - elementHeight - gap;
+            left = boxRect.left;
             maxHeight = Math.max(60, spaceAbove);
+            break;
+
+        case "top-center":
+            top = boxRect.top - elementHeight + gap;
+            left = boxRect.left + (boxWidth - elementWidth) / 2;
+            maxHeight = Math.max(60, spaceBelow);
             break;
 
         case "top-end":
-            left = boxRect.right - elementWidth;
             top = boxRect.top - elementHeight - gap;
+            left = boxRect.right - elementWidth;
             maxHeight = Math.max(60, spaceAbove);
             break;
 
-        case "right-start":
-            left = boxRect.right + gap;
+        case "right-down":
             top = boxRect.top;
+            left = boxRect.right + gap;
             maxHeight = Math.max(60, viewportHeight - boxRect.top - margin);
             break;
 
         case "right-center":
-            left = boxRect.right + gap;
             top = boxRect.top + (boxHeight - elementHeight) / 2;
+            left = boxRect.right + gap;
             maxHeight = Math.max(60, viewportHeight - margin * 2);
             break;
 
-        case "left-start":
-            left = boxRect.left - elementWidth - gap;
+        case "left-down":
             top = boxRect.top;
+            left = boxRect.left - elementWidth - gap;
             maxHeight = Math.max(60, viewportHeight - boxRect.top - margin);
             break;
 
         case "left-center":
-            left = boxRect.left - elementWidth - gap;
             top = boxRect.top + (boxHeight - elementHeight) / 2;
+            left = boxRect.left - elementWidth - gap;
             maxHeight = Math.max(60, viewportHeight - margin * 2);
             break;
     }
@@ -268,7 +267,7 @@ function MenuItem<T extends string>({
     onCloseAll,
     closeSignal,
     optionIcon,
-    submenuPlacement = "right-start",
+    submenuPlacement = "right-down",
     pageMargin = 12,
     menuGap = 4,
     instanceId,
@@ -357,7 +356,11 @@ function MenuItem<T extends string>({
 
         updateSubmenuPosition();
         let animationFrame = 0;
-        const update = () => {
+        const update = (e: Event) => {
+            if (e.type === "scroll") {
+                const target = e.target as Node | null;
+                if (target && submenuRef.current?.contains(target)) return;
+            }
             cancelAnimationFrame(animationFrame);
             animationFrame = requestAnimationFrame(updateSubmenuPosition);
         };
@@ -546,7 +549,7 @@ export default function MenuSelect<T extends string>({
     className = "",
     style,
     placement = "bottom-start",
-    submenuPlacement = "right-start",
+    submenuPlacement = "right-down",
     pageMargin = 12,
     menuGap = 4,
     closeOnSelect = true,
@@ -562,7 +565,6 @@ export default function MenuSelect<T extends string>({
     const [closeSignal, setCloseSignal] = useState(0);
     const menuRef = useRef<HTMLDivElement>(null);
     const triggerRef = useRef<HTMLElement>(null);
-
     const instanceId = useId();
 
     /* ---------------------
@@ -582,11 +584,30 @@ export default function MenuSelect<T extends string>({
             gap: menuGap,
         });
 
-        if (position.actualPlacement.startsWith("top")) {
-            setPlacementClass("anchor-bl");
-        } else {
-            setPlacementClass("anchor-tl");
-        }
+        if (position.actualPlacement.startsWith("top"))
+            if (position.actualPlacement.endsWith("start"))
+                setPlacementClass("anchor-st");
+            else if (position.actualPlacement.endsWith("end"))
+                setPlacementClass("anchor-et");
+            else
+                setPlacementClass("anchor-t");
+        else if (position.actualPlacement.startsWith("bottom"))
+            if (position.actualPlacement.endsWith("start"))
+                setPlacementClass("anchor-sb");
+            else if (position.actualPlacement.endsWith("end"))
+                setPlacementClass("anchor-eb");
+            else
+                setPlacementClass("anchor-b");
+        else if (position.actualPlacement.startsWith("left"))
+            if (position.actualPlacement.endsWith("down"))
+                setPlacementClass("anchor-tl");
+            else
+                setPlacementClass("anchor-l");
+        else if (position.actualPlacement.startsWith("right"))
+            if (position.actualPlacement.endsWith("down"))
+                setPlacementClass("anchor-tr");
+            else
+                setPlacementClass("anchor-r");
 
         setMenuStyle({
             position: "fixed",
@@ -605,16 +626,20 @@ export default function MenuSelect<T extends string>({
 
         updateMenuPosition();
         let animationFrame = 0;
-        const update = () => {
+        const update = (e: Event) => {
+            if (e.type === "scroll") {
+                const target = e.target as Node | null;
+                if (target && menuRef.current?.contains(target)) return;
+            }
             cancelAnimationFrame(animationFrame);
             animationFrame = requestAnimationFrame(updateMenuPosition);
         };
 
         window.addEventListener("resize", update);
-        window.addEventListener("scroll", update, {passive: true});
+        window.addEventListener("scroll", update, { passive: true, capture: true });
         return () => {
             window.removeEventListener("resize", update);
-            window.removeEventListener("scroll", update);
+            window.removeEventListener("scroll", update, true);
             cancelAnimationFrame(animationFrame);
         };
     }, [isOpen, placement, pageMargin, menuGap]);

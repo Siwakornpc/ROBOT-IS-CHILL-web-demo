@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { EditorScreen } from "@/components/editor/EditorScreen";
 import ColorPicker from "@/components/ColorPicker";
 import MenuSelect from "@/components/MenuSelect";
+import Slider from "@/components/slider";
 
 import { DEFAULT_THEME } from "@/components/themescript";
 import type { ThemeState } from "@/components/themescript";
@@ -39,9 +39,7 @@ export default function Body() {
         });
     };
 
-    const handleDefault = () => {
-        updateTheme(DEFAULT_THEME);
-    };
+    const handleDefault = () => updateTheme(DEFAULT_THEME);
 
     useEffect(() => {
         if (!loaded) return;
@@ -63,18 +61,11 @@ export default function Body() {
         }
 
         const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        
         triggerThemeUpdate('system');
 
-        const handleChange = () => {
-            triggerThemeUpdate('system');
-        };
-
+        const handleChange = () => triggerThemeUpdate('system');
         mediaQuery.addEventListener('change', handleChange);
-
-        return () => {
-            mediaQuery.removeEventListener('change', handleChange);
-        };
+        return () => mediaQuery.removeEventListener('change', handleChange);
     }, [theme, loaded]);
 
 
@@ -123,12 +114,10 @@ export default function Body() {
                 }
 
                 <p className="text-label text-xl">Theme</p>
-
                 <div className="box-hole">
                     
                     <div className="row-group">
                         <p className="text-label text-main-name">Theme Color</p>
-
                         <ColorPicker
                             value={theme.color}
                             onChange={(color) => {
@@ -141,7 +130,6 @@ export default function Body() {
 
                     <div className="row-group">
                         <p className="text-label text-main-name">Appearance</p>
-
                         <MenuSelect
                             id="theme-scheme"
                             value={theme.scheme}
@@ -156,7 +144,6 @@ export default function Body() {
 
                     <div className="row-group">
                         <p className="text-label text-main-name">Contrast</p>
-
                         <MenuSelect
                             id="theme-contrast"
                             value={theme.contrast}
@@ -173,8 +160,7 @@ export default function Body() {
                         type="button"
                         className="btn small btn-filled !w-48 !justify-center"
                         onClick={handleDefault}
-                    >
-                        Reset Default
+                    >Reset Default
                     </button>
                 </div>
             </div>
