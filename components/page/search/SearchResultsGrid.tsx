@@ -375,8 +375,6 @@ export default function SearchResults({
                         .map(term => term.trim().replace(/^--?/, ""))
                         .filter(Boolean) ?? []
                     : [searchName];
-                    
-            console.log(searchTerms);
 
             if (useRegex) {
                 try {
