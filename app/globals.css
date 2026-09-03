@@ -970,6 +970,7 @@ hr {
     border-radius: 2px;
     background: rgb(var(--md-color-secondary-container));
     overflow: hidden;
+    transition: flex-basis 200ms cubic-bezier(0.2, 0.0, 0, 1.0);
 }
 .slider-track-filled {
     background: rgb(var(--md-color-primary));
@@ -1002,7 +1003,7 @@ hr {
     height: stretch;
     background: rgb(var(--md-color-primary));
     border-radius: 2px;
-    transition: width 200ms cubic-bezier(0.2, 0.0, 0, 1.0), margin 200ms cubic-bezier(0.2, 0.0, 0, 1.0);
+    transition: width 200ms cubic-bezier(0.2, 0.0, 0, 1.0);
 }
 .slider-container:active .slider-thumb {
     width: 2px;
