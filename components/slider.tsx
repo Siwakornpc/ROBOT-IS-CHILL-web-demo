@@ -85,7 +85,7 @@ export default function Slider({
                 setIsPressed(false);
             }}
         >{hasZero
-            ? min >= 0
+            ? value >= 0
                 // POSITIVE OR ZERO: [Track 1: min->0] [Track 2: 0->thumb] [Thumb] [Track 3: thumb->max]
                 ? <>
                     <div
