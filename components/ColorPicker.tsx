@@ -409,7 +409,7 @@ export default function ColorPicker({
                 }}
             >
                 <div
-                    className="color-picker-hue-slider-thumb"
+                    className="color-picker-hue-slider-handle"
                     style={{
                         top: (orientation === "horizontal" ? `${hueThumbPosition * 100}%` : "auto"),
                         left: (orientation === "vertical" ? `${hueThumbPosition * 100}%` : "auto")
