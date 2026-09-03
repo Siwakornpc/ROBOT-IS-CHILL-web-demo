@@ -23,7 +23,6 @@ export default function Slider({
     className = "",
     style,
 }: SliderProps) {
-    const [isPressed, setIsPressed] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const dragRef = useRef(false);
     const clampedValue = Math.min(Math.max(value, min), max);
@@ -37,14 +36,13 @@ export default function Slider({
             if (!container) return;
 
             const rect = container.getBoundingClientRect();
-            const rawRatio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+            const rawRatio = Math.min(1, Math.max(0, (clientX - rect.left - 6) / (rect.width - 12)));
             let rawValue = min + rawRatio * (max - min);
 
             if (step && step > 0) {
                 const steppedValue = Math.round((rawValue - min) / step) * step + min;
                 rawValue = Math.min(max, Math.max(min, steppedValue));
             }
-
             onChange(rawValue);
         },
         [min, max, step, onChange]
@@ -53,7 +51,6 @@ export default function Slider({
         if (e.button !== 0) return;
         e.currentTarget.setPointerCapture(e.pointerId);
         dragRef.current = true;
-        setIsPressed(true);
         updateValueFromPosition(e.clientX);
     };
     const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -62,24 +59,19 @@ export default function Slider({
     };
     const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
         dragRef.current = false;
-        setIsPressed(false);
         if (e.currentTarget.hasPointerCapture(e.pointerId))
             e.currentTarget.releasePointerCapture(e.pointerId);
     };
-    const thumbWidth = isPressed ? '2px' : '${thumbWidth}';
 
     return (
         <div
             ref={containerRef}
-            className={`slider-container ${size} ${isPressed ? "pressed" : ""} ${className}`}
+            className={`slider-container ${size} ${className}`}
             style={{...style}}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
-            onPointerCancel={() => {
-                dragRef.current = false;
-                setIsPressed(false);
-            }}
+            onPointerCancel={() => dragRef.current = false}
         >{hasZero
             ? value >= 0
                 // positive value with zero
