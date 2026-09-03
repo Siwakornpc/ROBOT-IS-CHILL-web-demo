@@ -330,14 +330,16 @@ function MenuItem<T extends string>({
             gap: menuGap,
         });
 
-        if (position.actualPlacement.startsWith("top"))
-            setPlacementClass("anchor-br");
+        if (position.actualPlacement.startsWith("left"))
+            if (position.actualPlacement.endsWith("down"))
+                setPlacementClass("anchor-tl");
+            else
+                setPlacementClass("anchor-l");
         else if (position.actualPlacement.startsWith("right"))
-            setPlacementClass("anchor-l");
-        else if (position.actualPlacement.startsWith("left"))
-            setPlacementClass("anchor-r");
-        else
-            setPlacementClass("anchor-tr");
+            if (position.actualPlacement.endsWith("down"))
+                setPlacementClass("anchor-tr");
+            else
+                setPlacementClass("anchor-r");
 
         setSubmenuStyle({
             position: "fixed",
