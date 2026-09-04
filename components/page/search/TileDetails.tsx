@@ -10,6 +10,7 @@ import { updateFlagStaticHighlight } from "@/components/highlight/metadata-hight
 import { DiscordMarkdown } from "@/components/DiscordMarkdown";
 import applyOverflowFade from "@/components/OverflowFade";
 import { mapTiling } from "@/image_tiling";
+import { DEFAULT_PALETTE } from "@/components/PaletteColorPicker";
 import "@/types/string.extentions";
 import { DiscordUser } from '../../DiscordUser';
 
@@ -46,7 +47,6 @@ function getContrastColor(hex: string | null) {
     const b = parseInt(fullHex.substring(4, 6), 16);
     
     const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-    
     return yiq >= 128 ? "black" : "";
 }
 
@@ -59,41 +59,14 @@ export function Details({ selected }: DetailsProps) {
     const [displaySize, setDisplaySize] = useState<string>("Loading...");
 
     const [getPaletteColorData, setPaletteColorData] = useState<PaletteColorData | null>();
-
-    const [copied, setCopied] = useState(false);
     const [copiedPalette, setCopiedPalette] = useState<{ x: number; y: number } | null>(null);
-
-    const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const paletteTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const isCopiedMobileRef = useRef(false);
-
-    const handleCopy = async (text: string) => {
-        try {
-            await navigator.clipboard.writeText(text);
-
-            if (copyTimeoutRef.current) {
-                clearTimeout(copyTimeoutRef.current);
-            }
-
-            setCopied(true);
-
-            copyTimeoutRef.current = setTimeout(() => {
-                setCopied(false);
-                copyTimeoutRef.current = null;
-            }, 1500);
-        } catch (err) {
-            console.error("Failed to copy text: ", err);
-        }
-    };
 
     const handleCopyPalette = async (text: string, x: number, y: number) => {
         try {
             await navigator.clipboard.writeText(text);
-
-            if (paletteTimeoutRef.current) {
-                clearTimeout(paletteTimeoutRef.current);
-            }
-
+            if (paletteTimeoutRef.current) clearTimeout(paletteTimeoutRef.current);
             setCopiedPalette({ x, y });
 
             paletteTimeoutRef.current = setTimeout(() => {
@@ -108,9 +81,7 @@ export function Details({ selected }: DetailsProps) {
     const handleCopyPaletteMobile = (text: string, x: number, y: number) => {
         isCopiedMobileRef.current = false;
 
-        if (paletteTimeoutRef.current) {
-            clearTimeout(paletteTimeoutRef.current);
-        }
+        if (paletteTimeoutRef.current) clearTimeout(paletteTimeoutRef.current);
 
         paletteTimeoutRef.current = setTimeout(async () => {
             try {
@@ -118,7 +89,6 @@ export function Details({ selected }: DetailsProps) {
 
                 isCopiedMobileRef.current = true;
                 paletteTimeoutRef.current = null;
-
                 setCopiedPalette({ x, y });
             } catch (err) {
                 console.error("Failed to copy text: ", err);
@@ -133,15 +103,11 @@ export function Details({ selected }: DetailsProps) {
     };
 
     const handleAbortCopyPaletteMobile = () => {
-        if (isCopiedMobileRef.current) {
-            return;
-        }
-
+        if (isCopiedMobileRef.current) return;
         if (paletteTimeoutRef.current) {
             clearTimeout(paletteTimeoutRef.current);
             paletteTimeoutRef.current = null;
         }
-
         setCopiedPalette(null);
     };
 
@@ -150,7 +116,6 @@ export function Details({ selected }: DetailsProps) {
         if (!("macro" in selected)) return;
 
         const element = macroElementRef.current;
-
         if (!element) return;
 
         updateMacroStaticHighlight(element, selected.macro.value ? selected.macro.value : "");
@@ -160,7 +125,6 @@ export function Details({ selected }: DetailsProps) {
         if (!("variant" in selected)) return;
 
         const element = variantElementRef.current;
-
         if (!element) return;
 
         updateVariantStaticHighlight(
@@ -173,7 +137,6 @@ export function Details({ selected }: DetailsProps) {
         if (!("flag" in selected)) return;
 
         const element = flagElementRef.current;
-
         if (!element) return;
 
         updateFlagStaticHighlight(
@@ -185,18 +148,13 @@ export function Details({ selected }: DetailsProps) {
     // [tilingFrame, setTilingFrame]
     useEffect(() => {
         if (!("tile" in selected)) return;
-
         setTilingFrame(0);
 
         const tiled = mapTiling(selected.name, selected.tile.tiling);
         const imageMap = tiled.imageMap.flat().filter(item => item !== "");
-
         if (imageMap.length <= 1) return;
 
-        const interval = setInterval(() => {
-            setTilingFrame((frame) => (frame + 1) % imageMap.length);
-        }, 1200);
-
+        const interval = setInterval(() => setTilingFrame((frame) => (frame + 1) % imageMap.length), 1200);
         return () => clearInterval(interval);
     }, [selected]);
 
@@ -264,6 +222,14 @@ export function Details({ selected }: DetailsProps) {
 
         const currentFrame = imageMap[tilingFrame];
         const currentIndex = indexMap[tilingFrame];
+
+        function getColorByValue(targetValue: [number | null, number | null]): string | undefined {
+            const match = DEFAULT_PALETTE.find(
+                (item) => item.value[0] === targetValue[0] && item.value[1] === targetValue[1]
+            );
+            return match?.color;
+        }
+
         return (<>
             <p className="text-label search-details-name">{selected.name}</p>
 
@@ -350,19 +316,28 @@ export function Details({ selected }: DetailsProps) {
                     </tr>
                     <tr>
                         <td>{selected.name.startsWith("text_") ? "Active color" : "Color"}</td>
-                        <td>{selected.tile.active_color.join(", ")}</td>
+                        <td>
+                            <div
+                                className="palette-color-display"
+                                style={{ "--this-palette-color": getColorByValue(selected.tile.active_color) } as React.CSSProperties}    
+                            />
+                            {selected.tile.active_color.join(", ")}
+                        </td>
                     </tr>
                     {selected.name.startsWith("text_") &&
-                        selected.tile.inactive_color?.some((value) => value !== null) && (
-                            <tr>
-                                <td>Inactive color</td>
-                                <td>
-                                    {selected.tile.inactive_color
-                                        .filter((value): value is number => value !== null)
-                                        .join(", ")}
-                                </td>
-                            </tr>
-                        )
+                    selected.tile.inactive_color?.some((value) => value !== null) &&
+                        <tr>
+                            <td>Inactive color</td>
+                            <td>
+                                <div
+                                    className="palette-color-display"
+                                    style={{ "--this-palette-color": getColorByValue(selected.tile.inactive_color) } as React.CSSProperties}    
+                                />
+                                {selected.tile.inactive_color
+                                    .filter((value): value is number => value !== null)
+                                    .join(", ")}
+                            </td>
+                        </tr>
                     }
                     <tr>
                         <td>Source</td>
@@ -589,7 +564,6 @@ export function Details({ selected }: DetailsProps) {
                                         key={`palette-${selected.name}-row-${i}-column-${j}-color-${color}`}
                                         className="search-details-palette-this-color"
                                         style={{ "--this-palette-color": color } as React.CSSProperties}
-                                        // onClick={() => color && handleCopyPalette(color, j, i)}
                                         {...(!isMobile
                                             ? {
                                                 onClick: () => color && handleCopyPalette(color, j, i),
@@ -601,9 +575,7 @@ export function Details({ selected }: DetailsProps) {
                                         )}
                                     >
                                         <span
-                                            className={`palette-index-label ${
-                                                copiedPalette?.x === j && copiedPalette?.y === i ? "copied" : ""
-                                            }`}
+                                            className={`palette-index-label ${copiedPalette?.x === j && copiedPalette?.y === i ? "copied" : ""}`}
                                             style={{ "--contrast": getContrastColor(color), marginTop: (i >= 10) || (j >= 10) ? "0" : "" } as React.CSSProperties}
                                             {...(!isMobile)
                                                 ? {
@@ -683,9 +655,7 @@ export function Details({ selected }: DetailsProps) {
                     }
                     {selected.palette.colors.map((row, index) =>
                         row.map((color, jndex) => 
-                            <tr
-                                key={`palette-${selected.name}-color-${jndex}-${index}`}
-                            >
+                            <tr key={`palette-${selected.name}-color-${jndex}-${index}`}>
                                 <td>
                                     <div
                                         className="palette-color-display"
@@ -694,9 +664,7 @@ export function Details({ selected }: DetailsProps) {
                                     {`${jndex}, ${index}`}
                                 </td>
                                 <td className="discord-markdown">
-                                    <code className="discord-inline-code">
-                                        {color?.toUpperCase() ?? "None"}
-                                    </code>
+                                    <code className="discord-inline-code">{color?.toUpperCase() ?? "None"}</code>
                                 </td>
                             </tr>
                         )
@@ -737,15 +705,12 @@ export function Details({ selected }: DetailsProps) {
 
             <div className="search-details-contents-flexbox">
                 <div className="search-details-detailbox placeholder" id="description">
-                    <p>
-                        This is an overlay called "{selected.name}", which do not have any author or date recorded in the actual source.
-                    </p>
-                    <p>
-                        The only source that has been converted into a data in a form of JSON Object is: 
-                    </p>
+                    <p>This is an overlay called "{selected.name}", which do not have any author or date recorded in the actual source.</p>
+                    <p>The only source that has been converted into a data in a form of JSON Object is:</p>
                     <span className="discord-markdown">
                         <pre className="discord-code-block">
-                            <code>{`{
+                            <code>{
+`{
     "${selected.name}": {
         "url": ${selected.overlay.url}
     }
