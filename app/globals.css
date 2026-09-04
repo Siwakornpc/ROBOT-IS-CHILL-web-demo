@@ -2646,13 +2646,12 @@ main:has(.main-body) {
 .palette-index-label {
     opacity: 0;
 }
-.search-details-palette-this-color .copied::after {
+.search-details-palette-this-color .palette-index-label.copied::after {
     content: "check";
     display: block;
     font-family: 'Material Symbols Outlined';
     font-size: 32px;
     line-height: 1;
-    margin-bottom: -6px;
 }
 
 /* end frame index label*/
