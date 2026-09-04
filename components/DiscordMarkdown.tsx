@@ -8,6 +8,8 @@ import type { ReactNode } from "react";
 import type { Root } from "mdast";
 import { useDiscordUser } from './DiscordUser';
 
+import React from "react";
+
 /*
  * --------------------------------------------------------------------------
  * Types
@@ -831,6 +833,8 @@ function prepareSource(
     source: string,
     tokens: DiscordTokenStore
 ): string {
+    source = source.replace(/\r\n?/g, "\n");
+
     const normalized = protectUnsupportedGfmSyntax(
         normalizeListMarkerTypes(
             normalizeDiscordLists(
@@ -1075,6 +1079,49 @@ function formatDiscordTimestamp(
                 timeStyle: "short",
             }).format(date);
     }
+}
+
+function isBlockNode(node: any): boolean {
+    return [
+        "paragraph",
+        "heading",
+        "blockquote",
+        "list",
+        "code",
+        "thematicBreak",
+    ].includes(node.type);
+}
+
+function renderBlockChildren(
+    children: any[],
+    parentKey: string,
+    context: RenderContext
+): ReactNode[] {
+    const result: ReactNode[] = [];
+
+    children.forEach((child, index) => {
+        // If Markdown created separate block nodes because there was
+        // a blank line, preserve that visual separation.
+        if (
+            index > 0 &&
+            isBlockNode(child) &&
+            isBlockNode(children[index - 1])
+        ) {
+            result.push(
+                <br key={`${parentKey}-block-break-${index}`} />
+            );
+        }
+
+        result.push(
+            renderNode(
+                child,
+                `${parentKey}-${index}`,
+                context
+            )
+        );
+    });
+
+    return result;
 }
 
 /**
@@ -1326,9 +1373,30 @@ function renderText(
     let match: RegExpExecArray | null;
     let partIndex = 0;
 
+    function pushText(text: string, baseKey: string) {
+        if (!text) return;
+
+        const lines = text.split("\n");
+
+        lines.forEach((line, index) => {
+            if (index > 0) {
+                parts.push(
+                    <br key={`${baseKey}-br-${index}`} />
+                );
+            }
+
+            if (line) {
+                parts.push(line);
+            }
+        });
+    }
+
     while ((match = tokenRegex.exec(value)) !== null) {
         if (match.index > lastIndex) {
-            parts.push(value.slice(lastIndex, match.index));
+            pushText(
+                value.slice(lastIndex, match.index),
+                `${key}-text-${partIndex}`
+            );
         }
 
         const tokenIndex = Number(match[1]);
@@ -1342,21 +1410,32 @@ function renderText(
                     context
                 )
             );
-        } else parts.push(match[0]);
+        } else {
+            pushText(
+                match[0],
+                `${key}-unknown-${partIndex}`
+            );
+        }
 
         partIndex++;
         lastIndex = match.index + match[0].length;
     }
 
-    if (lastIndex < value.length) parts.push(value.slice(lastIndex));
-    if (parts.length === 0) return value;
+    if (lastIndex < value.length) {
+        pushText(
+            value.slice(lastIndex),
+            `${key}-text-final`
+        );
+    }
+
+    if (parts.length === 0) {
+        return value;
+    }
 
     return parts.map((part, index) => (
-        <span
-            key={`${key}-${index}`}
-            className="discord-text-part"
-        >{part}
-        </span>
+        <React.Fragment key={`${key}-${index}`}>
+            {part}
+        </React.Fragment>
     ));
 }
 
@@ -1816,7 +1895,7 @@ export function DiscordMarkdown({
     resolveEmojiUrl,
     locale = "en-US",
 }: DiscordMarkdownProps) {
-    const {tree, tokens} = parseMarkdown(children);
+    const { tree, tokens } = parseMarkdown(children);
 
     /*
      * Reference definitions are global to the document.
@@ -1829,9 +1908,7 @@ export function DiscordMarkdown({
         }
     >();
 
-    function collectDefinitions(
-        node: any
-    ) {
+    function collectDefinitions(node: any) {
         if (node.type === "definition") {
             definitions.set(
                 String(node.identifier).toLowerCase(),
@@ -1843,7 +1920,9 @@ export function DiscordMarkdown({
         }
 
         if (Array.isArray(node.children)) {
-            for (const child of node.children) collectDefinitions(child);
+            for (const child of node.children) {
+                collectDefinitions(child);
+            }
         }
     }
 
@@ -1861,7 +1940,7 @@ export function DiscordMarkdown({
 
     return (
         <div className="discord-markdown">
-            {renderChildren(
+            {renderBlockChildren(
                 tree.children,
                 "discord",
                 context
