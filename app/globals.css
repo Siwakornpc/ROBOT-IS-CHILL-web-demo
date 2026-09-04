@@ -2600,7 +2600,6 @@ main:has(.main-body) {
     text-align: center;
     font-family: var(--font-family-code);
     font-size: 1em;
-    margin-top: -4px;
     color: var(--contrast, var(--normal));
     user-select: none;
 }
@@ -2653,9 +2652,6 @@ main:has(.main-body) {
     display: block;
     font-family: 'Material Symbols Outlined';
     font-size: 32px;
-}
-.palette-index-label.copied {
-    margin-top: 0;
 }
 
 /* end frame index label*/
