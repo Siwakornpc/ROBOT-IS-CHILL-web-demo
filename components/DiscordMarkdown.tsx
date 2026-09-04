@@ -259,7 +259,6 @@ function normalizeDiscordLists(source: string): string {
  * NOTE: this intentionally does not attempt nested-list normalization; see
  * the caller for why.
  */
-
 function escapeEmptyListMarkers(source: string): string {
     const lines = source.replace(/\r\n?/g, "\n").split("\n");
 
@@ -326,12 +325,12 @@ function normalizeListMarkerTypes(source: string): string {
     // No leading whitespace on purpose: we only normalize top-level list
     // runs. Indented (nested) items are recognized by anyMarkerRe below,
     // but otherwise pass through unchanged.
-    const bulletRe = /^([-*])\s+(.*)$/;
-    const orderedRe = /^(\d+\.)\s+(.*)$/;
+    const bulletRe = /^([-*])(\s+)(.*)$/;
+    const orderedRe = /^(\d+)([.)])(\s+)(.*)$/;
 
     // Any list marker, indented or not - used only to tell a genuine
     // (possibly nested) list line apart from plain text.
-    const anyMarkerRe = /^\s*(?:[-*]\s+|\d+\.\s+)/;
+    const anyMarkerRe = /^\s*(?:[-*]\s+|\d+[.)]\s+)/;
 
     let i = 0;
 
@@ -839,7 +838,7 @@ function prepareSource(
             )
         )
     );
-
+    
     const lines = normalized.split("\n");
 
     let inFence = false;
