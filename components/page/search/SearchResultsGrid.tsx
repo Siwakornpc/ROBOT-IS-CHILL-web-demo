@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useDeferredValue, useMemo } from "react";
 import { type SearchMode } from "./SearchSelect";
 import stdlib_macros from "./stdlib_macros";
 import JSONbig from "json-bigint";
@@ -167,6 +167,8 @@ export default function SearchResults({
     filters?: Record<string, string[]>;
     useRegex?: boolean;
 }) {
+    const deferredSearchQuery = useDeferredValue(searchQuery);
+
     const gridRef = useRef<HTMLDivElement>(null);
     const [isVisible, setIsVisible] = useState(false);
     const [loadedResults, setLoadedResults] = useState<LoadedResults | null>(null);
@@ -345,143 +347,143 @@ export default function SearchResults({
             ? results
             : Object.entries(results)
         : [];
-    const filteredEntries = allEntries.filter(([name, data]) => {
-        const normalizedName = String(name ?? "").trim();
 
-        if (!normalizedName) return false;
+    const filteredEntries = useMemo(() => {
+        return allEntries.filter(([name, data]) => {
+            const normalizedName = String(name ?? "").trim();
+            if (!normalizedName) return false;
 
-        const searchName = mode === "palettes"
-            ? normalizedName.replace(/^[^:]+:/, "")
-            : normalizedName;
+            const searchName = mode === "palettes"
+                ? normalizedName.replace(/^[^:]+:/, "")
+                : normalizedName;
 
-        if (searchQuery) {
-            const searchTerms =
-                mode === "variants" && isVariantRecord(data)
-                    ? data.syntax
-                        ?.match(/^<([^>]*)>/)?.[1]
+            if (deferredSearchQuery) {
+                const searchTerms =
+                    mode === "variants" && isVariantRecord(data)
+                        ? data.syntax
+                            ?.match(/^<([^>]*)>/)?.[1]
                             ?.split("|")
                             .map(term => term.trim())
                             .filter(Boolean) ?? []
-                    : (mode === "flags" && isFlagRecord(data))
-                    ? data.syntax
-                        ?.match(/^(\((?:[^)]*)\)|^(?:[^=]*))(?:=?.*)?$/)?.[1]
-                        ?.split("|")
-                        .map(term => term.trim().replace(/^--?/, ""))
-                        .filter(Boolean) ?? []
-                    : [searchName];
+                        : (mode === "flags" && isFlagRecord(data))
+                        ? data.syntax
+                            ?.match(/^(\((?:[^)]*)\)|^(?:[^=]*))(?:=?.*)?$/)?.[1]
+                            ?.split("|")
+                            .map(term => term.trim().replace(/^--?/, ""))
+                            .filter(Boolean) ?? []
+                        : [searchName];
 
-            if (useRegex) {
-                try {
-                    const regex = new RegExp(searchQuery, "i");
-                    if (!searchTerms.some(term => regex.test(term))) return false;
-                } catch {
-                    return false;
-                }
-            } else {
-                const query = searchQuery.toLowerCase();
-                if (!searchTerms.some(term => term.toLowerCase().includes(query))) return false;
-            }
-        }
-
-        // apply active filters
-        for (const [filterKey, filterValues] of Object.entries(filters)) {
-            // ignore empty values
-            const validValues = filterValues.filter((v) => v !== "" && v !== undefined && v !== null);
-            if (validValues.length === 0) continue;
-
-            // --- TILE FILTERS ---
-            if (mode === "tiles" && isTileRecord(data)) {
-                if (filterKey === "color") {
-                    const [x, y] = data.active_color;
-                    const selectedColors = validValues.flatMap((val) => val.split(";"));
-                    if (!selectedColors.includes(`${x},${y}`)) return false;
-                }
-
-                if (filterKey === "iacolor") {
-                    const [x, y] = data.inactive_color;
-                    const selectedColors = validValues.flatMap((val) => val.split(";"));
-                    if (!selectedColors.includes(`${x},${y}`)) return false;
-                }
-
-                if (filterKey === "tiling") {
-                    if (!validValues.includes(data.tiling)) return false;
-                }
-
-                if (filterKey === "tags") {
-                    const hasTag = validValues.some((val) => data.tags.some((tag) => tag.toLowerCase().includes(val.toLowerCase())));
-                    if (!hasTag) return false;
-                }
-
-                if (filterKey === "tile:source") {
-                    const [sourceDir] = data.sprite;
-                    if (!validValues.some((val) => sourceDir.toLowerCase() === val.toLowerCase())) return false;
+                if (useRegex) {
+                    try {
+                        const regex = new RegExp(deferredSearchQuery, "i");
+                        if (!searchTerms.some(term => regex.test(term))) return false;
+                    } catch {
+                        return false;
+                    }
+                } else {
+                    const query = deferredSearchQuery.toLowerCase();
+                    if (!searchTerms.some(term => term.toLowerCase().includes(query))) return false;
                 }
             }
 
-            // --- MACRO FILTERS ---
-            if (mode === "macros" && isMacroRecord(data)) {
-                if (filterKey === "creator") {
-                    if (!data.creator || !validValues.includes(data.creator.toString())) return false;
+            // apply active filters
+            for (const [filterKey, filterValues] of Object.entries(filters)) {
+                const validValues = filterValues.filter((v) => v !== "" && v !== undefined && v !== null);
+                if (validValues.length === 0) continue;
+
+                // --- TILE FILTERS ---
+                if (mode === "tiles" && isTileRecord(data)) {
+                    if (filterKey === "color") {
+                        const [x, y] = data.active_color;
+                        const selectedColors = validValues.flatMap((val) => val.split(";"));
+                        if (!selectedColors.includes(`${x},${y}`)) return false;
+                    }
+
+                    if (filterKey === "iacolor") {
+                        const [x, y] = data.inactive_color;
+                        const selectedColors = validValues.flatMap((val) => val.split(";"));
+                        if (!selectedColors.includes(`${x},${y}`)) return false;
+                    }
+
+                    if (filterKey === "tiling") {
+                        if (!validValues.includes(data.tiling)) return false;
+                    }
+
+                    if (filterKey === "tags") {
+                        const hasTag = validValues.some((val) => data.tags.some((tag) => tag.toLowerCase().includes(val.toLowerCase())));
+                        if (!hasTag) return false;
+                    }
+
+                    if (filterKey === "tile:source") {
+                        const [sourceDir] = data.sprite;
+                        if (!validValues.some((val) => sourceDir.toLowerCase() === val.toLowerCase())) return false;
+                    }
                 }
 
-                if (filterKey === "builtin") {
-                    const wantBuiltin = validValues.includes("true");
-                    if (Boolean(data.builtin) !== wantBuiltin) return false;
+                // --- MACRO FILTERS ---
+                if (mode === "macros" && isMacroRecord(data)) {
+                    if (filterKey === "creator") {
+                        if (!data.creator || !validValues.includes(data.creator.toString())) return false;
+                    }
+
+                    if (filterKey === "builtin") {
+                        const wantBuiltin = validValues.includes("true");
+                        if (Boolean(data.builtin) !== wantBuiltin) return false;
+                    }
+
+                    if (filterKey === "desc") {
+                        const matchesDesc = validValues.some((val) => data.description.toLowerCase().includes(val.toLowerCase()));
+                        if (!matchesDesc) return false;
+                    }
                 }
 
-                if (filterKey === "desc") {
-                    const matchesDesc = validValues.some((val) => data.description.toLowerCase().includes(val.toLowerCase()));
-                    if (!matchesDesc) return false;
+                // --- FILTERIMAGE FILTERS ---
+                if (mode === "filters" && isFilterRecord(data)) {
+                    if (filterKey === "creator") {
+                        if (!validValues.includes(data.author)) return false;
+                    }
+
+                    if (filterKey === "mode") {
+                        if (data.absolute !== (filters.mode[0] === "true")) return false;
+                    }
+                }
+
+                // --- VARIANT FILTERS ---
+                if (mode === "variants" && isVariantRecord(data)) {
+                    if (filterKey === "desc") {
+                        const matches = validValues.some((val) =>
+                            data.description.toLowerCase().includes(val.toLowerCase())
+                        );
+                        if (!matches) return false;
+                    }
+                }
+
+                // --- FLAG FILTERS ---
+                if (mode === "flags" && isFlagRecord(data)) {
+                    if (filterKey === "desc") {
+                        const matches = validValues.some((val) =>
+                            data.description.toLowerCase().includes(val.toLowerCase())
+                        );
+                        if (!matches) return false;
+                    }
+                }
+
+                // -- PALETTES FILTERS --
+                if (mode === "palettes" && isPaletteRecord(data)) {
+                    if (filterKey === "palette:source") {
+                        const source = data.source;
+                        if (!validValues.some((val) => source.toLowerCase() === val.toLowerCase())) return false;
+                    }
+
+                    if (filterKey === "hascolor") {
+                        const colors = data.colors.flat().map((color) => color === null ? "None" : color);
+                        if (!validValues.some((val) => colors.some((color) => color.toLowerCase() === val.toLowerCase()))) return false;
+                    }
                 }
             }
-
-            // --- FILTERIMAGE FILTERS ---
-            if (mode === "filters" && isFilterRecord(data)) {
-                if (filterKey === "creator") {
-                    if (!validValues.includes(data.author)) return false;
-                }
-
-                if (filterKey === "mode") {
-                    if (data.absolute !== (filters.mode[0] === "true")) return false;
-                }
-            }
-
-            // --- VARIANT FILTERS ---
-            if (mode === "variants" && isVariantRecord(data)) {
-                if (filterKey === "desc") {
-                    const matches = validValues.some((val) =>
-                        data.description.toLowerCase().includes(val.toLowerCase())
-                    );
-                    if (!matches) return false;
-                }
-            }
-
-            // --- FLAG FILTERS ---
-            if (mode === "flags" && isFlagRecord(data)) {
-                if (filterKey === "desc") {
-                    const matches = validValues.some((val) =>
-                        data.description.toLowerCase().includes(val.toLowerCase())
-                    );
-                    if (!matches) return false;
-                }
-            }
-
-            // -- PALETTES FILTERS --
-            if (mode === "palettes" && isPaletteRecord(data)) {
-                if (filterKey === "palette:source") {
-                    const source = data.source;
-                    if (!validValues.some((val) => source.toLowerCase() === val.toLowerCase())) return false; // explicit source filtering
-                }
-
-                if (filterKey === "hascolor") {
-                    const colors = data.colors.flat().map((color) => color === null ? "None" : color);
-                    if (!validValues.some((val) => colors.some((color) => color.toLowerCase() === val.toLowerCase()))) return false;
-                }
-            }
-        }
-
-        return true;
-    });
+            return true;
+        });
+    }, [allEntries, deferredSearchQuery, filters, useRegex, mode]);
 
     useEffect(() => {
         if (!detailsName || !["tiles", "macros", "filters", "variants", "flags", "palettes"].includes(mode)) {
