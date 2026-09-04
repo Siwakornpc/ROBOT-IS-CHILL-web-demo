@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useDeferredValue } from "react";
 import { type SearchMode } from "./SearchSelect";
 import stdlib_macros from "./stdlib_macros";
 import JSONbig from "json-bigint";
@@ -167,6 +167,9 @@ export default function SearchResults({
     filters?: Record<string, string[]>;
     useRegex?: boolean;
 }) {
+    // prevents crashing when using backspace on mobile
+    const deferredSearchQuery = useDeferredValue(searchQuery);
+
     const gridRef = useRef<HTMLDivElement>(null);
     const [isVisible, setIsVisible] = useState(false);
     const [loadedResults, setLoadedResults] = useState<LoadedResults | null>(null);
@@ -354,9 +357,9 @@ export default function SearchResults({
             ? normalizedName.replace(/^[^:]+:/, "")
             : normalizedName;
 
-        if (searchQuery) {
+        if (deferredSearchQuery) {
             const searchTerms =
-                (mode === "variants" && isVariantRecord(data))
+                mode === "variants" && isVariantRecord(data)
                     ? data.syntax
                         ?.match(/^<([^>]*)>/)?.[1]
                             ?.split("|")
@@ -372,17 +375,16 @@ export default function SearchResults({
 
             if (useRegex) {
                 try {
-                    const regex = new RegExp(searchQuery, "i");
+                    const regex = new RegExp(deferredSearchQuery, "i");
                     if (!searchTerms.some(term => regex.test(term))) return false;
                 } catch {
                     return false;
                 }
             } else {
-                const query = searchQuery.toLowerCase();
+                const query = deferredSearchQuery.toLowerCase();
                 if (!searchTerms.some(term => term.toLowerCase().includes(query))) return false;
             }
         }
-
 
         // apply active filters
         for (const [filterKey, filterValues] of Object.entries(filters)) {
