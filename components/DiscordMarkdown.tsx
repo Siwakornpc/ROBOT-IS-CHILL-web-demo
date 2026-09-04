@@ -158,14 +158,6 @@ function makeToken(
  * which gets normalized to standard nested Markdown.
  */
 
-function normalizeNewlines(source: string): string {
-    return source.replace(/\r\n?/g, "\n");
-}
-
-function getFence(line: string): RegExpMatchArray | null {
-    return line.match(/^ {0,3}(`{3,}|~{3,})(.*)$/);
-}
-
 function normalizeDiscordLists(source: string): string {
     /*
      * Discord's list syntax is normal Markdown indentation:
@@ -184,7 +176,7 @@ function normalizeDiscordLists(source: string): string {
      *
      * which means that the rest of the message is quoted.
      */
-    const lines = normalizeNewlines(source).split("\n");
+    const lines = source.replace(/\r\n?/g, "\n").split("\n");
     const output: string[] = [];
 
     let inFence = false;
@@ -193,7 +185,9 @@ function normalizeDiscordLists(source: string): string {
     let multiLineQuote = false;
 
     for (const line of lines) {
-        const fence = getFence(line);
+        const fence = line.match(
+            /^ {0,3}(`{3,}|~{3,})(?:.*)?$/
+        );
 
         if (fence) {
             if (!inFence) {
@@ -223,7 +217,7 @@ function normalizeDiscordLists(source: string): string {
             continue;
         }
 
-        if (line.startsWith(">>>")) {
+        if (line.startsWith(">>> ")) {
             multiLineQuote = true;
 
             const content = line.slice(3).replace(/^ /, "");
@@ -232,6 +226,198 @@ function normalizeDiscordLists(source: string): string {
         }
 
         output.push(line);
+    }
+
+    return output.join("\n");
+}
+
+/*
+ * --------------------------------------------------------------------------
+ * List marker normalization
+ * --------------------------------------------------------------------------
+ *
+ * CommonMark (and therefore remark) starts a *new* list whenever the marker
+ * changes - switching from "1." to "-", or from "-" to "*", splits what
+ * looks like one list into several separate <ol>/<ul> nodes.
+ *
+ * Discord doesn't work that way. A contiguous run of list-item lines (no
+ * blank line or other content breaking it) is a single list, and its type
+ * (ordered vs. unordered) is decided by the marker of the *first* line only.
+ * Every following line in that run renders as the same type, regardless of
+ * what marker it was typed with:
+ *
+ *   1. Item      1. Item      - Item      - Item
+ *   2. Item  ->  2. Item      - Item  ->  - Item
+ *                                         (blank line resets the run)
+ *   1. Item      1. Item
+ *   - Item   ->  2. Item
+ *
+ * We rewrite the markers before remark ever sees them so the resulting AST
+ * is a single homogeneous list. Only top-level (non-indented) list lines are
+ * handled here - indented/nested items are left untouched.
+ *
+ * NOTE: this intentionally does not attempt nested-list normalization; see
+ * the caller for why.
+ */
+
+function escapeEmptyListMarkers(source: string): string {
+    const lines = source.replace(/\r\n?/g, "\n").split("\n");
+
+    let inFence = false;
+    let fenceChar = "";
+    let fenceLength = 0;
+
+    return lines
+        .map((line) => {
+            const fence = line.match(
+                /^ {0,3}(`{3,}|~{3,})(?:.*)?$/
+            );
+
+            if (fence) {
+                if (!inFence) {
+                    inFence = true;
+                    fenceChar = fence[1][0];
+                    fenceLength = fence[1].length;
+                } else if (
+                    fence[1][0] === fenceChar &&
+                    fence[1].length >= fenceLength
+                ) {
+                    inFence = false;
+                    fenceChar = "";
+                    fenceLength = 0;
+                }
+
+                return line;
+            }
+
+            if (inFence) return line;
+
+            // Bare "-" or "*" -> plain text
+            if (/^ {0,3}[-*]\s*$/.test(line)) {
+                return line.replace(
+                    /^(\s*)([-*])\s*$/,
+                    "$1\\$2"
+                );
+            }
+
+            // Bare "1." / "123." -> plain text
+            if (/^ {0,3}\d+\.\s*$/.test(line)) {
+                return line.replace(
+                    /^(\s*)(\d+)\.\s*$/,
+                    "$1$2\\."
+                );
+            }
+
+            return line;
+        })
+        .join("\n");
+}
+
+function normalizeListMarkerTypes(source: string): string {
+    const lines = source.replace(/\r\n?/g, "\n").split("\n");
+    const output: string[] = [];
+
+    let inFence = false;
+    let fenceChar = "";
+    let fenceLength = 0;
+
+    const isFence = (line: string) => line.match(/^ {0,3}(`{3,}|~{3,})(?:.*)?$/);
+
+    // No leading whitespace on purpose: we only normalize top-level list
+    // runs. Indented (nested) items are recognized by anyMarkerRe below,
+    // but otherwise pass through unchanged.
+    const bulletRe = /^([-*])\s+(.*)$/;
+    const orderedRe = /^(\d+\.)\s+(.*)$/;
+
+    // Any list marker, indented or not - used only to tell a genuine
+    // (possibly nested) list line apart from plain text.
+    const anyMarkerRe = /^\s*(?:[-*]\s+|\d+\.\s+)/;
+
+    let i = 0;
+
+    // Whether the line we just emitted was the last line of a top-level
+    // list run. CommonMark would normally "lazily continue" an unmarked
+    // line right after a list item into that item's paragraph (rendered
+    // as a <br> inside the <li> once remark-breaks runs). Discord does not
+    // do this: a bare line after a list item ends the list. We reproduce
+    // that by forcing a block break (blank line) before such a line.
+    let justEndedTopLevelList = false;
+
+    while (i < lines.length) {
+        const line = lines[i];
+        const fence = isFence(line);
+
+        if (fence) {
+            if (!inFence) {
+                inFence = true;
+                fenceChar = fence[1][0];
+                fenceLength = fence[1].length;
+            } else if (
+                fence[1][0] === fenceChar &&
+                fence[1].length >= fenceLength
+            ) {
+                inFence = false;
+                fenceChar = "";
+                fenceLength = 0;
+            }
+
+            output.push(line);
+            justEndedTopLevelList = false;
+            i++;
+            continue;
+        }
+
+        if (inFence) {
+            output.push(line);
+            i++;
+            continue;
+        }
+
+        const bulletMatch = line.match(bulletRe);
+        const orderedMatch = line.match(orderedRe);
+
+        if (bulletMatch || orderedMatch) {
+            // Start of a list run - its type is locked in by this first line.
+            const blockType: "ordered" | "bullet" = orderedMatch
+                ? "ordered"
+                : "bullet";
+            const bulletChar = bulletMatch ? bulletMatch[1] : "-";
+            let n = orderedMatch ? Number(orderedMatch[1]) : 1;
+
+            while (i < lines.length) {
+                const l = lines[i];
+                const b = l.match(bulletRe);
+                const o = l.match(orderedRe);
+
+                if (!b && !o) break;
+
+                const rest = o ? o[4] : (b as RegExpMatchArray)[3];
+
+                if (blockType === "ordered") {
+                    output.push(`${n}. ${rest}`);
+                    n++;
+                } else {
+                    output.push(`${bulletChar} ${rest}`);
+                }
+
+                i++;
+            }
+
+            justEndedTopLevelList = true;
+            continue;
+        }
+
+        if (
+            justEndedTopLevelList &&
+            line.trim() !== "" &&
+            !anyMarkerRe.test(line)
+        ) {
+            output.push("");
+        }
+
+        output.push(line);
+        justEndedTopLevelList = false;
+        i++;
     }
 
     return output.join("\n");
@@ -250,6 +436,9 @@ function protectDiscordSyntax(
     let result = "";
 
     let i = 0;
+    let inFence = false;
+    let fenceChar = "";
+    let fenceLength = 0;
 
     while (i < source.length) {
         /*
@@ -262,25 +451,38 @@ function protectDiscordSyntax(
          */
         if (i === 0 || source[i - 1] === "\n") {
             const rest = source.slice(i);
-            const fence = rest.match(/^```([^\n]*)\n([\s\S]*?)```/);
+
+            // ```lang\ncode``` — Discord (unlike CommonMark) allows the closing
+            // fence to sit on the same line as the last line of code, e.g.
+            //   ```js
+            //   code```
+            // remark won't recognize that as closed, so we extract the pieces
+            // ourselves and re-emit a fence with the closing marker forced onto
+            // its own line, which remark is guaranteed to parse correctly.
+            const fence = rest.match(
+                /^```(?:(\w+)\n)?([\s\S]*?)```/
+            );
 
             if (fence) {
-                const language = fence[1].trim();
+                const lang = fence[1] ?? "";
                 let content = fence[2];
 
-                if (content.startsWith("\n")) {
+                // When there's no language token, the newline that terminates the
+                // opening ``` line ends up captured as a leading "\n" in content
+                // instead of being consumed separately — strip it back out.
+                if (!lang && content.startsWith("\n")) {
                     content = content.slice(1);
                 }
 
-                result += "```";
-                result += language;
-                result += "\n";
-                result += content;
-                if (!content.endsWith("\n")) {
-                    result += "\n";
-                }
-                result += "```";
+                const normalized =
+                    "```" +
+                    lang +
+                    "\n" +
+                    content +
+                    (content.endsWith("\n") ? "" : "\n") +
+                    "```";
 
+                result += normalized;
                 i += fence[0].length;
                 continue;
             }
@@ -539,21 +741,23 @@ function protectDiscordSyntax(
 
 function protectUnsupportedGfmSyntax(source: string): string {
     /*
-     * Discord supports strikethrough, but not GFM tables, task-list
-     * checkboxes, or ordered lists. remark-gfm would otherwise turn those
-     * into AST nodes that Discord itself would never render.
+     * Discord supports strikethrough, and (unlike this file used to assume)
+     * ordered/unordered lists. It does NOT support GFM tables or task-list
+     * checkboxes. remark-gfm would otherwise turn those into AST nodes that
+     * Discord itself would never render.
      *
      * Escape only syntax that is unambiguously one of those unsupported
      * constructs, and leave ordinary text alone.
      */
-    const lines = normalizeNewlines(source).split("\n");
+    const lines = source.replace(/\r\n?/g, "\n").split("\n");
     const output = [...lines];
 
     let inFence = false;
     let fenceChar = "";
     let fenceLength = 0;
 
-    const isFence = getFence;
+    const isFence = (line: string) =>
+        line.match(/^ {0,3}(`{3,}|~{3,})(?:.*)?$/);
 
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
@@ -577,21 +781,6 @@ function protectUnsupportedGfmSyntax(source: string): string {
         }
 
         if (inFence) continue;
-
-        /*
-         * Ordered lists are not a Discord Markdown feature.
-         *
-         * 1. item
-         *
-         * must remain literal rather than becoming <ol>.
-         */
-        if (/^ {0,3}\d+[.)]\s+/.test(line)) {
-            output[i] = line.replace(
-                /^(\s*\d+)([.)])(\s+)/,
-                "$1\\$2$3"
-            );
-            continue;
-        }
 
         /*
          * GFM task-list syntax is not Discord syntax.
@@ -643,9 +832,12 @@ function prepareSource(
     source: string,
     tokens: DiscordTokenStore
 ): string {
-    const normalizedSource = normalizeNewlines(source);
     const normalized = protectUnsupportedGfmSyntax(
-        normalizeDiscordLists(normalizedSource)
+        normalizeListMarkerTypes(
+            normalizeDiscordLists(
+                escapeEmptyListMarkers(source)
+            )
+        )
     );
 
     const lines = normalized.split("\n");
@@ -657,7 +849,7 @@ function prepareSource(
      * Escapes any '>' at line start (with up to 3 leading spaces) that is NOT followed by a space, newline, or '>'.
      */
     const strictBlockquotes = lines.map((line) => {
-        const fence = getFence(line);
+        const fence = line.match(/^ {0,3}(`{3,}|~{3,})/);
 
         if (fence) {
             inFence = !inFence;
@@ -677,7 +869,7 @@ function prepareSource(
     inFence = false;
 
     const withSubtext = strictBlockquotes.map((line) => {
-        const fence = getFence(line);
+        const fence = line.match(/^ {0,3}(`{3,}|~{3,})/);
 
         if (fence) {
             inFence = !inFence;
@@ -892,23 +1084,15 @@ function formatDiscordTimestamp(
  * --------------------------------------------------------------------------
  */
 
-function DiscordUserMention({
-    id,
-    name,
-}: {
-    id: string;
-    name: ReactNode;
-}) {
+function DiscordUserMention({ id }: { id: string }) {
     const user = useDiscordUser(id);
 
     return (
         <a
             className="discord-mention discord-mention-user"
             target="_blank"
-            rel="noopener noreferrer"
             href={`https://discord.com/users/${id}`}
-        >
-            @{user?.username ?? name}
+        >@{user?.username ?? id}
         </a>
     );
 }
@@ -1009,12 +1193,10 @@ function renderToken(
 
         case "user": {
             const name = context.resolveUser?.(token.id) ?? token.id;
-
             return (
                 <DiscordUserMention
                     key={key}
                     id={token.id}
-                    name={name}
                 />
             );
         }
@@ -1133,21 +1315,6 @@ function renderToken(
  * --------------------------------------------------------------------------
  */
 
-function renderPlainText(value: string, key: string): ReactNode {
-    const lines = value.split("\n");
-
-    if (lines.length === 1) {
-        return value;
-    }
-
-    return lines.map((line, index) => (
-        <span key={`${key}-${index}`}>
-            {index > 0 && <br />}
-            {line}
-        </span>
-    ));
-}
-
 function renderText(
     value: string,
     key: string,
@@ -1162,41 +1329,36 @@ function renderText(
 
     while ((match = tokenRegex.exec(value)) !== null) {
         if (match.index > lastIndex) {
-            parts.push(
-                renderPlainText(
-                    value.slice(lastIndex, match.index),
-                    `${key}-${partIndex++}`
-                )
-            );
+            parts.push(value.slice(lastIndex, match.index));
         }
 
-        const token = context.tokens[Number(match[1])];
+        const tokenIndex = Number(match[1]);
+        const token = context.tokens[tokenIndex];
 
         if (token) {
             parts.push(
                 renderToken(
                     token,
-                    `${key}-${partIndex++}`,
+                    `${key}-token-${partIndex}`,
                     context
                 )
             );
-        } else {
-            parts.push(match[0]);
-        }
+        } else parts.push(match[0]);
 
+        partIndex++;
         lastIndex = match.index + match[0].length;
     }
 
-    if (lastIndex < value.length) {
-        parts.push(
-            renderPlainText(
-                value.slice(lastIndex),
-                `${key}-${partIndex}`
-            )
-        );
-    }
+    if (lastIndex < value.length) parts.push(value.slice(lastIndex));
+    if (parts.length === 0) return value;
 
-    return parts.length === 0 ? value : parts;
+    return parts.map((part, index) => (
+        <span
+            key={`${key}-${index}`}
+            className="discord-text-part"
+        >{part}
+        </span>
+    ));
 }
 
 /*
@@ -1463,13 +1625,13 @@ function renderNode(
             }
 
             return (
-                <p key={key}>
+                <span key={key}>
                     {renderChildren(
                         node.children,
                         key,
                         context
                     )}
-                </p>
+                </span>
             );
         }
 

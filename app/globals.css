@@ -131,6 +131,8 @@ ul {
 .discord-markdown {
     line-height: 1.375;
     overflow-wrap: anywhere;
+    display: flex;
+    flex-direction: column;
 }
 
 /*
@@ -226,6 +228,13 @@ ul {
     color: rgb(var(--md-color-outline));
     font-size: 0.875rem;
     margin: 0.225rem 0;
+}
+
+.discord-markdown .discord-subtext {
+    color: rgb(var(--md-color-outline));
+    font-size: 0.875rem;
+    margin: 0.225rem 0;
+    display: flow;
 }
 
 .discord-markdown .discord-mention {
