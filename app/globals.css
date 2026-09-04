@@ -131,8 +131,6 @@ ul {
 .discord-markdown {
     line-height: 1.375;
     overflow-wrap: anywhere;
-    display: flex;
-    flex-direction: column;
 }
 
 /*
