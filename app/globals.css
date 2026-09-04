@@ -2626,7 +2626,9 @@ main:has(.main-body) {
 .search-details-palette-this-color,
 .palette-index-label {
     transform: scale(1);
-    transition: 0.2s ease;
+    transition: transform 0.2s ease,
+        border-radius 0.2s ease,
+        opacity 0.2s ease;
 }
 .search-details-palette-this-color:hover {
     transform: scale(1.4);
@@ -2646,12 +2648,14 @@ main:has(.main-body) {
 .palette-index-label {
     opacity: 0;
 }
-.search-details-palette-this-color .palette-index-label.copied::after {
+.search-details-palette-this-color .copied::after {
     content: "check";
     display: block;
     font-family: 'Material Symbols Outlined';
     font-size: 32px;
-    line-height: 1;
+}
+.palette-index-label.copied {
+    margin-top: 0;
 }
 
 /* end frame index label*/
