@@ -29,19 +29,18 @@ export type TileRecord = {
     sprite: [string, string];
     tags: string[];
     tiling: string;
-};
+}
 export type MacroRecord = {
     description: string;
     builtin: boolean;
     creator?: string;
     value?: string;
-};
+}
 export type FilterRecord = {
     absolute: boolean;
     author: string;
     upload_time: number | null;
-};
-
+}
 export type VariantRecord = {
     description: string;
     syntax?: string;
@@ -55,20 +54,19 @@ export type FlagRecord = {
 export type SelectedTile = {
     name: string;
     tile: TileRecord;
-};
+}
 export type SelectedMacro = {
     name: string;
     macro: MacroRecord;
-};
+}
 export type SelectedFilter = {
     name: string;
     filter: FilterRecord;
-};
+}
 export type SelectedPalette = {
     name: string;
     palette: Palette;
 }
-
 export type SelectedVariant = {
     name: string;
     variant: VariantRecord;
@@ -240,9 +238,7 @@ export default function SearchResults({
                 if (!response.ok) throw new Error(`RIC API returned ${response.status}`);
 
                 const json = await response.text();
-                const data: SearchResults = JSONbig({
-                    storeAsString: true,
-                }).parse(json);
+                const data: SearchResults = JSONbig({ storeAsString: true }).parse(json);
 
                 if (endpointToLoad === "macros.json") {
                     const stdMacros = await stdlib_macros();
@@ -331,7 +327,6 @@ export default function SearchResults({
                 if (cancelled) return;
 
                 cachedPalettes.set(cacheKey, palettes);
-
                 setLoadedResults({
                     endpoint: cacheKey,
                     data: palettes,
@@ -342,7 +337,6 @@ export default function SearchResults({
         }
 
         load();
-
         return () => {cancelled = true};
     }, [mode, isVisible]);
 
@@ -400,18 +394,14 @@ export default function SearchResults({
             if (mode === "tiles" && isTileRecord(data)) {
                 if (filterKey === "color") {
                     const [x, y] = data.active_color;
-                    const tileColor = `${x},${y}`;
                     const selectedColors = validValues.flatMap((val) => val.split(";"));
-
-                    if (!selectedColors.includes(tileColor)) return false;
+                    if (!selectedColors.includes(`${x},${y}`)) return false;
                 }
 
                 if (filterKey === "iacolor") {
                     const [x, y] = data.inactive_color;
-                    const tileIaColor = `${x},${y}`;
                     const selectedColors = validValues.flatMap((val) => val.split(";"));
-
-                    if (!selectedColors.includes(tileIaColor)) return false;
+                    if (!selectedColors.includes(`${x},${y}`)) return false;
                 }
 
                 if (filterKey === "tiling") {
@@ -441,9 +431,7 @@ export default function SearchResults({
                 }
 
                 if (filterKey === "desc") {
-                    const matchesDesc = validValues.some((val) =>
-                        data.description.toLowerCase().includes(val.toLowerCase())
-                    );
+                    const matchesDesc = validValues.some((val) => data.description.toLowerCase().includes(val.toLowerCase()));
                     if (!matchesDesc) return false;
                 }
             }
@@ -488,7 +476,6 @@ export default function SearchResults({
 
                 if (filterKey === "hascolor") {
                     const colors = data.colors.flat().map((color) => color === null ? "None" : color);
-
                     if (!validValues.some((val) => colors.some((color) => color.toLowerCase() === val.toLowerCase()))) return false;
                 }
             }
@@ -498,10 +485,7 @@ export default function SearchResults({
     });
 
     useEffect(() => {
-        if (!detailsName ||
-            !["tiles", "macros", "filters", "variants", "flags", "palettes"]
-            .includes(mode)
-        ) {
+        if (!detailsName || !["tiles", "macros", "filters", "variants", "flags", "palettes"].includes(mode)) {
             restoredDetailsRef.current = null;
             return;
         }
@@ -533,7 +517,6 @@ export default function SearchResults({
             onSelect({ name: safeName, palette: data });
             restoredDetailsRef.current = detailsKey;
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [detailsName, mode, results]);
 
     const entries = filteredEntries.slice(0, visibleCount);
@@ -544,14 +527,13 @@ export default function SearchResults({
             (name) =>
                 name &&
                 !settledImages.has(name) &&
-                !brokenImages.has(name),
+                !brokenImages.has(name)
         );
 
 
     function scheduleNextImage(delay: number) {
         if (imageTimerRef.current)
             clearTimeout(imageTimerRef.current);
-
         imageTimerRef.current = setTimeout(() => setImageAttempt((attempt) => attempt + 1), delay);
     }
 
@@ -639,20 +621,13 @@ export default function SearchResults({
     }, [visibleCount]);
 
     // discord emojis
-
-    
-
     const resolveDiscordEmojis = (text: string) => {
         const parts = text.split(/(<a?:\w+:\d+>)/g);
 
         return parts.map((part, index) => {
             const match = part.match(/^<(a?):(\w+):(\d+)>$/);
-
-            if (!match) {
-                return part;
-            }
-
-            const [, animated, name, id] = match;
+            if (!match) return part;
+            const [animated, name, id] = match;
 
             return (
                 <span key={id} className="discord-markdown">
@@ -685,8 +660,8 @@ export default function SearchResults({
             className={`search-results ${mode} ascroll-y`}
             data-loaded={Boolean(results)}
         >
-            {!results ? (
-                <div className="before-results">
+            {!results
+                ? <div className="before-results">
                     {filteredEntries.length === 0
                         ? <span className="search-loading" role="status">
                             <span className="search-loading-spinner" aria-hidden="true" />
@@ -695,11 +670,8 @@ export default function SearchResults({
                         : ""
                     }
                 </div>
-            ) : filteredEntries.length === 0
-                ? 
-                <div className="before-results">
-                    <span>No results found</span>
-                </div>
+                : filteredEntries.length === 0
+                ? <div className="before-results"><span>No results found</span></div>
                 : ""
             }
 
@@ -723,8 +695,7 @@ export default function SearchResults({
                                 if (isTileRecord(tile)) onSelect({ name: safeName, tile });
                             }}
                         >
-                            {
-                                isBroken
+                            {isBroken
                                 ? <div className="search-item-tile search-item-tile-broken"><div/><div/></div>
                                 : canLoad
                                 ? <img
@@ -885,7 +856,6 @@ export default function SearchResults({
             {mode === "palettes" &&
                 entries.map(([name, palette], index) => {
                     const safeName = String(name ?? "").trim();
-
                     const normalizedName = safeName.replace(/^[^:]+:/, "");
 
                     return (
@@ -928,7 +898,6 @@ export default function SearchResults({
             {mode === "overlays" &&
                 entries.map(([name, overlay], index) => {
                     const safeName = String(name ?? "").trim();
-
                     if (!isOverlayRecord(overlay)) return null;
 
                     return (

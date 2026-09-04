@@ -367,7 +367,6 @@ export function FilterPanel({
         }
     };
     
-    const { isMenuOpen } = useMenu();
     const [isFlexibleMenu, setIsFlexibleMenu] = useState(false);
     
     useEffect(() => {
