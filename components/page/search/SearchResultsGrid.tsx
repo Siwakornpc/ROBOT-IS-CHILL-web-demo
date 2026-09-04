@@ -531,7 +531,6 @@ export default function SearchResults({
                 !brokenImages.has(name)
         );
 
-
     function scheduleNextImage(delay: number) {
         if (imageTimerRef.current)
             clearTimeout(imageTimerRef.current);
@@ -619,7 +618,8 @@ export default function SearchResults({
 
     useEffect(() => {
         setVisibleCount(BATCH_SIZE);
-    }, [searchQuery]);
+        if (imageTimerRef.current) clearTimeout(imageTimerRef.current);
+    }, [searchQuery, filters, mode]);
 
     useEffect(() => {
         loadingMoreRef.current = false;
@@ -773,12 +773,10 @@ export default function SearchResults({
                             className="kill-styling search-item"
                             key={safeName || `filter-${index}`}
                             onClick={() => {
-                                console.log(filter);
                                 if (isFilterRecord(filter)) onSelect({ name: safeName, filter });
                             }}
                         >
-                            {
-                                isBroken 
+                            {isBroken 
                                 ? <div className="search-item-tile search-item-tile-broken"><div/><div/></div>
                                 : canLoad
                                 ? <img
@@ -854,10 +852,6 @@ export default function SearchResults({
                 })
             }
             
-            {
-                // Palettes
-            }
-
             {mode === "palettes" &&
                 entries.map(([name, palette], index) => {
                     const safeName = String(name ?? "").trim();
