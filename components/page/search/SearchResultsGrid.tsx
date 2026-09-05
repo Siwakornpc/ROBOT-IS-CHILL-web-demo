@@ -169,8 +169,6 @@ export default function SearchResults({
     useRegex?: boolean;
     onResultsChange?: (results: SelectedSearchResult[]) => void;
 }) {
-    const deferredSearchQuery = useDeferredValue(searchQuery);
-
     const gridRef = useRef<HTMLDivElement>(null);
     const [isVisible, setIsVisible] = useState(false);
     const [loadedResults, setLoadedResults] = useState<LoadedResults | null>(null);
@@ -398,7 +396,7 @@ export default function SearchResults({
                 ? normalizedName.replace(/^[^:]+:/, "")
                 : normalizedName;
 
-            if (deferredSearchQuery) {
+            if (searchQuery) {
                 const searchTerms = mode === "variants" && isVariantRecord(data)
                     ? data.syntax
                         ?.match(/^<([^>]*)>/)?.[1]
@@ -415,13 +413,13 @@ export default function SearchResults({
 
                 if (useRegex) {
                     try {
-                        const regex = new RegExp(deferredSearchQuery, "i");
+                        const regex = new RegExp(searchQuery, "i");
                         if (!searchTerms.some(term => regex.test(term))) return false;
                     } catch {
                         return false;
                     }
                 } else {
-                    const query = deferredSearchQuery.toLowerCase();
+                    const query = searchQuery.toLowerCase();
                     if (!searchTerms.some(term => term.toLowerCase().includes(query))) return false;
                 }
             }
@@ -510,7 +508,7 @@ export default function SearchResults({
 
             return true;
         });
-    }, [allEntries, deferredSearchQuery, filters, useRegex, mode]);
+    }, [allEntries, searchQuery, filters, useRegex, mode]);
 
     useEffect(() => {
         if (!detailsName || !["tiles", "macros", "filters", "variants", "flags", "palettes"].includes(mode)) {
