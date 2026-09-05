@@ -570,6 +570,13 @@ export default function MenuSelect<T extends string>({
     const triggerRef = useRef<HTMLElement>(null);
     const instanceId = useId();
 
+    useEffect(() => {
+        const saved = localStorage.getItem("menuOpen");
+        if (saved === "true") {
+            setIsOpen(true);
+        }
+    }, []);
+
     /* ---------------------
         Menu positioning
     --------------------- */
