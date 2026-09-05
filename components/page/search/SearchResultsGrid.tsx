@@ -369,8 +369,6 @@ export default function SearchResults({
         });
     }, [allEntries, mode]);
 
-    const deferredQuery = useDeferredValue(searchQuery);
-
     const filteredEntries = useMemo(() => {
         return allEntries.filter(([name, data]) => {
             const normalizedName = String(name ?? "").trim();
@@ -380,7 +378,7 @@ export default function SearchResults({
                 ? normalizedName.replace(/^[^:]+:/, "")
                 : normalizedName;
 
-            if (deferredQuery) {
+            if (searchQuery) {
                 const searchTerms = mode === "variants" && isVariantRecord(data)
                     ? data.syntax
                         ?.match(/^<([^>]*)>/)?.[1]
@@ -397,13 +395,13 @@ export default function SearchResults({
 
                 if (useRegex) {
                     try {
-                        const regex = new RegExp(deferredQuery, "i");
+                        const regex = new RegExp(searchQuery, "i");
                         if (!searchTerms.some(term => regex.test(term))) return false;
                     } catch {
                         return false;
                     }
                 } else {
-                    const query = deferredQuery.toLowerCase();
+                    const query = searchQuery.toLowerCase();
                     if (!searchTerms.some(term => term.toLowerCase().includes(query))) return false;
                 }
             }
@@ -492,7 +490,7 @@ export default function SearchResults({
 
             return true;
         });
-    }, [allEntries, deferredQuery, filters, useRegex, mode]);
+    }, [allEntries, searchQuery, filters, useRegex, mode]);
 
     useEffect(() => {
         if (!detailsName || !["tiles", "macros", "filters", "variants", "flags", "palettes"].includes(mode)) {

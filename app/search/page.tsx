@@ -30,6 +30,7 @@ export default function Home() {
     });
 
     const isInternalUpdate = useRef(false);
+    const urlTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         nav_btn_select("Search");
@@ -54,6 +55,7 @@ export default function Home() {
         return () => {
             window.removeEventListener("hashchange", syncUrlState);
             window.removeEventListener("popstate", syncUrlState);
+            if (urlTimerRef.current) clearTimeout(urlTimerRef.current);
         };
     }, []);
 
@@ -63,14 +65,17 @@ export default function Home() {
         nextUseRegex: boolean,
         nextDetailsName: string | null,
     ) => {
-        isInternalUpdate.current = true;
-        writeSearchUrlState({
-            mode: nextMode,
-            query: nextSearchQuery,
-            regex: nextUseRegex,
-            details: nextDetailsName,
-            code,
-        });
+        if (urlTimerRef.current) clearTimeout(urlTimerRef.current);
+        urlTimerRef.current = setTimeout(() => {
+            isInternalUpdate.current = true;
+            writeSearchUrlState({
+                mode: nextMode,
+                query: nextSearchQuery,
+                regex: nextUseRegex,
+                details: nextDetailsName,
+                code,
+            });
+        }, 150);
     };
 
     const handleModeChange = (nextMode: SearchMode) => {
