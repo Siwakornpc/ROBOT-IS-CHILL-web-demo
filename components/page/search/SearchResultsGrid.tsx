@@ -368,26 +368,8 @@ export default function SearchResults({
             return [];
         });
     }, [allEntries, mode]);
-    const groupedResults = useMemo(() => {
-        const groups = new Map<string, SelectedSearchResult[]>();
 
-        for (const result of allResults) {
-            const spriteKey = 'tile' in result && result.tile?.sprite[1]
-                ? result.tile.sprite[1]
-                : result.name;
-
-            const existing = groups.get(spriteKey) ?? [];
-            existing.push(result);
-            groups.set(spriteKey, existing);
-        }
-
-        return Array.from(groups.entries()).map(([spriteKey, items]) => ({
-            spriteKey,
-            primary: items[0],
-            aliases: items.map(item => item.name),
-            allEntries: items,
-        }));
-    }, [allResults]);
+    const deferredQuery = useDeferredValue(searchQuery);
 
     const filteredEntries = useMemo(() => {
         return allEntries.filter(([name, data]) => {
@@ -398,7 +380,7 @@ export default function SearchResults({
                 ? normalizedName.replace(/^[^:]+:/, "")
                 : normalizedName;
 
-            if (searchQuery) {
+            if (deferredQuery) {
                 const searchTerms = mode === "variants" && isVariantRecord(data)
                     ? data.syntax
                         ?.match(/^<([^>]*)>/)?.[1]
@@ -415,13 +397,13 @@ export default function SearchResults({
 
                 if (useRegex) {
                     try {
-                        const regex = new RegExp(searchQuery, "i");
+                        const regex = new RegExp(deferredQuery, "i");
                         if (!searchTerms.some(term => regex.test(term))) return false;
                     } catch {
                         return false;
                     }
                 } else {
-                    const query = searchQuery.toLowerCase();
+                    const query = deferredQuery.toLowerCase();
                     if (!searchTerms.some(term => term.toLowerCase().includes(query))) return false;
                 }
             }
@@ -510,7 +492,7 @@ export default function SearchResults({
 
             return true;
         });
-    }, [allEntries, searchQuery, filters, useRegex, mode]);
+    }, [allEntries, deferredQuery, filters, useRegex, mode]);
 
     useEffect(() => {
         if (!detailsName || !["tiles", "macros", "filters", "variants", "flags", "palettes"].includes(mode)) {

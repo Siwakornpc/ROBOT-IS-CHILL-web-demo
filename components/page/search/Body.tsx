@@ -456,16 +456,6 @@ export default function Body({
     showMenu: boolean;
     onResultsChange?: (results: SelectedSearchResult[]) => void;
 }) {
-    const [localQuery, setLocalQuery] = useState(searchQuery);
-    useEffect(() => setLocalQuery(searchQuery), [searchQuery]);
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            if (localQuery !== searchQuery) onSearchQueryChange(localQuery);
-        }, 150);
-        return () => clearTimeout(timer);
-    }, [localQuery]);
-
     return (
         <main style={{ width: "stretch" }}>
             <div className="main-body">
@@ -482,15 +472,15 @@ export default function Body({
                     <input
                         className="searchbar"
                         placeholder="search for something..."
-                        value={localQuery}
-                        onChange={(e) => setLocalQuery(e.currentTarget.value)}
+                        value={searchQuery}
+                        onChange={(e) => onSearchQueryChange(e.target.value)}
                     />
                     <label className="btn ibtn small btn-text search-btn">
                         <input
                             type="checkbox"
                             className="hidden"
                             checked={useRegex}
-                            onChange={(e) => onRegexChange(e.currentTarget.checked)}
+                            onChange={(e) => onRegexChange(e.target.checked)}
                         />
                         <i className="icon">regular_expression</i>
                     </label>

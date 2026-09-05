@@ -18,11 +18,7 @@ export default function Executionoptionselect() {
         window.dispatchEvent(new Event("executionmodechange"));
     }, [mode]);
 
-    const renderBadge = (item: MenuOption<ExecutionMode>) => (
-        <span>
-            =<span className="emph">{item.value.slice(1)}</span>
-        </span>
-    );
+    const renderBadge = (item: MenuOption<ExecutionMode>) => <span>=<span className="emph">{item.value.slice(1)}</span></span>;
 
     return (
         <MenuSelect
