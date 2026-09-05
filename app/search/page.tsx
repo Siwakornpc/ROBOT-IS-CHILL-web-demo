@@ -5,8 +5,8 @@ import { type SearchMode } from "@/components/page/search/SearchSelect";
 import { type SelectedSearchResult } from "@/components/page/search/SearchResultsGrid";
 import { LeftBar, RightBarSearch } from "@/components/page/SideBars";
 import { Details } from "@/components/page/search/TileDetails";
-import { readSearchUrlState, writeSearchUrlState, } from "@/components/url_state/searchUrlState";
-import { useState, useEffect } from "react";
+import { readSearchUrlState, writeSearchUrlState } from "@/components/url_state/searchUrlState";
+import { useState, useEffect, useRef } from "react";
 import { nav_btn_select } from "@/components/nav_select";
 
 export default function Home() {
@@ -29,13 +29,19 @@ export default function Home() {
         overlays: {},
     });
 
+    const isInternalUpdate = useRef(false);
+
     useEffect(() => {
         nav_btn_select("Search");
 
         const syncUrlState = () => {
+            if (isInternalUpdate.current) {
+                isInternalUpdate.current = false;
+                return;
+            }
             const nextState = readSearchUrlState();
             setMode(nextState.mode);
-            setSearchQuery(nextState.query);
+            setSearchQuery(nextState.query ?? "");
             setUseRegex(nextState.regex);
             setDetailsName(nextState.details);
             setCode(nextState.code);
@@ -57,6 +63,7 @@ export default function Home() {
         nextUseRegex: boolean,
         nextDetailsName: string | null,
     ) => {
+        isInternalUpdate.current = true;
         writeSearchUrlState({
             mode: nextMode,
             query: nextSearchQuery,
