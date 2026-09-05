@@ -376,13 +376,10 @@ export function FilterPanel({
     
         // Set initial state
         handleResize();
-    
         window.addEventListener("resize", handleResize);
     
         // Cleanup
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
+        return () => window.removeEventListener("resize", handleResize);
     }, []);
 
     return (
@@ -392,8 +389,7 @@ export function FilterPanel({
                     type="button"
                     className="btn ibtn small btn-text"
                     onClick={onToggleFilter}
-                >
-                    <span className="icon">arrow_back</span>
+                ><span className="icon">arrow_back</span>
                 </button>
                 <p className="text-label">Search</p>
                 <SearchSelect value={mode} onChange={onModeChange} />
@@ -413,8 +409,7 @@ export function FilterPanel({
                                     type="button"
                                     className="btn ibtn xsmall btn-text"
                                     onClick={() => handleRemoveFilter(type, index)}
-                                >
-                                    <i className="icon">remove</i>
+                                ><i className="icon">remove</i>
                                 </button>
                             </div>
                             {renderFilterInput(type, value, index)}
@@ -461,6 +456,16 @@ export default function Body({
     showMenu: boolean;
     onResultsChange?: (results: SelectedSearchResult[]) => void;
 }) {
+    const [localQuery, setLocalQuery] = useState(searchQuery);
+    useEffect(() => setLocalQuery(searchQuery), [searchQuery]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (localQuery !== searchQuery) onSearchQueryChange(localQuery);
+        }, 150);
+        return () => clearTimeout(timer);
+    }, [localQuery]);
+
     return (
         <main style={{ width: "stretch" }}>
             <div className="main-body">
@@ -477,8 +482,8 @@ export default function Body({
                     <input
                         className="searchbar"
                         placeholder="search for something..."
-                        value={searchQuery}
-                        onChange={(e) => onSearchQueryChange(e.currentTarget.value)}
+                        value={localQuery}
+                        onChange={(e) => setLocalQuery(e.currentTarget.value)}
                     />
                     <label className="btn ibtn small btn-text search-btn">
                         <input
