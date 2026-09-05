@@ -123,6 +123,7 @@ export default function Home() {
                 onRegexChange={handleRegexChange}
                 onToggleFilter={() => setShowMenu((prev) => !prev)}
                 showMenu={showMenu}
+                onResultsChange={setAllResults}
             />
             {selected !== null &&
                 <RightBarSearch>
