@@ -8,12 +8,13 @@ import Slider from "@/components/slider";
 import { DEFAULT_THEME } from "@/components/themescript";
 import type { ThemeState } from "@/components/themescript";
 
+import { DEFAULT_FONT_STATE, FONT_SANS_OPTIONS, FONT_CODE_OPTIONS } from "@/components/fontscript";
+import type { FontState } from "@/components/fontscript";
 
 export default function Body() {
-    const [fontSize, setFontSize] = useState(16);
-    const [monoFontSize, setMonoFontSize] = useState(14);
     const [theme, setTheme] = useState<ThemeState>(DEFAULT_THEME);
     const [loaded, setLoaded] = useState(false);
+    const [font, setFontState] = useState<FontState>(DEFAULT_FONT_STATE);
 
     useEffect(() => {
         try {
@@ -26,8 +27,19 @@ export default function Body() {
                     contrast: parsed?.contrast ?? DEFAULT_THEME.contrast,
                 });
             }
+
+            const savedFontRaw = localStorage.getItem("font");
+            if (savedFontRaw) {
+                const parsed = JSON.parse(savedFontRaw);
+                setFontState({
+                    sans: parsed?.sans ?? DEFAULT_FONT_STATE.sans,
+                    code: parsed?.code ?? DEFAULT_FONT_STATE.code,
+                    sansSize: parsed?.sansSize ?? DEFAULT_FONT_STATE.sansSize,
+                    codeSize: parsed?.codeSize ?? DEFAULT_FONT_STATE.codeSize,
+                });
+            }
         } catch (e) {
-            console.error("Failed to parse theme from localStorage", e);
+            console.error("Failed to parse settings from localStorage", e);
         } finally {
             setLoaded(true);
         }
@@ -69,6 +81,20 @@ export default function Body() {
         return () => mediaQuery.removeEventListener('change', handleChange);
     }, [theme, loaded]);
 
+    const updateFont = (updates: Partial<FontState>) => {
+        setFontState((prev) => {
+            const updated = { ...prev, ...updates };
+            localStorage.setItem("font", JSON.stringify(updated));
+            return updated;
+        });
+    };
+    
+    useEffect(() => {
+        if (!loaded) return;
+        const applyFont = (window as any).setFont;
+        if (typeof applyFont !== "function") return;
+        applyFont(font.sans, font.code, font.sansSize, font.codeSize);
+    }, [font, loaded]);
 
     return (
         <main
@@ -89,22 +115,22 @@ export default function Body() {
                     <span className="row-group">
                         <p className="text-label text-main-name">Font Size</p>
                         <Slider
-                            value={fontSize}
+                            value={font.sansSize}
                             min={12}
                             max={28}
                             step={1}
-                            onChange={(value) => setFontSize(value)}
+                            onChange={(value) => updateFont({ sansSize: value })}
                         />
                     </span>
 
                     <span className="row-group">
                         <p className="text-label text-main-name">Monospace Font Size</p>
                         <Slider
-                            value={monoFontSize}
+                            value={font.codeSize}
                             min={10}
                             max={28}
                             step={1}
-                            onChange={(value) => setMonoFontSize(value)}
+                            onChange={(value) => updateFont({ codeSize: value })}
                         />
                     </span>
                 </div>
@@ -112,23 +138,22 @@ export default function Body() {
                 <div className="box-hole">
                     <span className="row-group">
                         <p className="text-label text-main-name">Sans Serif Font</p>
-                        <button type="button" className="dropdown-trigger">
-                            PLACEHOLDER
-                        </button>
+                        <MenuSelect
+                            id="font-sans"
+                            value={font.sans}
+                            options={FONT_SANS_OPTIONS}
+                            onChange={(newValue) => updateFont({ sans: newValue })}
+                        />
                     </span>
 
                     <span className="row-group">
                         <p className="text-label text-main-name">Monospace Font</p>
-                        <button type="button" className="dropdown-trigger">
-                            PLACEHOLDER
-                        </button>
-                    </span>
-
-                    <span className="row-group">
-                        <p className="text-label text-main-name">Monospace Font Size</p>
-                        <button type="button" className="dropdown-trigger">
-                            PLACEHOLDER
-                        </button>
+                        <MenuSelect
+                            id="font-code"
+                            value={font.code}
+                            options={FONT_CODE_OPTIONS}
+                            onChange={(newValue) => updateFont({ code: newValue })}
+                        />
                     </span>
                 </div>
 

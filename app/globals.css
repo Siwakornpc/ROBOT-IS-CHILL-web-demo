@@ -2,6 +2,10 @@
 @import "tailwindcss";
 
 :root {
+    --font-family-sans: var(--font-nunito-sans);
+    --font-family-code: var(--font-ibm-plex-mono);
+    --font-size: 16px;
+
     --body: rgb(var(--md-color-surface));
     --font-size-code: .875rem;
     --editor-line-height: 24px;
@@ -404,6 +408,7 @@ body {
     overflow: hidden;
     font-family: var(--font-family-sans);
     color: var(--normal);
+    font-size: var(--font-size);
     caret-color: rgb(var(--md-color-primary));
 }
 

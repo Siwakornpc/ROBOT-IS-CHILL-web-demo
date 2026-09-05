@@ -1,19 +1,31 @@
 import { Header } from "@/components/Header";
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Nunito_Sans } from "next/font/google";
+import { IBM_Plex_Mono, JetBrains_Mono, Inter, Nunito_Sans } from "next/font/google";
 import "./globals.css";
 import ThemeScript from '@/components/themescript';
 import { MenuProvider } from '@/components/MenuContext';
 import { ThemeProvider } from "@/components/ThemeProvider";
+import FontScript from '@/components/fontscript';
 
 const nunitoSans = Nunito_Sans({
     subsets: ["latin"],
-    variable: "--font-family-sans",
+    variable: "--font-nunito-sans",
+});
+
+const inter = Inter({
+    subsets: ["latin"],
+    variable: "--font-inter",
 });
 
 const ibmPlexMono = IBM_Plex_Mono({
     subsets: ["latin"],
-    variable: "--font-family-code",
+    variable: "--font-ibm-plex-mono",
+    weight: "400",
+});
+
+const jetBrainsMono = JetBrains_Mono({
+    subsets: ["latin"],
+    variable: "--font-jetbrains-mono",
     weight: "400",
 });
 
@@ -30,7 +42,7 @@ export default function RootLayout({
     return (
         <html
             lang="en"
-            className={`${nunitoSans.variable} ${ibmPlexMono.variable} h-full antialiased`}
+            className={`${nunitoSans.variable} ${inter.variable} ${ibmPlexMono.variable} ${jetBrainsMono.variable} h-full antialiased`}
         >
             <head>
                 <link
@@ -40,6 +52,7 @@ export default function RootLayout({
             </head>
             <body className="min-h-full flex flex-col bg-background text-foreground">
                 <ThemeScript />
+                <FontScript />
                 <MenuProvider>
                     <ThemeProvider>
                         <Header />
