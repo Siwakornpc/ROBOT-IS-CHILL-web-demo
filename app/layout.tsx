@@ -6,6 +6,7 @@ import ThemeScript from '@/components/themescript';
 import { MenuProvider } from '@/components/MenuContext';
 import { ThemeProvider } from "@/components/ThemeProvider";
 import FontScript from '@/components/fontscript';
+import { FontProvider } from "@/components/FontProvider";
 
 const nunitoSans = Nunito_Sans({
     subsets: ["latin"],
@@ -55,8 +56,10 @@ export default function RootLayout({
                 <FontScript />
                 <MenuProvider>
                     <ThemeProvider>
-                        <Header />
-                        {children}
+                        <FontProvider>
+                            <Header />
+                            {children}
+                        </FontProvider>
                     </ThemeProvider>
                 </MenuProvider>
             </body>
