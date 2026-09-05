@@ -17,6 +17,7 @@ export default function Home() {
     const [detailsName, setDetailsName] = useState<string | null>(null);
     const [code, setCode] = useState<string | null>(null);
     const [showMenu, setShowMenu] = useState(false);
+    const [allResults, setAllResults] = useState<SelectedSearchResult[]>([]);
     const [modeFilters, setModeFilters] = useState<Record<SearchMode, Record<string, string[]>>>({
         tiles: {},
         macros: {},
@@ -69,6 +70,7 @@ export default function Home() {
         setMode(nextMode);
         setSelected(null);
         setDetailsName(null);
+        setAllResults([]);
         updateUrl(nextMode, searchQuery, useRegex, null);
     };
 
@@ -119,21 +121,19 @@ export default function Home() {
                 filters={modeFilters[mode] ?? {}} 
                 useRegex={useRegex}
                 onRegexChange={handleRegexChange}
-                onToggleFilter={() =>
-                    setShowMenu((prev) => !prev)
-                }
+                onToggleFilter={() => setShowMenu((prev) => !prev)}
                 showMenu={showMenu}
             />
-            {selected !== null && (
+            {selected !== null &&
                 <RightBarSearch>
                     <button
                         className="btn ibtn small btn-text search-close-btn"
                         onClick={handleCloseDetails}
                     ><i className="icon">close</i>
                     </button>
-                    <Details selected={selected} />
+                    <Details selected={selected} allResults={allResults} />
                 </RightBarSearch>
-            )}
+            }
         </main>
     );
 }

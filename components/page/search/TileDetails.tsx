@@ -231,10 +231,12 @@ export function Details({ selected, allResults }: DetailsProps) {
         }
 
         const aliases = (allResults || [])
-            .filter((item) =>
-                "tile" in item && item.name !== selected.name &&
-                item.tile.sprite[0] === selected.tile.sprite[0] &&
-                item.tile.sprite[1] === selected.tile.sprite[1]
+            .filter(
+                (item): item is SelectedSearchResult & { tile: typeof selected.tile } =>
+                    "tile" in item &&
+                    item.name !== selected.name &&
+                    item.tile.sprite[0] === selected.tile.sprite[0] &&
+                    item.tile.sprite[1] === selected.tile.sprite[1]
             )
             .map((item) => item.name);
 
@@ -248,8 +250,7 @@ export function Details({ selected, allResults }: DetailsProps) {
                         className="search-details-image-wrapper ascroll-x"
                     >
                         {select === "one_tile"
-                            ?
-                            <div className="search-details-image-asize" data-frame={currentIndex}>
+                            ? <div className="search-details-image-asize" data-frame={currentIndex}>
                                 <img
                                     alt={selected.name}
                                     className="search-details-image"

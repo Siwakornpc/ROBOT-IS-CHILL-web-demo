@@ -159,6 +159,7 @@ export default function SearchResults({
     searchQuery = "",
     filters = {},
     useRegex = false,
+    onResultsChange,
 }: {
     mode: SearchMode;
     onSelect: (selected: SelectedSearchResult) => void;
@@ -166,6 +167,7 @@ export default function SearchResults({
     searchQuery?: string;
     filters?: Record<string, string[]>;
     useRegex?: boolean;
+    onResultsChange?: (results: SelectedSearchResult[]) => void;
 }) {
     const deferredSearchQuery = useDeferredValue(searchQuery);
 
@@ -344,6 +346,48 @@ export default function SearchResults({
             ? results
             : Object.entries(results)
         : [];
+
+    const allResults = useMemo<SelectedSearchResult[]>(() => {
+        return allEntries.flatMap(([name, data]): SelectedSearchResult[] => {
+            const safeName = String(name ?? "").trim();
+            if (!safeName) return [];
+            if (mode === "tiles" && isTileRecord(data))
+                return [{ name: safeName, tile: data }];
+            if (mode === "macros" && isMacroRecord(data))
+                return [{ name: safeName, macro: data }];
+            if (mode === "filters" && isFilterRecord(data))
+                return [{ name: safeName, filter: data }];
+            if (mode === "variants" && isVariantRecord(data))
+                return [{ name: safeName, variant: data }];
+            if (mode === "flags" && isFlagRecord(data))
+                return [{ name: safeName, flag: data }];
+            if (mode === "palettes" && isPaletteRecord(data))
+                return [{ name: safeName, palette: data }];
+            if (mode === "overlays" && isOverlayRecord(data))
+                return [{ name: safeName, overlay: data }];
+            return [];
+        });
+    }, [allEntries, mode]);
+    const groupedResults = useMemo(() => {
+        const groups = new Map<string, SelectedSearchResult[]>();
+
+        for (const result of allResults) {
+            const spriteKey = 'tile' in result && result.tile?.sprite[1]
+                ? result.tile.sprite[1]
+                : result.name;
+
+            const existing = groups.get(spriteKey) ?? [];
+            existing.push(result);
+            groups.set(spriteKey, existing);
+        }
+
+        return Array.from(groups.entries()).map(([spriteKey, items]) => ({
+            spriteKey,
+            primary: items[0],
+            aliases: items.map(item => item.name),
+            allEntries: items,
+        }));
+    }, [allResults]);
 
     const filteredEntries = useMemo(() => {
         return allEntries.filter(([name, data]) => {
@@ -567,9 +611,7 @@ export default function SearchResults({
     const loadingMoreRef = useRef(false);
 
     useEffect(() => {
-        return () => {
-            if (imageTimerRef.current) clearTimeout(imageTimerRef.current);
-        };
+        if (imageTimerRef.current) clearTimeout(imageTimerRef.current);
     }, []);
 
     useEffect(() => {
@@ -605,6 +647,10 @@ export default function SearchResults({
     useEffect(() => {
         loadingMoreRef.current = false;
     }, [visibleCount]);
+
+    useEffect(() => {
+        onResultsChange?.(allResults);
+    }, [allResults, onResultsChange]);
 
     const resolveDiscordEmojis = (text: string) => {
         const parts = text.split(/(<a?:\w+:\d+>)/g);

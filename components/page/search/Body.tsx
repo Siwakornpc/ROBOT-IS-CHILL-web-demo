@@ -447,6 +447,7 @@ export default function Body({
     onRegexChange,
     onToggleFilter,
     showMenu,
+    onResultsChange,
 }: {
     mode: SearchMode;
     onSelect: (selected: SelectedSearchResult) => void;
@@ -458,6 +459,7 @@ export default function Body({
     onRegexChange: (value: boolean) => void;
     onToggleFilter: (value: boolean) => void;
     showMenu: boolean;
+    onResultsChange?: (results: SelectedSearchResult[]) => void;
 }) {
     return (
         <main style={{ width: "stretch" }}>
@@ -497,6 +499,7 @@ export default function Body({
                     searchQuery={searchQuery}
                     filters={filters}
                     useRegex={useRegex}
+                    onResultsChange={onResultsChange}
                 />
             </div>
         </main>

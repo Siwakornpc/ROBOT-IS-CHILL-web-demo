@@ -21,7 +21,6 @@ function navigateWithCode(
 
     const code = new URLSearchParams(window.location.search).get("code");
     const target = new URL(path, window.location.href);
-
     if (code !== null) target.searchParams.set("code", code);
 
     window.location.href = target.toString();
@@ -38,19 +37,16 @@ export function LeftBar() {
 
         // Set initial state
         handleResize();
-
         window.addEventListener("resize", handleResize);
 
         // Cleanup
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
+        return () => window.removeEventListener("resize", handleResize);
     }, []);
 
     return (
         <>
             {isFlexibleMenu
-                ? <div className={`screen-blur ${isMenuOpen ? "true" : ""}`} onClick={closeMenu}></div>
+                ? <div className={`screen-blur ${isMenuOpen ? "true" : ""}`} onClick={closeMenu} />
                 : ""
             }
             <div className={`sb-left ${isFlexibleMenu ? "sb-left-fxb" : ""} ${isMenuOpen ? "opened" : ""}`}>
@@ -103,9 +99,7 @@ export function LeftBar() {
 }
 
 export function RightBar() {
-    return (
-        <div className="sb-right"></div>
-    );
+    return <div className="sb-right"></div>
 }
 
 export function RightBarSearch({children}: {children?: ReactNode}) {
@@ -131,10 +125,7 @@ export function RightBarSearch({children}: {children?: ReactNode}) {
 
         handleResize();
         window.addEventListener("resize", handleResize);
-
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
+        return () => window.removeEventListener("resize", handleResize);
     }, []);
 
     function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
@@ -168,7 +159,6 @@ export function RightBarSearch({children}: {children?: ReactNode}) {
         const downMidpoint = viewHeight * 0.25;
 
         const draggedUp = sheetOffset < dragStartOffset.current;
-
         const draggedDown = sheetOffset > dragStartOffset.current;
 
         let target;
@@ -188,19 +178,16 @@ export function RightBarSearch({children}: {children?: ReactNode}) {
             className={`sb-right ${isFlexibleMenu ? "sb-right-fxb" : ""} search-details-panel ascroll-y ${sheetOffset === 0 ? "to-top" : ""}`}
             style={{"--sheet-offset": `${sheetOffset}px`} as React.CSSProperties}
         >
-            {isFlexibleMenu && (
+            {isFlexibleMenu &&
                 <div
                     className="search-details-drag-handle"
                     onPointerDown={handlePointerDown}
                     onPointerMove={handlePointerMove}
                     onPointerUp={handlePointerUp}
                     onPointerCancel={handlePointerUp}
-                >
-                    <div className="drag-handle-hitbox">
-                        <div className="drag-handle" />
-                    </div>
+                ><div className="drag-handle-hitbox"><div className="drag-handle" /></div>
                 </div>
-            )}
+            }
 
             {children}
         </div>
