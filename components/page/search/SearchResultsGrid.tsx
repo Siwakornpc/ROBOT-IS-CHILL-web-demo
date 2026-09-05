@@ -339,11 +339,13 @@ export default function SearchResults({
         return () => {cancelled = true};
     }, [mode, isVisible]);
 
-    const allEntries: SearchEntry[] = results
-        ? Array.isArray(results)
-            ? results
-            : Object.entries(results)
-        : [];
+    const allEntries: SearchEntry[] = useMemo(() => {
+        return results
+            ? Array.isArray(results)
+                ? results
+                : Object.entries(results)
+            : [];
+    }, [results]);
 
     const allResults = useMemo<SelectedSearchResult[]>(() => {
         return allEntries.flatMap(([name, data]): SelectedSearchResult[] => {
