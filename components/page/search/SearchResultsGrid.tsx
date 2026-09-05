@@ -255,10 +255,7 @@ export default function SearchResults({
 
                         macroMap.set(key, [
                             safeName,
-                            {
-                                ...(macro as Record<string, unknown>),
-                                builtin: true,
-                            },
+                            { ...(macro as Record<string, unknown>), builtin: true },
                         ]);
                     }
 

@@ -16,6 +16,7 @@ import { DiscordUser } from '../../DiscordUser';
 
 type DetailsProps = {
     selected: SelectedSearchResult;
+    allResults?: SelectedSearchResult[];
 };
 
 type PaletteColorData = {
@@ -35,7 +36,6 @@ const getImageSize = (url: string): Promise<string> => {
 
 function getContrastColor(hex: string | null) {
     if (!hex) return;
-
     hex = hex.replace("#", "");
 
     const fullHex = hex.length === 3 
@@ -50,7 +50,7 @@ function getContrastColor(hex: string | null) {
     return yiq >= 128 ? "black" : "";
 }
 
-export function Details({ selected }: DetailsProps) {
+export function Details({ selected, allResults }: DetailsProps) {
     const macroElementRef = useRef<HTMLDivElement>(null);
     const variantElementRef = useRef<HTMLDivElement>(null);
     const flagElementRef = useRef<HTMLDivElement>(null);
@@ -230,6 +230,14 @@ export function Details({ selected }: DetailsProps) {
             return match?.color;
         }
 
+        const aliases = (allResults || [])
+            .filter((item) =>
+                "tile" in item && item.name !== selected.name &&
+                item.tile.sprite[0] === selected.tile.sprite[0] &&
+                item.tile.sprite[1] === selected.tile.sprite[1]
+            )
+            .map((item) => item.name);
+
         return (<>
             <p className="text-label search-details-name">{selected.name}</p>
 
@@ -351,14 +359,20 @@ export function Details({ selected }: DetailsProps) {
                         <td>Tags</td>
                         <td>
                             {selected.tile.tags.length
-                            ? selected.tile.tags.join(", ").toTitleCase()
-                            : "None"}
+                                ? selected.tile.tags.join(", ").toTitleCase()
+                                : "None"}
                         </td>
                     </tr>
                     <tr>
                         <td>Tiling</td>
                         <td>{selected.tile.tiling.toTitleCase()}</td>
                     </tr>
+                    {aliases.length > 0 &&
+                        <tr>
+                            <td>Aliases</td>
+                            <td>{aliases.join(", ")}</td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </>);
@@ -385,34 +399,29 @@ export function Details({ selected }: DetailsProps) {
             <div className="search-details-contents-flexbox">
                 <hr />
 
-                {selected.macro.creator && (
-                    <DiscordUser id={selected.macro.creator} />
-                )}
+                {selected.macro.creator && <DiscordUser id={selected.macro.creator} />}
 
                 <p className="search-details-label">Description</p>
                 <div className="search-details-detailbox" id="description">
                     <DiscordMarkdown>{selected.macro.description}</DiscordMarkdown>
                 </div>
 
-                {!isBuiltin ? (<>
-                    <p className="search-details-label">Value</p>
-                    <div
-                        ref={macroElementRef}
-                        className="search-details-detailbox macro"
-                    >{selected.macro.value}
-                    </div>
-                </>) : (
-                    <span className="discord-markdown">
+                {!isBuiltin
+                    ? <>
+                        <p className="search-details-label">Value</p>
+                        <div
+                            ref={macroElementRef}
+                            className="search-details-detailbox macro"
+                        >{selected.macro.value}
+                        </div>
+                    </>
+                    : <span className="discord-markdown">
                         <a href="" target="_blank" rel="noopener noreferrer">
-                            <span className="discord-text-part">
-                                Learn More
-                                {
-                                    // they don't do anything yet
-                                }
-                            </span>
+                            { /* they don't do anything yet */ }
+                            <span className="discord-text-part">Learn More</span>
                         </a>
                     </span>
-                )}
+                }
             </div>
         </>);
     }
@@ -436,9 +445,7 @@ export function Details({ selected }: DetailsProps) {
             <div className="search-details-contents-flexbox">
                 <hr />
 
-                {selected.filter.author && (
-                    <DiscordUser id={selected.filter.author} />
-                )}
+                {selected.filter.author && <DiscordUser id={selected.filter.author} />}
 
                 <table>
                     <tbody>
@@ -564,7 +571,7 @@ export function Details({ selected }: DetailsProps) {
                                         key={`palette-${selected.name}-row-${i}-column-${j}-color-${color}`}
                                         className="search-details-palette-this-color"
                                         style={{ "--this-palette-color": color } as React.CSSProperties}
-                                        {...(!isMobile
+                                        {...!isMobile
                                             ? {
                                                 onClick: () => color && handleCopyPalette(color, j, i),
                                             }
@@ -572,12 +579,12 @@ export function Details({ selected }: DetailsProps) {
                                                 onTouchStart: () => color && handleCopyPaletteMobile(color, j, i),
                                                 onTouchEnd: () => handleAbortCopyPaletteMobile(),
                                             }
-                                        )}
+                                        }
                                     >
                                         <span
                                             className={`palette-index-label ${copiedPalette?.x === j && copiedPalette?.y === i ? "copied" : ""}`}
                                             style={{ "--contrast": getContrastColor(color), marginTop: (i >= 10) || (j >= 10) ? "0" : "" } as React.CSSProperties}
-                                            {...(!isMobile)
+                                            {...!isMobile
                                                 ? {
                                                     onMouseEnter: () => handlePaletteOnHover({ x: j, y: i, color }),
                                                     onMouseLeave: () => handlePaletteOnHover(),
