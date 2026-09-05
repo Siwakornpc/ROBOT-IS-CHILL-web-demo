@@ -1,34 +1,11 @@
 import { Header } from "@/components/Header";
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, JetBrains_Mono, Inter, Nunito_Sans } from "next/font/google";
 import "./globals.css";
 import ThemeScript from '@/components/themescript';
+import FontScript from '@/components/fontscript';
 import { MenuProvider } from '@/components/MenuContext';
 import { ThemeProvider } from "@/components/ThemeProvider";
-import FontScript from '@/components/fontscript';
 import { FontProvider } from "@/components/FontProvider";
-
-const nunitoSans = Nunito_Sans({
-    subsets: ["latin"],
-    variable: "--font-nunito-sans",
-});
-
-const inter = Inter({
-    subsets: ["latin"],
-    variable: "--font-inter",
-});
-
-const ibmPlexMono = IBM_Plex_Mono({
-    subsets: ["latin"],
-    variable: "--font-ibm-plex-mono",
-    weight: "400",
-});
-
-const jetBrainsMono = JetBrains_Mono({
-    subsets: ["latin"],
-    variable: "--font-jetbrains-mono",
-    weight: "400",
-});
 
 export const metadata: Metadata = {
     title: "Robot Is Chill Web Demo",
@@ -41,10 +18,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html
-            lang="en"
-            className={`${nunitoSans.variable} ${inter.variable} ${ibmPlexMono.variable} ${jetBrainsMono.variable} h-full antialiased`}
-        >
+        <html lang="en" className="h-full antialiased">
             <head>
                 <link
                     rel="stylesheet"
