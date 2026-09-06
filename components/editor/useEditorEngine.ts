@@ -15,6 +15,7 @@ import { getAutocompleteContext } from "./autocompleteUtils";
 import { offsetToLineColumn } from "./lineModel";
 import { updateCaretMatch } from "./highlighting";
 import { updateCurrentLineClass } from "./domUpdaters";
+import stdlib_macros from "../page/search/stdlib_macros";
 
 
 type EditorRefs = {
@@ -107,15 +108,31 @@ export function useEditorEngine({
         async function fetchAutocompleteData() {
             try {
                 await loadVariants();
-                const res = await fetch("https://ric-api.sno.mba/macros.json");
-                if (res.ok) {
-                    const data = await res.json();
-                    macroList = Object.entries(data).map(([key, val]: [string, any]) => ({
-                        label: key,
-                        builtin: Boolean(val?.builtin)
-                    }));
-                    handleACSelectionChange();
+                const macroMap = new Map<string, { label: string; builtin?: boolean }>();
+
+                try {
+                    const res = await fetch("https://ric-api.sno.mba/macros.json");
+                    if (res.ok) {
+                        const data = await res.json();
+                        for (const [key, val] of Object.entries(data)) {
+                            macroMap.set(key, { label: key, builtin: Boolean((val as any)?.builtin) });
+                        }
+                    }
+                } catch (err) {
+                    console.error("Failed to load remote macros:", err);
                 }
+
+                try {
+                    const stdMacros = await stdlib_macros();
+                    for (const [name, info] of stdMacros) {
+                        macroMap.set(name, { label: name, builtin: info.builtin });
+                    }
+                } catch (err) {
+                    console.error("Failed to load stdlib macros:", err);
+                }
+
+                macroList = Array.from(macroMap.values());
+                handleACSelectionChange();
             } catch (err) {
                 console.error("Failed to load autocomplete data:", err);
             }
