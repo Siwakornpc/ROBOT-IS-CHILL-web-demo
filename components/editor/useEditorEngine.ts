@@ -110,22 +110,17 @@ export function useEditorEngine({
                 const res = await fetch("https://ric-api.sno.mba/macros.json");
                 if (res.ok) {
                     const data = await res.json();
-                    if (Array.isArray(data)) {
-                        macroList = data.map(item => ({
-                            label: item?.id || item?.name || String(item),
-                            builtin: Boolean(item?.builtin)
-                        }));
-                    } else if (data && typeof data === "object") {
-                        macroList = Object.entries(data).map(([key, val]: [string, any]) => ({
-                            label: val?.id || key,
-                            builtin: Boolean(val?.builtin)
-                        }));
-                    }
+                    macroList = Object.entries(data).map(([key, val]: [string, any]) => ({
+                        label: key,
+                        builtin: Boolean(val?.builtin)
+                    }));
+                    handleACSelectionChange();
                 }
             } catch (err) {
                 console.error("Failed to load autocomplete data:", err);
             }
         }
+        fetchAutocompleteData();
 
         const handleACSelectionChange = () => {
             if (document.activeElement !== editorArea) return;
