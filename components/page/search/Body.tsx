@@ -396,7 +396,7 @@ export function FilterPanel({
 
             <hr />
 
-            {currentOptions.length > 0 && (<>
+            {currentOptions.length > 0 && <>
                 <p className="text-label">Filters</p>
                 <div ref={(el) => applyOverflowFade(el, "y")} className="filter-section ascroll-y">
 
@@ -425,7 +425,7 @@ export function FilterPanel({
                         className="btn ibtn small btn-filled"
                     />
                 </div>
-            </>)}
+            </>}
         </div>
     );
 }

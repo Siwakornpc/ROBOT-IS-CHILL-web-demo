@@ -15,8 +15,9 @@ import { getAutocompleteContext } from "./autocompleteUtils";
 import { offsetToLineColumn } from "./lineModel";
 import { updateCaretMatch } from "./highlighting";
 import { updateCurrentLineClass } from "./domUpdaters";
+import stdlib_macros from "../page/search/stdlib_macros";
 
-
+type SearchEntry = [string, unknown];
 type EditorRefs = {
     editorAreaRef: RefObject<HTMLDivElement | null>;
     gutterElRef: RefObject<HTMLDivElement | null>;
@@ -108,7 +109,7 @@ export function useEditorEngine({
             render(state.value.length, state.value.length);
         };
 
-        let macroList: Array<{ label: string; detail?: string }> = [];
+        let macroMap: Array<{ label: string; detail?: string }> = [];
 
         async function fetchAutocompleteData() {
             try {
@@ -116,7 +117,38 @@ export function useEditorEngine({
                 const res = await fetch("https://ric-api.sno.mba/macros.json");
                 if (res.ok) {
                     const data = await res.json();
-                    macroList = Object.keys(data).map(key => ({ label: key }));
+                    const stdMacros = await stdlib_macros();
+                    const macroMap = new Map<string, SearchEntry>();
+
+                    // Standard-library macros win over API macros.
+                    for (const [name, macro] of stdMacros) {
+                        const safeName = String(name ?? "").trim();
+                        if (!safeName) continue;
+
+                        const key = safeName.toLowerCase();
+
+                        macroMap.set(key, [
+                            safeName,
+                            { ...(macro as Record<string, unknown>), builtin: true },
+                        ]);
+                    }
+
+                    // Add API macros only if they aren't already present.
+                    for (const [name, macro] of Object.entries(data)) {
+                        const safeName = String(name ?? "").trim();
+                        if (!safeName) continue;
+
+                        const key = safeName.toLowerCase();
+                        if (macroMap.has(key)) continue;
+
+                        macroMap.set(key, [
+                            safeName,
+                            {
+                                ...(macro as Record<string, unknown>),
+                                builtin: false,
+                            },
+                        ]);
+                    }
                 }
             } catch (err) {
                 console.error("Failed to load autocomplete data:", err);
@@ -140,14 +172,13 @@ export function useEditorEngine({
 
             updateCaretMatch(win, editorArea, start, end);
 
-            // Evaluate Autocomplete Context
             if (onAutocompleteChange) {
                 const isRenderMode = win.executionMode === "=t" || win.executionMode === "=r";
                 const context = getAutocompleteContext(state.value, start, isRenderMode);
 
                 if (context) {
                     const suggestions = context.type === "macro"
-                        ? macroList.map(m => ({ label: m.label, type: "macro" as const }))
+                        ? macroMap.map(m => ({ label: m.label, type: "macro" as const }))
                         : allv.map(v => ({ label: v, type: "variant" as const }));
 
                     const sel = window.getSelection();

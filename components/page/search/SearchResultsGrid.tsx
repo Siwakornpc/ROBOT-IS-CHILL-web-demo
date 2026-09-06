@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useDeferredValue, useMemo } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { type SearchMode } from "./SearchSelect";
 import stdlib_macros from "./stdlib_macros";
 import JSONbig from "json-bigint";
@@ -14,7 +14,6 @@ const IMAGE_ERROR_DELAY = 2000;
 const MAX_IMAGE_RETRIES = 4;
 
 const {variants, flags} = await loadUpstream();
-
 const overlays = getOverlays();
 
 const endpoints: Partial<Record<SearchMode, string>> = {
