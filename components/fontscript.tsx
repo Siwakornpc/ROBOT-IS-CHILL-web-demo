@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 export interface FontOption {
     value: string;
     label: string;
-    cssVar: string; // must match a `variable` registered on a next/font/google font in app/layout.tsx
+    cssVar: string;
 }
 
 export const FONT_SANS_OPTIONS: FontOption[] = [
