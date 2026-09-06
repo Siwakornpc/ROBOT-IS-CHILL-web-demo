@@ -24,6 +24,7 @@ type EditorRefs = {
     scrollElRef: RefObject<HTMLDivElement | null>;
     onCodeChange?: (code: string) => void;
     onAutocompleteChange?: (state: AutocompleteState) => void;
+    onInsertSuggestionRef?: React.RefObject<((startIndex: number, text: string) => void) | null>;
 };
 
 export type AutocompleteState = {
@@ -42,6 +43,7 @@ export function useEditorEngine({
     scrollElRef,
     onCodeChange,
     onAutocompleteChange,
+    onInsertSuggestionRef,
 }: EditorRefs) {
     useEffect(() => {
         const editorArea = editorAreaRef.current;
@@ -173,10 +175,28 @@ export function useEditorEngine({
                 });
             }
         };
+        
+        const insertSuggestion = (startIndex: number, text: string) => {
+            const lines = state.value.split("\n");
+            const { start } = getCaret(editorArea, lines);
+
+            const before = state.value.slice(0, startIndex);
+            const after = state.value.slice(start);
+
+            state.value = before + text + after;
+            onCodeChange?.(state.value);
+
+            const newPos = startIndex + text.length;
+            saveState(newPos, newPos);
+            render(newPos, newPos);
+            editorArea.focus();
+        };
+
+        if (onInsertSuggestionRef) onInsertSuggestionRef.current = insertSuggestion;
 
         editorArea.addEventListener("beforeinput", handleBeforeInput as EventListener);
         editorArea.addEventListener("keydown", handleKeydown);
-        document.addEventListener("selectionchange", handleSelectionChange);
+        document.addEventListener("selectionchange", handleACSelectionChange);
         scrollEl.addEventListener("scroll", handleScroll);
         editorArea.addEventListener("click", handleClick);
         window.addEventListener("resize", handleResize);
@@ -212,7 +232,7 @@ export function useEditorEngine({
         return () => {
             editorArea.removeEventListener("beforeinput", handleBeforeInput as EventListener);
             editorArea.removeEventListener("keydown", handleKeydown);
-            document.removeEventListener("selectionchange", handleSelectionChange);
+            document.removeEventListener("selectionchange", handleACSelectionChange);
             scrollEl.removeEventListener("scroll", handleScroll);
             editorArea.removeEventListener("click", handleClick);
             window.removeEventListener("resize", handleResize);

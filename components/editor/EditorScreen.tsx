@@ -5,11 +5,12 @@ import { useEditorEngine } from "./useEditorEngine";
 import { AutocompleteDropdown, SuggestionItem } from "./autocompleteDropdown";
 import "./editorReady";
 
-export function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) => void }) {
+export default function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) => void }) {
     const editorAreaRef = useRef<HTMLDivElement | null>(null);
     const gutterElRef = useRef<HTMLDivElement | null>(null);
     const gutterWrapRef = useRef<HTMLDivElement | null>(null);
     const scrollElRef = useRef<HTMLDivElement | null>(null);
+    const insertSuggestionRef = useRef<((startIndex: number, text: string) => void) | null>(null);
 
     const [autoComplete, setAutoComplete] = useState({
         isOpen: false,
@@ -21,11 +22,8 @@ export function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) =
     });
 
     const handleSelectSuggestion = (item: SuggestionItem) => {
-        const editorArea = editorAreaRef.current;
-        if (!editorArea) return;
-
-        const lines = editorArea.textContent?.split("\n") ?? [""];
-        
+        if (insertSuggestionRef.current)
+            insertSuggestionRef.current(autoComplete.startIndex, item.label);
         setAutoComplete(prev => ({ ...prev, isOpen: false }));
     };
 
@@ -36,6 +34,7 @@ export function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) =
         scrollElRef,
         onCodeChange,
         onAutocompleteChange: (state: any) => setAutoComplete(state),
+        onInsertSuggestionRef: insertSuggestionRef,
     });
 
     return (
@@ -71,5 +70,3 @@ export function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) =
         </div>
     );
 }
-
-export default EditorScreen;
