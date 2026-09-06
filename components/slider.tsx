@@ -73,7 +73,12 @@ export default function Slider({
             if (!container) return;
 
             const rect = container.getBoundingClientRect();
-            const rawRatio = Math.min(1, Math.max(0, (clientX - rect.left - 6) / (rect.width - 12)));
+            const isRtl = window.getComputedStyle(container).direction === "rtl";
+
+            let rawRatio = (clientX - rect.left - 6) / (rect.width - 12);
+            if (isRtl) rawRatio = 1 - rawRatio;
+
+            rawRatio = Math.min(1, Math.max(0, rawRatio));
             let rawValue = min + rawRatio * (max - min);
 
             if (step && step > 0) {
