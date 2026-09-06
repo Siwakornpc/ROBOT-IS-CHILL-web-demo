@@ -10,6 +10,11 @@ import {
     createEditorClickHandler }
 from "./handlers";
 import { getCaret } from "./caretUtils";
+import { loadVariants, allv } from "./getVariantName";
+import { getAutocompleteContext } from "./autocompleteUtils";
+import { offsetToLineColumn } from "./lineModel";
+import { updateCaretMatch } from "./highlighting";
+import { updateCurrentLineClass } from "./domUpdaters";
 
 
 type EditorRefs = {
@@ -18,6 +23,16 @@ type EditorRefs = {
     gutterWrapRef: RefObject<HTMLDivElement | null>;
     scrollElRef: RefObject<HTMLDivElement | null>;
     onCodeChange?: (code: string) => void;
+    onAutocompleteChange?: (state: AutocompleteState) => void;
+};
+
+export type AutocompleteState = {
+    isOpen: boolean;
+    query: string;
+    suggestions: Array<{ label: string; type: "macro" | "variant" | "tile" }>;
+    position: { top: number; left: number };
+    startIndex: number;
+    type: "macro" | "variant" | "tile";
 };
 
 export function useEditorEngine({
@@ -26,6 +41,7 @@ export function useEditorEngine({
     gutterWrapRef,
     scrollElRef,
     onCodeChange,
+    onAutocompleteChange,
 }: EditorRefs) {
     useEffect(() => {
         const editorArea = editorAreaRef.current;
@@ -33,9 +49,7 @@ export function useEditorEngine({
         const gutterWrap = gutterWrapRef.current;
         const scrollEl = scrollElRef.current;
 
-        if (!editorArea || !gutterEl || !gutterWrap || !scrollEl) {
-            return;
-        }
+        if (!editorArea || !gutterEl || !gutterWrap || !scrollEl) return;
 
         const win = window as WindowWithEditor;
         ensureEditorReady();
@@ -67,24 +81,21 @@ export function useEditorEngine({
             redo,
             onCodeChange,
         });
-        const handleKeydown = createKeydownHandler(
-            {
-                editorArea,
-                state,
-                saveState,
-                render,
-                undo,
-                redo,
-                onCodeChange
-            }
-        );
-        const handleSelectionChange = createSelectionChangeHandler(
-            {
-                win,
-                editorArea,
-                gutterEl,
-                state
-            });
+        const handleKeydown = createKeydownHandler({
+            editorArea,
+            state,
+            saveState,
+            render,
+            undo,
+            redo,
+            onCodeChange
+        });
+        const handleSelectionChange = createSelectionChangeHandler({
+            win,
+            editorArea,
+            gutterEl,
+            state
+        });
         const handleClick = createEditorClickHandler(editorArea);
 
         const handleScroll = () => {
@@ -95,6 +106,74 @@ export function useEditorEngine({
             render(state.value.length, state.value.length);
         };
 
+        let macroList: Array<{ label: string; detail?: string }> = [];
+
+        async function fetchAutocompleteData() {
+            try {
+                await loadVariants();
+                const res = await fetch("https://ric-api.sno.mba/macros.json");
+                if (res.ok) {
+                    const data = await res.json();
+                    macroList = Object.keys(data).map(key => ({ label: key }));
+                }
+            } catch (err) {
+                console.error("Failed to load autocomplete data:", err);
+            }
+        }
+        fetchAutocompleteData();
+
+        const handleACSelectionChange = () => {
+            if (document.activeElement !== editorArea) return;
+
+            const lines = state.value.split("\n");
+            const { start, end } = getCaret(editorArea, lines);
+            const { lineIndex } = offsetToLineColumn(lines, start);
+
+            const lineEls = Array.from(editorArea.children) as HTMLElement[];
+            updateCurrentLineClass(lineEls, lineIndex);
+
+            Array.from(gutterEl.children).forEach((el, i) => {
+                el.classList.toggle("active", i === lineIndex);
+            });
+
+            updateCaretMatch(win, editorArea, start, end);
+
+            // Evaluate Autocomplete Context
+            if (onAutocompleteChange) {
+                const isRenderMode = win.executionMode === "=t" || win.executionMode === "=r";
+                const context = getAutocompleteContext(state.value, start, isRenderMode);
+
+                if (context) {
+                    const suggestions = context.type === "macro"
+                        ? macroList.map(m => ({ label: m.label, type: "macro" as const }))
+                        : allv.map(v => ({ label: v, type: "variant" as const }));
+
+                    const sel = window.getSelection();
+                    if (sel && sel.rangeCount > 0) {
+                        const range = sel.getRangeAt(0);
+                        const rect = range.getBoundingClientRect();
+                        onAutocompleteChange({
+                            isOpen: true,
+                            query: context.query,
+                            suggestions,
+                            position: { top: rect.bottom + 4, left: rect.left },
+                            startIndex: context.startIndex,
+                            type: context.type,
+                        });
+                        return;
+                    }
+                }
+                onAutocompleteChange({
+                    isOpen: false,
+                    query: "",
+                    suggestions: [],
+                    position: { top: 0, left: 0 },
+                    startIndex: 0,
+                    type: "macro",
+                });
+            }
+        };
+
         editorArea.addEventListener("beforeinput", handleBeforeInput as EventListener);
         editorArea.addEventListener("keydown", handleKeydown);
         document.addEventListener("selectionchange", handleSelectionChange);
@@ -103,9 +182,7 @@ export function useEditorEngine({
         window.addEventListener("resize", handleResize);
 
         const api: EditorApi = {
-            get value() {
-                return state.value;
-            },
+            get value() { return state.value },
             set value(v) {
                 state.value = String(v ?? "");
                 onCodeChange?.(state.value);

@@ -9,11 +9,7 @@ export function offsetToLineColumn(lines: string[], offset: number): LineColumn 
 
     for (let i = 0; i < lines.length; i++) {
         const lineLength = lines[i].length;
-
-        if (remaining <= lineLength) {
-            return { lineIndex: i, column: remaining };
-        }
-
+        if (remaining <= lineLength) return { lineIndex: i, column: remaining };
         remaining -= lineLength + 1; // + 1 is for "\n" that joins this line to next
     }
 

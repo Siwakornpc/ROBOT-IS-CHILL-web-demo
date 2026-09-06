@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useEditorEngine } from "./useEditorEngine";
+import { AutocompleteDropdown, SuggestionItem } from "./autocompleteDropdown";
 import "./editorReady";
 
 export function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) => void }) {
@@ -10,12 +11,31 @@ export function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) =
     const gutterWrapRef = useRef<HTMLDivElement | null>(null);
     const scrollElRef = useRef<HTMLDivElement | null>(null);
 
+    const [autoComplete, setAutoComplete] = useState({
+        isOpen: false,
+        query: "",
+        suggestions: [] as SuggestionItem[],
+        position: { top: 0, left: 0 },
+        startIndex: 0,
+        type: "macro" as const,
+    });
+
+    const handleSelectSuggestion = (item: SuggestionItem) => {
+        const editorArea = editorAreaRef.current;
+        if (!editorArea) return;
+
+        const lines = editorArea.textContent?.split("\n") ?? [""];
+        
+        setAutoComplete(prev => ({ ...prev, isOpen: false }));
+    };
+
     useEditorEngine({
         editorAreaRef,
         gutterElRef,
         gutterWrapRef,
         scrollElRef,
         onCodeChange,
+        onAutocompleteChange: (state: any) => setAutoComplete(state),
     });
 
     return (
@@ -39,6 +59,15 @@ export function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) =
                     ></div>
                 </div>
             </div>
+
+            <AutocompleteDropdown
+                isOpen={autoComplete.isOpen}
+                query={autoComplete.query}
+                suggestions={autoComplete.suggestions}
+                position={autoComplete.position}
+                onSelect={handleSelectSuggestion}
+                onClose={() => setAutoComplete(prev => ({ ...prev, isOpen: false }))}
+            />
         </div>
     );
 }
