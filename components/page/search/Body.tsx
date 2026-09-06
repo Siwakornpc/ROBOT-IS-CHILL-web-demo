@@ -5,7 +5,6 @@ import SearchSelect, { type SearchMode } from "./SearchSelect";
 import MenuSelect from "@/components/MenuSelect";
 import ColorPicker from "@/components/ColorPicker";
 import PaletteColorPicker from "@/components/PaletteColorPicker";
-import { useMenu } from "@/components/MenuContext";
 import applyOverflowFade from "@/components/OverflowFade";
 
 // cache sprite sources
