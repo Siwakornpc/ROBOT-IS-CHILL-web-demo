@@ -206,17 +206,21 @@ export function useEditorEngine({
             const { start } = getCaret(editorArea, lines);
 
             let endIdx = start;
-            if (type === "variant") {
-                while (endIdx < state.value.length && state.value[endIdx] === ":") endIdx++;
-            }
+            if (type === "variant")
+                while (endIdx < state.value.length && (state.value[endIdx] === ":" || /\w/.test(state.value[endIdx])))
+                    endIdx++;
 
             const before = state.value.slice(0, startIndex);
             const after = state.value.slice(endIdx);
 
-            state.value = before + text + after;
+            let separator = "";
+            if (type === "variant" && before.length > 0 && !before.endsWith(":"))
+                separator = ":";
+
+            state.value = before + separator + text + after;
             onCodeChange?.(state.value);
 
-            const newPos = startIndex + text.length;
+            const newPos = before.length + separator.length + text.length;
             saveState(newPos, newPos);
             render(newPos, newPos);
             editorArea.focus();
