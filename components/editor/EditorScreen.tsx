@@ -10,7 +10,7 @@ export function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) =
     const gutterElRef = useRef<HTMLDivElement | null>(null);
     const gutterWrapRef = useRef<HTMLDivElement | null>(null);
     const scrollElRef = useRef<HTMLDivElement | null>(null);
-    const insertSuggestionRef = useRef<((startIndex: number, text: string, type?: "macro" | "variant" | "tile" | undefined) => void) | null>(null);
+    const insertSuggestionRef = useRef<((startIndex: number, text: string, type?: "macro" | "variant" | "tile") => void) | null>(null);
 
     const [autoComplete, setAutoComplete] = useState({
         isOpen: false,

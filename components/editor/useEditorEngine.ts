@@ -206,7 +206,9 @@ export function useEditorEngine({
             const { start } = getCaret(editorArea, lines);
 
             let endIdx = start;
-            if (type === "variant" && state.value[start] === ":") endIdx = start + 1;
+            if (type === "variant") {
+                while (endIdx < state.value.length && state.value[endIdx] === ":") endIdx++;
+            }
 
             const before = state.value.slice(0, startIndex);
             const after = state.value.slice(endIdx);
