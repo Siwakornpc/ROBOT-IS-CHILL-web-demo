@@ -5,7 +5,7 @@ import { useEditorEngine } from "./useEditorEngine";
 import { AutocompleteDropdown, SuggestionItem } from "./autocompleteDropdown";
 import "./editorReady";
 
-export default function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) => void }) {
+export function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) => void }) {
     const editorAreaRef = useRef<HTMLDivElement | null>(null);
     const gutterElRef = useRef<HTMLDivElement | null>(null);
     const gutterWrapRef = useRef<HTMLDivElement | null>(null);
@@ -70,3 +70,5 @@ export default function EditorScreen({ onCodeChange }: { onCodeChange?: (code: s
         </div>
     );
 }
+
+export default EditorScreen;
