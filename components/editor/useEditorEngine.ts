@@ -24,11 +24,7 @@ type EditorRefs = {
     scrollElRef: RefObject<HTMLDivElement | null>;
     onCodeChange?: (code: string) => void;
     onAutocompleteChange?: (state: AutocompleteState) => void;
-    onInsertSuggestionRef?: React.RefObject<((
-        startIndex: number,
-        text: string,
-        type?: "macro" | "variant" | "tile"
-    ) => void) | null>;
+    onInsertSuggestionRef?: React.RefObject<((startIndex: number, text: string) => void) | null>;
 };
 
 export type AutocompleteState = {
@@ -201,26 +197,17 @@ export function useEditorEngine({
             }
         };
         
-        const insertSuggestion = (startIndex: number, text: string, type?: "macro" | "variant" | "tile") => {
+        const insertSuggestion = (startIndex: number, text: string) => {
             const lines = state.value.split("\n");
             const { start } = getCaret(editorArea, lines);
 
-            let endIdx = start;
-            if (type === "variant")
-                while (endIdx < state.value.length && (state.value[endIdx] === ":" || /\w/.test(state.value[endIdx])))
-                    endIdx++;
-
             const before = state.value.slice(0, startIndex);
-            const after = state.value.slice(endIdx);
+            const after = state.value.slice(start);
 
-            let separator = "";
-            if (type === "variant" && before.length > 0 && !before.endsWith(":"))
-                separator = ":";
-
-            state.value = before + separator + text + after;
+            state.value = before + text + after;
             onCodeChange?.(state.value);
 
-            const newPos = before.length + separator.length + text.length;
+            const newPos = startIndex + text.length;
             saveState(newPos, newPos);
             render(newPos, newPos);
             editorArea.focus();

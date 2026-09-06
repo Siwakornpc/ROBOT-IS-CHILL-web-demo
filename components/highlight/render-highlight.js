@@ -120,7 +120,7 @@ export function highlightText(
 
         const variantMatch = remaining.match(variantPattern);
         if (variantMatch) {
-            const [delimiter, rawValue] = variantMatch;
+            const [, delimiter, rawValue] = variantMatch;
             result += createSpan("variant-name", delimiter);
             const matchedVariant = findLongestVariant(rawValue, variantNames);
 
