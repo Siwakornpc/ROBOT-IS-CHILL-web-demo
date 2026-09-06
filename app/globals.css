@@ -1628,6 +1628,7 @@ main:has(.main-body) {
     background: var(--surface-pressed);
 }
 .nav-btn.selected {
+    cursor: default;
     color: rgb(var(--md-color-on-secondary-container));
     background: var(--sb-button-selected);
 }

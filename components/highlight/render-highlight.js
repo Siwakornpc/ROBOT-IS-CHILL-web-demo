@@ -11,13 +11,15 @@ export async function loadFlags() {
     if (typeof window === "undefined") return;
 
     const flagsSource = await fetch(sourceUrls.flags).then((response) => response.text());
-
     const parsedFlags = [
         ...flagsSource.matchAll(/--[\w-]+|-[\w-]+/g),
         ...flagsSource.matchAll(/@flags\.register\(match=r"([^"]+)"/g),
     ].flatMap((match) => {
         if (match[0].startsWith("@flags.register"))
-            return match[1].split("|").map((part) => part.trim()).filter(Boolean);
+            return match[1]
+                .split("|")
+                .map((part) => part.trim())
+                .filter(Boolean);
 
         return [match[0]];
     });
@@ -118,15 +120,12 @@ export function highlightText(
 
         const variantMatch = remaining.match(variantPattern);
         if (variantMatch) {
-            const [, delimiter, rawValue] = variantMatch;
-
+            const [delimiter, rawValue] = variantMatch;
             result += createSpan("variant-name", delimiter);
-
             const matchedVariant = findLongestVariant(rawValue, variantNames);
 
             if (matchedVariant) {
                 result += createSpan("variant-name", matchedVariant);
-
                 const remainder = rawValue.slice(matchedVariant.length);
 
                 if (remainder) {
@@ -144,7 +143,7 @@ export function highlightText(
         }
 
         result += escapeHtml(text[index]);
-        index += 1;
+        index++;
     }
 
     return result;

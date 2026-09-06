@@ -4,11 +4,6 @@ export function nav_btn_select(name: string) {
     if (nav_btn) {
         nav_btn.classList.add("selected");
         nav_btn.removeAttribute("href");
-        
-        nav_btn.style.cursor = "default";
-
-        nav_btn.addEventListener("click", (e) => {
-            e.preventDefault();
-        });
+        nav_btn.addEventListener("click", (e) => e.preventDefault());
     }
 }

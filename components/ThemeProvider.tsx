@@ -57,9 +57,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         const applyTheme = (window as any).setTheme;
         if (typeof applyTheme !== "function") return;
 
-        const triggerThemeUpdate = () => {
-            applyTheme(theme.color, theme.scheme, theme.contrast);
-        };
+        const triggerThemeUpdate = () => applyTheme(theme.color, theme.scheme, theme.contrast);
 
         triggerThemeUpdate();
 

@@ -23,10 +23,10 @@ export const FONT_CODE_OPTIONS: FontOption[] = [
 ];
 
 export interface FontState {
-    sans: string;       // e.g. "nunito-sans" | "inter"
-    code: string;        // e.g. "ibm-plex-mono" | "jetbrains-mono"
-    sansSize: number;    // px
-    codeSize: number;    // px
+    sans: string;
+    code: string;
+    sansSize: number;
+    codeSize: number;
 }
 
 export const DEFAULT_FONT_STATE: FontState = {
@@ -36,8 +36,14 @@ export const DEFAULT_FONT_STATE: FontState = {
     codeSize: 14,
 };
 
-function resolveFontVar(options: FontOption[], value: string, fallback: string): string {
-    return (options.find((o) => o.value === value) ?? options.find((o) => o.value === fallback) ?? options[0]).cssVar;
+function resolveFontVar(
+    options: FontOption[],
+    value: string, 
+    fallback: string
+): string {
+    return (options.find((o) => o.value === value)
+        ?? options.find((o) => o.value === fallback)
+        ?? options[0]).cssVar;
 }
 
 export default function FontScript() {

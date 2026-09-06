@@ -5,8 +5,8 @@ let tilev = [];
 let spritev = [];
 let postv = [];
 let constantsv = [
-    "r",        "l",        "u",         "d",
-    "right",    "left",     "up",        "down"].sort();
+        "r",    "l",    "u",    "d",
+    "right", "left",   "up", "down"].sort();
 let miscv = [
     "maroon",
     "red",
