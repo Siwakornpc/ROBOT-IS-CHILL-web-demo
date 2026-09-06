@@ -7,8 +7,8 @@ import { createBeforeInputHandler } from "./beforeInputHandler";
 import {
     createKeydownHandler,
     createSelectionChangeHandler,
-    createEditorClickHandler }
-from "./handlers";
+    createEditorClickHandler
+} from "./handlers";
 import { getCaret } from "./caretUtils";
 import { loadVariants, allv } from "./getVariantName";
 import { getAutocompleteContext } from "./autocompleteUtils";
@@ -24,7 +24,11 @@ type EditorRefs = {
     scrollElRef: RefObject<HTMLDivElement | null>;
     onCodeChange?: (code: string) => void;
     onAutocompleteChange?: (state: AutocompleteState) => void;
-    onInsertSuggestionRef?: React.RefObject<((startIndex: number, text: string) => void) | null>;
+    onInsertSuggestionRef?: React.RefObject<((
+        startIndex: number,
+        text: string,
+        type?: "macro" | "variant" | "tile"
+    ) => void) | null>;
 };
 
 export type AutocompleteState = {
@@ -197,12 +201,15 @@ export function useEditorEngine({
             }
         };
         
-        const insertSuggestion = (startIndex: number, text: string) => {
+        const insertSuggestion = (startIndex: number, text: string, type?: "macro" | "variant" | "tile") => {
             const lines = state.value.split("\n");
             const { start } = getCaret(editorArea, lines);
 
+            let endIdx = start;
+            if (type === "variant" && state.value[start] === ":") endIdx = start + 1;
+
             const before = state.value.slice(0, startIndex);
-            const after = state.value.slice(start);
+            const after = state.value.slice(endIdx);
 
             state.value = before + text + after;
             onCodeChange?.(state.value);

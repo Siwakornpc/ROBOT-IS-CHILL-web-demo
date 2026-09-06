@@ -61,7 +61,7 @@ export function AutocompleteDropdown({
                         : item.type === "variant"
                         ? "var(--variant-name)"
                         : undefined }}
-                    >{item.label}
+                    >{item.type === "variant" && ":"}{item.label}
                     </span>
                 </div>
             ))}
