@@ -15,9 +15,8 @@ import { getAutocompleteContext } from "./autocompleteUtils";
 import { offsetToLineColumn } from "./lineModel";
 import { updateCaretMatch } from "./highlighting";
 import { updateCurrentLineClass } from "./domUpdaters";
-import stdlib_macros from "../page/search/stdlib_macros";
 
-type SearchEntry = [string, unknown];
+
 type EditorRefs = {
     editorAreaRef: RefObject<HTMLDivElement | null>;
     gutterElRef: RefObject<HTMLDivElement | null>;
@@ -31,7 +30,7 @@ type EditorRefs = {
 export type AutocompleteState = {
     isOpen: boolean;
     query: string;
-    suggestions: Array<{ label: string; type: "macro" | "variant" | "tile" }>;
+    suggestions: Array<{ label: string; type: "macro" | "variant" | "tile"; builtin?: boolean }>;
     position: { top: number; left: number };
     startIndex: number;
     type: "macro" | "variant" | "tile";
@@ -100,16 +99,10 @@ export function useEditorEngine({
             state
         });
         const handleClick = createEditorClickHandler(editorArea);
+        const handleScroll = () => gutterWrap.scrollTop = scrollEl.scrollTop;
+        const handleResize = () => render(state.value.length, state.value.length);
 
-        const handleScroll = () => {
-            gutterWrap.scrollTop = scrollEl.scrollTop;
-        };
-
-        const handleResize = () => {
-            render(state.value.length, state.value.length);
-        };
-
-        let macroMap: Array<{ label: string; detail?: string }> = [];
+        let macroList: Array<{ label: string; builtin?: boolean }> = [];
 
         async function fetchAutocompleteData() {
             try {
@@ -117,44 +110,15 @@ export function useEditorEngine({
                 const res = await fetch("https://ric-api.sno.mba/macros.json");
                 if (res.ok) {
                     const data = await res.json();
-                    const stdMacros = await stdlib_macros();
-                    const macroMap = new Map<string, SearchEntry>();
-
-                    // Standard-library macros win over API macros.
-                    for (const [name, macro] of stdMacros) {
-                        const safeName = String(name ?? "").trim();
-                        if (!safeName) continue;
-
-                        const key = safeName.toLowerCase();
-
-                        macroMap.set(key, [
-                            safeName,
-                            { ...(macro as Record<string, unknown>), builtin: true },
-                        ]);
-                    }
-
-                    // Add API macros only if they aren't already present.
-                    for (const [name, macro] of Object.entries(data)) {
-                        const safeName = String(name ?? "").trim();
-                        if (!safeName) continue;
-
-                        const key = safeName.toLowerCase();
-                        if (macroMap.has(key)) continue;
-
-                        macroMap.set(key, [
-                            safeName,
-                            {
-                                ...(macro as Record<string, unknown>),
-                                builtin: false,
-                            },
-                        ]);
-                    }
+                    macroList = Object.entries(data).map(([key, val]: [string, any]) => ({
+                        label: key,
+                        builtin: Boolean(val?.builtin)
+                    }));
                 }
             } catch (err) {
-                console.error("Failed to load autocomplete data:", err);
+            console.error("Failed to load autocomplete data:", err);
             }
         }
-        fetchAutocompleteData();
 
         const handleACSelectionChange = () => {
             if (document.activeElement !== editorArea) return;
@@ -165,11 +129,7 @@ export function useEditorEngine({
 
             const lineEls = Array.from(editorArea.children) as HTMLElement[];
             updateCurrentLineClass(lineEls, lineIndex);
-
-            Array.from(gutterEl.children).forEach((el, i) => {
-                el.classList.toggle("active", i === lineIndex);
-            });
-
+            Array.from(gutterEl.children).forEach((el, i) => el.classList.toggle("active", i === lineIndex));
             updateCaretMatch(win, editorArea, start, end);
 
             if (onAutocompleteChange) {
@@ -177,9 +137,24 @@ export function useEditorEngine({
                 const context = getAutocompleteContext(state.value, start, isRenderMode);
 
                 if (context) {
-                    const suggestions = context.type === "macro"
-                        ? macroMap.map(m => ({ label: m.label, type: "macro" as const }))
-                        : allv.map(v => ({ label: v, type: "variant" as const }));
+                    let suggestions = context.type === "macro"
+                        ? macroList.map(m => ({ label: m.label, type: "macro" as const, builtin: m.builtin }))
+                        : allv.map(v => ({ label: v, type: "variant" as const, builtin: false }));
+
+                    suggestions.sort((a, b) => {
+                        if (a.builtin && !b.builtin) return -1;
+                        if (!a.builtin && b.builtin) return 1;
+
+                        if (context.query) {
+                            const queryLower = context.query.toLowerCase();
+                            const aStarts = a.label.toLowerCase().startsWith(queryLower);
+                            const bStarts = b.label.toLowerCase().startsWith(queryLower);
+
+                            if (aStarts && !bStarts) return -1;
+                            if (!aStarts && bStarts) return 1;
+                        }
+                        return a.label.localeCompare(b.label);
+                    });
 
                     const sel = window.getSelection();
                     if (sel && sel.rangeCount > 0) {
