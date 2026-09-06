@@ -1,6 +1,15 @@
 import { Header } from "@/components/Header";
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, JetBrains_Mono, Inter, Nunito_Sans } from "next/font/google";
+import {
+    Nunito_Sans,
+    IBM_Plex_Sans,
+    Inter,
+    Google_Sans,
+    IBM_Plex_Mono,
+    JetBrains_Mono,
+    Bytesized,
+    Cascadia_Code,
+} from "next/font/google";
 import "./globals.css";
 import ThemeScript from '@/components/themescript';
 import { MenuProvider } from '@/components/MenuContext';
@@ -13,9 +22,19 @@ const nunitoSans = Nunito_Sans({
     variable: "--font-nunito-sans",
 });
 
+const ibmPlexSans = IBM_Plex_Sans({
+    subsets: ["latin"],
+    variable: "--font-ibm-plex-sans",
+});
+
 const inter = Inter({
     subsets: ["latin"],
     variable: "--font-inter",
+});
+
+const googleSans = Google_Sans({
+    subsets: ["latin"],
+    variable: "--font-google-sans",
 });
 
 const ibmPlexMono = IBM_Plex_Mono({
@@ -27,6 +46,18 @@ const ibmPlexMono = IBM_Plex_Mono({
 const jetBrainsMono = JetBrains_Mono({
     subsets: ["latin"],
     variable: "--font-jetbrains-mono",
+    weight: "400",
+});
+
+const bytesized = Bytesized({
+    subsets: ["latin"],
+    variable: "--font-bytesized",
+    weight: "400",
+});
+
+const cascadiaCode = Cascadia_Code({
+    subsets: ["latin"],
+    variable: "--font-cascadia-code",
     weight: "400",
 });
 
@@ -43,7 +74,16 @@ export default function RootLayout({
     return (
         <html
             lang="en"
-            className={`${nunitoSans.variable} ${inter.variable} ${ibmPlexMono.variable} ${jetBrainsMono.variable} h-full antialiased`}
+            className={`${[
+                nunitoSans,
+                ibmPlexSans,
+                inter,
+                googleSans,
+                ibmPlexMono,
+                jetBrainsMono,
+                bytesized,
+                cascadiaCode,
+            ].map((font) => font.variable).join(" ")} h-full antialiased`}
         >
             <head>
                 <link

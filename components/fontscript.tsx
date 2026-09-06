@@ -10,12 +10,16 @@ export interface FontOption {
 
 export const FONT_SANS_OPTIONS: FontOption[] = [
     { value: "nunito-sans", label: "Nunito Sans", cssVar: "--font-nunito-sans" },
+    { value: "ibm-plex-sans", label: "IBM Plex Sans", cssVar: "--font-ibm-plex-sans" },
     { value: "inter", label: "Inter", cssVar: "--font-inter" },
+    { value: "google-sans", label: "Google Sans", cssVar: "--font-google-sans" },
 ];
 
 export const FONT_CODE_OPTIONS: FontOption[] = [
     { value: "ibm-plex-mono", label: "IBM Plex Mono", cssVar: "--font-ibm-plex-mono" },
     { value: "jetbrains-mono", label: "JetBrains Mono", cssVar: "--font-jetbrains-mono" },
+    { value: "bytesized", label: "Bytesized", cssVar: "--font-bytesized" },
+    { value: "cascadia-code", label: "Cascadia Code", cssVar: "--font-cascadia-code" },
 ];
 
 export interface FontState {
