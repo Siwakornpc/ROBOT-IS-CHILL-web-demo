@@ -154,11 +154,24 @@ export function useEditorEngine({
                     if (sel && sel.rangeCount > 0) {
                         const range = sel.getRangeAt(0);
                         const rect = range.getBoundingClientRect();
+                        const editorRect = editorArea.getBoundingClientRect();
+
+                        const relativeTop = rect.bottom - editorRect.top + scrollEl.scrollTop;
+                        const relativeLeft = rect.left - editorRect.left;
+
+                        const dropdownHeight = 200;
+                        const editorHeight = editorArea.clientHeight;
+                        const spaceBelow = editorHeight - (rect.bottom - editorRect.top);
+
+                        let top = relativeTop + 4;
+                        if (spaceBelow < dropdownHeight && (rect.top - editorRect.top) > dropdownHeight)
+                            top = (rect.top - editorRect.top + scrollEl.scrollTop) - dropdownHeight - 4;
+
                         onAutocompleteChange({
                             isOpen: true,
                             query: context.query,
                             suggestions,
-                            position: { top: rect.bottom + 4, left: rect.left },
+                            position: { top, left: relativeLeft },
                             startIndex: context.startIndex,
                             type: context.type,
                         });
