@@ -10,7 +10,7 @@ export function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) =
     const gutterElRef = useRef<HTMLDivElement | null>(null);
     const gutterWrapRef = useRef<HTMLDivElement | null>(null);
     const scrollElRef = useRef<HTMLDivElement | null>(null);
-    const insertSuggestionRef = useRef<((startIndex: number, text: string) => void) | null>(null);
+    const insertSuggestionRef = useRef<((startIndex: number, text: string, type?: "macro" | "variant" | "tile" | undefined) => void) | null>(null);
 
     const [autoComplete, setAutoComplete] = useState({
         isOpen: false,
@@ -23,7 +23,7 @@ export function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) =
 
     const handleSelectSuggestion = (item: SuggestionItem) => {
         if (insertSuggestionRef.current)
-            insertSuggestionRef.current(autoComplete.startIndex, item.label);
+            insertSuggestionRef.current(autoComplete.startIndex, item.label, item.type);
         setAutoComplete(prev => ({ ...prev, isOpen: false }));
     };
 
