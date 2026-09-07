@@ -86,7 +86,6 @@ export function Details({ selected, allResults }: DetailsProps) {
         paletteTimeoutRef.current = setTimeout(async () => {
             try {
                 await navigator.clipboard.writeText(text);
-
                 isCopiedMobileRef.current = true;
                 paletteTimeoutRef.current = null;
                 setCopiedPalette({ x, y });

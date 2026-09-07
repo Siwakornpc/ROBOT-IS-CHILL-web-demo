@@ -54,18 +54,11 @@ export function useDiscordUser(id: string) {
 
         fetch(`/api/discord-user?id=${encodeURIComponent(id)}`)
             .then(async (response) => {
-                if (!response.ok) {
-                    throw new Error(
-                        `Failed to fetch user (${response.status})`
-                    );
-                }
-
+                if (!response.ok) throw new Error(`Failed to fetch user (${response.status})`);
                 return response.json();
             })
             .then((data) => {
-                if (!cancelled) {
-                    setUser(data);
-                }
+                if (!cancelled) setUser(data);
             })
             .catch((error) => {
                 console.error(
@@ -73,9 +66,7 @@ export function useDiscordUser(id: string) {
                     error
                 );
 
-                if (!cancelled) {
-                    setUser(null);
-                }
+                if (!cancelled) setUser(null);
             });
 
         return () => {

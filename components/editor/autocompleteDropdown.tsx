@@ -2,6 +2,7 @@
 
 import { isCI } from "next/dist/server/ci-info";
 import { useEffect, useState, useRef } from "react";
+import { useDiscordUser } from "../DiscordUser";
 
 export interface SuggestionItem {
     label: string;
@@ -142,7 +143,11 @@ export function AutocompleteDropdown({
                                 {item.label}
                             </span>
                         </span>
-                        {item.detail && <span>{item.detail}</span>}
+                        {item.detail && (
+                            item.detail.startsWith("@")
+                            ? <p>@{useDiscordUser(item.detail.slice(1))?.username}</p>
+                            : <p>item.detail</p>
+                        )}
                     </div>
                 );
             })}

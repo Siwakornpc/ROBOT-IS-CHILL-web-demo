@@ -192,7 +192,7 @@ export function useEditorEngine({
                 const context = getAutocompleteContext(state.value, start, isRenderMode);
 
                 if (context) {
-                    let suggestions: Array<{ label: string; type: "macro" | "variant" | "flag" | "tile"; builtin?: boolean }> = [];
+                    let suggestions: Array<{ label: string; type: "macro" | "variant" | "flag" | "tile"; builtin?: boolean, detail?: string }> = [];
 
                     autocompleteTypeRef.current = context.type;
 
