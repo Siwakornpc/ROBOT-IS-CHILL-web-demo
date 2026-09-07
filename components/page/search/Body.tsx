@@ -99,6 +99,7 @@ export function FilterPanel({
         macros: [
             { value: "creator", label: "Creator" },
             { value: "desc", label: "Description" },
+            { value: "value", label: "Value" },
             { value: "builtin", label: "Builtin" },
         ],
         variants: [
@@ -218,6 +219,19 @@ export function FilterPanel({
                 return (
                     <label className="text-field">
                         <span className="text-field-label">Description</span>
+                        <textarea
+                            placeholder=" "
+                            value={value}
+                            onChange={(e) => handleValueChange(type, index, e.target.value)}
+                            rows={2}
+                        />
+                    </label>
+                );
+
+            case "value":
+                return (
+                    <label className="text-field">
+                        <span className="text-field-label">Value</span>
                         <textarea
                             placeholder=" "
                             value={value}

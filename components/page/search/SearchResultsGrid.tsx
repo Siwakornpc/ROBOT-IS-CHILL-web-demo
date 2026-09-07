@@ -33,7 +33,7 @@ export type MacroRecord = {
     description: string;
     builtin: boolean;
     creator?: string;
-    value?: string;
+    value: string;
 }
 export type FilterRecord = {
     absolute: boolean;
@@ -447,6 +447,11 @@ export default function SearchResults({
 
                     if (filterKey === "desc") {
                         const matches = validValues.some((val) => data.description.toLowerCase().includes(val.toLowerCase()));
+                        if (!matches) return false;
+                    }
+
+                    if (filterKey === "value") {
+                        const matches = validValues.some((val) => data.value.includes(val));
                         if (!matches) return false;
                     }
                 }
