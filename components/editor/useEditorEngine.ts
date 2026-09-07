@@ -114,7 +114,12 @@ export function useEditorEngine({
             isLetterTypingRef.current = true;
         };
 
+        const handleMouseDown = () => {
+            isLetterTypingRef.current = false;
+        }
+
         document.addEventListener("keydown", handleGlobalKeydown);
+        document.addEventListener("mousedown", handleMouseDown);
 
         let macroList: Array<{ label: string; builtin?: boolean }> = [];
 
@@ -292,6 +297,7 @@ export function useEditorEngine({
 
         return () => {
             document.removeEventListener("keydown", handleGlobalKeydown);
+            document.removeEventListener("mousedown", handleMouseDown);
             editorArea.removeEventListener("beforeinput", handleBeforeInput as EventListener);
             editorArea.removeEventListener("keydown", handleKeydown);
             document.removeEventListener("selectionchange", handleACSelectionChange);

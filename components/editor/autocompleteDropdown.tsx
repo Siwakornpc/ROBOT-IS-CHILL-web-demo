@@ -92,6 +92,7 @@ export function AutocompleteDropdown({
 
     return (
         <div
+            ref={dropdownRef}
             className="autocomplete-dropdown"
             style={{ top: position.top, left: position.left }}
         >
