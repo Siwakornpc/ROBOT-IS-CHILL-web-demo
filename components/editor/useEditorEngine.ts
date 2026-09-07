@@ -124,20 +124,20 @@ export function useEditorEngine({
         const usernameCache = new Map<string, string>();
 
         async function resolveDiscordUsername(id: string): Promise<string> {
-            if (!id) return "unknown";
+            if (!id) return "community";
             if (usernameCache.has(id)) {
                 return usernameCache.get(id)!;
             }
             try {
                 const res = await fetch(`/api/discord-user?id=${encodeURIComponent(id)}`);
-                if (!res.ok) return id;
+                if (!res.ok) return "community"; // Fallback gracefully on 500/errors
                 const data = await res.json();
-                const username = data.username || id;
+                const username = data.username || data.display_name || "community";
                 usernameCache.set(id, username);
                 return username;
             } catch (err) {
                 console.error("Failed to fetch Discord user:", err);
-                return id;
+                return "community";
             }
         }
 
@@ -156,17 +156,18 @@ export function useEditorEngine({
                             const isBuiltin = Boolean((val as any)?.builtin);
                             const creatorId = (val as any)?.creator;
 
-                            let creatorDisplay = "builtin";
-                            if (!isBuiltin && creatorId) {
-                                const username = await resolveDiscordUsername(creatorId);
-                                creatorDisplay = `@${username}`;
-                            }
-
                             macroMap.set(key, {
                                 label: key,
                                 builtin: isBuiltin,
-                                creator: creatorDisplay,
+                                creator: isBuiltin ? "builtin" : (creatorId ? `@user` : "builtin"),
                             });
+
+                            if (!isBuiltin && creatorId) {
+                                resolveDiscordUsername(creatorId).then((username) => {
+                                    const entry = macroMap.get(key);
+                                    if (entry) entry.creator = `@${username}`;
+                                }).catch(() => {});
+                            }
                         }
                     }
                 } catch (err) {
