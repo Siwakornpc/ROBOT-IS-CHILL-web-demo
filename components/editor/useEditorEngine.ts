@@ -106,6 +106,7 @@ export function useEditorEngine({
                 || e.key === "ArrowRight"
                 || e.key === "ArrowUp"
                 || e.key === "ArrowDown"
+                || e.key === "Enter"
             ) {
                 isLetterTypingRef.current = false;
                 return;
