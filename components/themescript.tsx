@@ -6,8 +6,8 @@ import * as MCU from '@material/material-color-utilities';
 const customThemeColors = {
     success: '#84cc7b',
     syntaxName: '#72a5e7',
-    syntaxValue: '#cd625c',
-    syntaxEscaped: '#e9ad14',
+    syntaxValue: '#bad2e1',
+    syntaxEscaped: '#cd625c',
     syntaxBracketLayer0: { color: '#f1c43e', blend: false }, 
     syntaxBracketLayer1: { color: '#c85acc', blend: false }, 
     syntaxBracketLayer2: { color: '#5f94f5', blend: false },
