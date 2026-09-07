@@ -143,11 +143,7 @@ export function AutocompleteDropdown({
                                 {item.label}
                             </span>
                         </span>
-                        {item.detail && (
-                            item.detail.startsWith("@")
-                            ? <p>@{useDiscordUser(item.detail.slice(1))?.username}</p>
-                            : <p>item.detail</p>
-                        )}
+                        {item.detail && <p>{item.detail}</p>}
                     </div>
                 );
             })}
