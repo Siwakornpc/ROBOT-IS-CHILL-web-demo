@@ -1,4 +1,4 @@
-import { useEffect, type RefObject } from "react";
+import { useEffect, type RefObject, useRef } from "react";
 import type { EditorApi, EditorState, WindowWithEditor } from "./types";
 import { ensureEditorReady, resolveEditorReady } from "./editorReady";
 import { createHistoryManager } from "./historyManager";
@@ -46,6 +46,8 @@ export function useEditorEngine({
     onAutocompleteChange,
     onInsertSuggestionRef,
 }: EditorRefs) {
+    const isLetterTypingRef = useRef(false);
+
     useEffect(() => {
         const editorArea = editorAreaRef.current;
         const gutterEl = gutterElRef.current;
@@ -97,6 +99,22 @@ export function useEditorEngine({
         const handleScroll = () => gutterWrap.scrollTop = scrollEl.scrollTop;
         const handleResize = () => render(state.value.length, state.value.length);
 
+        const handleGlobalKeydown = (e: KeyboardEvent) => {
+            if (
+                e.key === "Backspace"
+                || e.key === "ArrowLeft"
+                || e.key === "ArrowRight"
+                || e.key === "ArrowUp"
+                || e.key === "ArrowDown"
+            ) {
+                isLetterTypingRef.current = false;
+                return;
+            }
+            isLetterTypingRef.current = true;
+        };
+
+        document.addEventListener("keydown", handleGlobalKeydown);
+
         let macroList: Array<{ label: string; builtin?: boolean }> = [];
 
         async function fetchAutocompleteData() {
@@ -135,6 +153,18 @@ export function useEditorEngine({
 
         const handleACSelectionChange = () => {
             if (document.activeElement !== editorArea) return;
+            if (!isLetterTypingRef.current) {
+                if (!onAutocompleteChange) return;
+                onAutocompleteChange({
+                    isOpen: false,
+                    query: "",
+                    suggestions: [],
+                    position: { top: 0, left: 0 },
+                    startIndex: 0,
+                    type: "macro",
+                });
+                return;
+            }
 
             const lines = state.value.split("\n");
             const { start, end } = getCaret(editorArea, lines);
@@ -260,6 +290,7 @@ export function useEditorEngine({
         resolveEditorReady?.(api);
 
         return () => {
+            document.removeEventListener("keydown", handleGlobalKeydown);
             editorArea.removeEventListener("beforeinput", handleBeforeInput as EventListener);
             editorArea.removeEventListener("keydown", handleKeydown);
             document.removeEventListener("selectionchange", handleACSelectionChange);

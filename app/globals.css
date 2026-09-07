@@ -2969,6 +2969,7 @@ tr:nth-child(odd) td {
 .autocomplete-dropdown-option.most-relevant,
 .autocomplete-dropdown-option:first-child {
     background: rgb(var(--md-color-surface-container-high));
+    font-weight: bold;
 }
 
 /*
