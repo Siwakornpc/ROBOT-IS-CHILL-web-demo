@@ -1955,7 +1955,8 @@ main:has(.main-body) {
 .status-label.emph {
     color: rgb(var(--md-color-tertiary));
 }
-.status-separator {
+.status-value::before {
+    content: "·";
     color: rgb(var(--md-color-outline));
 }
 .status-btn {

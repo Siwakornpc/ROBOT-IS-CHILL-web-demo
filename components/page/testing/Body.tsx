@@ -113,9 +113,7 @@ export default function Body() {
     const [sliderValue4, setSliderValue4] = useState(-5);
     useEffect(() => {
         const element = variantElementRef.current;
-
         if (!element) return;
-
         updateVariantStaticHighlight(element, variantText);
     }, []);
 

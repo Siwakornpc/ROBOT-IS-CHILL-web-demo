@@ -12,7 +12,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                 <div className="run-controls">
                     <p className="text-label">Execute</p>
                     <button id="run" style={{display: "none"}} disabled>Run</button>
-                    <StatusBar />
+                    <StatusBar small={window.innerWidth < 640} />
                 </div>
                 <hr />
                 <EditorScreen onCodeChange={onCodeChange} />

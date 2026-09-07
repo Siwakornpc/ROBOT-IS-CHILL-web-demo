@@ -14,7 +14,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                     <p className="text-label">Execute</p>
                     <ExecutionModeSelect />
                     <button id="run" style={{display: "none"}} disabled>Run</button>
-                    <StatusBar />
+                    <StatusBar small={window.innerWidth < 640} />
                 </div>
                 <hr />
                 <EditorScreen onCodeChange={onCodeChange} />
