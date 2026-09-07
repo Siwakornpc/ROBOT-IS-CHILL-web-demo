@@ -15,7 +15,7 @@ export function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) =
     const [autoComplete, setAutoComplete] = useState({
         isOpen: false,
         query: "",
-        suggestions: [] as SuggestionItem[],
+        suggestions: [] as [],
         position: { top: 0, left: 0 },
         startIndex: 0,
         type: "macro" as const,

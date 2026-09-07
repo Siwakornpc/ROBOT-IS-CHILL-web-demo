@@ -1,4 +1,4 @@
-import { useEffect, type RefObject, useRef } from "react";
+import { useEffect, type RefObject, useRef, useState } from "react";
 import type { EditorApi, EditorState, WindowWithEditor } from "./types";
 import { ensureEditorReady, resolveEditorReady } from "./editorReady";
 import { createHistoryManager } from "./historyManager";
@@ -16,7 +16,7 @@ import { offsetToLineColumn } from "./lineModel";
 import { updateCaretMatch } from "./highlighting";
 import { updateCurrentLineClass } from "./domUpdaters";
 import stdlib_macros from "../page/search/stdlib_macros";
-
+import { useDiscordUser } from "../DiscordUser";
 
 type EditorRefs = {
     editorAreaRef: RefObject<HTMLDivElement | null>;
@@ -31,7 +31,7 @@ type EditorRefs = {
 export type AutocompleteState = {
     isOpen: boolean;
     query: string;
-    suggestions: Array<{ label: string; type: "macro" | "variant" | "tile"; builtin?: boolean }>;
+    suggestions: Array<{ label: string; type: "macro" | "variant" | "tile"; builtin?: boolean; detail?: string | null }>;
     position: { top: number; left: number };
     startIndex: number;
     type: "macro" | "variant" | "tile";
@@ -114,26 +114,27 @@ export function useEditorEngine({
             isLetterTypingRef.current = true;
         };
 
-        const handleMouseDown = () => {
-            isLetterTypingRef.current = false;
-        }
+        const handleMouseDown = () => isLetterTypingRef.current = false;
 
         document.addEventListener("keydown", handleGlobalKeydown);
         document.addEventListener("mousedown", handleMouseDown);
 
-        let macroList: Array<{ label: string; builtin?: boolean }> = [];
+        let macroList: Array<{ label: string; builtin?: boolean; creator: string }> = [];
 
         async function fetchAutocompleteData() {
             try {
                 await loadVariants();
-                const macroMap = new Map<string, { label: string; builtin?: boolean }>();
+                const macroMap = new Map<string, { label: string; builtin?: boolean; creator: string }>();
 
                 try {
                     const res = await fetch("https://ric-api.sno.mba/macros.json");
                     if (res.ok) {
                         const data = await res.json();
                         for (const [key, val] of Object.entries(data)) {
-                            macroMap.set(key, { label: key, builtin: Boolean((val as any)?.builtin) });
+                            macroMap.set(key, {
+                                label: key,
+                                builtin: Boolean((val as any)?.builtin),
+                                creator: (Boolean((val as any)?.builtin) ? "builtin" : "@" + useDiscordUser((val as any)?.creator)) });
                         }
                     }
                 } catch (err) {
@@ -143,7 +144,7 @@ export function useEditorEngine({
                 try {
                     const stdMacros = await stdlib_macros();
                     for (const [name, info] of stdMacros) {
-                        macroMap.set(name, { label: name, builtin: info.builtin });
+                        macroMap.set(name, { label: name, builtin: info.builtin, creator: "builtin" });
                     }
                 } catch (err) {
                     console.error("Failed to load stdlib macros:", err);
@@ -187,7 +188,7 @@ export function useEditorEngine({
 
                 if (context) {
                     let suggestions = context.type === "macro"
-                        ? macroList.map(m => ({ label: m.label, type: "macro" as const, builtin: m.builtin }))
+                        ? macroList.map(m => ({ label: m.label, type: "macro" as const, builtin: m.builtin, detail: m.creator }))
                         : allv.map(v => ({ label: v, type: "variant" as const, builtin: false }));
 
                     suggestions.sort((a, b) => {

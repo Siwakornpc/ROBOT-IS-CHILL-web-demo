@@ -16,7 +16,6 @@ export function DiscordUser({ id }: DiscordUserProps) {
         fetch(`/api/discord-user?id=${encodeURIComponent(id)}`)
             .then(async (response) => {
                 if (!response.ok) throw new Error(`Failed to fetch user (${response.status})`);
-
                 return response.json();
             })
             .then((data) => {
