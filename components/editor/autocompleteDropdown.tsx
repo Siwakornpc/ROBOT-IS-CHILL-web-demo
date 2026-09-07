@@ -40,21 +40,11 @@ export function AutocompleteDropdown({
             className="autocomplete-dropdown"
             style={{ top: position.top, left: position.left }}
         >
-            {filtered.slice(0, 50).map((item, index) => (
+            {filtered.slice(0, 12).map((item, index) => (
                 <div
-                    key={item.label}
-                    style={{
-                        padding: "6px 12px",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        cursor: "pointer",
-                        background: index === selectedIndex ? "var(--surface-hovered)" : "transparent",
-                    }}
-                    onMouseDown={(e) => {
-                        e.preventDefault();
-                        onSelect(item);
-                    }}
-                    onMouseEnter={() => setSelectedIndex(index)}
+                    key={`${index}-${item.type}-${item.label}`}
+                    className="autocomplete-dropdown-option"
+                    onMouseDown={(e) => { e.preventDefault(); onSelect(item); }}
                 >
                     <span style={{ color: item.type === "macro"
                         ? "var(--macro-name)"

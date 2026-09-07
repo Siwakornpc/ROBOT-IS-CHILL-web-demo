@@ -93,12 +93,6 @@ export function useEditorEngine({
             redo,
             onCodeChange
         });
-        const handleSelectionChange = createSelectionChangeHandler({
-            win,
-            editorArea,
-            gutterEl,
-            state
-        });
         const handleClick = createEditorClickHandler(editorArea);
         const handleScroll = () => gutterWrap.scrollTop = scrollEl.scrollTop;
         const handleResize = () => render(state.value.length, state.value.length);
@@ -179,24 +173,22 @@ export function useEditorEngine({
                     if (sel && sel.rangeCount > 0) {
                         const range = sel.getRangeAt(0);
                         const rect = range.getBoundingClientRect();
-                        const editorRect = editorArea.getBoundingClientRect();
-
-                        const relativeTop = rect.bottom - editorRect.top + scrollEl.scrollTop;
-                        const relativeLeft = rect.left - editorRect.left;
 
                         const dropdownHeight = 200;
-                        const editorHeight = editorArea.clientHeight;
-                        const spaceBelow = editorHeight - (rect.bottom - editorRect.top);
+                        const spaceBelow = window.innerHeight - rect.bottom;
+                        const spaceAbove = rect.top;
 
-                        let top = relativeTop + 4;
-                        if (spaceBelow < dropdownHeight && (rect.top - editorRect.top) > dropdownHeight)
-                            top = (rect.top - editorRect.top + scrollEl.scrollTop) - dropdownHeight - 4;
+                        let top = rect.bottom + 4;
+                        if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight)
+                            top = rect.top - dropdownHeight - 4;
+
+                        const left = rect.left;
 
                         onAutocompleteChange({
                             isOpen: true,
                             query: context.query,
                             suggestions,
-                            position: { top, left: relativeLeft },
+                            position: { top, left },
                             startIndex: context.startIndex,
                             type: context.type,
                         });
