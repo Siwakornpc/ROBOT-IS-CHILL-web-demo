@@ -2989,7 +2989,7 @@ tr:nth-child(odd) td {
     display: flex;
     justify-content: space-between;
     cursor: pointer;
-    padding: 0 8px;
+    padding: 0 4px;
     border-radius: 8px;
 }
 .ac-dropdown-option:hover {
