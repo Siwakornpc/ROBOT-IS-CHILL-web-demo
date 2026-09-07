@@ -141,8 +141,8 @@ export function AutocompleteDropdown({
                                 {item.type === "variant" ? (triggerChar || ":") : item.type === "flag" ? "--" : ""}
                                 {item.label}
                             </span>
-                            {item.detail && <span>{item.detail}</span>}
                         </span>
+                        {item.detail && <span>{item.detail}</span>}
                     </div>
                 );
             })}
