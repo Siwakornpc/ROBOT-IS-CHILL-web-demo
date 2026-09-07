@@ -13,6 +13,7 @@ export const FONT_SANS_OPTIONS: FontOption[] = [
     { value: "ibm-plex-sans", label: "IBM Plex Sans", cssVar: "--font-ibm-plex-sans" },
     { value: "inter", label: "Inter", cssVar: "--font-inter" },
     { value: "google-sans", label: "Google Sans", cssVar: "--font-google-sans" },
+    { value: "bytesized", label: "Bytesized", cssVar: "--font-bytesized" },
 ];
 
 export const FONT_CODE_OPTIONS: FontOption[] = [
