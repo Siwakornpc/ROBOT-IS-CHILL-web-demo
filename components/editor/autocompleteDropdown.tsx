@@ -109,7 +109,7 @@ export function AutocompleteDropdown({
     return (
         <div
             ref={dropdownRef}
-            className="autocomplete-dropdown inset-scrollbar"
+            className="ac-dropdown inset-scrollbar"
             style={{ top: position.top, left: position.left }}
         >
             {visibleSuggestions.map((item, index) => {
@@ -120,16 +120,14 @@ export function AutocompleteDropdown({
                         ref={(el) => {
                             itemRefs.current[index] = el;
                         }}
-                        className={`autocomplete-dropdown-option ${isSelected ? "selected" : ""}`}
+                        className={`ac-dropdown-option ${isSelected ? "selected" : ""}`}
                         onMouseDown={(e) => {
                             e.preventDefault();
                             onSelect(item);
                         }}
                     >
                         <span className="flex gap-[4px]">
-                            <span
-                                className="icon ac-icon"
-                            >
+                            <span className="icon ac-icon">
                                 {item.type === "macro"
                                     ? "data_array"
                                     : item.type === "variant"

@@ -2942,7 +2942,7 @@ tr:nth-child(odd) td {
     autocomplete popup
 */
 
-.autocomplete-dropdown {
+.ac-dropdown {
     position: fixed;
     overflow-y: auto;
     width: 400px;
@@ -2959,33 +2959,24 @@ tr:nth-child(odd) td {
     --scrollbar-inset-size: 4px;
 }
 
-.autocomplete-dropdown-option {
-<<<<<<< HEAD
-    padding: 0 2px;
+.ac-dropdown-option {
     display: flex;
     justify-content: space-between;
     cursor: pointer;
-    height: 24px;
-    align-items: center;
-=======
-    display: flex;
-    justify-content: space-between;
-    cursor: pointer;
-    padding: 4px 8px;
+    padding: 0 8px;
     border-radius: 8px;
->>>>>>> 01d5a6fbde4f6f71a5e88ea8dbb0fd363c11a3c7
 }
-.autocomplete-dropdown-option:hover {
+.ac-dropdown-option:hover {
     background: var(--surface-hovered);
 }
-.autocomplete-dropdown-option.selected {
+.ac-dropdown-option.selected {
     font-weight: bold;
     background: rgb(var(--md-color-secondary-container));
 }
-.autocomplete-dropdown-option.macro-name.selected {
+.ac-dropdown-option.macro-name.selected {
     color: rgb(var(--md-color-on-syntax-name-container));
 }
-.autocomplete-dropdown-option.variant-name.selected {
+.ac-dropdown-option.variant-name.selected {
     color: rgb(var(--md-color-on-render-variant-name-container));
 }
 .ac-icon {
