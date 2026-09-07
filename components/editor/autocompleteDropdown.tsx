@@ -139,7 +139,7 @@ export function AutocompleteDropdown({
                                 : ""
                             }
                             <span>
-                                {item.type === "variant" ? (triggerChar || ":") : item.type === "flag" ? "--" : ""}
+                                {item.type === "variant" ? (triggerChar || ":") : ""}
                                 {item.label}
                             </span>
                         </span>
