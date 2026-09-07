@@ -15,10 +15,11 @@ export function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) =
     const [autoComplete, setAutoComplete] = useState({
         isOpen: false,
         query: "",
-        suggestions: [] as [],
+        suggestions: [] as SuggestionItem[],
         position: { top: 0, left: 0 },
         startIndex: 0,
         type: "macro" as const,
+        triggerChar: undefined as string | undefined,
     });
 
     const handleSelectSuggestion = (item: SuggestionItem) => {
@@ -64,6 +65,7 @@ export function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) =
                 query={autoComplete.query}
                 suggestions={autoComplete.suggestions}
                 position={autoComplete.position}
+                triggerChar={autoComplete.triggerChar}
                 onSelect={handleSelectSuggestion}
                 onClose={() => setAutoComplete(prev => ({ ...prev, isOpen: false }))}
             />

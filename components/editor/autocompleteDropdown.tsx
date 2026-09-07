@@ -14,6 +14,7 @@ interface AutocompleteProps {
     query: string;
     suggestions: SuggestionItem[];
     position: { top: number; left: number };
+    triggerChar?: string;
     onSelect: (item: SuggestionItem) => void;
     onClose: () => void;
 }
@@ -23,6 +24,7 @@ export function AutocompleteDropdown({
     query,
     suggestions,
     position,
+    triggerChar,
     onSelect,
     onClose,
 }: AutocompleteProps) {
@@ -135,7 +137,10 @@ export function AutocompleteDropdown({
                                 ? <span className="icon ac-icon">flag</span>
                                 : ""
                             }
-                            <span>{item.type === "variant" ? ":" : item.type === "flag" ? "--" : ""}{item.label}</span>
+                            <span>
+                                {item.type === "variant" ? (triggerChar || ":") : item.type === "flag" ? "--" : ""}
+                                {item.label}
+                            </span>
                             {item.detail && <span>{item.detail}</span>}
                         </span>
                     </div>

@@ -17,7 +17,6 @@ import { updateCaretMatch } from "./highlighting";
 import { updateCurrentLineClass } from "./domUpdaters";
 import stdlib_macros from "../page/search/stdlib_macros";
 import { loadFlags, flags } from "@/components/highlight/render-highlight";
-import { useDiscordUser } from "../DiscordUser";
 
 type EditorRefs = {
     editorAreaRef: RefObject<HTMLDivElement | null>;
@@ -36,6 +35,7 @@ export type AutocompleteState = {
     position: { top: number; left: number };
     startIndex: number;
     type: "macro" | "variant" | "flag" | "tile";
+    triggerChar?: string;
 };
 
 export function useEditorEngine({
@@ -121,6 +121,26 @@ export function useEditorEngine({
         document.addEventListener("keydown", handleGlobalKeydown);
         document.addEventListener("mousedown", handleMouseDown);
 
+        const usernameCache = new Map<string, string>();
+
+        async function resolveDiscordUsername(id: string): Promise<string> {
+            if (!id) return "unknown";
+            if (usernameCache.has(id)) {
+                return usernameCache.get(id)!;
+            }
+            try {
+                const res = await fetch(`/api/discord-user?id=${encodeURIComponent(id)}`);
+                if (!res.ok) return id;
+                const data = await res.json();
+                const username = data.username || id;
+                usernameCache.set(id, username);
+                return username;
+            } catch (err) {
+                console.error("Failed to fetch Discord user:", err);
+                return id;
+            }
+        }
+
         let macroList: Array<{ label: string; builtin?: boolean; creator: string }> = [];
 
         async function fetchAutocompleteData() {
@@ -133,10 +153,20 @@ export function useEditorEngine({
                     if (res.ok) {
                         const data = await res.json();
                         for (const [key, val] of Object.entries(data)) {
+                            const isBuiltin = Boolean((val as any)?.builtin);
+                            const creatorId = (val as any)?.creator;
+
+                            let creatorDisplay = "builtin";
+                            if (!isBuiltin && creatorId) {
+                                const username = await resolveDiscordUsername(creatorId);
+                                creatorDisplay = `@${username}`;
+                            }
+
                             macroMap.set(key, {
                                 label: key,
-                                builtin: Boolean((val as any)?.builtin),
-                                creator: (Boolean((val as any)?.builtin) ? "builtin" : "@" + useDiscordUser((val as any)?.creator)) });
+                                builtin: isBuiltin,
+                                creator: creatorDisplay,
+                            });
                         }
                     }
                 } catch (err) {
@@ -194,7 +224,7 @@ export function useEditorEngine({
                     autocompleteTypeRef.current = context.type;
 
                     if (context.type === "macro") {
-                        suggestions = macroList.map(m => ({ label: m.label, type: "macro" as const, builtin: m.builtin }));
+                        suggestions = macroList.map(m => ({ label: m.label, type: "macro" as const, builtin: m.builtin, detail: m.creator }));
                     } else if (context.type === "variant") {
                         suggestions = allv.map(v => ({ label: v, type: "variant" as const, builtin: false }));
                     } else if (context.type === "flag") {
@@ -238,6 +268,7 @@ export function useEditorEngine({
                             position: { top, left },
                             startIndex: context.startIndex,
                             type: context.type,
+                            triggerChar: context.triggerChar,
                         });
                         return;
                     }

@@ -2,6 +2,7 @@ export type AutocompleteContext = {
     type: "macro" | "variant" | "flag" | "tile";
     query: string;
     startIndex: number;
+    triggerChar?: string;
 };
 
 export function getAutocompleteContext(
@@ -28,19 +29,24 @@ export function getAutocompleteContext(
     if (isRenderMode) {
         // check if variant
         const colonIndex = textBeforeCaret.lastIndexOf(":");
-        if (colonIndex !== -1) {
-            const afterColon = textBeforeCaret.slice(colonIndex);
-            if (!/\s/.test(afterColon)) {
-                const query = textBeforeCaret.slice(colonIndex + 1);
+        const semicolonIndex = textBeforeCaret.lastIndexOf(";");
+        const variantIndex = Math.max(colonIndex, semicolonIndex);
+
+        if (variantIndex !== -1) {
+            const triggerChar = textBeforeCaret[variantIndex];
+            const afterVariant = textBeforeCaret.slice(variantIndex);
+            if (!/\s/.test(afterVariant)) {
+                const query = textBeforeCaret.slice(variantIndex + 1);
                 return {
                     type: "variant",
                     query,
-                    startIndex: lineStart + colonIndex + 1
+                    startIndex: lineStart + variantIndex + 1,
+                    triggerChar
                 };
             }
         }
         
-        //check if flag
+        // check if flag
         const lastDash = textBeforeCaret.lastIndexOf("-");
         if (lastDash !== -1) {
             const isDoubleDash = textBeforeCaret[lastDash - 1] === "-";
@@ -48,7 +54,6 @@ export function getAutocompleteContext(
                 
             const afterDash = textBeforeCaret.slice(flagStartIndex);
             if (!/\s/.test(afterDash)) {
-                console.log(lineStart + flagStartIndex);
                 return {
                     type: "flag",
                     query: afterDash,
