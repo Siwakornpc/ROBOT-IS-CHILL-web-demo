@@ -2945,7 +2945,7 @@ tr:nth-child(odd) td {
 .autocomplete-dropdown {
     position: fixed;
     width: 400px;
-    max-height: 200px;
+    max-height: 194px;
     font-family: var(--font-family-code);
     font-size: 14px;
     border-radius: 8px;
@@ -2957,10 +2957,12 @@ tr:nth-child(odd) td {
 }
 
 .autocomplete-dropdown-option {
-    padding: 6px 12px;
+    padding: 0 2px;
     display: flex;
     justify-content: space-between;
     cursor: pointer;
+    height: 24px;
+    align-items: center;
 }
 .autocomplete-dropdown-option:hover {
     background: var(--surface-hovered);
@@ -2968,6 +2970,9 @@ tr:nth-child(odd) td {
 .autocomplete-dropdown-option.selected {
     background: rgb(var(--md-color-surface-container-high));
     font-weight: bold;
+}
+.ac-icon {
+    font-size: 20px;
 }
 
 /*

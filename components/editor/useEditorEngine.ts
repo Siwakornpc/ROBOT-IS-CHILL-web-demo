@@ -16,7 +16,7 @@ import { offsetToLineColumn } from "./lineModel";
 import { updateCaretMatch } from "./highlighting";
 import { updateCurrentLineClass } from "./domUpdaters";
 import stdlib_macros from "../page/search/stdlib_macros";
-
+import { loadFlags, flags } from "@/components/highlight/render-highlight";
 
 type EditorRefs = {
     editorAreaRef: RefObject<HTMLDivElement | null>;
@@ -31,10 +31,10 @@ type EditorRefs = {
 export type AutocompleteState = {
     isOpen: boolean;
     query: string;
-    suggestions: Array<{ label: string; type: "macro" | "variant" | "tile"; builtin?: boolean }>;
+    suggestions: Array<{ label: string; type: "macro" | "variant" | "flag" | "tile"; builtin?: boolean }>;
     position: { top: number; left: number };
     startIndex: number;
-    type: "macro" | "variant" | "tile";
+    type: "macro" | "variant" | "flag" | "tile";
 };
 
 export function useEditorEngine({
@@ -47,6 +47,7 @@ export function useEditorEngine({
     onInsertSuggestionRef,
 }: EditorRefs) {
     const isLetterTypingRef = useRef(false);
+    const autocompleteTypeRef = useRef<AutocompleteState["type"]>("macro");
 
     useEffect(() => {
         const editorArea = editorAreaRef.current;
@@ -186,9 +187,17 @@ export function useEditorEngine({
                 const context = getAutocompleteContext(state.value, start, isRenderMode);
 
                 if (context) {
-                    let suggestions = context.type === "macro"
-                        ? macroList.map(m => ({ label: m.label, type: "macro" as const, builtin: m.builtin }))
-                        : allv.map(v => ({ label: v, type: "variant" as const, builtin: false }));
+                    let suggestions: Array<{ label: string; type: "macro" | "variant" | "flag" | "tile"; builtin?: boolean }> = [];
+
+                    autocompleteTypeRef.current = context.type;
+
+                    if (context.type === "macro") {
+                        suggestions = macroList.map(m => ({ label: m.label, type: "macro" as const, builtin: m.builtin }));
+                    } else if (context.type === "variant") {
+                        suggestions = allv.map(v => ({ label: v, type: "variant" as const, builtin: false }));
+                    } else if (context.type === "flag") {
+                        suggestions = flags.map(f => ({ label: f, type: "flag" as const, builtin: false }));
+                    }
 
                     suggestions.sort((a, b) => {
                         if (a.builtin && !b.builtin) return -1;
@@ -243,16 +252,29 @@ export function useEditorEngine({
         };
         
         const insertSuggestion = (startIndex: number, text: string) => {
+            isLetterTypingRef.current = false;
+
             const lines = state.value.split("\n");
             const { start } = getCaret(editorArea, lines);
 
-            const before = state.value.slice(0, startIndex);
+            let insertText = text;
+            let before = state.value.slice(0, startIndex);
+
+            if (autocompleteTypeRef.current === "flag") {
+                const match = before.match(/(--?)$/);
+                if (match) {
+                    console.log("Length: ", match[0].length);
+                    before = state.value.slice(0, startIndex - match[0].length - (match[0].length === 2 ? 1 : 0));
+                    // it's very weird that it was for example "   -" 4 and "   --" is 6
+                }
+            }
+
             const after = state.value.slice(start);
 
-            state.value = before + text + after;
+            state.value = before + insertText + after;
             onCodeChange?.(state.value);
 
-            const newPos = startIndex + text.length;
+            const newPos = startIndex + insertText.length;
             saveState(newPos, newPos);
             render(newPos, newPos);
             editorArea.focus();

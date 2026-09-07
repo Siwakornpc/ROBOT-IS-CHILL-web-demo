@@ -1,5 +1,5 @@
 export type AutocompleteContext = {
-    type: "macro" | "variant" | "tile";
+    type: "macro" | "variant" | "flag" | "tile";
     query: string;
     startIndex: number;
 };
@@ -18,17 +18,42 @@ export function getAutocompleteContext(
     
     if (lastOpenBracket > lastCloseBracket) {
         const query = textBeforeCaret.slice(lastOpenBracket + 1);
-        return { type: "macro", query, startIndex: lineStart + lastOpenBracket + 1 };
+        return {
+            type: "macro",
+            query,
+            startIndex: lineStart + lastOpenBracket + 1 
+        };
     }
     
-    // check if variant
     if (isRenderMode) {
+        // check if variant
         const colonIndex = textBeforeCaret.lastIndexOf(":");
         if (colonIndex !== -1) {
             const afterColon = textBeforeCaret.slice(colonIndex);
             if (!/\s/.test(afterColon)) {
                 const query = textBeforeCaret.slice(colonIndex + 1);
-                return { type: "variant", query, startIndex: lineStart + colonIndex + 1 };
+                return {
+                    type: "variant",
+                    query,
+                    startIndex: lineStart + colonIndex + 1
+                };
+            }
+        }
+        
+        //check if flag
+        const lastDash = textBeforeCaret.lastIndexOf("-");
+        if (lastDash !== -1) {
+            const isDoubleDash = textBeforeCaret[lastDash - 1] === "-";
+            const flagStartIndex = isDoubleDash ? lastDash + 2 : lastDash + 1;
+                
+            const afterDash = textBeforeCaret.slice(flagStartIndex);
+            if (!/\s/.test(afterDash)) {
+                console.log(lineStart + flagStartIndex);
+                return {
+                    type: "flag",
+                    query: afterDash,
+                    startIndex: lineStart + flagStartIndex,
+                };
             }
         }
     }

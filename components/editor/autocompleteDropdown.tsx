@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from "react";
 
 export interface SuggestionItem {
     label: string;
-    type: "macro" | "variant" | "tile";
+    type: "macro" | "variant" | "flag" | "tile";
 }
 
 interface AutocompleteProps {
@@ -27,14 +27,34 @@ export function AutocompleteDropdown({
 }: AutocompleteProps) {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const dropdownRef = useRef<HTMLDivElement | null>(null);
+    const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
     const filtered = suggestions.filter((item) => 
         item.label.toLowerCase().includes(query.toLowerCase())
     );
 
     const visibleSuggestions = filtered.slice(0, 12);
-
+    
     useEffect(() => setSelectedIndex(0), [query, suggestions]);
+
+        useEffect(() => {
+        if (!isOpen) return;
+        const activeEl = itemRefs.current[selectedIndex];
+        const container = dropdownRef.current;
+
+        if (activeEl && container) {
+            const elTop = activeEl.offsetTop;
+            const elBottom = elTop + activeEl.offsetHeight;
+            const containerTop = container.scrollTop;
+            const containerBottom = containerTop + container.clientHeight;
+
+            if (elTop < containerTop) {
+                container.scrollTop = elTop;
+            } else if (elBottom > containerBottom) {
+                container.scrollTop = elBottom - container.clientHeight;
+            }
+        }
+    }, [selectedIndex, isOpen]);
 
     useEffect(() => {
         if (!isOpen) return;
@@ -101,18 +121,37 @@ export function AutocompleteDropdown({
                 return (
                     <div
                         key={`${index}-${item.type}-${item.label}`}
+                        ref={(el) => {
+                            itemRefs.current[index] = el;
+                        }}
                         className={`autocomplete-dropdown-option ${isSelected ? "selected" : ""}`}
                         onMouseDown={(e) => {
                             e.preventDefault();
                             onSelect(item);
                         }}
                     >
-                        <span style={{ color: item.type === "macro"
-                            ? "var(--macro-name)"
-                            : item.type === "variant"
-                            ? "var(--variant-name)"
-                            : undefined }}
-                        >{item.type === "variant" && ":"}{item.label}
+                        <span className="flex gap-[4px]">
+                            <span
+                                className="icon ac-icon"
+                            >
+                                {item.type === "macro"
+                                    ? "data_array"
+                                    : item.type === "variant"
+                                    ? "format_paint"
+                                    : item.type === "flag"
+                                    ? "flag"
+                                    : ""
+                                }
+                            </span>
+                            <span style={{ color: item.type === "macro"
+                                ? "var(--macro-name)"
+                                : item.type === "variant"
+                                ? "var(--variant-name)"
+                                : item.type === "flag"
+                                ? "var(--flag-name)"
+                                : undefined }}
+                            >{item.type === "variant" && ":"}{item.label}
+                            </span>
                         </span>
                     </div>
                 );

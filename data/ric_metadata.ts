@@ -33,69 +33,6 @@ export interface RobotIsChillMetadata {
     flags: Flags;
 }
 
-export const sampleVariants: Variants = {
-    crop: {
-        description:
-            "Crops the sprite to the specified bounding box.\n" +
-            "If the `change_bbox` toggle is on, then the sprite's bounding box is altered, as opposed to removing pixels.",
-
-        syntax:
-            "<crop|cr><x: int>/<y: int>/<u: int>/<v: int>/[change_bbox: bool = False]",
-
-        applied:
-            "While applying effects to sprite image",
-    },
-
-    croppoly: {
-        description:
-            "Crops the sprite to the specified polygon.",
-
-        syntax:
-            "<croppoly><point_coords: list[int]>",
-
-        applied:
-            "While applying effects to sprite image",
-    },
-};
-
-
-export const sampleFlags: Flags = {
-    background: {
-        syntax:
-            "(-b | --background)=#<color: Color>",
-
-        description:
-            "Sets the background of a render to a color.",
-    },
-
-    palette: {
-        syntax:
-            "(-p | --palette)=<palette: str>",
-
-        description:
-            "Sets the palette to use for the render. For a list of palettes, try `search type:palette`.",
-    },
-
-    raw: {
-        syntax:
-            "(-r | --raw)=<name: str>",
-
-        description:
-            "Alias for -F=<name> -f=zip -m=1.",
-    },
-
-    filename: {
-        syntax:
-            "(-F | --filename)=<name: str>",
-
-        description:
-            "Sets the filename of the render.\n" +
-            "When used in conjunction with `--format=zip`, each frame in the zip will be named `<filename>_<frame // 3>_<frame % 3>.png`.\n" +
-            "The filename must be at most 64 characters long, and must be valid.",
-    },
-};
-
-
 function splitTopLevel(text: string): string[] {
     const out: string[] = [];
 

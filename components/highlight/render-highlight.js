@@ -11,21 +11,28 @@ export async function loadFlags() {
     if (typeof window === "undefined") return;
 
     const flagsSource = await fetch(sourceUrls.flags).then((response) => response.text());
+
     const parsedFlags = [
         ...flagsSource.matchAll(/--[\w-]+|-[\w-]+/g),
         ...flagsSource.matchAll(/@flags\.register\(match=r"([^"]+)"/g),
     ].flatMap((match) => {
-        if (match[0].startsWith("@flags.register"))
-            return match[1]
+        if (match[0].startsWith("@flags.register")) {
+            const pattern = match[1];
+
+            return pattern
+                .replace(/^\(\?:/, "")
+                .replace(/\)$/, "")
                 .split("|")
                 .map((part) => part.trim())
                 .filter(Boolean);
+        }
 
         return [match[0]];
     });
 
     flags = [...new Set(parsedFlags)];
 }
+
 
 export async function loadVariantData() {
     if (typeof window === "undefined") return [];
