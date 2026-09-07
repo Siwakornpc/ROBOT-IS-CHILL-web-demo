@@ -2972,14 +2972,37 @@ tr:nth-child(odd) td {
 }
 .ac-dropdown-option.selected {
     font-weight: bold;
+    color: rgb(var(--md-color-on-secondary-container));
     background: rgb(var(--md-color-secondary-container));
+}
+.ac-dropdown-option p {
+    color: rgb(var(--md-color-outline-variant));
+}
+.ac-dropdown-option.selected p {
+    color: rgb(var(--md-color-on-secondary-container));
 }
 .ac-dropdown-option.macro-name.selected {
     color: rgb(var(--md-color-on-syntax-name-container));
+    background: rgb(var(--md-color-syntax-name-container));
+}
+.ac-dropdown-option.macro-name.selected p {
+    color: rgb(var(--md-color-syntax-name));
 }
 .ac-dropdown-option.variant-name.selected {
     color: rgb(var(--md-color-on-render-variant-name-container));
+    background: rgb(var(--md-color-render-variant-name-container));
 }
+.ac-dropdown-option.variant-name.selected p {
+    color: rgb(var(--md-color-render-variant-name));
+}
+.ac-dropdown-option.flag-name.selected {
+    color: rgb(var(--md-color-on-render-flag-name-container));
+    background: rgb(var(--md-color-render-flag-name-container));
+}
+.ac-dropdown-option.flag-name.selected p {
+    color: rgb(var(--md-color-render-flag-name));
+}
+
 .ac-icon {
     font-size: 20px;
 }
