@@ -10,8 +10,8 @@ export function StatusBar({ small = false }: { small?: boolean }) {
             </div>
             <div className="status">
                 {small
-                    ? <span className="status-label icon emph">speed</span>
-                    : <span className="status-label emph">Time</span>
+                    ? <span className="status-label icon">speed</span>
+                    : <span className="status-label">Time</span>
                 }
                 <span className="status-value" id="status-time">0ms</span>
             </div>

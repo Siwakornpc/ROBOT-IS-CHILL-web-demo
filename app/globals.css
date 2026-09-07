@@ -1955,9 +1955,22 @@ main:has(.main-body) {
 .status-label.emph {
     color: rgb(var(--md-color-tertiary));
 }
-.status-value::before {
+.status-label.icon {
+    font-size: 20px;
+    font-weight: normal;
+    color: rgb(var(--md-color-primary));
+}
+.status-label.emph, .status-label.icon.emph {
+    color: rgb(var(--md-color-tertiary));
+}
+.status-label::after {
     content: "·";
+    font-weight: normal;
+    margin-inline-start: 4px;
     color: rgb(var(--md-color-outline));
+}
+.status-label.icon::after {
+    content: none;
 }
 .status-btn {
     padding: 0 1px;
