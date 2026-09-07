@@ -7,6 +7,7 @@ import { useDiscordUser } from "../DiscordUser";
 export interface SuggestionItem {
     label: string;
     type: "macro" | "variant" | "flag" | "tile";
+    builtin?: boolean;
     detail: string | null;
 }
 
@@ -18,6 +19,11 @@ interface AutocompleteProps {
     triggerChar?: string;
     onSelect: (item: SuggestionItem) => void;
     onClose: () => void;
+}
+
+function MacroCreator({ id }: { id: string }) {
+    const user = useDiscordUser(id);
+    return <p>{user?.username ?? id}</p>;
 }
 
 export function AutocompleteDropdown({
@@ -143,7 +149,9 @@ export function AutocompleteDropdown({
                                 {item.label}
                             </span>
                         </span>
-                        {item.detail && <p>{item.detail}</p>}
+                        {item.detail && (item.type === "macro" && !item.builtin
+                            ? <MacroCreator id={item.detail} />
+                            : <p>{item.detail}</p>)}
                     </div>
                 );
             })}

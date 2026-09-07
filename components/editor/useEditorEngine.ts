@@ -19,7 +19,6 @@ import stdlib_macros from "../page/search/stdlib_macros";
 import { loadFlags, flags } from "@/components/highlight/render-highlight";
 
 import JSONbig from "json-bigint";
-import { getUser } from "@/lib/discord-client";
 
 type EditorRefs = {
     editorAreaRef: RefObject<HTMLDivElement | null>;
@@ -150,22 +149,11 @@ export function useEditorEngine({
                         const data = JSONbig({ storeAsString: true }).parse(json);
                         for (const [key, val] of Object.entries(data)) {
                             const isBuiltin = Boolean((val as any)?.builtin);
-                            let creator = "builtin";
-
-                            if (!isBuiltin) {
-                                const creatorId = (val as any)?.creator;
-                                try {
-                                    creator = (await getUser(creatorId)).username;
-                                } catch (err) {
-                                    console.error(`Failed to load Discord user ${creatorId}:`, err);
-                                    creator = creatorId;
-                                }
-                            }
 
                             macroMap.set(key, {
                                 label: key,
                                 builtin: isBuiltin,
-                                creator,
+                                creator: isBuiltin ? "builtin" : (val as any)?.creator,
                             });
                         }
                     }
