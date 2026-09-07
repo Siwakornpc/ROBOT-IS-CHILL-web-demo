@@ -6,6 +6,7 @@ import { useEffect, useState, useRef } from "react";
 export interface SuggestionItem {
     label: string;
     type: "macro" | "variant" | "flag" | "tile";
+    detail: string | null;
 }
 
 interface AutocompleteProps {
@@ -76,9 +77,8 @@ export function AutocompleteDropdown({
             }
             else if (e.key === "Enter" || e.key === "Tab") {
                 e.preventDefault();
-                if (visibleSuggestions[selectedIndex]) {
+                if (visibleSuggestions[selectedIndex])
                     onSelect(visibleSuggestions[selectedIndex]);
-                }
             }
             else if (e.key === "Escape") {
                 e.preventDefault();
@@ -87,9 +87,7 @@ export function AutocompleteDropdown({
         }
 
         window.addEventListener("keydown", handleKeyDown, true);
-        return () => {
-            window.removeEventListener("keydown", handleKeyDown, true);
-        };
+        return () => window.removeEventListener("keydown", handleKeyDown, true);
     }, [isOpen, visibleSuggestions, selectedIndex, onSelect, onClose])
 
     useEffect(() => {
@@ -103,9 +101,7 @@ export function AutocompleteDropdown({
         }
 
         document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
+        return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [isOpen, onClose]);
 
     if (!isOpen || visibleSuggestions.length === 0) return null;
@@ -113,7 +109,7 @@ export function AutocompleteDropdown({
     return (
         <div
             ref={dropdownRef}
-            className="autocomplete-dropdown"
+            className="autocomplete-dropdown inset-scrollbar"
             style={{ top: position.top, left: position.left }}
         >
             {visibleSuggestions.map((item, index) => {
@@ -152,6 +148,10 @@ export function AutocompleteDropdown({
                                 : undefined }}
                             >{item.type === "variant" && ":"}{item.label}
                             </span>
+                            {item.detail && item.type === "macro"
+                                ? <span>{item.detail}</span>
+                                : ""
+                            }
                         </span>
                     </div>
                 );
