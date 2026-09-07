@@ -120,36 +120,23 @@ export function AutocompleteDropdown({
                         ref={(el) => {
                             itemRefs.current[index] = el;
                         }}
-                        className={`ac-dropdown-option ${isSelected ? "selected" : ""}`}
+                        className={`ac-dropdown-option ${item.type}-name ${isSelected ? "selected" : ""}`}
                         onMouseDown={(e) => {
                             e.preventDefault();
                             onSelect(item);
                         }}
                     >
                         <span className="flex gap-[4px]">
-                            <span className="icon ac-icon">
-                                {item.type === "macro"
-                                    ? "data_array"
-                                    : item.type === "variant"
-                                    ? "format_paint"
-                                    : item.type === "flag"
-                                    ? "flag"
-                                    : ""
-                                }
-                            </span>
-                            <span style={{ color: item.type === "macro"
-                                ? "var(--macro-name)"
+                            {item.type === "macro"
+                                ? <span className="custom icon ac-icon">macrosia</span>
                                 : item.type === "variant"
-                                ? "var(--variant-name)"
+                                ? <span className="icon ac-icon">format_paint</span>
                                 : item.type === "flag"
-                                ? "var(--flag-name)"
-                                : undefined }}
-                            >{item.type === "variant" && ":"}{item.label}
-                            </span>
-                            {item.detail && item.type === "macro"
-                                ? <span>{item.detail}</span>
+                                ? <span className="icon ac-icon">flag</span>
                                 : ""
                             }
+                            <span>{item.type === "variant" ? ":" : item.type === "flag" ? "--" : ""}{item.label}</span>
+                            {item.detail && <span>{item.detail}</span>}
                         </span>
                     </div>
                 );
