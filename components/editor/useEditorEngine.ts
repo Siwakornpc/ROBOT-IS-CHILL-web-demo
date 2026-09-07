@@ -122,31 +122,36 @@ export function useEditorEngine({
         document.addEventListener("mousedown", handleMouseDown);
 
         const usernameCache = new Map<string, string>();
+        let apiFailed = false;
 
-        async function resolveDiscordUsername(id: string): Promise<string> {
-            if (!id) return "community";
-            if (usernameCache.has(id)) {
-                return usernameCache.get(id)!;
-            }
+        async function resolveDiscordUsername(id: string): Promise<string | null> {
+            if (!id || apiFailed) return null;
+            if (usernameCache.has(id)) return usernameCache.get(id) || null;
             try {
                 const res = await fetch(`/api/discord-user?id=${encodeURIComponent(id)}`);
-                if (!res.ok) return "community"; // Fallback gracefully on 500/errors
+                if (!res.ok) {
+                    if (res.status === 500) apiFailed = true;
+                    return null;
+                }
                 const data = await res.json();
-                const username = data.username || data.display_name || "community";
-                usernameCache.set(id, username);
-                return username;
+                const username = data.username || data.display_name;
+                if (username) {
+                    usernameCache.set(id, username);
+                    return username;
+                }
+                return null;
             } catch (err) {
-                console.error("Failed to fetch Discord user:", err);
-                return "community";
+                apiFailed = true;
+                return null;
             }
         }
 
-        let macroList: Array<{ label: string; builtin?: boolean; creator: string }> = [];
+        let macroList: Array<{ label: string; builtin?: boolean; creator: string | null }> = [];
 
         async function fetchAutocompleteData() {
             try {
                 await loadVariants();
-                const macroMap = new Map<string, { label: string; builtin?: boolean; creator: string }>();
+                const macroMap = new Map<string, { label: string; builtin?: boolean; creator: string | null }>();
 
                 try {
                     const res = await fetch("https://ric-api.sno.mba/macros.json");
@@ -159,13 +164,18 @@ export function useEditorEngine({
                             macroMap.set(key, {
                                 label: key,
                                 builtin: isBuiltin,
-                                creator: isBuiltin ? "builtin" : (creatorId ? `@user` : "builtin"),
+                                creator: isBuiltin ? "builtin" : null,
                             });
 
                             if (!isBuiltin && creatorId) {
                                 resolveDiscordUsername(creatorId).then((username) => {
-                                    const entry = macroMap.get(key);
-                                    if (entry) entry.creator = `@${username}`;
+                                    if (username) {
+                                        const entry = macroMap.get(key);
+                                        if (entry) {
+                                            entry.creator = `@${username}`;
+                                            handleACSelectionChange();
+                                        }
+                                    }
                                 }).catch(() => {});
                             }
                         }
