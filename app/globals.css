@@ -3003,12 +3003,18 @@ tr:nth-child(odd) td {
     font-weight: bold;
 }
 .ac-dropdown-option p {
-    color: rgb(var(--md-color-on-surface-variant));
-    font-size: 0.675rem;
+    color: rgb(var(--md-color-outline));
+    font-size: 0.75rem;
+}
+.ac-dropdown-option.selected p {
+    color: rgb(var(--md-color-on-secondary-container));
 }
 .ac-dropdown-option.macro-name.selected {
     color: rgb(var(--md-color-on-syntax-name-container));
     background: rgb(var(--md-color-syntax-name-container));
+}
+.ac-dropdown-option.macro-name.selected p {
+    color: rgb(var(--md-color-syntax-name));
 }
 .ac-dropdown-option.variant-name.selected {
     color: rgb(var(--md-color-on-render-variant-name-container));

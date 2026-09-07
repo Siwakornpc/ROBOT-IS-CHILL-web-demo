@@ -21,11 +21,6 @@ interface AutocompleteProps {
     onClose: () => void;
 }
 
-function MacroCreator({ id }: { id: string }) {
-    const user = useDiscordUser(id);
-    return <p>{user?.username ?? id}</p>;
-}
-
 export function AutocompleteDropdown({
     isOpen,
     query,
@@ -149,9 +144,10 @@ export function AutocompleteDropdown({
                                 {item.label}
                             </span>
                         </span>
-                        {item.detail && (item.type === "macro" && !item.builtin
-                            ? <MacroCreator id={item.detail} />
-                            : <p>{item.detail}</p>)}
+                        <p>{item.detail && (item.type === "macro" && !item.builtin
+                            ? `@${useDiscordUser(item.detail)?.username ?? item.detail}`
+                            : item.detail
+                        )}</p>
                     </div>
                 );
             })}
