@@ -48,6 +48,7 @@ export function useEditorEngine({
     onInsertSuggestionRef,
 }: EditorRefs) {
     const isLetterTypingRef = useRef(false);
+    const isACLetterTypingRef = useRef(false);
     const autocompleteTypeRef = useRef<AutocompleteState["type"]>("macro");
 
     useEffect(() => {
@@ -102,8 +103,7 @@ export function useEditorEngine({
         const handleResize = () => render(state.value.length, state.value.length);
 
         const handleGlobalKeydown = (e: KeyboardEvent) => {
-            if (
-                e.key === "Backspace"
+            if (e.key === "Backspace"
                 || e.key === "ArrowLeft"
                 || e.key === "ArrowRight"
                 || e.key === "ArrowUp"
@@ -115,10 +115,22 @@ export function useEditorEngine({
             }
             isLetterTypingRef.current = true;
         };
+        const handleACKeydown = (e: KeyboardEvent) => {
+            if (e.key === "ArrowUp"
+                || e.key === "ArrowDown"
+                || e.key === "Enter"
+                || e.key === "Tab"
+            ) {
+                isACLetterTypingRef.current = false;
+                return;
+            }
+            isACLetterTypingRef.current = true;
+        };
 
         const handleMouseDown = () => isLetterTypingRef.current = false;
 
         document.addEventListener("keydown", handleGlobalKeydown);
+        document.addEventListener("keydown", handleACKeydown);
         document.addEventListener("mousedown", handleMouseDown);
 
         let macroList: Array<{ label: string; builtin?: boolean; creator: string }> = [];
@@ -165,7 +177,7 @@ export function useEditorEngine({
 
         const handleACSelectionChange = () => {
             if (document.activeElement !== editorArea) return;
-            if (!isLetterTypingRef.current) {
+            if (!isACLetterTypingRef.current) {
                 if (!onAutocompleteChange) return;
                 onAutocompleteChange({
                     isOpen: false,
@@ -258,7 +270,7 @@ export function useEditorEngine({
         };
         
         const insertSuggestion = (startIndex: number, text: string) => {
-            isLetterTypingRef.current = false;
+            isACLetterTypingRef.current = false;
 
             const lines = state.value.split("\n");
             const { start } = getCaret(editorArea, lines);
@@ -325,6 +337,7 @@ export function useEditorEngine({
 
         return () => {
             document.removeEventListener("keydown", handleGlobalKeydown);
+            document.removeEventListener("keydown", handleACKeydown);
             document.removeEventListener("mousedown", handleMouseDown);
             editorArea.removeEventListener("beforeinput", handleBeforeInput as EventListener);
             editorArea.removeEventListener("keydown", handleKeydown);
