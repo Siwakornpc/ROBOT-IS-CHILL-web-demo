@@ -16,6 +16,7 @@ import { MenuProvider } from '@/components/MenuContext';
 import { ThemeProvider } from "@/components/ThemeProvider";
 import FontScript from '@/components/fontscript';
 import { FontProvider } from "@/components/FontProvider";
+import "material-symbols";
 
 const nunitoSans = Nunito_Sans({
     subsets: ["latin"],
@@ -85,23 +86,12 @@ export default function RootLayout({
                 cascadiaCode,
             ].map((font) => font.variable).join(" ")} h-full antialiased`}
         >
-            <head>
-                <link
-                    rel="stylesheet"
-                    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0..1,0"
-                />
-            </head>
             <body className="min-h-full flex flex-col bg-background text-foreground">
-                <ThemeScript />
-                <FontScript />
-                <MenuProvider>
-                    <ThemeProvider>
-                        <FontProvider>
-                            <Header />
-                            {children}
-                        </FontProvider>
-                    </ThemeProvider>
-                </MenuProvider>
+                <ThemeScript /> <FontScript />
+                <MenuProvider><ThemeProvider><FontProvider>
+                    <Header />
+                    {children}
+                </FontProvider></ThemeProvider></MenuProvider>
             </body>
         </html>
     );
