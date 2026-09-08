@@ -22,7 +22,12 @@ interface AutocompleteProps {
 }
 
 function MacroCreator({ id }: { id: string }) {
-    const user = useDiscordUser(id);
+    const { user, loading } = useDiscordUser(id);
+
+    if (loading) {
+        return <p>loading...</p>;
+    }
+
     return <p>@{user?.username ?? id}</p>;
 }
 
