@@ -2815,10 +2815,10 @@ main:has(.main-body) {
     color: var(--variant);
 }
 
-td:has(.palette-color-display) {
-    display: flex;
+td > div:has(.palette-color-display) {
     align-items: center;
     gap: 8px;
+    display: flex;
 }
 .palette-color-display {
     display: inline-block;

@@ -325,11 +325,13 @@ export function Details({ selected, allResults }: DetailsProps) {
                     <tr>
                         <td>{selected.name.startsWith("text_") ? "Active color" : "Color"}</td>
                         <td>
-                            <div
-                                className="palette-color-display"
-                                style={{ "--this-palette-color": getColorByValue(selected.tile.active_color) } as React.CSSProperties}    
-                            />
-                            {selected.tile.active_color.join(", ")}
+                            <div>
+                                <div
+                                    className="palette-color-display"
+                                    style={{ "--this-palette-color": getColorByValue(selected.tile.active_color) } as React.CSSProperties}    
+                                />
+                                {selected.tile.active_color.join(", ")}
+                            </div>
                         </td>
                     </tr>
                     {selected.name.startsWith("text_") &&
@@ -337,13 +339,15 @@ export function Details({ selected, allResults }: DetailsProps) {
                         <tr>
                             <td>Inactive color</td>
                             <td>
-                                <div
-                                    className="palette-color-display"
-                                    style={{ "--this-palette-color": getColorByValue(selected.tile.inactive_color) } as React.CSSProperties}    
-                                />
-                                {selected.tile.inactive_color
-                                    .filter((value): value is number => value !== null)
-                                    .join(", ")}
+                                <div>
+                                    <div
+                                        className="palette-color-display"
+                                        style={{ "--this-palette-color": getColorByValue(selected.tile.inactive_color) } as React.CSSProperties}    
+                                    />
+                                    {selected.tile.inactive_color
+                                        .filter((value): value is number => value !== null)
+                                        .join(", ")}
+                                </div>
                             </td>
                         </tr>
                     }
@@ -512,7 +516,7 @@ export function Details({ selected, allResults }: DetailsProps) {
         </>);
     }
 
-    // Details for Variants
+    // Details for Flags
 
     if ("flag" in selected) {
         return (<>
@@ -637,11 +641,13 @@ export function Details({ selected, allResults }: DetailsProps) {
                             {getPaletteColorData
                                 ? <>
                                     <td className="before">
-                                        <span
-                                            className="palette-color-display"
-                                            style={{ "--this-palette-color": getPaletteColorData.color } as React.CSSProperties}    
-                                        />
-                                        {`${getPaletteColorData.x}, ${getPaletteColorData.y}`}
+                                        <div>
+                                            <div
+                                                className="palette-color-display"
+                                                style={{ "--this-palette-color": getPaletteColorData.color } as React.CSSProperties}    
+                                            />
+                                            {`${getPaletteColorData.x}, ${getPaletteColorData.y}`}
+                                        </div>
                                     </td>
                                     <td className="discord-markdown before">
                                         <code className="discord-inline-code">{getPaletteColorData.color?.toUpperCase() ?? "None"}</code>
