@@ -2845,26 +2845,22 @@ table {
 }
 
 .table-description {
-    width: 120px;
+    width: 144px;
 }
-
 th, td {
     padding: 6px 12px;
     word-wrap: anywhere;
     vertical-align: top;
 }
-
 th:not(:last-child) {
     border-inline-end: 1px solid rgb(var(--md-color-outline));
 }
 td:not(:last-child) {
     border-inline-end: 1px solid var(--editor-outline);
 }
-
 th {
     background: rgb(var(--md-color-surface-container-highest));
 }
-
 tr:nth-child(odd) td {
     background: rgb(var(--md-color-on-surface), 0.08);
 }
