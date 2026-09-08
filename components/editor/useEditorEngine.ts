@@ -178,7 +178,7 @@ export function useEditorEngine({
 
         const handleACSelectionChange = () => {
             if (document.activeElement !== editorArea) return;
-            if (!isLetterTypingRef.current) {
+            if (!isACLetterTypingRef.current) {
                 /*
                     When you do !isLetterTypingRef.current, you're currently
                     making the autocomplete suggestion disappear when you do
