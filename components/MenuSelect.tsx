@@ -20,11 +20,15 @@ import {createPortal} from "react-dom";
 ---------- */
 
 export type MenuPlacement =
-    | "bottom-start"
+    | "bottom-left"
+    | "bottom-right"
     | "bottom-center"
+    | "bottom-start"
     | "bottom-end"
-    | "top-start"
+    | "top-left"
+    | "top-right"
     | "top-center"
+    | "top-start"
     | "top-end"
     | "right-down"
     | "right-center"
@@ -150,11 +154,18 @@ function calculateMenuPosition(
     let top = boxRect.bottom + gap;
     let left = boxRect.left;
     let maxHeight = Math.max(60, spaceBelow);
+    
+    const isRtl = window.getComputedStyle(document.documentElement).direction === "rtl";
 
     switch (actualPlacement) {
-        case "bottom-start":
+        case "bottom-left":
             top = boxRect.bottom + gap;
             left = boxRect.left;
+            break;
+
+        case "bottom-right":
+            top = boxRect.bottom + gap;
+            left = boxRect.right - elementWidth;
             break;
 
         case "bottom-center":
@@ -162,15 +173,27 @@ function calculateMenuPosition(
             left = boxRect.left + (boxWidth - elementWidth) / 2;
             break;
 
+        case "bottom-start":
+            top = boxRect.bottom + gap;
+            left = boxRect.left;
+            if (isRtl) left = boxRect.right - elementWidth;
+            break;
+
         case "bottom-end":
             top = boxRect.bottom + gap;
             left = boxRect.right - elementWidth;
-            maxHeight = Math.max(60, spaceBelow);
+            if (isRtl) left = boxRect.left;
             break;
 
-        case "top-start":
+        case "top-left":
             top = boxRect.top - elementHeight - gap;
             left = boxRect.left;
+            maxHeight = Math.max(60, spaceAbove);
+            break;
+
+        case "top-right":
+            top = boxRect.top - elementHeight - gap;
+            left = boxRect.right - elementWidth;
             maxHeight = Math.max(60, spaceAbove);
             break;
 
@@ -180,10 +203,16 @@ function calculateMenuPosition(
             maxHeight = Math.max(60, spaceBelow);
             break;
 
+        case "top-start":
+            top = boxRect.top - elementHeight - gap;
+            left = boxRect.left;
+            if (isRtl) left = boxRect.right - elementWidth;
+            break;
+
         case "top-end":
             top = boxRect.top - elementHeight - gap;
             left = boxRect.right - elementWidth;
-            maxHeight = Math.max(60, spaceAbove);
+            if (isRtl) left = boxRect.left;
             break;
 
         case "right-down":

@@ -70,24 +70,24 @@ export function AutocompleteDropdown({
         if (!isOpen) return;
 
         function handleKeyDown(e: KeyboardEvent) {
-            if (visibleSuggestions.length === 0) return;
+            if (filtered.length === 0) return;
 
             if (e.key === "ArrowDown") {
                 e.preventDefault();
                 setSelectedIndex((prev) => 
-                    (prev + 1) % visibleSuggestions.length
+                    (prev + 1) % filtered.length
                 );
             }
             else if (e.key == "ArrowUp") {
                 e.preventDefault();
                 setSelectedIndex((prev) => 
-                    (prev - 1 + visibleSuggestions.length) % visibleSuggestions.length
+                    (prev - 1 + filtered.length) % filtered.length
                 );
             }
             else if (e.key === "Enter" || e.key === "Tab") {
                 e.preventDefault();
-                if (visibleSuggestions[selectedIndex])
-                    onSelect(visibleSuggestions[selectedIndex]);
+                if (filtered[selectedIndex])
+                    onSelect(filtered[selectedIndex]);
             }
             else if (e.key === "Escape") {
                 e.preventDefault();
@@ -97,7 +97,7 @@ export function AutocompleteDropdown({
 
         window.addEventListener("keydown", handleKeyDown, true);
         return () => window.removeEventListener("keydown", handleKeyDown, true);
-    }, [isOpen, visibleSuggestions, selectedIndex, onSelect, onClose])
+    }, [isOpen, filtered, selectedIndex, onSelect, onClose])
 
     useEffect(() => {
         if (!isOpen) return;
@@ -113,7 +113,7 @@ export function AutocompleteDropdown({
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [isOpen, onClose]);
 
-    if (!isOpen || visibleSuggestions.length === 0) return null;
+    if (!isOpen || filtered.length === 0) return null;
 
     return (
         <div
@@ -121,7 +121,7 @@ export function AutocompleteDropdown({
             className="ac-dropdown inset-scrollbar"
             style={{ top: position.top, left: position.left }}
         >
-            {visibleSuggestions.map((item, index) => {
+            {filtered.map((item, index) => {
                 const isSelected = index === selectedIndex;
                 return (
                     <div
