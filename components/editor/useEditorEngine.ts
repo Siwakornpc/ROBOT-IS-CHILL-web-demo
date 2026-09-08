@@ -101,7 +101,10 @@ export function useEditorEngine({
         const handleClick = createEditorClickHandler(editorArea);
         const handleSelectionChange = createSelectionChangeHandler({ win, editorArea, gutterEl, state });
         const handleScroll = () => gutterWrap.scrollTop = scrollEl.scrollTop;
-        const handleResize = () => render(state.value.length, state.value.length);
+        const handleResize = () => {
+            render(state.value.length, state.value.length);
+            handleACSelectionChange();
+        };
 
         const handleGlobalKeydown = (e: KeyboardEvent) => {
             isLetterTypingRef.current = e.key.length === 1
@@ -178,6 +181,26 @@ export function useEditorEngine({
         }
         fetchAutocompleteData();
 
+        const getAutocompletePosition = (rect: DOMRect) => {
+            const dropdownHeight = 200;
+            const dropdownWidth = 400;
+            const gap = 4;
+            const fitsBelow = window.innerHeight - rect.bottom >= dropdownHeight + gap;
+            const fitsAbove = rect.top >= dropdownHeight + gap;
+
+            let top = fitsBelow || !fitsAbove
+                ? rect.bottom + gap
+                : rect.top - dropdownHeight - gap;
+            let left = rect.left;
+
+            top = Math.min(top, window.innerHeight - dropdownHeight - gap);
+            top = Math.max(gap, top);
+            left = Math.min(left, window.innerWidth - dropdownWidth - gap);
+            left = Math.max(gap, left);
+
+            return { top, left };
+        };
+
         const handleACSelectionChange = () => {
             if (document.activeElement !== editorArea) return;
             if (!isACLetterTypingRef.current && !isAutocompleteOpenRef.current) {
@@ -232,23 +255,14 @@ export function useEditorEngine({
                     if (sel && sel.rangeCount > 0) {
                         const range = sel.getRangeAt(0);
                         const rect = range.getBoundingClientRect();
-
-                        const dropdownHeight = 200;
-                        const spaceBelow = window.innerHeight - rect.bottom;
-                        const spaceAbove = rect.top;
-
-                        let top = rect.bottom + 4;
-                        if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight)
-                            top = rect.top - dropdownHeight - 4;
-
-                        const left = rect.left;
+                        const position = getAutocompletePosition(rect);
 
                         isAutocompleteOpenRef.current = true;
                         onAutocompleteChange({
                             isOpen: true,
                             query: context.query,
                             suggestions,
-                            position: { top, left },
+                            position,
                             startIndex: context.startIndex,
                             type: context.type,
                             triggerChar: context.triggerChar,
@@ -267,6 +281,16 @@ export function useEditorEngine({
                 });
             }
         };
+
+        const layoutResizeObserver = typeof ResizeObserver !== "undefined"
+            ? new ResizeObserver(() => handleACSelectionChange())
+            : null;
+        layoutResizeObserver?.observe(editorArea);
+        layoutResizeObserver?.observe(scrollEl);
+
+        const visualViewport = window.visualViewport;
+        visualViewport?.addEventListener("resize", handleACSelectionChange);
+        scrollEl.addEventListener("scroll", handleACSelectionChange);
         
         const insertSuggestion = (startIndex: number, text: string) => {
             isACLetterTypingRef.current = false;
@@ -348,6 +372,9 @@ export function useEditorEngine({
             scrollEl.removeEventListener("scroll", handleScroll);
             editorArea.removeEventListener("click", handleClick);
             window.removeEventListener("resize", handleResize);
+            layoutResizeObserver?.disconnect();
+            visualViewport?.removeEventListener("resize", handleACSelectionChange);
+            scrollEl.removeEventListener("scroll", handleACSelectionChange);
             window.removeEventListener("executionmodechange", refreshHighlighting);
             window.removeEventListener("rendersyntaxloaded", refreshHighlighting);
         };
