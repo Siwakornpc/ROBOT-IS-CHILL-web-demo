@@ -670,11 +670,13 @@ export function Details({ selected, allResults }: DetailsProps) {
                         row.map((color, jndex) => 
                             <tr key={`palette-${selected.name}-color-${jndex}-${index}`}>
                                 <td>
-                                    <div
-                                        className="palette-color-display"
-                                        style={{ "--this-palette-color": color } as React.CSSProperties}    
-                                    />
-                                    {`${jndex}, ${index}`}
+                                    <div>
+                                        <div
+                                            className="palette-color-display"
+                                            style={{ "--this-palette-color": color } as React.CSSProperties}    
+                                        />
+                                        {`${jndex}, ${index}`}
+                                    </div>
                                 </td>
                                 <td className="discord-markdown">
                                     <code className="discord-inline-code">{color?.toUpperCase() ?? "None"}</code>
