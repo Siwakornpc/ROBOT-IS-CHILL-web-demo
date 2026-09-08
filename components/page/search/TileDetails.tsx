@@ -559,10 +559,7 @@ export function Details({ selected, allResults }: DetailsProps) {
                 <span className="search-details-subname">{` (${selected.palette.source})`}</span>
             </p>
 
-            <div
-                ref={(el) => applyOverflowFade(el, "xy")}
-                className="search-details-palette-wrapper ascroll-x ascroll-y"
-            >
+            <div className="search-details-palette-wrapper ascroll-x ascroll-y">
                 <div className="search-details-palette-wrapper-asize">
                     <div className="search-details-palette-element">
                         {selected.palette.colors.map((row, i) =>
