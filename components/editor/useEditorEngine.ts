@@ -178,15 +178,7 @@ export function useEditorEngine({
 
         const handleACSelectionChange = () => {
             if (document.activeElement !== editorArea) return;
-            if (!isLetterTypingRef.current) {
-                /*
-                    When you do !isLetterTypingRef.current, you're currently
-                    making the autocomplete suggestion disappear when you do
-                    ArrowLeft ArrowRight ArrowUp ArrowDown
-                    Backspace Enter Tab and MouseClick.
-
-                    This is to mimic VSCode's behavior
-                */
+            if (!isACLetterTypingRef.current) {
                 if (!onAutocompleteChange) return;
                 onAutocompleteChange({
                     isOpen: false,
