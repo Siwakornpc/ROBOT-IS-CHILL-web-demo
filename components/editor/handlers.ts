@@ -32,6 +32,118 @@ type KeydownDeps = {
     onCodeChange?: (code: string) => void;
 };
 
+const INDENT = "    ";
+const INDENT_SIZE = 4;
+
+function getLineStart(value: string, offset: number): number {
+    const i = value.lastIndexOf("\n", offset - 1);
+    return i === -1 ? 0 : i + 1;
+}
+
+function getLineEnd(value: string, offset: number): number {
+    const i = value.indexOf("\n", offset);
+    return i === -1 ? value.length : i;
+}
+
+function getLineIndent(line: string): string {
+    const match = line.match(/^[ \t]*/);
+    return match?.[0] ?? "";
+}
+
+function indentationColumns(indent: string): number {
+    let columns = 0;
+
+    for (const ch of indent) {
+        if (ch === "\t") {
+            columns += INDENT_SIZE - (columns % INDENT_SIZE);
+        } else {
+            columns++;
+        }
+    }
+
+    return columns;
+}
+
+function removeOneIndentLevel(indent: string): string {
+    if (!indent) return indent;
+
+    let columns = 0;
+    let removeChars = 0;
+
+    for (const ch of indent) {
+        const width = ch === "\t"
+            ? INDENT_SIZE - (columns % INDENT_SIZE)
+            : 1;
+
+        if (columns + width > INDENT_SIZE) {
+            break;
+        }
+
+        columns += width;
+        removeChars++;
+    }
+
+    return indent.slice(removeChars);
+}
+
+function spacesToNextTabStop(column: number): number {
+    return INDENT_SIZE - (column % INDENT_SIZE);
+}
+
+function indentAtCaret(
+    value: string,
+    position: number,
+): { value: string; position: number } {
+    const lineStart = getLineStart(value, position);
+    const beforeCaret = value.slice(lineStart, position);
+
+    const leadingWhitespace = getLineIndent(beforeCaret);
+
+    const column = indentationColumns(leadingWhitespace);
+
+    const visualColumn = leadingWhitespace.length === beforeCaret.length
+        ? column
+        : column + (beforeCaret.length - leadingWhitespace.length);
+
+    const spaces = spacesToNextTabStop(visualColumn);
+
+    const newValue = value.slice(0, position) + " ".repeat(spaces) + value.slice(position);
+
+    return {
+        value: newValue,
+        position: position + spaces,
+    };
+}
+
+/**
+ * Unindents one line and returns the new caret position.
+ */
+function unindentLine(
+    value: string,
+    position: number,
+): { value: string; position: number } {
+    const lineStart = getLineStart(value, position);
+    const lineEnd = getLineEnd(value, position);
+    const line = value.slice(lineStart, lineEnd);
+
+    const oldIndent = getLineIndent(line);
+
+    if (!oldIndent) {
+        return { value, position };
+    }
+
+    const newIndent = removeOneIndentLevel(oldIndent);
+    const removed = oldIndent.length - newIndent.length;
+
+    const newValue = value.slice(0, lineStart) + newIndent + value.slice(lineStart + oldIndent.length);
+
+    return {
+        value: newValue,
+        position: Math.max(lineStart, position - removed),
+    };
+}
+
+
 export function createKeydownHandler(deps: KeydownDeps) {
     const { editorArea, state, saveState, render, undo, redo, onCodeChange } = deps;
 
@@ -48,60 +160,136 @@ export function createKeydownHandler(deps: KeydownDeps) {
         if (e.key === "Tab") {
             e.preventDefault();
 
-            const { start, end } = getCaret(editorArea, state.value.split("\n"));
-            const indent = "    ";
+            const lines = state.value.split("\n");
+            const { start, end } = getCaret(editorArea, lines);
 
             if (start === end) {
                 if (e.shiftKey) {
-                    const ls = lineStartOf(state.value, start);
-                    const m = state.value.slice(ls, start).match(/[ \t]{1,4}$/);
-                    if (!m) return;
+                    const { value, position } = unindentLine(state.value, start);
 
-                    state.value = state.value.slice(0, start - m[0].length) + state.value.slice(start);
+                    if (value === state.value) return;
+
+                    state.value = value;
+
                     onCodeChange?.(state.value);
-                    const pos = start - m[0].length;
-                    saveState(pos, pos);
-                    render(pos, pos);
+                    saveState(position, position);
+                    render(position, position);
                     return;
                 }
 
-                state.value = state.value.slice(0, start) + indent + state.value.slice(end);
+                const result = indentAtCaret(state.value, start);
+
+                state.value = result.value;
+
                 onCodeChange?.(state.value);
-                saveState(start + indent.length, start + indent.length);
-                render(start + indent.length, start + indent.length);
+                saveState(result.position, result.position);
+                render(result.position, result.position);
                 return;
             }
 
-            const lineStart = lineStartOf(state.value, start);
-            let lineEnd = state.value.indexOf("\n", end);
-            if (lineEnd === -1) lineEnd = state.value.length;
+            const firstLineStart = getLineStart(state.value, start);
 
-            const lines = state.value.slice(lineStart, lineEnd).split("\n");
-            let firstLineDelta = 0;
+            let lastLineEnd = getLineEnd(
+                state.value,
+                end,
+            );
+
+            if (
+                end > start &&
+                end === getLineStart(state.value, end) &&
+                end > firstLineStart
+            ) lastLineEnd = end - 1;
+
+            const selectedText = state.value.slice(firstLineStart, lastLineEnd);
+
+            const selectedLines = selectedText.split("\n");
+
             let totalDelta = 0;
+            let firstLineDelta = 0;
 
-            const newLines = lines.map((line, i) => {
+            const newLines = selectedLines.map((line, index) => {
                 if (e.shiftKey) {
-                    const m = line.match(/^( {1,4}|\t)/);
-                    const cut = m ? m[0].length : 0;
-                    if (i === 0) firstLineDelta = -cut;
-                    totalDelta -= cut;
-                    return cut ? line.slice(cut) : line;
+                    const oldIndent = getLineIndent(line);
+                    const newIndent = removeOneIndentLevel(oldIndent);
+
+                    const delta = newIndent.length - oldIndent.length;
+
+                    if (index === 0) {
+                        firstLineDelta = delta;
+                    }
+
+                    totalDelta += delta;
+
+                    return (newIndent + line.slice(oldIndent.length));
                 }
 
-                if (i === 0) firstLineDelta = indent.length;
-                totalDelta += indent.length;
-                return indent + line;
+                if (index === 0) {
+                    firstLineDelta = INDENT.length;
+                }
+
+                totalDelta += INDENT.length;
+
+                return INDENT + line;
             });
 
-            state.value = state.value.slice(0, lineStart) + newLines.join("\n") + state.value.slice(lineEnd);
+            const replacement = newLines.join("\n");
+
+            state.value = state.value.slice(0, firstLineStart) + replacement + state.value.slice(lastLineEnd);
+
             onCodeChange?.(state.value);
 
-            const newStart = Math.max(lineStart, start + firstLineDelta);
-            const newEnd = end + totalDelta;
+            const newStart = Math.max(firstLineStart, start + firstLineDelta);
+
+            const newEnd = Math.max(newStart, end + totalDelta);
 
             saveState(newStart, newEnd);
             render(newStart, newEnd);
+
+            return;
+        }
+
+        if (e.key === "Backspace") {
+            const lines = state.value.split("\n");
+            const { start, end } = getCaret(editorArea, lines);
+
+            if (start !== end) return;
+            if (start === 0) return;
+
+            const lineStart = getLineStart(state.value, start);
+            const beforeCaret = state.value.slice(lineStart, start);
+
+            const indent = getLineIndent(beforeCaret);
+
+            if (beforeCaret === indent && indent.length > 0) {
+                e.preventDefault();
+
+                const { value, position } = unindentLine(state.value, start);
+
+                state.value = value;
+
+                onCodeChange?.(state.value);
+                saveState(position, position);
+                render(position, position);
+
+                return;
+            }
+
+            if (beforeCaret.length === 0) {
+                e.preventDefault();
+
+                const deleteAt = start - 1;
+
+                state.value = state.value.slice(0, deleteAt) + state.value.slice(start);
+
+                const position = deleteAt;
+
+                onCodeChange?.(state.value);
+                saveState(position, position);
+                render(position, position);
+
+                return;
+            }
+
             return;
         }
 
