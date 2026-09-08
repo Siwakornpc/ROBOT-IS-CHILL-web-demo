@@ -229,7 +229,7 @@ export function useEditorEngine({
                     autocompleteTypeRef.current = context.type;
 
                     if (context.type === "macro") {
-                        suggestions = macroList.map(m => ({ label: m.label.replace(/[\r\n]/g, ""), type: "macro" as const, builtin: m.builtin, detail: m.creator }));
+                        suggestions = macroList.map(m => ({ label: m.label, type: "macro" as const, builtin: m.builtin, detail: m.creator }));
                     } else if (context.type === "variant") {
                         suggestions = allv.map(v => ({ label: v, type: "variant" as const, builtin: false }));
                     } else if (context.type === "flag") {

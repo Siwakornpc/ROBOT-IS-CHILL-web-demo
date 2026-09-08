@@ -146,7 +146,7 @@ export function AutocompleteDropdown({
                             }
                             <span id="this-name">
                                 {item.type === "variant" ? (triggerChar || ":") : ""}
-                                {item.label}
+                                {item.label.replace(/[\r\n]/g, "")}
                             </span>
                         </span>
                         {item.detail && (item.type === "macro" && !item.builtin
