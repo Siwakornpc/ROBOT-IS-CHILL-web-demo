@@ -85,8 +85,10 @@ export function DiscordUser({ id }: DiscordUserProps) {
 }
 
 export function useDiscordUser(id: string) {
-    const [user, setUser] = useState<DiscordUserData | null>(() => userCache.get(id) ?? null);
-    const [loading, setLoading] = useState(() => !userCache.has(id));
+    const cached = userCache.get(id);
+
+    const [user, setUser] = useState<DiscordUserData | null>(cached ?? null);
+    const [loading, setLoading] = useState(!cached);
 
     useEffect(() => {
         const cached = userCache.get(id);
@@ -98,6 +100,7 @@ export function useDiscordUser(id: string) {
         }
 
         let cancelled = false;
+
         setLoading(true);
 
         fetchDiscordUser(id)

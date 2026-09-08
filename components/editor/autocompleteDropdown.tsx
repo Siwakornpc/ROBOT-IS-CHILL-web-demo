@@ -24,11 +24,7 @@ interface AutocompleteProps {
 function MacroCreator({ id }: { id: string }) {
     const { user, loading } = useDiscordUser(id);
 
-    if (loading) {
-        return <p>loading...</p>;
-    }
-
-    return <p>@{user?.username ?? id}</p>;
+    return <p>@{loading ? "loading..." : user?.username ?? id}</p>;
 }
 
 export function AutocompleteDropdown({
