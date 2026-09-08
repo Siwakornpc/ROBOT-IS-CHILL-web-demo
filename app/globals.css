@@ -1062,6 +1062,9 @@ hr {
 [dir=rtl] .slider-handle::after {
     translate: calc(50% - 2px);
 }
+[dir=rtl] .slider-container:active .slider-handle::after {
+    translate: calc(50% - 1px);
+}
 
 .slider-container.xsmall {
     height: 44px;
