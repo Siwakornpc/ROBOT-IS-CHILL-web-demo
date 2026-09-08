@@ -1131,14 +1131,14 @@ function renderBlockChildren(
  */
 
 function DiscordUserMention({ id }: { id: string }) {
-    const user = useDiscordUser(id);
+    const { user, loading }= useDiscordUser(id);
 
     return (
         <a
             className="discord-mention discord-mention-user"
             target="_blank"
             href={`https://discord.com/users/${id}`}
-        >@{user?.username ?? id}
+        >{loading ? "Loading..." : `@${user?.username ?? id}`}
         </a>
     );
 }
