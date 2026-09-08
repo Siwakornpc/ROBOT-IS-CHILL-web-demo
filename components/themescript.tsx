@@ -6,8 +6,8 @@ import * as MCU from '@material/material-color-utilities';
 const customThemeColors = {
     success: '#84cc7b',
     syntaxName: '#72a5e7',
-    syntaxValue: '#e7be72',
-    syntaxEscaped: '#ee9459',
+    syntaxValue: '#ffe341',
+    syntaxEscaped: '#ff8147',
     syntaxBracketLayer0: { color: '#f1c43e', blend: false }, 
     syntaxBracketLayer1: { color: '#c85acc', blend: false }, 
     syntaxBracketLayer2: { color: '#5f94f5', blend: false },
@@ -15,7 +15,7 @@ const customThemeColors = {
     renderFlagName: '#adec8b',
     renderFlagValue: '#84cc7b',
     renderVariantName: '#be6ed4',
-    renderVariantValue: '#de4fb6',
+    renderVariantValue: '#de4f8f',
 
     typeArgumentname: '#5f94f5',
     typeIdentifier: '#0fa779',
