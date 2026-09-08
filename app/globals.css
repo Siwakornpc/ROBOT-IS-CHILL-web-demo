@@ -3006,6 +3006,16 @@ tr:nth-child(odd) td {
 .ac-dropdown-option p {
     color: rgb(var(--md-color-outline));
     font-size: 0.75rem;
+    max-width: 120px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.ac-dropdown-option #this-name {
+    max-width: 210px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 .ac-dropdown-option.selected p {
     color: rgb(var(--md-color-on-secondary-container));

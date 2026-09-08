@@ -1,6 +1,5 @@
 "use client";
 
-import { isCI } from "next/dist/server/ci-info";
 import { useEffect, useState, useRef } from "react";
 import { useDiscordUser } from "../DiscordUser";
 
@@ -145,14 +144,14 @@ export function AutocompleteDropdown({
                                 ? <span className="icon ac-icon">flag</span>
                                 : ""
                             }
-                            <span>
+                            <span id="this-name">
                                 {item.type === "variant" ? (triggerChar || ":") : ""}
                                 {item.label}
                             </span>
                         </span>
                         {item.detail && (item.type === "macro" && !item.builtin
                             ? <MacroCreator id={item.detail} />
-                            : <p>{item.detail}</p>)}
+                            : <p>{`(${item.detail})`}</p>)}
                     </div>
                 );
             })}
