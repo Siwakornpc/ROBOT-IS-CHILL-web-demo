@@ -296,6 +296,7 @@ export function useEditorEngine({
             saveState(newPos, newPos);
             render(newPos, newPos);
             editorArea.focus();
+            editorArea.dispatchEvent(new Event("input", { bubbles: true }));
         };
 
         if (onInsertSuggestionRef) onInsertSuggestionRef.current = insertSuggestion;
