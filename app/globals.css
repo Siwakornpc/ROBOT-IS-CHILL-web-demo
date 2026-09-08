@@ -3014,7 +3014,7 @@ tr:nth-child(odd) td {
 .ac-dropdown-option #this-name {
     max-width: 210px;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: pre;
     overflow: hidden;
 }
 .ac-dropdown-option.selected p {
