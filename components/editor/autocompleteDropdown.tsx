@@ -46,8 +46,8 @@ export function AutocompleteDropdown({
     const visibleSuggestions = filtered.slice(0, 12);
     
     useEffect(() => setSelectedIndex(0), [query, suggestions]);
-
-        useEffect(() => {
+    
+    useEffect(() => {
         if (!isOpen) return;
         const activeEl = itemRefs.current[selectedIndex];
         const container = dropdownRef.current;
