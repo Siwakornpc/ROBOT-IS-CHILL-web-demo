@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 
 export function buildMacroDefinitionUrl(name: string): string {
     const macroName = String(name ?? "").trim();
