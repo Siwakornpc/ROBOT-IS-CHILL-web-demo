@@ -70,24 +70,24 @@ export function AutocompleteDropdown({
         if (!isOpen) return;
 
         function handleKeyDown(e: KeyboardEvent) {
-            if (filtered.length === 0) return;
+            if (visibleSuggestions.length === 0) return;
 
             if (e.key === "ArrowDown") {
                 e.preventDefault();
                 setSelectedIndex((prev) => 
-                    (prev + 1) % filtered.length
+                    (prev + 1) % visibleSuggestions.length
                 );
             }
             else if (e.key == "ArrowUp") {
                 e.preventDefault();
                 setSelectedIndex((prev) => 
-                    (prev - 1 + filtered.length) % filtered.length
+                    (prev - 1 + visibleSuggestions.length) % visibleSuggestions.length
                 );
             }
             else if (e.key === "Enter" || e.key === "Tab") {
                 e.preventDefault();
-                if (filtered[selectedIndex])
-                    onSelect(filtered[selectedIndex]);
+                if (visibleSuggestions[selectedIndex])
+                    onSelect(visibleSuggestions[selectedIndex]);
             }
             else if (e.key === "Escape") {
                 e.preventDefault();
