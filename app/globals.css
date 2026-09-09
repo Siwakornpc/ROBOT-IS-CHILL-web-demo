@@ -1514,9 +1514,9 @@ hr {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    margin: 12px;
-
     position: relative;
+    height: calc(100dvh - 56px);
+    padding: 12px;
 }
 
 main:has(.main-body) {
@@ -1690,8 +1690,8 @@ main:has(.main-body) {
     flex-direction: column;
     position: relative;
     width: 100%;
-    height: 10rem;
-    min-height: 10rem;
+    height: 16rem;
+    min-height: 16rem;
     border-radius: 8px;
     background: var(--editor-body);
     border: 1px solid rgb(var(--md-color-outline-variant));
@@ -1900,7 +1900,8 @@ main:has(.main-body) {
     position: relative;
 
     width: stretch;
-    height: calc(100dvh - 330px);
+    height: stretch;
+    min-height: 12rem;
     padding: 8px 12px;
 
     background: var(--editor-body);
