@@ -58,10 +58,12 @@ export function AutocompleteDropdown({
             const containerTop = container.scrollTop;
             const containerBottom = containerTop + container.clientHeight;
 
+            const padding = 4;
+
             if (elTop < containerTop) {
-                container.scrollTop = elTop - 4;
+                container.scrollTop = elTop - padding;
             } else if (elBottom > containerBottom) {
-                container.scrollTop = elBottom - container.clientHeight + 4;
+                container.scrollTop = elBottom - container.clientHeight + padding;
             }
         }
     }, [selectedIndex, isOpen]);

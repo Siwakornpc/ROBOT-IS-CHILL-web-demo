@@ -16,6 +16,7 @@ import stdlib_macros from "../page/search/stdlib_macros";
 import { loadFlags, flags } from "@/components/highlight/render-highlight";
 
 import JSONbig from "json-bigint";
+import { lineStartOf } from './lineUtils';
 
 type EditorRefs = {
     editorAreaRef: RefObject<HTMLDivElement | null>;
@@ -99,7 +100,35 @@ export function useEditorEngine({
             onCodeChange
         });
         const handleClick = createEditorClickHandler(editorArea);
+
+        const handleCurrentLineScroll = () => {
+            if (!scrollEl) return;
+            const currentLine = editorArea.querySelector(".editor-line.current");
+
+            if (!currentLine) return;
+
+            const padding = 8;
+
+            const scroll_rect = scrollEl.getBoundingClientRect();
+            const currentLine_rect = currentLine.getBoundingClientRect();
+
+            if (currentLine_rect.top < scroll_rect.top) {
+                scrollEl.scrollTop -= padding;
+            } else if (currentLine_rect.bottom > scroll_rect.bottom) {
+                scrollEl.scrollTop += padding;
+            }
+        };
+
         const handleSelectionChange = createSelectionChangeHandler({ win, editorArea, gutterEl, state });
+
+        const handleSelectionChangeWithScroll = () => {
+            handleSelectionChange();
+
+            requestAnimationFrame(() => {
+                handleCurrentLineScroll();
+            });
+        };
+
         const handleScroll = () => gutterWrap.scrollTop = scrollEl.scrollTop;
         const handleResize = () => {
             render(state.value.length, state.value.length);
@@ -327,7 +356,7 @@ export function useEditorEngine({
 
         editorArea.addEventListener("beforeinput", handleBeforeInput as EventListener);
         editorArea.addEventListener("keydown", handleKeydown);
-        document.addEventListener("selectionchange", handleSelectionChange);
+        document.addEventListener("selectionchange", handleSelectionChangeWithScroll);
         document.addEventListener("selectionchange", handleACSelectionChange);
         scrollEl.addEventListener("scroll", handleScroll);
         editorArea.addEventListener("click", handleClick);
@@ -367,7 +396,7 @@ export function useEditorEngine({
             document.removeEventListener("mousedown", handleMouseDown);
             editorArea.removeEventListener("beforeinput", handleBeforeInput as EventListener);
             editorArea.removeEventListener("keydown", handleKeydown);
-            document.removeEventListener("selectionchange", handleSelectionChange);
+            document.removeEventListener("selectionchange", handleSelectionChangeWithScroll);
             document.removeEventListener("selectionchange", handleACSelectionChange);
             scrollEl.removeEventListener("scroll", handleScroll);
             editorArea.removeEventListener("click", handleClick);
