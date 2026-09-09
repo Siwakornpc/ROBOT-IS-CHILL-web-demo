@@ -1796,8 +1796,8 @@ main:has(.main-body) {
 .macro-name {
     color: var(--macro-name);
 }
-.macro-ref {
-    color: rgb(var(--md-color-on-primary-container));
+.macro-ref:hover {
+    color: rgb(var(--md-color-tertiary));
     text-decoration: underline;
     cursor: pointer;
 }

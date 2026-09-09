@@ -17,7 +17,6 @@ import { loadFlags, flags } from "@/components/highlight/render-highlight";
 import { buildMacroDefinitionUrl, getMacroDefinitionNameFromElement } from "./macroDefinition";
 
 import JSONbig from "json-bigint";
-import { lineStartOf } from './lineUtils';
 
 type EditorRefs = {
     editorAreaRef: RefObject<HTMLDivElement | null>;
@@ -113,11 +112,10 @@ export function useEditorEngine({
             const scroll_rect = scrollEl.getBoundingClientRect();
             const currentLine_rect = currentLine.getBoundingClientRect();
 
-            if (currentLine_rect.top < scroll_rect.top) {
+            if (currentLine_rect.top < scroll_rect.top)
                 scrollEl.scrollTop -= padding;
-            } else if (currentLine_rect.bottom > scroll_rect.bottom) {
+            else if (currentLine_rect.bottom > scroll_rect.bottom)
                 scrollEl.scrollTop += padding;
-            }
         };
 
         const handleSelectionChange = createSelectionChangeHandler({ win, editorArea, gutterEl, state });
@@ -132,20 +130,17 @@ export function useEditorEngine({
         };
 
         const handleMacroReferenceKeydown = (e: KeyboardEvent) => {
-            if ((e.ctrlKey || e.metaKey) && !(e.altKey || e.shiftKey)) {
+            if ((e.ctrlKey || e.metaKey) && !(e.altKey || e.shiftKey))
                 updateMacroReferenceState(true);
-            }
         };
 
         const handleMacroReferenceKeyup = (e: KeyboardEvent) => {
-            if (e.key === "Control" || e.key === "Meta") {
+            if (e.key === "Control" || e.key === "Meta")
                 updateMacroReferenceState(false);
-            }
         };
 
-        const handleMacroReferenceBlur = () => {
+        const handleMacroReferenceBlur = () =>
             updateMacroReferenceState(false);
-        };
 
         const handleMacroHover = (e: MouseEvent) => {
             if (!isMacroReferenceActive) return;
@@ -170,10 +165,7 @@ export function useEditorEngine({
 
         const handleSelectionChangeWithScroll = () => {
             handleSelectionChange();
-
-            requestAnimationFrame(() => {
-                handleCurrentLineScroll();
-            });
+            requestAnimationFrame(handleCurrentLineScroll);
         };
 
         const handleScroll = () => gutterWrap.scrollTop = scrollEl.scrollTop;
@@ -194,20 +186,18 @@ export function useEditorEngine({
                 && !e.metaKey
                 && !e.altKey;
 
-            if (e.key === "Escape") {
+            if (e.key === "Escape")
                 isAutocompleteOpenRef.current = false;
-            }
         };
 
         const handleMouseDown = (e: MouseEvent) => {
             isLetterTypingRef.current = false;
             const clickedInEditor = editorArea.contains(e.target as Node);
-            if (!clickedInEditor) {
+            if (!clickedInEditor)
                 isAutocompleteOpenRef.current = false;
-            }
-            if (!isAutocompleteOpenRef.current) {
+
+            if (!isAutocompleteOpenRef.current)
                 isACLetterTypingRef.current = false;
-            }
         };
 
         document.addEventListener("keydown", handleGlobalKeydown);
@@ -386,7 +376,6 @@ export function useEditorEngine({
                 if (match) {
                     console.log("Length: ", match[0].length);
                     before = state.value.slice(0, startIndex - match[0].length - (match[0].length === 2 ? 1 : 0));
-                    // it's very weird that it was for example "   -" 4 and "   --" is 6
                 }
             }
 
@@ -429,7 +418,7 @@ export function useEditorEngine({
         };
 
         const refreshHighlighting = () => {
-            const { start, end } = getCaret(editorArea, state.value.split("\n"));
+            const {start, end} = getCaret(editorArea, state.value.split("\n"));
             render(start, end);
         };
 
@@ -448,21 +437,21 @@ export function useEditorEngine({
             document.removeEventListener("keydown", handleMacroReferenceKeydown);
             document.removeEventListener("keyup", handleMacroReferenceKeyup);
             document.removeEventListener("mousedown", handleMouseDown);
-            window.removeEventListener("blur", handleMacroReferenceBlur);
-            editorArea.removeEventListener("beforeinput", handleBeforeInput as EventListener);
-            editorArea.removeEventListener("keydown", handleKeydown);
             document.removeEventListener("selectionchange", handleSelectionChangeWithScroll);
             document.removeEventListener("selectionchange", handleACSelectionChange);
-            scrollEl.removeEventListener("scroll", handleScroll);
+            window.removeEventListener("resize", handleResize);
+            window.removeEventListener("blur", handleMacroReferenceBlur);
+            window.removeEventListener("executionmodechange", refreshHighlighting);
+            window.removeEventListener("rendersyntaxloaded", refreshHighlighting);
+            editorArea.removeEventListener("beforeinput", handleBeforeInput as EventListener);
+            editorArea.removeEventListener("keydown", handleKeydown);
             editorArea.removeEventListener("mouseover", handleMacroHover);
             editorArea.removeEventListener("click", handleClick);
             editorArea.removeEventListener("click", handleMacroDefinition);
-            window.removeEventListener("resize", handleResize);
+            scrollEl.removeEventListener("scroll", handleScroll);
+            scrollEl.removeEventListener("scroll", handleACSelectionChange);
             layoutResizeObserver?.disconnect();
             visualViewport?.removeEventListener("resize", handleACSelectionChange);
-            scrollEl.removeEventListener("scroll", handleACSelectionChange);
-            window.removeEventListener("executionmodechange", refreshHighlighting);
-            window.removeEventListener("rendersyntaxloaded", refreshHighlighting);
         };
     }, [editorAreaRef, gutterElRef, gutterWrapRef, scrollElRef]);
 }
