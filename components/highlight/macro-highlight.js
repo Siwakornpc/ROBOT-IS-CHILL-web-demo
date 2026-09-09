@@ -3,12 +3,13 @@ const escapeHtml = (str) => str
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
 
-const span = (className, textValue, kind = "", id = -1, depth = 0, pos = -1) => {
+const span = (className, textValue, kind = "", id = -1, depth = 0, pos = -1, macroName = "") => {
     if (kind === "open" || kind === "close")
         return `<span class="${className} ${kind}-bracket bracket-level-${depth % 3}" data-bid="${id}" data-pos="${pos}">${escapeHtml(textValue)}</span>`;
 
     const position = pos >= 0 ? ` data-pos="${pos}"` : "";
-    return `<span class="${className}"${position}>${escapeHtml(textValue)}</span>`;
+    const macroAttribute = macroName ? ` data-macro-name="${escapeHtml(macroName)}"` : "";
+    return `<span class="${className}"${position}${macroAttribute}>${escapeHtml(textValue)}</span>`;
 };
 
 // Shared escape-aware bracket pairing. Used both to know which "]" closes
@@ -127,7 +128,7 @@ const buildMacroTokens = (text) => {
 const tokenHtml = (token) => {
     if (token.type === "bracket") return token.html;
     if (!token.className) return escapeHtml(token.text);
-    return span(token.className, token.text, "", -1, 0, token.pos);
+    return span(token.className, token.text, "", -1, 0, token.pos, token.className === "macro-name" ? token.text : "");
 };
 
 export const macroHighlighter = (text) => buildMacroTokens(text).map(tokenHtml).join("");

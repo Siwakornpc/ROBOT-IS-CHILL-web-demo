@@ -14,6 +14,7 @@ import { loadVariants, allv } from "./getVariantName";
 import { getAutocompleteContext } from "./autocompleteUtils";
 import stdlib_macros from "../page/search/stdlib_macros";
 import { loadFlags, flags } from "@/components/highlight/render-highlight";
+import { buildMacroDefinitionUrl, getMacroDefinitionNameFromElement } from "./macroDefinition";
 
 import JSONbig from "json-bigint";
 import { lineStartOf } from './lineUtils';
@@ -121,6 +122,52 @@ export function useEditorEngine({
 
         const handleSelectionChange = createSelectionChangeHandler({ win, editorArea, gutterEl, state });
 
+        let isMacroReferenceActive = false;
+
+        const updateMacroReferenceState = (active: boolean) => {
+            isMacroReferenceActive = active;
+            editorArea.querySelectorAll(".macro-name").forEach((el) => {
+                el.classList.toggle("macro-ref", active);
+            });
+        };
+
+        const handleMacroReferenceKeydown = (e: KeyboardEvent) => {
+            if ((e.ctrlKey || e.metaKey) && !(e.altKey || e.shiftKey)) {
+                updateMacroReferenceState(true);
+            }
+        };
+
+        const handleMacroReferenceKeyup = (e: KeyboardEvent) => {
+            if (e.key === "Control" || e.key === "Meta") {
+                updateMacroReferenceState(false);
+            }
+        };
+
+        const handleMacroReferenceBlur = () => {
+            updateMacroReferenceState(false);
+        };
+
+        const handleMacroHover = (e: MouseEvent) => {
+            if (!isMacroReferenceActive) return;
+
+            const macroName = getMacroDefinitionNameFromElement(e.target);
+            if (!macroName) return;
+
+            const target = e.target instanceof Element ? e.target.closest(".macro-name") as HTMLElement | null : null;
+            if (target) target.classList.add("macro-ref");
+        };
+
+        const handleMacroDefinition = (e: MouseEvent) => {
+            if (!(e.ctrlKey || e.metaKey)) return;
+
+            const macroName = getMacroDefinitionNameFromElement(e.target);
+            if (!macroName) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+            window.location.assign(buildMacroDefinitionUrl(macroName));
+        };
+
         const handleSelectionChangeWithScroll = () => {
             handleSelectionChange();
 
@@ -165,7 +212,10 @@ export function useEditorEngine({
 
         document.addEventListener("keydown", handleGlobalKeydown);
         document.addEventListener("keydown", handleACKeydown);
+        document.addEventListener("keydown", handleMacroReferenceKeydown);
+        document.addEventListener("keyup", handleMacroReferenceKeyup);
         document.addEventListener("mousedown", handleMouseDown);
+        window.addEventListener("blur", handleMacroReferenceBlur);
 
         let macroList: Array<{ label: string; builtin?: boolean; creator: string }> = [];
 
@@ -359,7 +409,9 @@ export function useEditorEngine({
         document.addEventListener("selectionchange", handleSelectionChangeWithScroll);
         document.addEventListener("selectionchange", handleACSelectionChange);
         scrollEl.addEventListener("scroll", handleScroll);
+        editorArea.addEventListener("mouseover", handleMacroHover);
         editorArea.addEventListener("click", handleClick);
+        editorArea.addEventListener("click", handleMacroDefinition);
         window.addEventListener("resize", handleResize);
 
         const api: EditorApi = {
@@ -393,13 +445,18 @@ export function useEditorEngine({
         return () => {
             document.removeEventListener("keydown", handleGlobalKeydown);
             document.removeEventListener("keydown", handleACKeydown);
+            document.removeEventListener("keydown", handleMacroReferenceKeydown);
+            document.removeEventListener("keyup", handleMacroReferenceKeyup);
             document.removeEventListener("mousedown", handleMouseDown);
+            window.removeEventListener("blur", handleMacroReferenceBlur);
             editorArea.removeEventListener("beforeinput", handleBeforeInput as EventListener);
             editorArea.removeEventListener("keydown", handleKeydown);
             document.removeEventListener("selectionchange", handleSelectionChangeWithScroll);
             document.removeEventListener("selectionchange", handleACSelectionChange);
             scrollEl.removeEventListener("scroll", handleScroll);
+            editorArea.removeEventListener("mouseover", handleMacroHover);
             editorArea.removeEventListener("click", handleClick);
+            editorArea.removeEventListener("click", handleMacroDefinition);
             window.removeEventListener("resize", handleResize);
             layoutResizeObserver?.disconnect();
             visualViewport?.removeEventListener("resize", handleACSelectionChange);
