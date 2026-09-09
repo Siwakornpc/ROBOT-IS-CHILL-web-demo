@@ -43,7 +43,7 @@ export function AutocompleteDropdown({
         item.label.toLowerCase().includes(query.toLowerCase())
     );
 
-    const visibleSuggestions = filtered.slice(0, 12);
+    const visibleSuggestions = filtered.slice(0, 20);
     
     useEffect(() => setSelectedIndex(0), [query, suggestions]);
 
@@ -60,11 +60,10 @@ export function AutocompleteDropdown({
 
             const padding = 4;
 
-            if (elTop < containerTop) {
+            if (elTop < containerTop)
                 container.scrollTop = elTop - padding;
-            } else if (elBottom > containerBottom) {
+            else if (elBottom > containerBottom)
                 container.scrollTop = elBottom - container.clientHeight + padding;
-            }
         }
     }, [selectedIndex, isOpen]);
 
