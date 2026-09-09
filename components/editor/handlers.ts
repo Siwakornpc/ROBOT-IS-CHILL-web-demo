@@ -100,13 +100,11 @@ function indentAtCaret(
     const leadingWhitespace = getLineIndent(beforeCaret);
 
     const column = indentationColumns(leadingWhitespace);
-
     const visualColumn = leadingWhitespace.length === beforeCaret.length
         ? column
         : column + (beforeCaret.length - leadingWhitespace.length);
 
     const spaces = spacesToNextTabStop(visualColumn);
-
     const newValue = value.slice(0, position) + " ".repeat(spaces) + value.slice(position);
 
     return {
@@ -201,7 +199,6 @@ export function createKeydownHandler(deps: KeydownDeps) {
             ) lastLineEnd = end - 1;
 
             const selectedText = state.value.slice(firstLineStart, lastLineEnd);
-
             const selectedLines = selectedText.split("\n");
 
             let totalDelta = 0;
@@ -211,7 +208,6 @@ export function createKeydownHandler(deps: KeydownDeps) {
                 if (e.shiftKey) {
                     const oldIndent = getLineIndent(line);
                     const newIndent = removeOneIndentLevel(oldIndent);
-
                     const delta = newIndent.length - oldIndent.length;
 
                     if (index === 0) {
@@ -228,7 +224,6 @@ export function createKeydownHandler(deps: KeydownDeps) {
                 }
 
                 totalDelta += INDENT.length;
-
                 return INDENT + line;
             });
 
@@ -239,7 +234,6 @@ export function createKeydownHandler(deps: KeydownDeps) {
             onCodeChange?.(state.value);
 
             const newStart = Math.max(firstLineStart, start + firstLineDelta);
-
             const newEnd = Math.max(newStart, end + totalDelta);
 
             saveState(newStart, newEnd);
@@ -270,7 +264,6 @@ export function createKeydownHandler(deps: KeydownDeps) {
                 onCodeChange?.(state.value);
                 saveState(position, position);
                 render(position, position);
-
                 return;
             }
 
@@ -286,7 +279,6 @@ export function createKeydownHandler(deps: KeydownDeps) {
                 onCodeChange?.(state.value);
                 saveState(position, position);
                 render(position, position);
-
                 return;
             }
 

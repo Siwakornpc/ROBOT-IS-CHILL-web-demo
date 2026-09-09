@@ -2972,7 +2972,7 @@ tr:nth-child(odd) td {
     position: fixed;
     overflow-y: auto;
     width: 400px;
-    max-height: 194px;
+    max-height: 200px;
     font-family: var(--font-family-code);
     font-size: var(--font-size-code);
     line-height: var(--editor-line-height);

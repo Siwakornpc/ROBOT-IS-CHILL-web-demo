@@ -46,7 +46,7 @@ export function AutocompleteDropdown({
     const visibleSuggestions = filtered.slice(0, 12);
     
     useEffect(() => setSelectedIndex(0), [query, suggestions]);
-    
+
     useEffect(() => {
         if (!isOpen) return;
         const activeEl = itemRefs.current[selectedIndex];
@@ -59,9 +59,9 @@ export function AutocompleteDropdown({
             const containerBottom = containerTop + container.clientHeight;
 
             if (elTop < containerTop) {
-                container.scrollTop = elTop;
+                container.scrollTop = elTop - 4;
             } else if (elBottom > containerBottom) {
-                container.scrollTop = elBottom - container.clientHeight;
+                container.scrollTop = elBottom - container.clientHeight + 4;
             }
         }
     }, [selectedIndex, isOpen]);
