@@ -2490,7 +2490,7 @@ main:has(.main-body) {
     font-family: var(--font-family-code);
     margin: 2rem auto;
     word-wrap: break-word;
-    min-height: 3rem;
+    max-height: fit-content;
 }
 .search-details-macro-name,
 .search-details-variant-name,
