@@ -121,7 +121,7 @@ export function AutocompleteDropdown({
             className="ac-dropdown inset-scrollbar"
             style={{ top: position.top, left: position.left }}
         >
-            {filtered.map((item, index) => {
+            {visibleSuggestions.map((item, index) => {
                 const isSelected = index === selectedIndex;
                 return (
                     <div
