@@ -7,6 +7,7 @@ const customThemeColors = {
     success: '#84cc7b',
     syntaxName: '#72a5e7',
     syntaxValue: '#ffcb22',
+    syntaxEscaped: '#ff8147',
     syntaxBracketLayer0: { color: '#f1c43e', blend: false }, 
     syntaxBracketLayer1: { color: '#c85acc', blend: false }, 
     syntaxBracketLayer2: { color: '#5f94f5', blend: false },
