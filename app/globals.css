@@ -1515,7 +1515,7 @@ hr {
     flex-direction: column;
     gap: 8px;
     position: relative;
-    min-height: calc(100dvh - 56px);
+    height: calc(100dvh - 56px);
     padding: 12px;
 }
 
