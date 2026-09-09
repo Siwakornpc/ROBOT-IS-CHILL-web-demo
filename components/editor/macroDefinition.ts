@@ -1,19 +1,11 @@
-"use client";
-
-import { useEffect, useState } from "react";
-
 export function buildMacroDefinitionUrl(name: string): string {
     const macroName = String(name ?? "").trim();
     if (!macroName) return "/search";
 
-    const [codeParam, setCodeParam] = useState<string>("");
+    const codeParam = typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("code");
+    const codeQuery = codeParam === null ? "" : `&code=${encodeURIComponent(codeParam)}`;
 
-    useEffect(() => {
-        const match = window.location.search.match(/(?:\?|&)(code=[^&]*)/)
-        if (match) setCodeParam(`?${match[1]}`);
-    }, []);
-
-    return `/search#macros?details=${encodeURIComponent(macroName)}${codeParam}`;
+    return `/search#macros?details=${encodeURIComponent(macroName)}${codeQuery}`;
 }
 
 export function getMacroDefinitionNameFromElement(target: EventTarget | null): string | null {
@@ -25,6 +17,5 @@ export function getMacroDefinitionNameFromElement(target: EventTarget | null): s
     if (!element) return null;
 
     const macroName = element.getAttribute("data-macro-name") ?? element.textContent ?? "";
-    const trimmed = macroName.trim();
-    return trimmed || null;
+    return macroName.trim() || null;
 }
