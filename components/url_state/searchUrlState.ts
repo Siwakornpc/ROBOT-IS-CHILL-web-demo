@@ -47,22 +47,18 @@ export function encodeCodeForUrl(code: string): string {
         try {
             window.localStorage.setItem(`${CODE_STORAGE_PREFIX}${token}`, code);
             return token;
-        } catch {
-            // Fall back to the raw value if storage is unavailable.
-        }
+        } catch {} // Fall back to the raw value if storage is unavailable.
     }
 
     return code;
 }
 
 export function readCodeFromUrlParam(codeParam: string | null): string | null {
-    if (codeParam === null || codeParam === "") {
+    if (codeParam === null || codeParam === "")
         return null;
-    }
 
-    if (typeof window === "undefined" || !("localStorage" in window)) {
+    if (typeof window === "undefined" || !("localStorage" in window))
         return codeParam;
-    }
 
     try {
         const storedCode = window.localStorage.getItem(`${CODE_STORAGE_PREFIX}${codeParam}`);
@@ -73,15 +69,12 @@ export function readCodeFromUrlParam(codeParam: string | null): string | null {
 }
 
 export function clearCodeFromUrlStorage(codeParam: string | null) {
-    if (typeof window === "undefined" || !("localStorage" in window) || codeParam === null) {
+    if (typeof window === "undefined" || !("localStorage" in window) || codeParam === null)
         return;
-    }
 
     try {
         window.localStorage.removeItem(`${CODE_STORAGE_PREFIX}${codeParam}`);
-    } catch {
-        // Ignore storage errors.
-    }
+    } catch {} // Ignore storage errors.
 }
 
 export function readSearchUrlState(): SearchUrlState {
