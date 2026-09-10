@@ -20,20 +20,23 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
     return (
         <main style={{ width: "stretch" }}>
             <div className="main-body">
-                <div className="run-controls">
-                    <p className="text-label">Execute</p>
-                    <ExecutionModeSelect />
-                    <button id="run" style={{display: "none"}} disabled>Run</button>
-                    <StatusBar small={isSmallScreen} />
+                <div className="flex flex-col gap-[8px]">
+                    <div className="run-controls">
+                        <p className="text-label">Execute</p>
+                        <button id="run" style={{display: "none"}} disabled>Run</button>
+                        <StatusBar small={isSmallScreen} />
+                    </div>
+                    <hr />
+                    <EditorScreen onCodeChange={onCodeChange} />
+                    
+                    <MacroInitializer />
                 </div>
-                <hr />
-                <EditorScreen onCodeChange={onCodeChange} />
-                
-                <MacroInitializer />
 
-                <p className="text-label">Render</p>
-                <hr />
-                <RenderScreen />
+                <div className="flex flex-col gap-[8px] h-full">
+                    <p className="text-label">Output</p>
+                    <hr />
+                    <RenderScreen />
+                </div>
             </div>
         </main>
     );
