@@ -23,6 +23,6 @@ export function updateCurrentLineClass(lineEls: HTMLElement[], activeLine: numbe
 export function syncGutterScroll(gutterWrap: HTMLElement | null, gutterEl: HTMLElement | null, scrollEl: HTMLElement | null) {
     if (!gutterWrap || !gutterEl || !scrollEl) return;
 
-    const contentHeight = Math.max(gutterWrap.scrollHeight, scrollEl.scrollHeight, scrollEl.clientHeight);
+    const contentHeight = Math.max(scrollEl.scrollHeight, scrollEl.clientHeight);
     gutterWrap.style.height = `${contentHeight}px`;
 }
