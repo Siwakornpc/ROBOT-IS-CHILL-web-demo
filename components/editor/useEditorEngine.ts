@@ -141,7 +141,7 @@ export function useEditorEngine({
 
         const handleMacroReferenceBlur = () => updateMacroReferenceState(false);
 
-        const handleMacroReferencePageshowPersisted = (e: React.SyntheticEvent) => {
+        const handleMacroReferencePageshowPersisted = (e: PageTransitionEvent) => {
             if (e.persisted)
                 updateMacroReferenceState(false);
         }
