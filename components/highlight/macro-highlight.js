@@ -53,12 +53,22 @@ const buildMacroTokens = (text) => {
     const current = () => bracketStack.at(-1);
 
     const appendText = (ch, className, pos) => {
-        tokens.push({
-            type: "text",
-            text: ch,
-            className: className || "",
-            pos: pos
-        });
+        const last = tokens.at(-1);
+        const resolvedClass = className || "";
+        if (
+            last &&
+            last.type === "text" &&
+            last.className === resolvedClass &&
+            last.pos + last.text.length === pos
+        )
+            last.text += ch;
+        else
+            tokens.push({
+                type: "text",
+                text: ch,
+                className: resolvedClass,
+                pos: pos
+            });
     };
 
     const flushArg1 = () => {
