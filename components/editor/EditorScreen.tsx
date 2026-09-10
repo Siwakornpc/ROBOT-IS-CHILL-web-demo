@@ -40,11 +40,11 @@ export function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) =
 
     return (
         <div className="editor-code">
-            <div className="editor-body-row">
+            <div className="editor-body-row ascroll-y" id="editor-text-scroll" ref={scrollElRef}>
                 <div className="editor-gutter-wrap" id="editor-gutter-wrap" ref={gutterWrapRef}>
                     <div className="editor-gutter" id="editor-gutter" ref={gutterElRef}></div>
                 </div>
-                <div className="editor-text ascroll-y" id="editor-text-scroll" ref={scrollElRef}>
+                <div className="editor-text" id="editor-text-scroll-inner">
                     <div
                         id="editor-area"
                         className="editor-input"

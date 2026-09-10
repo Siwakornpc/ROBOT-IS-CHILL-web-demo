@@ -2,7 +2,7 @@ import { useEffect, type RefObject, useRef, useState } from "react";
 import type { EditorApi, EditorState, WindowWithEditor } from "./types";
 import { ensureEditorReady, resolveEditorReady } from "./editorReady";
 import { createHistoryManager } from "./historyManager";
-import { createRenderer, shouldScrollSelectionToCaret } from "./renderer";
+import { createRenderer, scrollCaretIntoView, shouldScrollSelectionToCaret } from "./renderer";
 import { createBeforeInputHandler } from "./beforeInputHandler";
 import { normalizeNewlines } from "./lineUtils";
 import {
@@ -16,6 +16,7 @@ import { getAutocompleteContext } from "./autocompleteUtils";
 import stdlib_macros from "../page/search/stdlib_macros";
 import { loadFlags, flags } from "@/components/highlight/render-highlight";
 import { buildMacroDefinitionUrl, getMacroDefinitionNameFromElement } from "./macroDefinition";
+import { syncGutterScroll } from "./domUpdaters";
 
 import JSONbig from "json-bigint";
 
@@ -102,23 +103,6 @@ export function useEditorEngine({
         });
         const handleClick = createEditorClickHandler(editorArea);
 
-        const handleCurrentLineScroll = () => {
-            if (!scrollEl) return;
-            const currentLine = editorArea.querySelector(".editor-line.current");
-
-            if (!currentLine) return;
-
-            const padding = 8;
-
-            const scroll_rect = scrollEl.getBoundingClientRect();
-            const currentLine_rect = currentLine.getBoundingClientRect();
-
-            if (currentLine_rect.top < scroll_rect.top)
-                scrollEl.scrollTop -= padding;
-            else if (currentLine_rect.bottom > scroll_rect.bottom)
-                scrollEl.scrollTop += padding;
-        };
-
         const handleSelectionChange = createSelectionChangeHandler({ win, editorArea, gutterEl, state });
 
         let isMacroReferenceActive = false;
@@ -171,14 +155,21 @@ export function useEditorEngine({
         const handleSelectionChangeWithScroll = () => {
             if (document.activeElement !== editorArea) return;
 
-            const selection = window.getSelection();
             handleSelectionChange();
 
+            const selection = window.getSelection();
             if (!shouldScrollSelectionToCaret(selection)) return;
-            requestAnimationFrame(handleCurrentLineScroll);
+
+            requestAnimationFrame(() => {
+                if (document.activeElement !== editorArea) return;
+                scrollCaretIntoView(scrollEl);
+            });
         };
 
-        const handleScroll = () => gutterWrap.scrollTop = scrollEl.scrollTop;
+        const handleScroll = () => {
+            syncGutterScroll(gutterWrap, gutterEl, scrollEl);
+        };
+
         const handleResize = () => {
             render(state.value.length, state.value.length, { scrollToCaret: false });
             handleACSelectionChange();

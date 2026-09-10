@@ -1718,13 +1718,15 @@ main:has(.main-body) {
     display: flex;
     flex: auto;
     min-height: 0;
+    overflow: auto;
 }
 
 .editor-gutter-wrap {
     flex: 0 0 auto;
     min-width: 3rem;
-    overflow: hidden;
+    overflow: visible;
     border-inline-end: 1px solid var(--editor-outline);
+    background: inherit;
 }
 
 .editor-gutter {
@@ -1732,6 +1734,8 @@ main:has(.main-body) {
     user-select: none;
     padding: 4px;
     padding-inline-end: 0;
+    will-change: transform;
+    transform: translateY(0);
 }
 
 .gutter-line {
@@ -1756,6 +1760,7 @@ main:has(.main-body) {
     position: relative;
     min-width: 0;
     width: stretch;
+    min-height: 100%;
 }
 
 #editor-area {

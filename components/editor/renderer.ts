@@ -55,7 +55,7 @@ export function shouldScrollSelectionToCaret(selection: Selection | null): selec
     return selection.getRangeAt(0).collapsed === true;
 }
 
-function scrollCaretIntoView(scrollEl: HTMLElement) {
+export function scrollCaretIntoView(scrollEl: HTMLElement) {
     const selection = window.getSelection();
     if (!shouldScrollSelectionToCaret(selection)) return;
 
@@ -76,10 +76,24 @@ function scrollCaretIntoView(scrollEl: HTMLElement) {
     const visibleTop = scrollElRect.top + padding;
     const visibleBottom = scrollElRect.bottom - padding;
 
-    if (currentLineRect.top < visibleTop) {
-        scrollEl.scrollTop += currentLineRect.top - visibleTop;
-    } else if (currentLineRect.bottom > visibleBottom) {
-        scrollEl.scrollTop += currentLineRect.bottom - visibleBottom;
+    const maxScrollTop = Math.max(0, scrollEl.scrollHeight - scrollEl.clientHeight);
+    const scrollDelta = (() => {
+        if (currentLineRect.top < visibleTop) {
+            return currentLineRect.top - visibleTop;
+        }
+
+        if (currentLineRect.bottom > visibleBottom) {
+            return currentLineRect.bottom - visibleBottom;
+        }
+
+        return 0;
+    })();
+
+    if (scrollDelta === 0) return;
+
+    const targetScrollTop = Math.min(Math.max(0, scrollEl.scrollTop + scrollDelta), maxScrollTop);
+    if (targetScrollTop !== scrollEl.scrollTop) {
+        scrollEl.scrollTop = targetScrollTop;
     }
 }
 
@@ -131,7 +145,7 @@ export function createRenderer(deps: RendererDeps) {
         updateGutter(gutterEl, lineEls, lineIndex);
         updateCurrentLineClass(lineEls, lineIndex);
         updateCaretMatch(win, editorArea, s, e);
-        syncGutterScroll(gutterWrap, scrollEl);
+        syncGutterScroll(gutterWrap, gutterEl, scrollEl);
 
         requestAnimationFrame(() => {
             if (gen !== state.renderGen) return;
