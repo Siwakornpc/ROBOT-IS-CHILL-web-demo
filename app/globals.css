@@ -1790,12 +1790,7 @@ main:has(.main-body) {
 
 .editor-line > span {
     border-radius: 2px;
-    padding: 4px 0;
-}
-
-.editor-line > .macro-bracket-match {
-    border-radius: 2px;
-    padding: 3px 0;
+    padding-block: 3px;
 }
 
 .macro-brackets {
@@ -1831,6 +1826,7 @@ main:has(.main-body) {
     color: var(--macro-empty) !important;
 }
 .macro-bracket-match.macro-bracket-match {
+    padding-block: 2px;
     color: rgb(var(--md-color-on-tertiary-container)) !important;
     background: rgb(var(--md-color-tertiary-container), .32);
     outline: 1px solid rgb(var(--md-color-on-tertiary-container), .32);
