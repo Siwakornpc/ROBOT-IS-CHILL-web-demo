@@ -1812,6 +1812,9 @@ main:has(.main-body) {
 .macro-variable {
     color: var(--macro-var);
 }
+.editor-line > .error {
+    text-decoration: underline wavy var(--error);
+}
 .escape {
     color: var(--escape);
 }
