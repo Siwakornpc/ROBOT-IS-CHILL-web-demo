@@ -45,13 +45,21 @@ const buildMacroTokens = (text) => {
     const { validPairs } = findBracketPairsInternal(text);
 
     let bracketId = 0;
-    const stateStack = [];
     const bracketStack = [];
     const escapable = new Set(["[", "]", "/", "\\", "$"]);
     const tokens = [];
     const storedVariables = new Set();
 
     const current = () => bracketStack.at(-1);
+
+    const appendText = (ch, className, pos) => {
+        tokens.push({
+            type: "text",
+            text: ch,
+            className: className || "",
+            pos: pos
+        });
+    };
 
     const flushArg1 = () => {
         const curr = current();
