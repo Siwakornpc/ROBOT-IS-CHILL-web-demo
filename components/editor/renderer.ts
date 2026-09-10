@@ -50,9 +50,14 @@ function highlightLines(win: WindowWithEditor, lines: string[], value: string) {
 // caret. Identify the layout boundaries using the getBoundingClientRect()
 // trick, then calculate if the current line has exceed the scroll element rect
 // with an additional padding.
+export function shouldScrollSelectionToCaret(selection: Selection | null): selection is Selection {
+    if (!selection || selection.rangeCount === 0) return false;
+    return selection.getRangeAt(0).collapsed === true;
+}
+
 function scrollCaretIntoView(scrollEl: HTMLElement) {
     const selection = window.getSelection();
-    if (!selection || !selection.rangeCount) return;
+    if (!shouldScrollSelectionToCaret(selection)) return;
 
     const range = selection.getRangeAt(0);
     let node: Node | null = range.startContainer;
@@ -68,15 +73,13 @@ function scrollCaretIntoView(scrollEl: HTMLElement) {
     const currentLineRect = currentLine.getBoundingClientRect();
 
     const padding = 8;
+    const visibleTop = scrollElRect.top + padding;
+    const visibleBottom = scrollElRect.bottom - padding;
 
-    if (currentLineRect.top < scrollElRect.top) {
-        scrollEl.scrollTop -= padding;
-    } else if (currentLineRect.bottom > scrollElRect.bottom) {
-        scrollEl.scrollTop += padding;
-    } else {
-        currentLine.scrollIntoView({
-            block: "nearest",
-        });
+    if (currentLineRect.top < visibleTop) {
+        scrollEl.scrollTop += currentLineRect.top - visibleTop;
+    } else if (currentLineRect.bottom > visibleBottom) {
+        scrollEl.scrollTop += currentLineRect.bottom - visibleBottom;
     }
 }
 
@@ -93,7 +96,7 @@ export function createRenderer(deps: RendererDeps) {
 
     let lastNotifiedValue = state.value;
 
-    function render(start: number, end = start) {
+    function render(start: number, end = start, options: { scrollToCaret?: boolean } = {}) {
         const gen = ++state.renderGen;
 
         const normalizedValue = normalizeNewlines(state.value);
@@ -118,7 +121,9 @@ export function createRenderer(deps: RendererDeps) {
         const e = clamp(end, 0, state.value.length);
 
         setRange(editorArea, lines, s, e);
-        scrollCaretIntoView(scrollEl);
+        if (options.scrollToCaret !== false) {
+            scrollCaretIntoView(scrollEl);
+        }
 
         const { lineIndex } = offsetToLineColumn(lines, s);
         const lineEls = Array.from(editorArea.children) as HTMLElement[];
@@ -132,7 +137,9 @@ export function createRenderer(deps: RendererDeps) {
             if (gen !== state.renderGen) return;
             if (document.activeElement !== editorArea) return;
             setRange(editorArea, lines, s, e);
-            scrollCaretIntoView(scrollEl);
+            if (options.scrollToCaret !== false) {
+                scrollCaretIntoView(scrollEl);
+            }
         });
     }
 

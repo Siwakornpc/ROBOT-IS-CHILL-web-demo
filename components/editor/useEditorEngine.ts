@@ -2,7 +2,7 @@ import { useEffect, type RefObject, useRef, useState } from "react";
 import type { EditorApi, EditorState, WindowWithEditor } from "./types";
 import { ensureEditorReady, resolveEditorReady } from "./editorReady";
 import { createHistoryManager } from "./historyManager";
-import { createRenderer } from "./renderer";
+import { createRenderer, shouldScrollSelectionToCaret } from "./renderer";
 import { createBeforeInputHandler } from "./beforeInputHandler";
 import { normalizeNewlines } from "./lineUtils";
 import {
@@ -170,13 +170,17 @@ export function useEditorEngine({
 
         const handleSelectionChangeWithScroll = () => {
             if (document.activeElement !== editorArea) return;
+
+            const selection = window.getSelection();
             handleSelectionChange();
+
+            if (!shouldScrollSelectionToCaret(selection)) return;
             requestAnimationFrame(handleCurrentLineScroll);
         };
 
         const handleScroll = () => gutterWrap.scrollTop = scrollEl.scrollTop;
         const handleResize = () => {
-            render(state.value.length, state.value.length);
+            render(state.value.length, state.value.length, { scrollToCaret: false });
             handleACSelectionChange();
         };
 

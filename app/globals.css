@@ -1790,6 +1790,12 @@ main:has(.main-body) {
 
 .editor-line > span {
     border-radius: 2px;
+    padding: 4px 0;
+}
+
+.editor-line > .macro-bracket-match {
+    border-radius: 2px;
+    padding: 3px 0;
 }
 
 .macro-brackets {
