@@ -45,6 +45,12 @@ const buildMacroTokens = (text) => {
     const { validPairs } = findBracketPairsInternal(text);
 
     const tokens = [];
+    const storedVariables = new Set();
+
+    let currentMacroName = "";
+    let isFirstValue = false;
+    let currentArgText = "";
+
     const appendText = (textValue, className = "", pos = -1) => {
         const previous = tokens.at(-1);
 
@@ -90,6 +96,8 @@ const buildMacroTokens = (text) => {
             const empty = validPairs.get(i) === i + 1 || next === "/";
             bracketStack.push({ id, close: validPairs.get(i), empty });
             stateStack.push("name");
+            currentMacroName = "";
+            isFirstValue = false;
             tokens.push({
                 type: "bracket",
                 pos: i,
@@ -98,8 +106,13 @@ const buildMacroTokens = (text) => {
             });
         }
         else if (ch === "]" && bracketStack.length && bracketStack.at(-1).close === i) {
+            if (currentMacroName === "store" && currentArgText.trim())
+                storedVariables.add(currentArgText.trim());
+            
             const item = bracketStack.pop();
             stateStack.pop();
+            stateStack.length === 0 && (currentMacroName = "");
+            
             tokens.push({
                 type: "bracket",
                 pos: i,
@@ -108,16 +121,28 @@ const buildMacroTokens = (text) => {
             });
         }
         else if (stateStack.length && ch === "/") {
+            if (stateStack.at(-1) === "name") isFirstValue = true; // Next text tokens will be the first argument/variable name
             stateStack[stateStack.length - 1] = "value";
             appendText(ch, bracketStack.at(-1).empty ? "macro-empty" : "macro-arg-separator", i);
         }
         else if (stateStack.length) {
             const current = bracketStack.at(-1);
-            appendText(
-                ch,
-                current.empty ? "macro-empty" : (stateStack.at(-1) === "name" ? "macro-name" : "macro-value"),
-                i,
-            );
+            const isNameState = stateStack.at(-1) === "name";
+
+            if (isNameState) {
+                currentMacroName += ch;
+                appendText(ch, current.empty ? "macro-empty" : "macro-name", i);
+            } else {
+                let className = current.empty ? "macro-empty" : "macro-value";
+
+                if (isFirstValue) {
+                    currentArgText += ch;
+                    if (currentMacroName === "load")
+                        className = storedVariables.has(currentArgText.trim()) ? "macro-variable-name" : "error";
+                }
+
+                appendText(ch, className, i);
+            }
         }
         else appendText(ch, "", i);
     }

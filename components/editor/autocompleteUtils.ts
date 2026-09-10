@@ -37,8 +37,8 @@ export function getAutocompleteContext(
     const lastSlash = lastUnescapedIndex(textBeforeCaret, "/");
     
     if (
-        lastOpenBracket > lastCloseBracket
-        && lastOpenBracket > lastSlash
+        lastOpenBracket > lastCloseBracket &&
+        lastOpenBracket > lastSlash
     ) {
         const macroStart = lastOpenBracket + 1;
         const query = textBeforeCaret.slice(macroStart);

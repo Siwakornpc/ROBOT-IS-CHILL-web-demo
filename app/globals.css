@@ -16,6 +16,7 @@
     --macro-arg-separator: rgb(var(--md-color-on-surface-variant));
     --macro-name: rgb(var(--md-color-syntax-name));
     --macro-value: rgb(var(--md-color-syntax-value));
+    --macro-var: rgb(var(--md-color-syntax-variable));
 
     --escape: rgb(var(--md-color-outline));
     --macro-value-escape: rgb(var(--md-color-syntax-escaped));
@@ -393,6 +394,10 @@ ul {
 
 ::placeholder {
     color: var(--variant);
+}
+
+.error {
+    color: var(--error);
 }
 
 body {
@@ -1784,7 +1789,7 @@ main:has(.main-body) {
 */
 
 .editor-line > span {
-    border-radius: 1px;
+    border-radius: 2px;
 }
 
 .macro-brackets {
@@ -1803,6 +1808,9 @@ main:has(.main-body) {
 }
 .macro-value {
     color: var(--macro-value);
+}
+.macro-variable-name {
+    color: var(--macro-var);
 }
 .escape {
     color: var(--escape);
@@ -1924,10 +1932,6 @@ main:has(.main-body) {
     overflow-wrap: anywhere;
 
     margin: auto 0;
-}
-#render-output.error,
-.status-value.error {
-    color: var(--error);
 }
 #render-output.complete {
     color: var(--success);
