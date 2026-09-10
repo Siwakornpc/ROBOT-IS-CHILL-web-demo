@@ -23,6 +23,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                 <div className="flex flex-col gap-[8px]">
                     <div className="run-controls">
                         <p className="text-label">Execute</p>
+                        <ExecutionModeSelect />
                         <button id="run" style={{display: "none"}} disabled>Run</button>
                         <StatusBar small={isSmallScreen} />
                     </div>
@@ -32,8 +33,8 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                     <MacroInitializer />
                 </div>
 
-                <div className="flex flex-col gap-[8px] h-full">
-                    <p className="text-label">Output</p>
+                <div className="flex flex-col gap-[8px]" style={{height: "stretch"}}>
+                    <p className="text-label">Render</p>
                     <hr />
                     <RenderScreen />
                 </div>
