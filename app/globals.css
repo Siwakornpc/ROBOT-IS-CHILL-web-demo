@@ -1724,6 +1724,7 @@ main:has(.main-body) {
 .editor-gutter-wrap {
     flex: 0 0 auto;
     min-width: 3rem;
+    height: max-content;
     overflow: visible;
     border-inline-end: 1px solid var(--editor-outline);
     background: inherit;
