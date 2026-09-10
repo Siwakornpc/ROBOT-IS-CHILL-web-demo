@@ -48,7 +48,7 @@ const buildMacroTokens = (text) => {
     const storedVariables = new Set();
 
     let currentMacroName = "";
-    let isFirstValue = false;
+    let argIndex = 0;
     let currentArgText = "";
 
     const appendText = (textValue, className = "", pos = -1) => {
@@ -76,13 +76,6 @@ const buildMacroTokens = (text) => {
         const ch = text[i];
         const next = text[i + 1];
 
-        // "\n" is always emitted as its own plain/uncoloured token, regardless of
-        // bracket depth or name/value state. This does two things: it keeps a
-        // multi-line macro call (name or value text that continues across a line
-        // break) tokenizing correctly, since state carries through untouched, and
-        // it guarantees no <span> ever contains a literal newline - callers can
-        // safely split the rendered HTML on "\n" to get one chunk per source line
-        // without ever splitting a tag in half.
         if (ch === "\n") appendText(ch, "", i);
 
         else if (ch === "\\" && next && escapable.has(next)) {
@@ -97,7 +90,8 @@ const buildMacroTokens = (text) => {
             bracketStack.push({ id, close: validPairs.get(i), empty });
             stateStack.push("name");
             currentMacroName = "";
-            isFirstValue = false;
+            argIndex = 0;
+            currentArgText = "";
             tokens.push({
                 type: "bracket",
                 pos: i,
@@ -121,24 +115,25 @@ const buildMacroTokens = (text) => {
             });
         }
         else if (stateStack.length && ch === "/") {
-            if (stateStack.at(-1) === "name") isFirstValue = true; // Next text tokens will be the first argument/variable name
+            argIndex++;
             stateStack[stateStack.length - 1] = "value";
             appendText(ch, bracketStack.at(-1).empty ? "macro-empty" : "macro-arg-separator", i);
         }
         else if (stateStack.length) {
             const current = bracketStack.at(-1);
-            const isNameState = stateStack.at(-1) === "name";
 
-            if (isNameState) {
+            if (argIndex === 0) {
                 currentMacroName += ch;
                 appendText(ch, current.empty ? "macro-empty" : "macro-name", i);
             } else {
                 let className = current.empty ? "macro-empty" : "macro-value";
 
-                if (isFirstValue) {
+                if (argIndex === 1) {
                     currentArgText += ch;
                     if (currentMacroName === "load")
                         className = storedVariables.has(currentArgText.trim()) ? "macro-variable" : "error";
+                    else if (currentMacroName === "store")
+                        className = "macro-variable";
                 }
 
                 appendText(ch, className, i);
