@@ -168,6 +168,7 @@ export function useEditorEngine({
         };
 
         const handleSelectionChangeWithScroll = () => {
+            if (document.activeElement !== scrollEl) return;
             handleSelectionChange();
             requestAnimationFrame(handleCurrentLineScroll);
         };
