@@ -50,6 +50,7 @@ const buildMacroTokens = (text) => {
     let currentMacroName = "";
     let argIndex = 0;
     let currentArgText = "";
+    let arg1Buffer = [];
 
     const appendText = (textValue, className = "", pos = -1) => {
         const previous = tokens.at(-1);
@@ -67,6 +68,22 @@ const buildMacroTokens = (text) => {
         tokens.push({ type: "text", text: textValue, className, pos });
     };
 
+    const flushArg1 = () => {
+        if (arg1Buffer.length === 0) return;
+        const trimmed = currentArgText.trim();
+        let resolvedClassName = arg1Buffer[0].empty ? "macro-empty" : "macro-value";
+
+        if (currentMacroName === "store")
+            resolvedClassName = "macro-variable";
+        else if (currentMacroName === "load")
+            resolvedClassName = storedVariables.has(trimmed) ? "macro-variable" : "error";
+
+        for (const item of arg1Buffer) {
+            appendText(item.ch, resolvedClassName, item.pos);
+        }
+        arg1Buffer = [];
+    };
+
     let bracketId = 0;
     const stateStack = [];
     const bracketStack = [];
@@ -76,15 +93,24 @@ const buildMacroTokens = (text) => {
         const ch = text[i];
         const next = text[i + 1];
 
-        if (ch === "\n") appendText(ch, "", i);
-
+        if (ch === "\n") {
+            if (argIndex === 1) flushArg1();
+            appendText(ch, "", i);
+        }
         else if (ch === "\\" && next && escapable.has(next)) {
             const state = stateStack.at(-1);
-            appendText(ch + next, state === "value" ? "macro-value-escape" : "escape", i);
+            const escapeClass = state === "value" ? "macro-value-escape" : "escape";
+            if (state === "value" && argIndex === 1) {
+                arg1Buffer.push({ ch: ch + next, pos: i, empty: bracketStack.at(-1).empty });
+                currentArgText += ch + next;
+            } else {
+                if (argIndex === 1) flushArg1();
+                appendText(ch + next, escapeClass, i);
+            }
             i++;
         }
-        
         else if (ch === "[" && validPairs.has(i)) {
+            if (argIndex === 1) flushArg1();
             const id = bracketId++;
             const empty = validPairs.get(i) === i + 1 || next === "/";
             bracketStack.push({ id, close: validPairs.get(i), empty });
@@ -92,6 +118,7 @@ const buildMacroTokens = (text) => {
             currentMacroName = "";
             argIndex = 0;
             currentArgText = "";
+            arg1Buffer = [];
             tokens.push({
                 type: "bracket",
                 pos: i,
@@ -100,12 +127,16 @@ const buildMacroTokens = (text) => {
             });
         }
         else if (ch === "]" && bracketStack.length && bracketStack.at(-1).close === i) {
+            if (argIndex === 1) flushArg1();
             if (currentMacroName === "store" && currentArgText.trim())
                 storedVariables.add(currentArgText.trim());
             
             const item = bracketStack.pop();
             stateStack.pop();
             stateStack.length === 0 && (currentMacroName = "");
+            argIndex = 0;
+            currentArgText = "";
+            arg1Buffer = [];
             
             tokens.push({
                 type: "bracket",
@@ -115,6 +146,7 @@ const buildMacroTokens = (text) => {
             });
         }
         else if (stateStack.length && ch === "/") {
+            if (argIndex === 1) flushArg1();
             argIndex++;
             stateStack[stateStack.length - 1] = "value";
             appendText(ch, bracketStack.at(-1).empty ? "macro-empty" : "macro-arg-separator", i);
@@ -125,21 +157,18 @@ const buildMacroTokens = (text) => {
             if (argIndex === 0) {
                 currentMacroName += ch;
                 appendText(ch, current.empty ? "macro-empty" : "macro-name", i);
+            } else if (argIndex === 1) {
+                currentArgText += ch;
+                arg1Buffer.push({ ch, pos: i, empty: current.empty });
             } else {
                 let className = current.empty ? "macro-empty" : "macro-value";
-
-                if (argIndex === 1) {
-                    currentArgText += ch;
-                    if (currentMacroName === "load")
-                        className = storedVariables.has(currentArgText.trim()) ? "macro-variable" : "error";
-                    else if (currentMacroName === "store")
-                        className = "macro-variable";
-                }
-
                 appendText(ch, className, i);
             }
         }
-        else appendText(ch, "", i);
+        else {
+            if (argIndex === 1) flushArg1();
+            appendText(ch, "", i);
+        }
     }
 
     return tokens;
