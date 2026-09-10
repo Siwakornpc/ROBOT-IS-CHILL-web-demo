@@ -19,9 +19,9 @@ function navigateWithCode(
 
     event.preventDefault();
 
-    const code = new URLSearchParams(window.location.search).get("code");
+    const codeParam = new URLSearchParams(window.location.search).get("code");
     const target = new URL(path, window.location.href);
-    if (code !== null) target.searchParams.set("code", code);
+    if (codeParam !== null) target.searchParams.set("code", codeParam);
 
     window.location.href = target.toString();
 }

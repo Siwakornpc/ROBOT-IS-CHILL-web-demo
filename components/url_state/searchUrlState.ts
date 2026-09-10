@@ -12,6 +12,8 @@ export type WriteSearchUrlState = Omit<SearchUrlState, "mode"> & {
     mode?: SearchMode | null;
 };
 
+const CODE_STORAGE_PREFIX = "ric_url_code_";
+
 const modeHashes: Record<SearchMode, string> = {
     tiles: "tiles",
     macros: "macros",
@@ -27,6 +29,61 @@ const hashModes: Record<string, SearchMode> = Object.fromEntries(
     Object.entries(modeHashes).map(([mode, hash]) => [hash, mode]),
 ) as Record<string, SearchMode>;
 
+function hashString(input: string): string {
+    let hash = 2166136261;
+
+    for (let i = 0; i < input.length; i++) {
+        hash ^= input.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+    }
+
+    return (hash >>> 0).toString(36);
+}
+
+export function encodeCodeForUrl(code: string): string {
+    const token = hashString(code);
+
+    if (typeof window !== "undefined" && "localStorage" in window) {
+        try {
+            window.localStorage.setItem(`${CODE_STORAGE_PREFIX}${token}`, code);
+            return token;
+        } catch {
+            // Fall back to the raw value if storage is unavailable.
+        }
+    }
+
+    return code;
+}
+
+export function readCodeFromUrlParam(codeParam: string | null): string | null {
+    if (codeParam === null || codeParam === "") {
+        return null;
+    }
+
+    if (typeof window === "undefined" || !("localStorage" in window)) {
+        return codeParam;
+    }
+
+    try {
+        const storedCode = window.localStorage.getItem(`${CODE_STORAGE_PREFIX}${codeParam}`);
+        return storedCode ?? codeParam;
+    } catch {
+        return codeParam;
+    }
+}
+
+export function clearCodeFromUrlStorage(codeParam: string | null) {
+    if (typeof window === "undefined" || !("localStorage" in window) || codeParam === null) {
+        return;
+    }
+
+    try {
+        window.localStorage.removeItem(`${CODE_STORAGE_PREFIX}${codeParam}`);
+    } catch {
+        // Ignore storage errors.
+    }
+}
+
 export function readSearchUrlState(): SearchUrlState {
     if (typeof window === "undefined") {
         return {
@@ -41,13 +98,15 @@ export function readSearchUrlState(): SearchUrlState {
     const [hashName, hashQuery = ""] = window.location.hash.slice(1).split("?", 2);
     const hashParams = new URLSearchParams(hashQuery);
     const searchParams = new URLSearchParams(window.location.search);
+    const searchCode = readCodeFromUrlParam(searchParams.get("code"));
+    const hashCode = readCodeFromUrlParam(hashParams.get("code"));
 
     return {
         mode: hashModes[hashName.toLowerCase()] ?? "tiles",
         query: hashParams.get("query") ?? "",
         regex: hashParams.get("regex")?.toLowerCase() === "true",
         details: hashParams.get("details") ?? searchParams.get("details"),
-        code: searchParams.get("code") ?? hashParams.get("code"),
+        code: searchCode ?? hashCode,
     };
 }
 
@@ -69,7 +128,8 @@ export function writeSearchUrlState(state: WriteSearchUrlState) {
     url.searchParams.delete("details");
 
     if (state.code !== null) {
-        url.searchParams.set("code", state.code);
+        const encodedCode = encodeCodeForUrl(state.code);
+        url.searchParams.set("code", encodedCode);
     } else {
         url.searchParams.delete("code");
     }
