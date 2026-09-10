@@ -13,6 +13,7 @@ export type WriteSearchUrlState = Omit<SearchUrlState, "mode"> & {
 };
 
 const CODE_STORAGE_PREFIX = "ric_url_code_";
+const URL_CODE_PREFIX = "h1_";
 
 const modeHashes: Record<SearchMode, string> = {
     tiles: "tiles",
@@ -29,7 +30,34 @@ const hashModes: Record<string, SearchMode> = Object.fromEntries(
     Object.entries(modeHashes).map(([mode, hash]) => [hash, mode]),
 ) as Record<string, SearchMode>;
 
-function hashString(input: string): string {
+function encodeUrlSafeBase64(input: string): string {
+    const bytes = new TextEncoder().encode(input);
+    let binary = "";
+
+    bytes.forEach((byte) => {
+        binary += String.fromCharCode(byte);
+    });
+
+    return btoa(binary)
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/g, "");
+}
+
+function decodeUrlSafeBase64(input: string): string | null {
+    try {
+        const normalized = input.replace(/-/g, "+").replace(/_/g, "/");
+        const padded = normalized + "=".repeat((4 - (normalized.length % 4)) % 4);
+        const binary = atob(padded);
+        const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+
+        return new TextDecoder().decode(bytes);
+    } catch {
+        return null;
+    }
+}
+
+function getLegacyHashString(input: string): string {
     let hash = 2166136261;
 
     for (let i = 0; i < input.length; i++) {
@@ -41,31 +69,37 @@ function hashString(input: string): string {
 }
 
 export function encodeCodeForUrl(code: string): string {
-    const token = hashString(code);
+    const token = `${URL_CODE_PREFIX}${encodeUrlSafeBase64(code)}`;
 
     if (typeof window !== "undefined" && "localStorage" in window) {
         try {
             window.localStorage.setItem(`${CODE_STORAGE_PREFIX}${token}`, code);
-            return token;
+            window.localStorage.setItem(`${CODE_STORAGE_PREFIX}${getLegacyHashString(code)}`, code);
         } catch {} // Fall back to the raw value if storage is unavailable.
     }
 
-    return code;
+    return token;
 }
 
 export function readCodeFromUrlParam(codeParam: string | null): string | null {
     if (codeParam === null || codeParam === "")
         return null;
 
-    if (typeof window === "undefined" || !("localStorage" in window))
-        return codeParam;
-
-    try {
-        const storedCode = window.localStorage.getItem(`${CODE_STORAGE_PREFIX}${codeParam}`);
-        return storedCode ?? codeParam;
-    } catch {
-        return codeParam;
+    if (typeof window !== "undefined" && "localStorage" in window) {
+        try {
+            const storedCode = window.localStorage.getItem(`${CODE_STORAGE_PREFIX}${codeParam}`);
+            if (storedCode !== null)
+                return storedCode;
+        } catch {}
     }
+
+    if (codeParam.startsWith(URL_CODE_PREFIX)) {
+        const decoded = decodeUrlSafeBase64(codeParam.slice(URL_CODE_PREFIX.length));
+        if (decoded !== null)
+            return decoded;
+    }
+
+    return codeParam;
 }
 
 export function clearCodeFromUrlStorage(codeParam: string | null) {
