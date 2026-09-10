@@ -23,6 +23,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                 <div className="flex flex-col gap-[8px]">
                     <div className="run-controls">
                         <p className="text-label">Execute</p>
+                        <ExecutionModeSelect />
                         <button id="run" style={{display: "none"}} disabled>Run</button>
                         <StatusBar small={isSmallScreen} />
                     </div>
