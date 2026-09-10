@@ -139,8 +139,12 @@ export function useEditorEngine({
                 updateMacroReferenceState(false);
         };
 
-        const handleMacroReferenceBlur = () =>
-            updateMacroReferenceState(false);
+        const handleMacroReferenceBlur = () => updateMacroReferenceState(false);
+
+        const handleMacroReferencePageshowPersisted = (e React.SyntheticEvent) => {
+            if (e.persisted)
+                updateMacroReferenceState(false);
+        }
 
         const handleMacroHover = (e: MouseEvent) => {
             if (!isMacroReferenceActive) return;
@@ -206,6 +210,7 @@ export function useEditorEngine({
         document.addEventListener("keyup", handleMacroReferenceKeyup);
         document.addEventListener("mousedown", handleMouseDown);
         window.addEventListener("blur", handleMacroReferenceBlur);
+        window.addEventListener("pageshow", handleMacroReferencePageshowPersisted);
 
         let macroList: Array<{ label: string; builtin?: boolean; creator: string }> = [];
 
@@ -441,6 +446,7 @@ export function useEditorEngine({
             document.removeEventListener("selectionchange", handleACSelectionChange);
             window.removeEventListener("resize", handleResize);
             window.removeEventListener("blur", handleMacroReferenceBlur);
+            window.removeEventListener("pageshow", handleMacroReferencePageshowPersisted);
             window.removeEventListener("executionmodechange", refreshHighlighting);
             window.removeEventListener("rendersyntaxloaded", refreshHighlighting);
             editorArea.removeEventListener("beforeinput", handleBeforeInput as EventListener);
