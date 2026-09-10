@@ -1,5 +1,5 @@
 import type { EditorState } from "./types";
-import { lineStartOf } from "./lineUtils";
+import { lineStartOf, normalizeNewlines } from "./lineUtils";
 import { getCaret } from "./caretUtils";
 
 type BeforeInputDeps = {
@@ -26,7 +26,7 @@ export function createBeforeInputHandler(deps: BeforeInputDeps) {
     return function handleBeforeInput(e: InputEvent) {
         e.preventDefault();
 
-        const value = state.value;
+        const value = normalizeNewlines(state.value);
         const { start, end } = getCaret(editorArea, value.split("\n"));
         let newValue = value;
         let newStart = start;
@@ -35,7 +35,7 @@ export function createBeforeInputHandler(deps: BeforeInputDeps) {
         switch (e.inputType) {
             case "insertText":
             case "insertCompositionText": {
-                const text = e.data ?? "";
+                const text = normalizeNewlines(e.data ?? "");
 
                 if (text === "[") {
                     isLeftBracketPressed = true;
@@ -156,7 +156,7 @@ export function createBeforeInputHandler(deps: BeforeInputDeps) {
 
             case "insertFromPaste":
             case "insertFromDrop": {
-                const text = (e.dataTransfer && e.dataTransfer.getData("text/plain")) || e.data || "";
+                const text = normalizeNewlines((e.dataTransfer && e.dataTransfer.getData("text/plain")) || e.data || "");
                 newValue = value.slice(0, start) + text + value.slice(end);
                 newStart = newEnd = start + text.length;
                 break;
@@ -180,10 +180,10 @@ export function createBeforeInputHandler(deps: BeforeInputDeps) {
             }
         }
 
-        state.value = newValue;
-        onCodeChange?.(newValue);
+        state.value = normalizeNewlines(newValue);
+        onCodeChange?.(state.value);
         saveState(newStart, newEnd);
         render(newStart, newEnd);
-        editorArea.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: e.inputType, data: e.data }));
+        editorArea.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: e.inputType, data: normalizeNewlines(e.data ?? "") }));
     };
 }

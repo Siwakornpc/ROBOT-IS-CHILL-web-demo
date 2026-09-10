@@ -1,5 +1,5 @@
 import type { EditorState, WindowWithEditor } from "./types";
-import { clamp } from "./lineUtils";
+import { clamp, normalizeNewlines } from "./lineUtils";
 import { offsetToLineColumn } from "./lineModel";
 import { setRange } from "./caretUtils";
 import { updateGutter, updateCurrentLineClass, syncGutterScroll } from "./domUpdaters";
@@ -95,6 +95,11 @@ export function createRenderer(deps: RendererDeps) {
 
     function render(start: number, end = start) {
         const gen = ++state.renderGen;
+
+        const normalizedValue = normalizeNewlines(state.value);
+        if (state.value !== normalizedValue) {
+            state.value = normalizedValue;
+        }
 
         const lines = state.value.split("\n");
 

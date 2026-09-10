@@ -4,6 +4,7 @@ import { ensureEditorReady, resolveEditorReady } from "./editorReady";
 import { createHistoryManager } from "./historyManager";
 import { createRenderer } from "./renderer";
 import { createBeforeInputHandler } from "./beforeInputHandler";
+import { normalizeNewlines } from "./lineUtils";
 import {
     createKeydownHandler,
     createSelectionChangeHandler,
@@ -412,7 +413,7 @@ export function useEditorEngine({
         const api: EditorApi = {
             get value() { return state.value },
             set value(v) {
-                state.value = String(v ?? "");
+                state.value = normalizeNewlines(String(v ?? ""));
                 onCodeChange?.(state.value);
                 saveState(0, 0);
                 render(0, 0);
