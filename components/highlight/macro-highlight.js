@@ -138,7 +138,7 @@ const buildMacroTokens = (text) => {
                 if (isFirstValue) {
                     currentArgText += ch;
                     if (currentMacroName === "load")
-                        className = storedVariables.has(currentArgText.trim()) ? "macro-variable-name" : "error";
+                        className = storedVariables.has(currentArgText.trim()) ? "macro-variable" : "error";
                 }
 
                 appendText(ch, className, i);
@@ -182,7 +182,7 @@ export const updateHighlightState = (editorArea, start, end) => {
         .forEach(el => el.classList.remove("selection"));
 
     const syntaxTokens = Array.from(editorArea.querySelectorAll(
-        ".macro-name, .macro-value, .macro-empty, .escape, .macro-value-escape"
+        ".macro-name, .macro-value, .macro-empty, .escape, .macro-value-escape, .macro-variable, .error"
     ));
 
     if (start !== end) {
@@ -204,13 +204,30 @@ export const updateHighlightState = (editorArea, start, end) => {
             return start > from && start <= to;
         }) ?? syntaxTokens.find(el => Number(el.dataset.pos) === start);
 
-        if (activeToken?.classList.contains("macro-name") || activeToken?.classList.contains("macro-value")) {
-            const tokenText = activeToken.textContent;
-            const tokenClass = activeToken.classList.contains("macro-name") ? "macro-name" : "macro-value";
+        if (activeToken) {
+            const tokenText = activeToken.textContent.trim();
 
-            syntaxTokens
-                .filter(el => el.classList.contains(tokenClass) && el.textContent === tokenText)
-                .forEach(el => el.classList.add("selection"));
+            // If clicking a value, variable, or error token, match all instances with the same text name
+            if (
+                activeToken.classList.contains("macro-value") ||
+                activeToken.classList.contains("macro-variable") ||
+                activeToken.classList.contains("error")
+            ) {
+                syntaxTokens
+                    .filter(el => 
+                        (el.classList.contains("macro-value") ||
+                         el.classList.contains("macro-variable") ||
+                         el.classList.contains("error")) &&
+                        el.textContent.trim() === tokenText &&
+                        tokenText !== ""
+                    )
+                    .forEach(el => el.classList.add("selection"));
+            } 
+            else if (activeToken.classList.contains("macro-name")) {
+                syntaxTokens
+                    .filter(el => el.classList.contains("macro-name") && el.textContent === activeToken.textContent)
+                    .forEach(el => el.classList.add("selection"));
+            }
         }
     }
 
