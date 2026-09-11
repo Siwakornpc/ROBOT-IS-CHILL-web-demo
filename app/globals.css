@@ -1577,9 +1577,12 @@ main:has(.main-body) {
     color: rgb(var(--md-color-on-primary-container));
 }
 
+[data-font-sans=--font-roboto-flex] .title-name #name-1 {
+    font-size: 2rem;
+    font-variation-settings: "wght" 1000, "slnt" -10, "wdth" 25;
+}
 [data-font-sans=--font-roboto-flex] .title-name {
-    font-weight: 800;
-    font-variation-settings: "wdth" 150;
+    font-variation-settings: "wght" 200, "slnt" -10, "wdth" 150;
 }
 
 /*
