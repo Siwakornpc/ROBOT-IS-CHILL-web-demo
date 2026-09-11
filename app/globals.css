@@ -1820,7 +1820,7 @@ main:has(.main-body) {
     color: var(--macro-var);
 }
 .editor-line > .error {
-    text-decoration: underline wavy var(--error);
+    text-decoration: underline 1px wavy var(--error);
 }
 .escape {
     color: var(--escape);
