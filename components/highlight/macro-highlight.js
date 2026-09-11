@@ -77,7 +77,7 @@ const buildMacroTokens = (text, storedVariables = new Set()) => {
 
         if (["store", "get", "is_stored", "drop"].includes(curr.currentMacroName))
             resolvedClassName = "macro-variable";
-        else if (["load", "byte.set", "byte.get"].includes(curr.currentMacroName))
+        else if (["load", "byte.set", "byte.get", "byte.splice"].includes(curr.currentMacroName))
             resolvedClassName = storedVariables.has(trimmed) ? "macro-variable" : "error";
 
         for (const item of curr.arg1Buffer) {

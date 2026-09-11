@@ -5,7 +5,7 @@ export type AutocompleteContext = {
     triggerChar?: string;
 };
 
-const variableMacros = new Set(["store", "get", "is_stored", "drop", "load", "byte.set", "byte.get"]);
+const variableMacros = new Set(["store", "get", "is_stored", "drop", "load", "byte.set", "byte.get", "byte.splice"]);
 
 function isEscaped(value: string, index: number): boolean {
     let slashCount = 0;
