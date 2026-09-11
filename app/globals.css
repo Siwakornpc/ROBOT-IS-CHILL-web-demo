@@ -1586,17 +1586,22 @@ main:has(.main-body) {
     color: rgb(var(--md-color-on-primary-container));
 }
 
-[data-font-sans=--font-roboto-flex] .title-name #name-1 {
-    font-size: 2rem;
-    font-weight: 1000;
-    --vfont-slnt: -10;
-    --vfont-wdth: 25;
-}
 [data-font-sans=--font-roboto-flex] .title-name {
     font-size: 1.5rem;
     font-weight: 200;
     --vfont-slnt: -10;
     --vfont-wdth: 150;
+}
+[data-font-sans=--font-roboto-flex] .title-name:hover {
+    --vfont-grad: 150;
+}
+[data-font-sans=--font-roboto-flex] .title-name:active {
+    --vfont-grad: -200;
+}
+[data-font-sans=--font-roboto-flex] .title-name #name-1 {
+    font-size: 2rem;
+    font-weight: 1000;
+    --vfont-wdth: 25;
 }
 
 /*
