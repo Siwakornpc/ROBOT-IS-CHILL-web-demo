@@ -5,7 +5,7 @@ import { useDiscordUser } from "../DiscordUser";
 
 export interface SuggestionItem {
     label: string;
-    type: "macro" | "variant" | "flag" | "tile";
+    type: "macro" | "variant" | "flag" | "var";
     builtin?: boolean;
     detail: string | null;
 }
