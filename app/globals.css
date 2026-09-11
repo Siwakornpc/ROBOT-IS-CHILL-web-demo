@@ -3013,6 +3013,7 @@ tr:nth-child(odd) td {
     user-select: none;
     padding: 0 4px;
     border-radius: 8px;
+    --icon-wght: 300;
 }
 .ac-dropdown-option:hover {
     background: var(--surface-hovered);
@@ -3023,6 +3024,7 @@ tr:nth-child(odd) td {
 .ac-dropdown-option.selected {
     color: rgb(var(--md-color-on-secondary-container));
     background: rgb(var(--md-color-secondary-container));
+    --icon-wght: 600;
 }
 .ac-dropdown-option.selected span span:nth-child(2) {
     font-weight: bold;
