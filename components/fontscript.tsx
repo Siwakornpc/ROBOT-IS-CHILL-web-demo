@@ -22,6 +22,8 @@ export const FONT_CODE_OPTIONS: FontOption[] = [
     { value: "jetbrains-mono", label: "JetBrains Mono", cssVar: "--font-jetbrains-mono" },
     { value: "bytesized", label: "Bytesized", cssVar: "--font-bytesized" },
     { value: "cascadia-code", label: "Cascadia Code", cssVar: "--font-cascadia-code" },
+    { value: "source-code-pro", label: "Source Code Pro", cssVar: "--font-source-code-pro" },
+    { value: "courier-prime", label: "Courier Prime", cssVar: "--font-courier-prime" },
 ];
 
 export interface FontState {

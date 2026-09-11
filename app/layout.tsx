@@ -10,6 +10,8 @@ import {
     JetBrains_Mono,
     Bytesized,
     Cascadia_Code,
+    Source_Code_Pro,
+    Courier_Prime,
 } from "next/font/google";
 import "./globals.css";
 import ThemeScript, { ThemeProvider } from '@/components/themescript';
@@ -57,6 +59,16 @@ const cascadiaCode = Cascadia_Code({
     variable: "--font-cascadia-code",
     weight: "400",
 });
+const sourceCodePro = Source_Code_Pro({
+    subsets: ["latin"],
+    variable: "--font-source-code-pro",
+    weight: "400",
+});
+const courierPrime = Courier_Prime({
+    subsets: ["latin"],
+    variable: "--font-courier-prime",
+    weight: "400",
+});
 
 export const metadata: Metadata = {
     title: "Robot Is Chill Web Demo",
@@ -68,15 +80,22 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
         <html
             lang="en"
             className={`${[
+                // sans
                 nunitoSans,
                 ibmPlexSans,
                 inter,
                 robotoFlex,
                 googleSans,
+
+                // both
+                bytesized,
+
+                // mono
                 ibmPlexMono,
                 jetBrainsMono,
-                bytesized,
                 cascadiaCode,
+                sourceCodePro,
+                courierPrime,
             ].map((font) => font.variable).join(" ")} h-full antialiased`}
         >
             <body className="min-h-full flex flex-col bg-background text-foreground">
