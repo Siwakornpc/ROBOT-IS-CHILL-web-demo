@@ -10,7 +10,7 @@ import {
     createSelectionChangeHandler,
     createEditorClickHandler
 } from "./handlers";
-import { getCaret, setRange } from "./caretUtils";
+import { getCaret } from "./caretUtils";
 import { loadVariants, allv } from "./getVariantName";
 import { getAutocompleteContext } from "./autocompleteUtils";
 import stdlib_macros from "../page/search/stdlib_macros";
@@ -101,10 +101,7 @@ export function useEditorEngine({
             redo,
             onCodeChange
         });
-        const handleClick = createEditorClickHandler(editorArea, () => {
-            const lines = state.value.split("\n");
-            setRange(editorArea, lines, state.value.length, state.value.length);
-        });
+        const handleClick = createEditorClickHandler(editorArea);
 
         const handleSelectionChange = createSelectionChangeHandler({ win, editorArea, gutterEl, state });
 
@@ -167,26 +164,6 @@ export function useEditorEngine({
                 if (document.activeElement !== editorArea) return;
                 scrollCaretIntoView(scrollEl);
             });
-        };
-
-        const handleEditorFocus = () => {
-            const isCoarsePointer = typeof window !== "undefined"
-                && "matchMedia" in window
-                && window.matchMedia("(pointer: coarse)").matches;
-
-            if (!isCoarsePointer) return;
-
-            const selection = window.getSelection();
-            if (!selection || selection.rangeCount === 0) {
-                render(state.value.length, state.value.length, { scrollToCaret: false });
-                return;
-            }
-
-            const range = selection.getRangeAt(0);
-            const isAtEditorRoot = range.startContainer === editorArea || range.endContainer === editorArea;
-            if (range.collapsed && isAtEditorRoot) {
-                render(state.value.length, state.value.length, { scrollToCaret: false });
-            }
         };
 
         const handleScroll = () => {
@@ -419,7 +396,6 @@ export function useEditorEngine({
         if (onInsertSuggestionRef) onInsertSuggestionRef.current = insertSuggestion;
 
         editorArea.addEventListener("beforeinput", handleBeforeInput as EventListener);
-        editorArea.addEventListener("focus", handleEditorFocus);
         editorArea.addEventListener("keydown", handleKeydown);
         document.addEventListener("selectionchange", handleSelectionChangeWithScroll);
         document.addEventListener("selectionchange", handleACSelectionChange);
@@ -471,7 +447,6 @@ export function useEditorEngine({
             window.removeEventListener("executionmodechange", refreshHighlighting);
             window.removeEventListener("rendersyntaxloaded", refreshHighlighting);
             editorArea.removeEventListener("beforeinput", handleBeforeInput as EventListener);
-            editorArea.removeEventListener("focus", handleEditorFocus);
             editorArea.removeEventListener("keydown", handleKeydown);
             editorArea.removeEventListener("mouseover", handleMacroHover);
             editorArea.removeEventListener("click", handleClick);
