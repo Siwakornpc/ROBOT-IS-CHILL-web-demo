@@ -145,7 +145,7 @@ export function createRenderer(deps: RendererDeps) {
         updateGutter(gutterEl, lineEls, lineIndex);
         updateCurrentLineClass(lineEls, lineIndex);
         updateCaretMatch(win, editorArea, s, e);
-        syncGutterScroll(gutterWrap, gutterEl, scrollEl);
+        syncGutterScroll(gutterWrap, editorArea);
 
         requestAnimationFrame(() => {
             if (gen !== state.renderGen) return;

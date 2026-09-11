@@ -20,9 +20,9 @@ export function updateCurrentLineClass(lineEls: HTMLElement[], activeLine: numbe
     });
 }
 
-export function syncGutterScroll(gutterWrap: HTMLElement | null, gutterEl: HTMLElement | null, scrollEl: HTMLElement | null) {
-    if (!gutterWrap || !gutterEl || !scrollEl) return;
+export function syncGutterScroll(gutterWrap: HTMLElement | null, editorArea: HTMLElement | null) {
+    if (!gutterWrap || !editorArea) return;
 
-    const contentHeight = Math.max(scrollEl.scrollHeight, scrollEl.clientHeight);
+    const contentHeight = editorArea.offsetHeight;
     gutterWrap.style.height = `${contentHeight}px`;
 }

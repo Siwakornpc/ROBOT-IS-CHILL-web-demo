@@ -167,7 +167,7 @@ export function useEditorEngine({
         };
 
         const handleScroll = () => {
-            syncGutterScroll(gutterWrap, gutterEl, scrollEl);
+            syncGutterScroll(gutterWrap, editorArea);
         };
 
         const handleResize = () => {
