@@ -96,6 +96,15 @@
 	--t-elevation-5: 0 8px 12px #00000026, 0 4px 4px #0000004d;
 }
 
+[data-font=--font-roboto-flex] * {
+    font-variation-settings:
+        "GRAD" var(--vfont-grad, 0),
+        "slnt" var(--vfont-slnt, 0),
+        "wdth" var(--vfont-wdth, 100),
+        "XOPQ" var(--vfont-thick-stroke, 96),
+        "YOPQ" var(--vfont-thin-stroke, 79);
+}
+
 @theme inline {
   --color-background: var(--body);
   --color-foreground: var(--normal);
@@ -1579,11 +1588,15 @@ main:has(.main-body) {
 
 [data-font-sans=--font-roboto-flex] .title-name #name-1 {
     font-size: 2rem;
-    font-variation-settings: "wght" 1000, "slnt" -10, "wdth" 25;
+    font-weight: 1000;
+    --vfont-slnt: -10;
+    --vfont-wdth: 25;
 }
 [data-font-sans=--font-roboto-flex] .title-name {
     font-size: 1.5rem;
-    font-variation-settings: "wght" 200, "slnt" -10, "wdth" 150;
+    font-weight: 200;
+    --vfont-slnt: -10;
+    --vfont-wdth: 150;
 }
 
 /*
