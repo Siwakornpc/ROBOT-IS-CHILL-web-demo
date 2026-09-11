@@ -481,6 +481,7 @@ export default function Body({
                             onChange={(e) => onToggleFilter(e.currentTarget.checked)}
                         />
                         <i className="icon">menu</i>
+                        <i className="icon">menu_open</i>
                     </label>
                     <input
                         className="searchbar"
