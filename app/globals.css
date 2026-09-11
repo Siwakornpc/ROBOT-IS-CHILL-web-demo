@@ -1553,8 +1553,8 @@ main:has(.main-body) {
 
 .title-name {
     display: flex;
+    align-items: baseline;
     position: relative;
-    top: 2px;
     font-size: 1.2rem;
     text-decoration: none;
     margin-left: 10px;
