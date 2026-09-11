@@ -33,10 +33,10 @@ type EditorRefs = {
 export type AutocompleteState = {
     isOpen: boolean;
     query: string;
-    suggestions: Array<{ label: string; type: "macro" | "variant" | "flag" | "tile"; builtin?: boolean; detail?: string | null }>;
+    suggestions: Array<{ label: string; type: "macro" | "variant" | "flag" | "var"; builtin?: boolean; detail?: string | null }>;
     position: { top: number; left: number };
     startIndex: number;
-    type: "macro" | "variant" | "flag" | "tile";
+    type: "macro" | "variant" | "flag" | "var";
     triggerChar?: string;
 };
 
@@ -201,13 +201,13 @@ export function useEditorEngine({
                 isACLetterTypingRef.current = false;
         };
 
+        window.addEventListener("blur", handleMacroReferenceBlur);
+        window.addEventListener("pageshow", handleMacroReferencePageshowPersisted);
         document.addEventListener("keydown", handleGlobalKeydown);
         document.addEventListener("keydown", handleACKeydown);
         document.addEventListener("keydown", handleMacroReferenceKeydown);
         document.addEventListener("keyup", handleMacroReferenceKeyup);
         document.addEventListener("mousedown", handleMouseDown);
-        window.addEventListener("blur", handleMacroReferenceBlur);
-        window.addEventListener("pageshow", handleMacroReferencePageshowPersisted);
 
         let macroList: Array<{ label: string; builtin?: boolean; creator: string }> = [];
 
@@ -295,7 +295,7 @@ export function useEditorEngine({
                 const context = getAutocompleteContext(state.value, start, isRenderMode);
 
                 if (context) {
-                    let suggestions: Array<{ label: string; type: "macro" | "variant" | "flag" | "tile"; builtin?: boolean, detail?: string }> = [];
+                    let suggestions: Array<{ label: string; type: "macro" | "variant" | "flag" | "var"; builtin?: boolean, detail?: string }> = [];
 
                     autocompleteTypeRef.current = context.type;
 
@@ -395,15 +395,15 @@ export function useEditorEngine({
 
         if (onInsertSuggestionRef) onInsertSuggestionRef.current = insertSuggestion;
 
-        editorArea.addEventListener("beforeinput", handleBeforeInput as EventListener);
-        editorArea.addEventListener("keydown", handleKeydown);
+        window.addEventListener("resize", handleResize);
         document.addEventListener("selectionchange", handleSelectionChangeWithScroll);
         document.addEventListener("selectionchange", handleACSelectionChange);
-        scrollEl.addEventListener("scroll", handleScroll);
+        editorArea.addEventListener("beforeinput", handleBeforeInput as EventListener);
+        editorArea.addEventListener("keydown", handleKeydown);
         editorArea.addEventListener("mouseover", handleMacroHover);
         editorArea.addEventListener("click", handleClick);
         editorArea.addEventListener("click", handleMacroDefinition);
-        window.addEventListener("resize", handleResize);
+        scrollEl.addEventListener("scroll", handleScroll);
 
         const api: EditorApi = {
             get value() { return state.value },
@@ -434,6 +434,11 @@ export function useEditorEngine({
         resolveEditorReady?.(api);
 
         return () => {
+            window.removeEventListener("resize", handleResize);
+            window.removeEventListener("blur", handleMacroReferenceBlur);
+            window.removeEventListener("pageshow", handleMacroReferencePageshowPersisted);
+            window.removeEventListener("executionmodechange", refreshHighlighting);
+            window.removeEventListener("rendersyntaxloaded", refreshHighlighting);
             document.removeEventListener("keydown", handleGlobalKeydown);
             document.removeEventListener("keydown", handleACKeydown);
             document.removeEventListener("keydown", handleMacroReferenceKeydown);
@@ -441,11 +446,6 @@ export function useEditorEngine({
             document.removeEventListener("mousedown", handleMouseDown);
             document.removeEventListener("selectionchange", handleSelectionChangeWithScroll);
             document.removeEventListener("selectionchange", handleACSelectionChange);
-            window.removeEventListener("resize", handleResize);
-            window.removeEventListener("blur", handleMacroReferenceBlur);
-            window.removeEventListener("pageshow", handleMacroReferencePageshowPersisted);
-            window.removeEventListener("executionmodechange", refreshHighlighting);
-            window.removeEventListener("rendersyntaxloaded", refreshHighlighting);
             editorArea.removeEventListener("beforeinput", handleBeforeInput as EventListener);
             editorArea.removeEventListener("keydown", handleKeydown);
             editorArea.removeEventListener("mouseover", handleMacroHover);

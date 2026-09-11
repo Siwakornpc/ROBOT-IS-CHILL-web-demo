@@ -1,5 +1,5 @@
 export type AutocompleteContext = {
-    type: "macro" | "variant" | "flag" | "tile";
+    type: "macro" | "variant" | "flag" | "var";
     query: string;
     startIndex: number;
     triggerChar?: string;
