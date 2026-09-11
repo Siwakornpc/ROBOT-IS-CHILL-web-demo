@@ -59,6 +59,8 @@ export default function FontScript() {
             target.style.setProperty('--font-family-code', `var(${codeVar})`);
             target.style.setProperty('--font-size', `${sansSize}px`);
             target.style.setProperty('--font-size-code', `${codeSize}px`);
+            target.setAttribute("data-font-sans", sansVar)
+            target.setAttribute("data-font-code", codeVar)
         }
 
         (window as any).setFont = setFont;
