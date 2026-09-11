@@ -87,6 +87,8 @@ export function AutocompleteDropdown({
             }
             else if (e.key === "Enter" || e.key === "Tab") {
                 e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
                 if (visibleSuggestions[selectedIndex])
                     onSelect(visibleSuggestions[selectedIndex]);
             }
