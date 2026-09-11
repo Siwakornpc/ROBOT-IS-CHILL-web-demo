@@ -1555,11 +1555,9 @@ main:has(.main-body) {
     display: flex;
     position: relative;
     top: 2px;
-    font-size: 1.2rem;
-
-    margin-left: 10px;
-
+    font-size: 2rem;
     text-decoration: none;
+    margin-left: 10px;
 }
 
 .title-name #name-1 {
