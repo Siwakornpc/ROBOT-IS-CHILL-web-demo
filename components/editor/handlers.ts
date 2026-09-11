@@ -7,7 +7,7 @@ import { updateCurrentLineClass } from "./domUpdaters";
 import { updateCaretMatch } from "./highlighting";
 import { clearLeftBracketStatesFromKeyDirections } from "./beforeInputHandler";
 
-export function createEditorClickHandler(editorArea: HTMLElement) {
+export function createEditorClickHandler(editorArea: HTMLElement, onFocusToEnd?: () => void) {
     return function handleClick(e: MouseEvent) {
         if (e.target !== editorArea) return;
 
@@ -19,6 +19,7 @@ export function createEditorClickHandler(editorArea: HTMLElement) {
         if (e.clientY < textBottom) return;
 
         editorArea.focus({ preventScroll: true });
+        onFocusToEnd?.();
     };
 }
 
