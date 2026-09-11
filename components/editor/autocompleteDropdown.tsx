@@ -146,7 +146,7 @@ export function AutocompleteDropdown({
                                 : item.type === "flag"
                                 ? <span className="icon ac-icon">flag</span>
                                 : item.type === "var"
-                                ? <span className="icon ac-icon">data_object</span>
+                                ? <span className="icon ac-icon">label</span>
                                 : ""
                             }
                             <span className="this-name">
