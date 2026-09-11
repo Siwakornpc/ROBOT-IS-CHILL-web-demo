@@ -32,6 +32,7 @@ const inter = Inter({
 const robotoFlex = Roboto_Flex({
     subsets: ["latin"],
     variable: "--font-roboto-flex",
+    axes: ["GRAD", "slnt", "wdth", "XOPQ", "YOPQ"]
 });
 const googleSans = Google_Sans({
     subsets: ["latin"],
