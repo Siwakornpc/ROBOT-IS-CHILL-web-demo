@@ -4,6 +4,7 @@ import {
     Nunito_Sans,
     IBM_Plex_Sans,
     Inter,
+    Roboto_Flex,
     Google_Sans,
     IBM_Plex_Mono,
     JetBrains_Mono,
@@ -11,51 +12,46 @@ import {
     Cascadia_Code,
 } from "next/font/google";
 import "./globals.css";
-import ThemeScript from '@/components/themescript';
+import ThemeScript, { ThemeProvider } from '@/components/themescript';
 import { MenuProvider } from '@/components/MenuContext';
-import { ThemeProvider } from "@/components/ThemeProvider";
-import FontScript from '@/components/fontscript';
-import { FontProvider } from "@/components/FontProvider";
+import FontScript, { FontProvider } from '@/components/fontscript';
 import "material-symbols";
 
 const nunitoSans = Nunito_Sans({
     subsets: ["latin"],
     variable: "--font-nunito-sans",
 });
-
 const ibmPlexSans = IBM_Plex_Sans({
     subsets: ["latin"],
     variable: "--font-ibm-plex-sans",
 });
-
 const inter = Inter({
     subsets: ["latin"],
     variable: "--font-inter",
 });
-
+const robotoFlex = Roboto_Flex({
+    subsets: ["latin"],
+    variable: "--font-roboto-flex",
+});
 const googleSans = Google_Sans({
     subsets: ["latin"],
     variable: "--font-google-sans",
 });
-
 const ibmPlexMono = IBM_Plex_Mono({
     subsets: ["latin"],
     variable: "--font-ibm-plex-mono",
     weight: "400",
 });
-
 const jetBrainsMono = JetBrains_Mono({
     subsets: ["latin"],
     variable: "--font-jetbrains-mono",
     weight: "400",
 });
-
 const bytesized = Bytesized({
     subsets: ["latin"],
     variable: "--font-bytesized",
     weight: "400",
 });
-
 const cascadiaCode = Cascadia_Code({
     subsets: ["latin"],
     variable: "--font-cascadia-code",
@@ -67,11 +63,7 @@ export const metadata: Metadata = {
     description: "A free web demo of the Discord Bot: ROBOT IS CHILL in Vercel App",
 };
 
-export default function RootLayout({
-    children,
-}: Readonly<{
-    children: React.ReactNode;
-}>) {
+export default function RootLayout({children}: Readonly<{children: React.ReactNode}>) {
     return (
         <html
             lang="en"
@@ -79,6 +71,7 @@ export default function RootLayout({
                 nunitoSans,
                 ibmPlexSans,
                 inter,
+                robotoFlex,
                 googleSans,
                 ibmPlexMono,
                 jetBrainsMono,
