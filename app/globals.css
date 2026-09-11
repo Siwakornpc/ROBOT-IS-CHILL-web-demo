@@ -3010,11 +3010,15 @@ tr:nth-child(odd) td {
     display: flex;
     justify-content: space-between;
     cursor: pointer;
+    user-select: none;
     padding: 0 4px;
     border-radius: 8px;
 }
 .ac-dropdown-option:hover {
     background: var(--surface-hovered);
+}
+.ac-dropdown-option:active {
+    background: var(--surface-pressed);
 }
 .ac-dropdown-option.selected {
     color: rgb(var(--md-color-on-secondary-container));
