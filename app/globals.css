@@ -96,7 +96,7 @@
 	--t-elevation-5: 0 8px 12px #00000026, 0 4px 4px #0000004d;
 }
 
-[data-font=--font-roboto-flex] * {
+[data-font-sans=--font-roboto-flex] * {
     font-variation-settings:
         "GRAD" var(--vfont-grad, 0),
         "slnt" var(--vfont-slnt, 0),
