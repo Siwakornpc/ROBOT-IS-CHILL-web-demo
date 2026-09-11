@@ -145,9 +145,11 @@ export function AutocompleteDropdown({
                                 ? <span className="icon ac-icon">format_paint</span>
                                 : item.type === "flag"
                                 ? <span className="icon ac-icon">flag</span>
+                                : item.type === "var"
+                                ? <span className="icon ac-icon">data_object</span>
                                 : ""
                             }
-                            <span id="this-name">
+                            <span className="this-name">
                                 {item.type === "variant" ? (triggerChar || ":") : ""}
                                 {item.label.replace(/[\r\n]/g, "")}
                             </span>

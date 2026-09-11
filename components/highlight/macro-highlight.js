@@ -41,15 +41,13 @@ const findBracketPairsInternal = (text) => {
 // inline). Kept separate so both macroHighlighter (joined string) and
 // macroHighlightSegments (positioned pieces, for combined-highlight.js)
 // can share one tokenizing pass.
-const buildMacroTokens = (text) => {
+const buildMacroTokens = (text, storedVariables = new Set()) => {
     const { validPairs } = findBracketPairsInternal(text);
 
     let bracketId = 0;
     const bracketStack = [];
     const escapable = new Set(["[", "]", "/", "\\", "$"]);
     const tokens = [];
-    const storedVariables = new Set();
-
     const current = () => bracketStack.at(-1);
 
     const appendText = (ch, className, pos) => {
@@ -179,6 +177,12 @@ const tokenHtml = (token) => {
 };
 
 export const macroHighlighter = (text) => buildMacroTokens(text).map(tokenHtml).join("");
+
+export const getStoredVariables = (text) => {
+    const storedVariables = new Set();
+    buildMacroTokens(text, storedVariables);
+    return [...storedVariables];
+};
 
 // Same output as macroHighlighter, but as {start, end, html} pieces
 // instead of one joined string, so combined-highlight.js can pick out

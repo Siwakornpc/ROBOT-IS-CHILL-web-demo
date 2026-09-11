@@ -15,6 +15,7 @@ import { loadVariants, allv } from "./getVariantName";
 import { getAutocompleteContext } from "./autocompleteUtils";
 import stdlib_macros from "../page/search/stdlib_macros";
 import { loadFlags, flags } from "@/components/highlight/render-highlight";
+import { getStoredVariables } from "@/components/highlight/macro-highlight.js";
 import { buildMacroDefinitionUrl, getMacroDefinitionNameFromElement } from "./macroDefinition";
 import { syncGutterScroll } from "./domUpdaters";
 
@@ -318,17 +319,21 @@ export function useEditorEngine({
                 const context = getAutocompleteContext(state.value, start, isRenderMode);
 
                 if (context) {
-                    let suggestions: Array<{ label: string; type: "macro" | "variant" | "flag" | "var"; builtin?: boolean, detail?: string }> = [];
-
+                    let suggestions: Array<{ label: string; type: "macro" | "variant" | "flag" | "var"; builtin?: boolean, detail?: string }>
+                        = context.type === "macro"
+                        ? macroList.map(m => ({ label: m.label, type: "macro" as const, builtin: m.builtin, detail: m.creator }))
+                        : context.type === "variant"
+                        ? allv.map(v => ({ label: v, type: "variant" as const, builtin: false }))
+                        : context.type === "flag"
+                        ? flags.map(f => ({ label: f, type: "flag" as const, builtin: false }))
+                        : context.type === "var"
+                        ? getStoredVariables(state.value).map(variable => ({
+                            label: variable,
+                            type: "var" as const,
+                            builtin: false,
+                        }))
+                        : [];
                     autocompleteTypeRef.current = context.type;
-
-                    if (context.type === "macro") {
-                        suggestions = macroList.map(m => ({ label: m.label, type: "macro" as const, builtin: m.builtin, detail: m.creator }));
-                    } else if (context.type === "variant") {
-                        suggestions = allv.map(v => ({ label: v, type: "variant" as const, builtin: false }));
-                    } else if (context.type === "flag") {
-                        suggestions = flags.map(f => ({ label: f, type: "flag" as const, builtin: false }));
-                    }
 
                     suggestions.sort((a, b) => {
                         if (a.builtin && !b.builtin) return -1;

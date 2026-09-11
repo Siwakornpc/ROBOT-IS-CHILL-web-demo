@@ -5,6 +5,8 @@ export type AutocompleteContext = {
     triggerChar?: string;
 };
 
+const variableMacros = new Set(["store", "get", "is_stored", "drop", "load", "byte.set", "byte.get"]);
+
 function isEscaped(value: string, index: number): boolean {
     let slashCount = 0;
 
@@ -36,20 +38,30 @@ export function getAutocompleteContext(
     const lastCloseBracket = lastUnescapedIndex(textBeforeCaret, "]");
     const lastSlash = lastUnescapedIndex(textBeforeCaret, "/");
     
-    if (
-        lastOpenBracket > lastCloseBracket &&
-        lastOpenBracket > lastSlash
-    ) {
+    if (lastOpenBracket > lastCloseBracket) {
         const macroStart = lastOpenBracket + 1;
         const query = textBeforeCaret.slice(macroStart);
 
-        if (!query) return null;
+        const separatorIndex = query.indexOf("/");
+        const macroName = separatorIndex === -1 ? query : query.slice(0, separatorIndex);
+        if (separatorIndex !== -1 && variableMacros.has(macroName)) {
+            const variableQuery = query.slice(separatorIndex + 1);
+            if (!variableQuery) return null;
 
-        return {
-            type: "macro",
-            query,
-            startIndex: lineStart + macroStart
-        };
+            return {
+                type: "var",
+                query: variableQuery,
+                startIndex: lineStart + macroStart + separatorIndex + 1,
+            };
+        }
+
+        if (lastOpenBracket > lastSlash && query) {
+            return {
+                type: "macro",
+                query,
+                startIndex: lineStart + macroStart
+            };
+        }
     }
     
     if (isRenderMode) {
