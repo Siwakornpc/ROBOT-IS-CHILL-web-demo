@@ -1555,7 +1555,7 @@ main:has(.main-body) {
     display: flex;
     position: relative;
     top: 2px;
-    font-size: 2rem;
+    font-size: 1.2rem;
     text-decoration: none;
     margin-left: 10px;
 }
@@ -1582,6 +1582,7 @@ main:has(.main-body) {
     font-variation-settings: "wght" 1000, "slnt" -10, "wdth" 25;
 }
 [data-font-sans=--font-roboto-flex] .title-name {
+    font-size: 1.5rem;
     font-variation-settings: "wght" 200, "slnt" -10, "wdth" 150;
 }
 
