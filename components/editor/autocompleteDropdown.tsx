@@ -132,7 +132,7 @@ export function AutocompleteDropdown({
                         ref={(el) => {
                             itemRefs.current[index] = el;
                         }}
-                        className={`ac-dropdown-option ${item.type}-name ${isSelected ? "selected" : ""}`}
+                        className={`ac-dropdown-option ${item.type === "var" ? "macro-variable" : `${item.type}-name`} ${isSelected ? "selected" : ""}`}
                         onMouseDown={(e) => {
                             e.preventDefault();
                             onSelect(item);

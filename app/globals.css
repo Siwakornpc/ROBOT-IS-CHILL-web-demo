@@ -3047,6 +3047,13 @@ tr:nth-child(odd) td {
 .ac-dropdown-option.macro-name.selected p {
     color: rgb(var(--md-color-syntax-name));
 }
+.ac-dropdown-option.macro-variable.selected {
+    color: rgb(var(--md-color-on-syntax-variable-container));
+    background: rgb(var(--md-color-syntax-variable-container));
+}
+.ac-dropdown-option.macro-variable.selected p {
+    color: rgb(var(--md-color-syntax-variable));
+}
 .ac-dropdown-option.variant-name.selected {
     color: rgb(var(--md-color-on-render-variant-name-container));
     background: rgb(var(--md-color-render-variant-name-container));
