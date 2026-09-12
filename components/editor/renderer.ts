@@ -83,7 +83,7 @@ export function scrollCaretIntoView(scrollEl: HTMLElement) {
 
     const scrollRect = scrollEl.getBoundingClientRect();
 
-    const padding = 4;
+    const padding = 8;
 
     const visibleTop = scrollRect.top + padding;
     const visibleBottom = scrollRect.bottom - padding;
