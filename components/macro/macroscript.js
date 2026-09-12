@@ -171,17 +171,17 @@ ${Object.keys(dbMacros).length} macros.`;
                         statusSteps.textContent = "Error";
                     } else {
                         statusSteps.classList.remove("error");
-                        statusSteps.textContent = steps[0] ?? 0;
+                        statusSteps.textContent = steps[0].toLocaleString('us-US') ?? 0;
                     }
                 }
 
                 output.classList.remove("error");
 
-                result = result.replace(/\s*<--(\d+)$/, "");
+                result = result.replace(/\n {4}<--(\d+)$/, "");
 
                 if (result.includes("[MACRO ERROR]")) {
                     output.classList.add("error");
-                    result = result.replace(/\s*<--\[add\/\[step\]\/-2\](\n-----)/, "$1");
+                    result = result.replace(/\n {4}<--\[add\/\[step\]\/-2\](\n-----)/, "$1");
                 }
 
                 output.textContent = result;
