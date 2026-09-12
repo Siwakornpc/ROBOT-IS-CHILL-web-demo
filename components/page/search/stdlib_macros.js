@@ -31,13 +31,15 @@ export default async function stdlib_macros() {
         );
 
         stdMacros.push([
-            name,
+            name.replace(/(^"|"$)/g, ""),
             {
                 description: descriptionLinesNID.join("\n"),
                 builtin: true,
             },
         ]);
     }
+
+    console.log(stdMacros.sort());
 
     return stdMacros.sort();
 }
