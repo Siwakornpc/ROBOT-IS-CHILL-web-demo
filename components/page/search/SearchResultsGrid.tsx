@@ -663,277 +663,282 @@ export default function SearchResults({
     --------------------- */  
 
     return (
-        <div
-            ref={(el) => {
-                gridRef.current = el;
-                applyOverflowFade(el, "y");
-            }}
-            className={`search-results ${mode} ascroll-y`}
-            data-loaded={Boolean(results)}
-        >
-            {!results
-                ? <div className="before-results">
-                    {filteredEntries.length === 0
-                        ? <span className="search-loading" role="status">
-                            <div className="search-loading-spinner" aria-hidden="true" />
-                            <span>Loading</span>
-                        </span>
-                        : ""
-                    }
-                </div>
-                : filteredEntries.length === 0
-                ? <div className="before-results"><span>No results found</span></div>
-                : ""
-            }
+        <> {/* i did this so i can read better
+                unless you want to move it there */}
+            <span className="search-results-label">
+                {`${filteredEntries.length.toLocaleString('en-US')} results found`}
+            </span>
+            <div
+                ref={(el) => {
+                    gridRef.current = el;
+                    applyOverflowFade(el, "y");
+                }}
+                className={`search-results ${mode} ascroll-y`}
+                data-loaded={Boolean(results)}
+            >
+                {!results
+                    ? <div className="before-results">
+                        {filteredEntries.length === 0
+                            ? <span className="search-loading" role="status">
+                                <div className="search-loading-spinner" aria-hidden="true" />
+                                <span>Loading</span>
+                            </span>
+                            : ""
+                        }
+                    </div>
+                    : filteredEntries.length === 0
+                    ? <div className="before-results"><span>No results found</span></div>
+                    : ""
+                }
 
-            {
-                // Tiles
-            }
+                {
+                    // Tiles
+                }
 
-            {mode === "tiles" &&
-                entries.map(([name, tile], index) => {
-                    const safeName = String(name ?? "").trim();
-                    const imageUrl = `https://ric-api.sno.mba/tiles/${encodeURIComponent(safeName)}.gif`;
-                    const isBroken = brokenImages.has(safeName);
-                    const canLoad = settledImages.has(safeName) || safeName === nextImageName;
+                {mode === "tiles" &&
+                    entries.map(([name, tile], index) => {
+                        const safeName = String(name ?? "").trim();
+                        const imageUrl = `https://ric-api.sno.mba/tiles/${encodeURIComponent(safeName)}.gif`;
+                        const isBroken = brokenImages.has(safeName);
+                        const canLoad = settledImages.has(safeName) || safeName === nextImageName;
 
-                    return (
-                        <button
-                            type="button"
-                            className="kill-styling search-item"
-                            key={safeName || `tile-${index}`}
-                            onClick={() => {
-                                if (isTileRecord(tile)) onSelect({ name: safeName, tile });
-                            }}
-                        >
-                            {isBroken
-                                ? <div className="search-item-tile search-item-tile-broken"><div/><div/></div>
-                                : canLoad
-                                ? <img
-                                    key={`${safeName}-${imageAttempt}`}
-                                    className="search-item-tile"
-                                    src={imageUrl}
-                                    alt=""
-                                    aria-hidden="true"
-                                    loading="lazy"
-                                    decoding="async"
-                                    onLoad={() => settleImage(safeName)}
-                                    onError={() => {
-                                        handleImageError(safeName);
-                                        settleImage(safeName);
-                                    }}
-                                />
-                                : <span className="search-item-tile pending" aria-hidden="true" />
-                            }
-                            <span className="search-item-name">{safeName}</span>
-                        </button>
-                    );
-                })
-            }
-
-            {
-                // Macros
-            }
-
-            {mode === "macros" &&
-                entries.map(([name, macro], index) => {
-                    const safeName = (name ?? "").trim();
-                    const isBuiltin = isMacroRecord(macro) && macro.builtin ? "builtin" : "";
-
-                    return (
-                        <button
-                            type="button"
-                            className="kill-styling search-item"
-                            key={safeName || `macro-${index}`}
-                            onClick={() => {
-                                if (isMacroRecord(macro)) onSelect({ name: safeName, macro });
-                            }}
-                        >
-                            <span
-                                ref={(el) => applyOverflowFade(el, "y")}
-                                className={`search-item-macro ${isBuiltin}`}
+                        return (
+                            <button
+                                type="button"
+                                className="kill-styling search-item"
+                                key={safeName || `tile-${index}`}
+                                onClick={() => {
+                                    if (isTileRecord(tile)) onSelect({ name: safeName, tile });
+                                }}
                             >
-                                <span className="macro-brackets">[</span>
-                                <span className="macro-name">{resolveDiscordEmojis(safeName)}</span>
-                                <span className="macro-brackets">]</span>
-                            </span>
-                        </button>
-                    );
-                })
-            }
-
-            {
-                // Filters
-            }
-
-            {mode === "filters" &&
-                entries.map(([name, filter], index) => {
-                    const safeName = String(name ?? "").trim();
-                    const imageUrl = `https://ric-api.sno.mba/filters/${encodeURIComponent(safeName)}.png`;
-                    const isBroken = brokenImages.has(safeName);
-                    const canLoad = settledImages.has(safeName) || safeName === nextImageName;
-
-                    return (
-                        <button
-                            type="button"
-                            className="kill-styling search-item"
-                            key={safeName || `filter-${index}`}
-                            onClick={() => {
-                                if (isFilterRecord(filter)) onSelect({ name: safeName, filter });
-                            }}
-                        >
-                            {isBroken 
-                                ? <div className="search-item-tile search-item-tile-broken"><div/><div/></div>
-                                : canLoad
-                                ? <img
-                                    key={`${safeName}-${imageAttempt}`}
-                                    className="search-item-tile"
-                                    src={imageUrl}
-                                    alt=""
-                                    aria-hidden="true"
-                                    loading="lazy"
-                                    decoding="async"
-                                    onLoad={() => handleImageLoad(safeName)}
-                                    onError={() => handleImageError(safeName)}
-                                />
-                                : <span className="search-item-tile pending" aria-hidden="true" />
-                            }
-                            <span className="search-item-name">{safeName}</span>
-                        </button>
-                    );
-                })
-            }
-
-            {
-                // Variants
-            }
-
-            {mode === "variants" &&
-                entries.map(([name, variant], index) => {
-                    const safeName = (name ?? "").trim();
-
-                    return (
-                        <button
-                            type="button"
-                            className="kill-styling search-item"
-                            key={safeName || `value-${index}`}
-                            onClick={() => {
-                                if (isVariantRecord(variant)) onSelect({ name: safeName, variant });
-                            }}
-                        >
-                            <span
-                                ref={(el) => applyOverflowFade(el, "y")}
-                                className="search-item-variant variant-name"
-                            >:{name !== "m_syntax_shim" ? <span>{name}</span> : <s>{name}</s>}
-                            </span>
-                        </button>
-                    );
-                })
-            }
-
-            {
-                // Flags
-            }
-
-            {mode === "flags" &&
-                entries.map(([name, flag], index) => {
-                    const safeName = (name ?? "").trim();
-
-                    return (
-                        <button
-                            type="button"
-                            className="kill-styling search-item"
-                            key={safeName || `flag-${index}`}
-                            onClick={() => {
-                                if (isFlagRecord(flag)) onSelect({ name: safeName, flag });
-                            }}
-                        >
-                            <span
-                                ref={(el) => applyOverflowFade(el, "y")}
-                                className="search-item-flag flag-name"
-                            >--<span>{name}</span>
-                            </span>
-                        </button>
-                    );
-                })
-            }
-
-            {
-                // Palettes
-            }
-
-            {mode === "palettes" &&
-                entries.map(([name, palette], index) => {
-                    const safeName = String(name ?? "").trim();
-                    const normalizedName = safeName.replace(/^[^:]+:/, "");
-
-                    return (
-                        <button
-                            type="button"
-                            className="kill-styling search-item"
-                            key={safeName || `palette-${index}`}
-                            onClick={() => {
-                                if (isPaletteRecord(palette)) onSelect({ name: safeName, palette });
-                            }}
-                        >
-                            <div className="search-item-palette">
-                                {isPaletteRecord(palette)
-                                    ? palette.colors.map((row, index) =>
-                                        <div
-                                            key={`palette-row-${safeName ?? "unidentified"}-${index}`}
-                                            className="search-item-palette-these-colors-row"
-                                        >
-                                            {row.map((color, jndex) =>
-                                                <div
-                                                    key={`palette-this-color-${safeName ?? "unidentified"}-${color}-${jndex}`}
-                                                    className="search-item-palette-this-color"
-                                                    style={{ "--this-palette-color": color } as React.CSSProperties}
-                                                />
-                                            )}
-                                        </div>
-                                    )
-                                    : ""
+                                {isBroken
+                                    ? <div className="search-item-tile search-item-tile-broken"><div/><div/></div>
+                                    : canLoad
+                                    ? <img
+                                        key={`${safeName}-${imageAttempt}`}
+                                        className="search-item-tile"
+                                        src={imageUrl}
+                                        alt=""
+                                        aria-hidden="true"
+                                        loading="lazy"
+                                        decoding="async"
+                                        onLoad={() => settleImage(safeName)}
+                                        onError={() => {
+                                            handleImageError(safeName);
+                                            settleImage(safeName);
+                                        }}
+                                    />
+                                    : <span className="search-item-tile pending" aria-hidden="true" />
                                 }
-                            </div>
-                            <span className="search-item-grouped-name">
-                                <span className="search-item-name">{normalizedName}</span>
-                                <span className="search-item-subname">{`(${isPaletteRecord(palette) ? palette.source : ""})`}</span>
-                            </span>
-                        </button>
-                    );
-                })
-            }
+                                <span className="search-item-name">{safeName}</span>
+                            </button>
+                        );
+                    })
+                }
 
-            {
-                // Overlays
-            }
+                {
+                    // Macros
+                }
 
-            {mode === "overlays" &&
-                entries.map(([name, overlay], index) => {
-                    const safeName = String(name ?? "").trim();
-                    if (!isOverlayRecord(overlay)) return null;
+                {mode === "macros" &&
+                    entries.map(([name, macro], index) => {
+                        const safeName = (name ?? "").trim();
+                        const isBuiltin = isMacroRecord(macro) && macro.builtin ? "builtin" : "";
 
-                    return (
-                        <button
-                            type="button"
-                            className="kill-styling search-item"
-                            key={safeName || `overlay-${index}`}
-                            onClick={() => {
-                                if (isOverlayRecord(overlay)) onSelect({ name: safeName, overlay });
-                            }}
-                        >
-                            <div
-                                className="search-item-overlay"
-                                style={{background: `url(${overlay.url})`}}
-                                aria-hidden="true"
-                            />
-                            <span className="search-item-name">{safeName}</span>
-                        </button>
-                    );
-                })
-            }
+                        return (
+                            <button
+                                type="button"
+                                className="kill-styling search-item"
+                                key={safeName || `macro-${index}`}
+                                onClick={() => {
+                                    if (isMacroRecord(macro)) onSelect({ name: safeName, macro });
+                                }}
+                            >
+                                <span
+                                    ref={(el) => applyOverflowFade(el, "y")}
+                                    className={`search-item-macro ${isBuiltin}`}
+                                >
+                                    <span className="macro-brackets">[</span>
+                                    <span className="macro-name">{resolveDiscordEmojis(safeName)}</span>
+                                    <span className="macro-brackets">]</span>
+                                </span>
+                            </button>
+                        );
+                    })
+                }
 
-            {hasMore && <div ref={loadMoreRef} />}
-        </div>
-    );
+                {
+                    // Filters
+                }
+
+                {mode === "filters" &&
+                    entries.map(([name, filter], index) => {
+                        const safeName = String(name ?? "").trim();
+                        const imageUrl = `https://ric-api.sno.mba/filters/${encodeURIComponent(safeName)}.png`;
+                        const isBroken = brokenImages.has(safeName);
+                        const canLoad = settledImages.has(safeName) || safeName === nextImageName;
+
+                        return (
+                            <button
+                                type="button"
+                                className="kill-styling search-item"
+                                key={safeName || `filter-${index}`}
+                                onClick={() => {
+                                    if (isFilterRecord(filter)) onSelect({ name: safeName, filter });
+                                }}
+                            >
+                                {isBroken 
+                                    ? <div className="search-item-tile search-item-tile-broken"><div/><div/></div>
+                                    : canLoad
+                                    ? <img
+                                        key={`${safeName}-${imageAttempt}`}
+                                        className="search-item-tile"
+                                        src={imageUrl}
+                                        alt=""
+                                        aria-hidden="true"
+                                        loading="lazy"
+                                        decoding="async"
+                                        onLoad={() => handleImageLoad(safeName)}
+                                        onError={() => handleImageError(safeName)}
+                                    />
+                                    : <span className="search-item-tile pending" aria-hidden="true" />
+                                }
+                                <span className="search-item-name">{safeName}</span>
+                            </button>
+                        );
+                    })
+                }
+
+                {
+                    // Variants
+                }
+
+                {mode === "variants" &&
+                    entries.map(([name, variant], index) => {
+                        const safeName = (name ?? "").trim();
+
+                        return (
+                            <button
+                                type="button"
+                                className="kill-styling search-item"
+                                key={safeName || `value-${index}`}
+                                onClick={() => {
+                                    if (isVariantRecord(variant)) onSelect({ name: safeName, variant });
+                                }}
+                            >
+                                <span
+                                    ref={(el) => applyOverflowFade(el, "y")}
+                                    className="search-item-variant variant-name"
+                                >:{name !== "m_syntax_shim" ? <span>{name}</span> : <s>{name}</s>}
+                                </span>
+                            </button>
+                        );
+                    })
+                }
+
+                {
+                    // Flags
+                }
+
+                {mode === "flags" &&
+                    entries.map(([name, flag], index) => {
+                        const safeName = (name ?? "").trim();
+
+                        return (
+                            <button
+                                type="button"
+                                className="kill-styling search-item"
+                                key={safeName || `flag-${index}`}
+                                onClick={() => {
+                                    if (isFlagRecord(flag)) onSelect({ name: safeName, flag });
+                                }}
+                            >
+                                <span
+                                    ref={(el) => applyOverflowFade(el, "y")}
+                                    className="search-item-flag flag-name"
+                                >--<span>{name}</span>
+                                </span>
+                            </button>
+                        );
+                    })
+                }
+
+                {
+                    // Palettes
+                }
+
+                {mode === "palettes" &&
+                    entries.map(([name, palette], index) => {
+                        const safeName = String(name ?? "").trim();
+                        const normalizedName = safeName.replace(/^[^:]+:/, "");
+
+                        return (
+                            <button
+                                type="button"
+                                className="kill-styling search-item"
+                                key={safeName || `palette-${index}`}
+                                onClick={() => {
+                                    if (isPaletteRecord(palette)) onSelect({ name: safeName, palette });
+                                }}
+                            >
+                                <div className="search-item-palette">
+                                    {isPaletteRecord(palette)
+                                        ? palette.colors.map((row, index) =>
+                                            <div
+                                                key={`palette-row-${safeName ?? "unidentified"}-${index}`}
+                                                className="search-item-palette-these-colors-row"
+                                            >
+                                                {row.map((color, jndex) =>
+                                                    <div
+                                                        key={`palette-this-color-${safeName ?? "unidentified"}-${color}-${jndex}`}
+                                                        className="search-item-palette-this-color"
+                                                        style={{ "--this-palette-color": color } as React.CSSProperties}
+                                                    />
+                                                )}
+                                            </div>
+                                        )
+                                        : ""
+                                    }
+                                </div>
+                                <span className="search-item-grouped-name">
+                                    <span className="search-item-name">{normalizedName}</span>
+                                    <span className="search-item-subname">{`(${isPaletteRecord(palette) ? palette.source : ""})`}</span>
+                                </span>
+                            </button>
+                        );
+                    })
+                }
+
+                {
+                    // Overlays
+                }
+
+                {mode === "overlays" &&
+                    entries.map(([name, overlay], index) => {
+                        const safeName = String(name ?? "").trim();
+                        if (!isOverlayRecord(overlay)) return null;
+
+                        return (
+                            <button
+                                type="button"
+                                className="kill-styling search-item"
+                                key={safeName || `overlay-${index}`}
+                                onClick={() => {
+                                    if (isOverlayRecord(overlay)) onSelect({ name: safeName, overlay });
+                                }}
+                            >
+                                <div
+                                    className="search-item-overlay"
+                                    style={{background: `url(${overlay.url})`}}
+                                    aria-hidden="true"
+                                />
+                                <span className="search-item-name">{safeName}</span>
+                            </button>
+                        );
+                    })
+                }
+
+                {hasMore && <div ref={loadMoreRef} />}
+            </div>
+    </>);
 }

@@ -2342,6 +2342,11 @@ main:has(.main-body) {
     justify-items: center;
 }
 
+.search-results-label {
+    color: rgb(var(--md-color-on-secondary-container));
+    font-size: 0.8rem;
+}
+
 .search-results.tiles,
 .search-results.overlays {
     grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
