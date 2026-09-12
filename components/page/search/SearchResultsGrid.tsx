@@ -662,12 +662,12 @@ export default function SearchResults({
         RETURNING STATES
     --------------------- */  
 
-    return (
-        <> {/* i did this so i can read better
-                unless you want to move it there */}
-            <span className="search-results-label">
-                {`${filteredEntries.length.toLocaleString('en-US')} results found`}
-            </span>
+    return (<>
+            {results
+                ? <span className="search-results-label">
+                    {`${filteredEntries.length.toLocaleString('en-US')} results found`}
+                </span> : ""
+            }
             <div
                 ref={(el) => {
                     gridRef.current = el;
