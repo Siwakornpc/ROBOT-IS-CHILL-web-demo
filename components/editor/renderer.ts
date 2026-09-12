@@ -1,7 +1,7 @@
 import type { EditorState, WindowWithEditor } from "./types";
 import { clamp, normalizeNewlines } from "./lineUtils";
 import { offsetToLineColumn } from "./lineModel";
-import { setRange } from "./caretUtils";
+import { setRange, getCaretCoordinates } from "./caretUtils";
 import { updateGutter, updateCurrentLineClass, syncGutterScroll } from "./domUpdaters";
 import { highlight, updateCaretMatch } from "./highlighting";
 
@@ -57,44 +57,78 @@ export function shouldScrollSelectionToCaret(selection: Selection | null): selec
 
 export function scrollCaretIntoView(scrollEl: HTMLElement) {
     const selection = window.getSelection();
-    if (!shouldScrollSelectionToCaret(selection)) return;
+
+    if (!selection || selection.rangeCount === 0) {
+        return;
+    }
 
     const range = selection.getRangeAt(0);
+
+    if (!range.collapsed) {
+        return;
+    }
+
     let node: Node | null = range.startContainer;
 
     if (node.nodeType === Node.TEXT_NODE) {
-        node = node.parentNode;
+        node = node.parentElement;
     }
 
-    const currentLine = (node as HTMLElement | null)?.closest?.(".editor-line") as HTMLElement | null;
-    if (!currentLine) return;
+    const currentLine = (node as HTMLElement | null)
+        ?.closest?.(".editor-line") as HTMLElement | null;
 
-    const scrollElRect = scrollEl.getBoundingClientRect();
-    const currentLineRect = currentLine.getBoundingClientRect();
+    if (!currentLine) {
+        return;
+    }
+
+    const scrollRect = scrollEl.getBoundingClientRect();
 
     const padding = 4;
-    const visibleTop = scrollElRect.top + padding;
-    const visibleBottom = scrollElRect.bottom - padding;
 
-    const maxScrollTop = Math.max(0, scrollEl.scrollHeight - scrollEl.clientHeight);
-    const scrollDelta = (() => {
-        if (currentLineRect.top < visibleTop) {
-            return currentLineRect.top - visibleTop;
-        }
+    const visibleTop = scrollRect.top + padding;
+    const visibleBottom = scrollRect.bottom - padding;
 
-        if (currentLineRect.bottom > visibleBottom) {
-            return currentLineRect.bottom - visibleBottom;
-        }
+    // Try to get the actual caret position.
+    const caretRange = range.cloneRange();
+    caretRange.collapse(true);
 
-        return 0;
-    })();
+    const caretRect = caretRange.getBoundingClientRect();
 
-    if (scrollDelta === 0) return;
+    let caretTop: number;
+    let caretBottom: number;
 
-    const targetScrollTop = Math.min(Math.max(0, scrollEl.scrollTop + scrollDelta), maxScrollTop);
-    if (targetScrollTop !== scrollEl.scrollTop) {
-        scrollEl.scrollTop = targetScrollTop;
+    if (caretRect.height > 0) {
+        caretTop = caretRect.top;
+        caretBottom = caretRect.bottom;
+    } else {
+        // Empty line: browser may not give the caret a rect.
+        const lineRect = currentLine.getBoundingClientRect();
+
+        caretTop = lineRect.top;
+        caretBottom = lineRect.top + parseFloat(
+            getComputedStyle(currentLine).lineHeight
+        );
     }
+
+    let delta = 0;
+
+    if (caretTop < visibleTop) {
+        delta = caretTop - visibleTop;
+    } else if (caretBottom > visibleBottom) {
+        delta = caretBottom - visibleBottom;
+    }
+
+    if (delta === 0) {
+        return;
+    }
+
+    const maxScrollTop =
+        Math.max(0, scrollEl.scrollHeight - scrollEl.clientHeight);
+
+    scrollEl.scrollTop = Math.max(
+        0,
+        Math.min(scrollEl.scrollTop + delta, maxScrollTop)
+    );
 }
 
 export function createRenderer(deps: RendererDeps) {

@@ -133,3 +133,57 @@ export function setRange(editorArea: HTMLElement | null, lines: string[], start:
     sel.removeAllRanges();
     sel.addRange(range);
 }
+
+interface CaretCoordinates {
+  x: number;
+  y: number;
+}
+
+export function getCaretCoordinates(
+  el: HTMLElement
+): CaretCoordinates | null {
+  const selection = window.getSelection();
+
+  if (!selection || selection.rangeCount === 0) {
+    return null;
+  }
+
+  const range = selection.getRangeAt(0);
+
+  if (!el.contains(range.commonAncestorContainer)) {
+    return null;
+  }
+
+  // First try the actual caret rectangle.
+  const caretRange = range.cloneRange();
+  caretRange.collapse(true);
+
+  const rect = caretRange.getClientRects()[0];
+
+  if (rect) {
+    return {
+      x: rect.left + window.scrollX,
+      y: rect.top + window.scrollY,
+    };
+  }
+
+  // No text to measure — find the line containing the caret.
+  let node: Node | null = range.startContainer;
+
+  if (node.nodeType === Node.TEXT_NODE) {
+    node = node.parentElement;
+  }
+
+  const line = (node as HTMLElement | null)?.closest(".line");
+
+  if (!line || !el.contains(line)) {
+    return null;
+  }
+
+  const lineRect = line.getBoundingClientRect();
+
+  return {
+    x: lineRect.left + window.scrollX,
+    y: lineRect.top + window.scrollY,
+  };
+}
