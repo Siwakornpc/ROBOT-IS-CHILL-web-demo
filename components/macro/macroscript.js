@@ -177,11 +177,11 @@ ${Object.keys(dbMacros).length} macros.`;
 
                 output.classList.remove("error");
 
-                result = result.replace(/\n {4}<--(\d+)$/, "");
+                result = result.replace(/\n? {4}<--(\d+)$/, "");
 
                 if (result.includes("[MACRO ERROR]")) {
                     output.classList.add("error");
-                    result = result.replace(/\n {4}<--\[add\/\[step\]\/-2\](\n-----)/, "$1");
+                    result = result.replace(/\n? {4}<--\[add\/\[step\]\/-2\](\n-----)/, "$1");
                 }
 
                 output.textContent = result;
