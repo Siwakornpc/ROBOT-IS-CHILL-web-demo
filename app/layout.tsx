@@ -7,6 +7,7 @@ import {
     Roboto_Flex,
     Google_Sans,
     Noto_Sans,
+    Geist,
     IBM_Plex_Mono,
     JetBrains_Mono,
     Bytesized,
@@ -14,6 +15,7 @@ import {
     Source_Code_Pro,
     Courier_Prime,
     Noto_Sans_Mono,
+    Geist_Mono,
 } from "next/font/google";
 import "./globals.css";
 import ThemeScript, { ThemeProvider } from '@/components/themescript';
@@ -45,6 +47,10 @@ const googleSans = Google_Sans({
 const notoSans = Noto_Sans({
     subsets: ["latin"],
     variable: "--font-noto-sans",
+});
+const geist = Geist({
+    subsets: ["latin"],
+    variable: "--font-geist",
 });
 
 const ibmPlexMono = IBM_Plex_Mono({
@@ -82,6 +88,11 @@ const notoSansMono = Noto_Sans_Mono({
     variable: "--font-noto-sans-mono",
     weight: "400",
 });
+const geistMono = Geist_Mono({
+    subsets: ["latin"],
+    variable: "--font-geist-mono",
+    weight: "400",
+});
 
 export const metadata: Metadata = {
     title: "Robot Is Chill Web Demo",
@@ -100,6 +111,7 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
                 robotoFlex,
                 googleSans,
                 notoSans,
+                geist,
 
                 // both
                 bytesized,
@@ -111,6 +123,7 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
                 sourceCodePro,
                 courierPrime,
                 notoSansMono,
+                geistMono,
             ].map((font) => font.variable).join(" ")} h-full antialiased`}
         >
             <body className="min-h-full flex flex-col bg-background text-foreground">
