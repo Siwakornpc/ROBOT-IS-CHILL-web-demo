@@ -76,7 +76,7 @@ const cascadiaCode = Cascadia_Code({
 const sourceCodePro = Source_Code_Pro({
     subsets: ["latin"],
     variable: "--font-source-code-pro",
-    weight: "400",
+    weight: "500",
 });
 const courierPrime = Courier_Prime({
     subsets: ["latin"],
@@ -91,7 +91,7 @@ const notoSansMono = Noto_Sans_Mono({
 const geistMono = Geist_Mono({
     subsets: ["latin"],
     variable: "--font-geist-mono",
-    weight: "400",
+    weight: "500",
 });
 
 export const metadata: Metadata = {
