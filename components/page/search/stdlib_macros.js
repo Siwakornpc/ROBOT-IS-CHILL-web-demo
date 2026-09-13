@@ -39,7 +39,5 @@ export default async function stdlib_macros() {
         ]);
     }
 
-    console.log(stdMacros.sort());
-
     return stdMacros.sort();
 }
