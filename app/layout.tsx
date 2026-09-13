@@ -6,12 +6,14 @@ import {
     Inter,
     Roboto_Flex,
     Google_Sans,
+    Noto_Sans,
     IBM_Plex_Mono,
     JetBrains_Mono,
     Bytesized,
     Cascadia_Code,
     Source_Code_Pro,
     Courier_Prime,
+    Noto_Sans_Mono,
 } from "next/font/google";
 import "./globals.css";
 import ThemeScript, { ThemeProvider } from '@/components/themescript';
@@ -40,6 +42,11 @@ const googleSans = Google_Sans({
     subsets: ["latin"],
     variable: "--font-google-sans",
 });
+const notoSans = Noto_Sans({
+    subsets: ["latin"],
+    variable: "--font-noto-sans",
+});
+
 const ibmPlexMono = IBM_Plex_Mono({
     subsets: ["latin"],
     variable: "--font-ibm-plex-mono",
@@ -70,6 +77,11 @@ const courierPrime = Courier_Prime({
     variable: "--font-courier-prime",
     weight: "400",
 });
+const notoSansMono = Noto_Sans_Mono({
+    subsets: ["latin"],
+    variable: "--font-noto-sans-mono",
+    weight: "400",
+});
 
 export const metadata: Metadata = {
     title: "Robot Is Chill Web Demo",
@@ -87,6 +99,7 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
                 inter,
                 robotoFlex,
                 googleSans,
+                notoSans,
 
                 // both
                 bytesized,
@@ -97,6 +110,7 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
                 cascadiaCode,
                 sourceCodePro,
                 courierPrime,
+                notoSansMono,
             ].map((font) => font.variable).join(" ")} h-full antialiased`}
         >
             <body className="min-h-full flex flex-col bg-background text-foreground">

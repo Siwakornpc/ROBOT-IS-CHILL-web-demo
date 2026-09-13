@@ -15,6 +15,7 @@ export const FONT_SANS_OPTIONS: FontOption[] = [
     { value: "roboto-flex", label: "Roboto Flex", cssVar: "--font-roboto-flex" },
     { value: "google-sans", label: "Google Sans", cssVar: "--font-google-sans" },
     { value: "bytesized", label: "Bytesized", cssVar: "--font-bytesized" },
+    { value: "noto-sans", label: "Noto Sans", cssVar: "--font-noto-sans" },
 ];
 
 export const FONT_CODE_OPTIONS: FontOption[] = [
@@ -24,6 +25,7 @@ export const FONT_CODE_OPTIONS: FontOption[] = [
     { value: "cascadia-code", label: "Cascadia Code", cssVar: "--font-cascadia-code" },
     { value: "source-code-pro", label: "Source Code Pro", cssVar: "--font-source-code-pro" },
     { value: "courier-prime", label: "Courier Prime", cssVar: "--font-courier-prime" },
+    { value: "noto-sans-mono", label: "Noto Sans Mono", cssVar: "--font-noto-sans-mono" },
 ];
 
 export interface FontState {
