@@ -19,3 +19,25 @@ export function getMacroDefinitionNameFromElement(target: EventTarget | null): s
     const macroName = element.getAttribute("data-macro-name") ?? element.textContent ?? "";
     return macroName.trim() || null;
 }
+
+export function buildVariableDefinitionUrl(name: string): string {
+    const variableName = String(name ?? "").trim();
+    if (!variableName) return "/search";
+
+    const codeParam = typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("code");
+    const codeQuery = codeParam === null ? "" : `&code=${encodeURIComponent(codeParam)}`;
+
+    return `/search#macros?details=${encodeURIComponent(variableName)}${codeQuery}`;
+}
+
+export function getVariableDefinitionNameFromElement(target: EventTarget | null): string | null {
+    const element = target instanceof Element
+        ? target.closest(".macro-variable")
+        : target instanceof Node
+        ? target.parentElement?.closest(".macro-variable")
+        : null;
+    if (!element) return null;
+
+    const macroVariable = element.getAttribute("data-macro-variable") ?? element.textContent ?? "";
+    return macroVariable.trim() || null;
+}

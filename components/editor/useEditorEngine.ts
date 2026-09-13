@@ -16,7 +16,12 @@ import { getAutocompleteContext } from "./autocompleteUtils";
 import stdlib_macros from "../page/search/stdlib_macros";
 import { loadFlags, flags } from "@/components/highlight/render-highlight";
 import { getStoredVariables } from "@/components/highlight/macro-highlight.js";
-import { buildMacroDefinitionUrl, getMacroDefinitionNameFromElement } from "./macroDefinition";
+import {
+    buildMacroDefinitionUrl,
+    getMacroDefinitionNameFromElement,
+    buildVariableDefinitionUrl,
+    getVariableDefinitionNameFromElement,
+} from "./macroDefinition";
 import { syncGutterScroll } from "./domUpdaters";
 
 import JSONbig from "json-bigint";
@@ -107,11 +112,19 @@ export function useEditorEngine({
         const handleSelectionChange = createSelectionChangeHandler({ win, editorArea, gutterEl, state });
 
         let isMacroReferenceActive = false;
+        let isVariableReferenceActive = false;
 
         const updateMacroReferenceState = (active: boolean) => {
             isMacroReferenceActive = active;
             editorArea.querySelectorAll(".macro-name").forEach((el) => {
                 el.classList.toggle("macro-ref", active);
+            });
+        };
+
+        const updateVariableReferenceState = (active: boolean) => {
+            isVariableReferenceActive = active;
+            editorArea.querySelectorAll(".macro-variable").forEach((el) => {
+                el.classList.toggle("variable-ref", active);
             });
         };
 
@@ -125,11 +138,26 @@ export function useEditorEngine({
                 updateMacroReferenceState(false);
         };
 
-        const handleMacroReferenceBlur = () => updateMacroReferenceState(false);
+        const handleVariableReferenceKeydown = (e: KeyboardEvent) => {
+            if ((e.ctrlKey || e.metaKey) && !(e.altKey || e.shiftKey))
+                updateVariableReferenceState(true);
+        };
+
+        const handleVariableReferenceKeyup = (e: KeyboardEvent) => {
+            if (e.key === "Control" || e.key === "Meta")
+                updateVariableReferenceState(false);
+        };
+
+        const handleMacroReferenceBlur = () => {
+            updateMacroReferenceState(false);
+            updateVariableReferenceState(false);
+        };
 
         const handleMacroReferencePageshowPersisted = (e: PageTransitionEvent) => {
-            if (e.persisted)
+            if (e.persisted) {
                 updateMacroReferenceState(false);
+                updateVariableReferenceState(false);
+            }
         }
 
         const handleMacroHover = (e: MouseEvent) => {
@@ -138,7 +166,14 @@ export function useEditorEngine({
             const macroName = getMacroDefinitionNameFromElement(e.target);
             if (!macroName) return;
 
-            const target = e.target instanceof Element ? e.target.closest(".macro-name") as HTMLElement | null : null;
+            const textTarget = e.target instanceof Node
+                ? e.target.nodeType === Node.TEXT_NODE
+                    ? e.target.parentElement
+                    : e.target instanceof Element
+                        ? e.target
+                        : null
+                : null;
+            const target = textTarget instanceof Element ? textTarget.closest(".macro-name") as HTMLElement | null : null;
             if (target) target.classList.add("macro-ref");
         };
 
@@ -151,6 +186,58 @@ export function useEditorEngine({
             e.preventDefault();
             e.stopPropagation();
             window.location.assign(buildMacroDefinitionUrl(macroName));
+        };
+
+        const handleVariableHover = (e: MouseEvent) => {
+            if (!isVariableReferenceActive) return;
+
+            const macroVariable = getVariableDefinitionNameFromElement(e.target);
+            if (!macroVariable) return;
+
+            const textTarget = e.target instanceof Node
+                ? e.target.nodeType === Node.TEXT_NODE
+                    ? e.target.parentElement
+                    : e.target instanceof Element
+                        ? e.target
+                        : null
+                : null;
+            const target = textTarget instanceof Element ? textTarget.closest(".macro-variable") as HTMLElement | null : null;
+            if (target) target.classList.add("variable-ref");
+        };
+
+        const findFirstVariableDefinition = (name: string): { index: number; match: string; nameIndex: number } | null => {
+            const trimmed = name.trim();
+            if (!trimmed) return null;
+
+            const escapedName = trimmed.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            const pattern = new RegExp(`\\[(?:store|byte\\.set)\\/(${escapedName})(?=\\/|\\])`, "gi");
+            const matches = [...state.value.matchAll(pattern)];
+            const firstMatch = matches[0];
+
+            if (!firstMatch || firstMatch.index === undefined) return null;
+            const nameIndex = firstMatch.index + firstMatch[0].indexOf(firstMatch[1]);
+            return { index: firstMatch.index, match: firstMatch[0], nameIndex };
+        };
+
+        const handleVariableDefinition = (e: MouseEvent) => {
+            if (!(e.ctrlKey || e.metaKey)) return;
+
+            const macroVariable = getVariableDefinitionNameFromElement(e.target);
+            if (!macroVariable) return;
+
+            const definition = findFirstVariableDefinition(macroVariable);
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (definition) {
+                const caretPos = definition.nameIndex;
+                editorArea.focus();
+                render(caretPos, caretPos, { scrollToCaret: true });
+                return;
+            }
+
+            window.location.assign(buildVariableDefinitionUrl(macroVariable));
         };
 
         const handleSelectionChangeWithScroll = () => {
@@ -207,7 +294,9 @@ export function useEditorEngine({
         document.addEventListener("keydown", handleGlobalKeydown);
         document.addEventListener("keydown", handleACKeydown);
         document.addEventListener("keydown", handleMacroReferenceKeydown);
+        document.addEventListener("keydown", handleVariableReferenceKeydown);
         document.addEventListener("keyup", handleMacroReferenceKeyup);
+        document.addEventListener("keyup", handleVariableReferenceKeyup);
         document.addEventListener("mousedown", handleMouseDown);
 
         let macroList: Array<{ label: string; builtin?: boolean; creator: string }> = [];
@@ -405,10 +494,12 @@ export function useEditorEngine({
         document.addEventListener("selectionchange", handleACSelectionChange);
         editorArea.addEventListener("beforeinput", handleBeforeInput as EventListener);
         editorArea.addEventListener("keydown", handleKeydown);
-        editorArea.addEventListener("mouseover", handleMacroHover);
         editorArea.addEventListener("click", handleClick);
-        editorArea.addEventListener("click", handleMacroDefinition);
         scrollEl.addEventListener("scroll", handleScroll);
+        editorArea.addEventListener("mouseover", handleMacroHover);
+        editorArea.addEventListener("click", handleMacroDefinition);
+        editorArea.addEventListener("mouseover", handleVariableHover);
+        editorArea.addEventListener("click", handleVariableDefinition);
 
         const api: EditorApi = {
             get value() { return state.value },
@@ -447,16 +538,20 @@ export function useEditorEngine({
             document.removeEventListener("keydown", handleGlobalKeydown);
             document.removeEventListener("keydown", handleACKeydown);
             document.removeEventListener("keydown", handleMacroReferenceKeydown);
+            document.removeEventListener("keydown", handleVariableReferenceKeydown);
             document.removeEventListener("keyup", handleMacroReferenceKeyup);
+            document.removeEventListener("keyup", handleVariableReferenceKeyup);
             document.removeEventListener("mousedown", handleMouseDown);
             document.removeEventListener("selectionchange", handleSelectionChangeWithScroll);
             document.removeEventListener("selectionchange", handleACSelectionChange);
             editorArea.removeEventListener("beforeinput", handleBeforeInput as EventListener);
             editorArea.removeEventListener("keydown", handleKeydown);
-            editorArea.removeEventListener("mouseover", handleMacroHover);
             editorArea.removeEventListener("click", handleClick);
-            editorArea.removeEventListener("click", handleMacroDefinition);
             scrollEl.removeEventListener("scroll", handleScroll);
+            editorArea.removeEventListener("mouseover", handleMacroHover);
+            editorArea.removeEventListener("click", handleMacroDefinition);
+            editorArea.removeEventListener("mouseover", handleVariableHover);
+            editorArea.removeEventListener("click", handleVariableDefinition);
             scrollEl.removeEventListener("scroll", handleACSelectionChange);
             layoutResizeObserver?.disconnect();
             visualViewport?.removeEventListener("resize", handleACSelectionChange);

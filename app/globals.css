@@ -1837,6 +1837,11 @@ main:has(.main-body) {
 .macro-variable {
     color: var(--macro-var);
 }
+.variable-ref:hover {
+    color: rgb(var(--md-color-tertiary));
+    text-decoration: underline;
+    cursor: pointer;
+}
 .editor-line > .error {
     text-decoration: underline 1px wavy var(--error);
 }

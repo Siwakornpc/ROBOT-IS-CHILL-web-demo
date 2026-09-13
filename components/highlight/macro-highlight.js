@@ -41,8 +41,54 @@ const findBracketPairsInternal = (text) => {
 // inline). Kept separate so both macroHighlighter (joined string) and
 // macroHighlightSegments (positioned pieces, for combined-highlight.js)
 // can share one tokenizing pass.
+const collectStoredVariables = (text) => {
+    const { validPairs } = findBracketPairsInternal(text);
+    const storedVariables = new Set();
+    const bracketStack = [];
+
+    for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        const next = text[i + 1];
+        const curr = bracketStack.at(-1);
+
+        if (ch === "[" && validPairs.has(i)) {
+            bracketStack.push({
+                close: validPairs.get(i),
+                currentMacroName: "",
+                currentArgText: "",
+                argIndex: 0,
+            });
+        }
+        else if (curr && ch === "]" && curr.close === i) {
+            if (["store", "byte.set"].includes(curr.currentMacroName.trim()) && curr.currentArgText.trim()) {
+                storedVariables.add(curr.currentArgText.trim());
+            }
+            bracketStack.pop();
+        }
+        else if (curr && ch === "/") {
+            curr.argIndex++;
+        }
+        else if (curr) {
+            if (curr.argIndex === 0) {
+                curr.currentMacroName += ch;
+            } else if (curr.argIndex === 1) {
+                curr.currentArgText += ch;
+            }
+        }
+        else if (ch === "\\" && next) {
+            i++;
+        }
+    }
+
+    return storedVariables;
+};
+
 const buildMacroTokens = (text, storedVariables = new Set()) => {
     const { validPairs } = findBracketPairsInternal(text);
+    const knownStoredVariables = new Set(storedVariables);
+    for (const storedVariable of collectStoredVariables(text)) {
+        knownStoredVariables.add(storedVariable);
+    }
 
     let bracketId = 0;
     const bracketStack = [];
@@ -78,7 +124,7 @@ const buildMacroTokens = (text, storedVariables = new Set()) => {
         if (["store", "get", "is_stored", "drop"].includes(curr.currentMacroName))
             resolvedClassName = "macro-variable";
         else if (["load", "byte.set", "byte.get", "byte.splice"].includes(curr.currentMacroName))
-            resolvedClassName = storedVariables.has(trimmed) ? "macro-variable" : "error";
+            resolvedClassName = knownStoredVariables.has(trimmed) ? "macro-variable" : "error";
 
         for (const item of curr.arg1Buffer) {
             appendText(item.ch, resolvedClassName, item.pos);
@@ -132,7 +178,7 @@ const buildMacroTokens = (text, storedVariables = new Set()) => {
         }
         else if (curr && ch === "]" && curr.close === i) {
             if (curr.argIndex === 1) flushArg1();
-            if (curr.currentMacroName === "store" && curr.currentArgText.trim())
+            if (["store", "byte.set"].includes(curr.currentMacroName.trim()) && curr.currentArgText.trim())
                 storedVariables.add(curr.currentArgText.trim());
             
             const item = bracketStack.pop();
