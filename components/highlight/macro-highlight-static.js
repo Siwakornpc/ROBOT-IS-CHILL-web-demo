@@ -3,12 +3,13 @@ const escapeHtml = (str) => str
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
 
-const span = (className, textValue, kind = "", id = -1, depth = 0, pos = -1) => {
+const span = (className, textValue, kind = "", id = -1, depth = 0, pos = -1, macroName = "") => {
     if (kind === "open" || kind === "close")
         return `<span class="${className} ${kind}-bracket bracket-level-${depth % 3}" data-bid="${id}" data-pos="${pos}">${escapeHtml(textValue)}</span>`;
 
     const position = pos >= 0 ? ` data-pos="${pos}"` : "";
-    return `<span class="${className}"${position}>${escapeHtml(textValue)}</span>`;
+    const macroAttribute = macroName ? ` data-macro-name="${escapeHtml(macroName)}"` : "";
+    return `<span class="${className}"${position}${macroAttribute}>${escapeHtml(textValue)}</span>`;
 };
 
 // Shared escape-aware bracket pairing. Used both to know which "]" closes
@@ -36,65 +37,140 @@ const findBracketPairsInternal = (text) => {
     return { validPairs, topLevel };
 };
 
-const specialTokens = [
-    { regex: /^\$-?\d+/, className: "macro-custom-argument" },
-    { regex: /^\$!/, className: "macro-custom-executor-mode" },
-    { regex: /^\$#/, className: "macro-custom-argument-count" },
-];
-
 // Builds the raw token list (same tokens macroHighlighter used to build
 // inline). Kept separate so both macroHighlighter (joined string) and
 // macroHighlightSegments (positioned pieces, for combined-highlight.js)
 // can share one tokenizing pass.
-const buildMacroTokens = (text) => {
+const collectStoredVariables = (text) => {
     const { validPairs } = findBracketPairsInternal(text);
-
-    const tokens = [];
-    const appendText = (textValue, className = "", pos = -1) => {
-        const previous = tokens.at(-1);
-
-        if (
-            previous
-            && previous.type === "text"
-            && previous.className === className
-            && previous.pos + previous.text.length === pos
-        ) {
-            previous.text += textValue;
-            return;
-        }
-
-        tokens.push({ type: "text", text: textValue, className, pos });
-    };
-
-    let bracketId = 0;
-    const stateStack = [];
+    const storedVariables = new Set();
     const bracketStack = [];
-    const escapable = new Set(["[", "]", "/", "\\", "$"]);
 
     for (let i = 0; i < text.length; i++) {
         const ch = text[i];
         const next = text[i + 1];
+        const curr = bracketStack.at(-1);
 
-        // "\n" is always emitted as its own plain/uncoloured token, regardless of
-        // bracket depth or name/value state. This does two things: it keeps a
-        // multi-line macro call (name or value text that continues across a line
-        // break) tokenizing correctly, since state carries through untouched, and
-        // it guarantees no <span> ever contains a literal newline - callers can
-        // safely split the rendered HTML on "\n" to get one chunk per source line
-        // without ever splitting a tag in half.
-        if (ch === "\n") appendText(ch, "", i);
-
-        else if (ch === "\\" && next && escapable.has(next)) {
-            const state = stateStack.at(-1);
-            appendText(ch + next, state === "value" ? "macro-value-escape" : "escape", i);
+        if (ch === "[" && validPairs.has(i)) {
+            bracketStack.push({
+                close: validPairs.get(i),
+                currentMacroName: "",
+                currentArgText: "",
+                argIndex: 0,
+            });
+        }
+        else if (curr && ch === "]" && curr.close === i) {
+            if (["store", "byte.set"].includes(curr.currentMacroName.trim()) && curr.currentArgText.trim()) {
+                storedVariables.add(curr.currentArgText.trim());
+            }
+            bracketStack.pop();
+        }
+        else if (curr && ch === "/") {
+            curr.argIndex++;
+        }
+        else if (curr) {
+            if (curr.argIndex === 0) {
+                curr.currentMacroName += ch;
+            } else if (curr.argIndex === 1) {
+                curr.currentArgText += ch;
+            }
+        }
+        else if (ch === "\\" && next) {
             i++;
         }
-        
+    }
+
+    return storedVariables;
+};
+
+const buildMacroTokens = (text, storedVariables = new Set()) => {
+    const { validPairs } = findBracketPairsInternal(text);
+    const knownStoredVariables = new Set(storedVariables);
+    for (const storedVariable of collectStoredVariables(text)) {
+        knownStoredVariables.add(storedVariable);
+    }
+
+    let bracketId = 0;
+    const bracketStack = [];
+    const escapable = new Set(["[", "]", "/", "\\", "$"]);
+    const tokens = [];
+    const current = () => bracketStack.at(-1);
+
+    const appendText = (ch, className, pos) => {
+        const last = tokens.at(-1);
+        const resolvedClass = className || "";
+        if (
+            last &&
+            last.type === "text" &&
+            last.className === resolvedClass &&
+            last.pos + last.text.length === pos
+        )
+            last.text += ch;
+        else
+            tokens.push({
+                type: "text",
+                text: ch,
+                className: resolvedClass,
+                pos: pos
+            });
+    };
+
+    const flushArg1 = () => {
+        const curr = current();
+        if (!curr || curr.arg1Buffer.length === 0) return;
+        const trimmed = curr.currentArgText.trim();
+        let resolvedClassName = curr.arg1Buffer[0].empty ? "macro-empty" : "macro-value";
+
+        if (
+            ["store", "get", "is_stored", "drop", "load", "byte.set", "byte.get", "byte.splice"].includes(curr.currentMacroName)
+            || knownStoredVariables.has(trimmed)
+        ) {
+            resolvedClassName = "macro-variable";
+        }
+
+        for (const item of curr.arg1Buffer) {
+            appendText(item.ch, resolvedClassName, item.pos);
+        }
+        curr.arg1Buffer = [];
+    };
+
+    for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        const next = text[i + 1];
+        const curr = current();
+
+        if (ch === "\n") {
+            if (curr && curr.argIndex === 1) flushArg1();
+            appendText(ch, "", i);
+        }
+        else if (ch === "\\" && next && escapable.has(next)) {
+            const state = curr ? (curr.argIndex > 0 ? "value" : "name") : "";
+            const escapeClass = state === "value" ? "macro-value-escape" : "escape";
+            if (curr && state === "value" && curr.argIndex === 1) {
+                curr.arg1Buffer.push({ ch: ch + next, pos: i, empty: curr.empty });
+                curr.currentArgText += ch + next;
+            } else {
+                if (curr && curr.argIndex === 1) flushArg1();
+                appendText(ch + next, escapeClass, i);
+            }
+            i++;
+        }
         else if (ch === "[" && validPairs.has(i)) {
+            if (curr && curr.argIndex === 1) flushArg1();
             const id = bracketId++;
             const empty = validPairs.get(i) === i + 1 || next === "/";
-            bracketStack.push({ id, close: validPairs.get(i), empty });
-            stateStack.push("name");
+
+            bracketStack.push({
+                id,
+                close: validPairs.get(i),
+                empty,
+                state: "name",
+                currentMacroName: "",
+                argIndex: 0,
+                currentArgText: "",
+                arg1Buffer: []
+            });
+
             tokens.push({
                 type: "bracket",
                 pos: i,
@@ -102,9 +178,13 @@ const buildMacroTokens = (text) => {
                 html: span(empty ? "macro-empty" : "macro-brackets", "[", "open", id, bracketStack.length - 1, i),
             });
         }
-        else if (ch === "]" && bracketStack.length && bracketStack.at(-1).close === i) {
+        else if (curr && ch === "]" && curr.close === i) {
+            if (curr.argIndex === 1) flushArg1();
+            if (["store", "byte.set"].includes(curr.currentMacroName.trim()) && curr.currentArgText.trim())
+                storedVariables.add(curr.currentArgText.trim());
+
             const item = bracketStack.pop();
-            stateStack.pop();
+
             tokens.push({
                 type: "bracket",
                 pos: i,
@@ -112,38 +192,26 @@ const buildMacroTokens = (text) => {
                 html: span(item.empty ? "macro-empty" : "macro-brackets", "]", "close", item.id, bracketStack.length, i),
             });
         }
-        else if (stateStack.length && ch === "/") {
-            stateStack[stateStack.length - 1] = "value";
-            appendText(ch, bracketStack.at(-1).empty ? "macro-empty" : "macro-arg-separator", i);
+        else if (curr && ch === "/") {
+            if (curr.argIndex === 1) flushArg1();
+            curr.argIndex++;
+            curr.state = "value";
+            appendText(ch, curr.empty ? "macro-empty" : "macro-arg-separator", i);
         }
-        else if (stateStack.length) {
-            const current = bracketStack.at(-1);
-            const isValueState = stateStack.at(-1) === "value";
-            const special = isValueState
-                ? specialTokens.find(({ regex }) => regex.test(text.slice(i)))
-                : null;
-
-            if (special) {
-                const value = text.slice(i).match(special.regex)[0];
-                appendText(value, special.className, i);
-                i += value.length - 1;
-            }
-            else {
-                appendText(
-                    ch,
-                    current.empty ? "macro-empty" : (stateStack.at(-1) === "name" ? "macro-name" : "macro-value"),
-                    i,
-                );
+        else if (curr) {
+            if (curr.argIndex === 0) {
+                curr.currentMacroName += ch;
+                appendText(ch, curr.empty ? "macro-empty" : "macro-name", i);
+            } else if (curr.argIndex === 1) {
+                curr.currentArgText += ch;
+                curr.arg1Buffer.push({ ch, pos: i, empty: curr.empty });
+            } else {
+                let className = curr.empty ? "macro-empty" : "macro-value";
+                appendText(ch, className, i);
             }
         }
         else {
-            const special = specialTokens.find(({ regex }) => regex.test(text.slice(i)));
-            if (special) {
-                const value = text.slice(i).match(special.regex)[0];
-
-                appendText(value, special.className, i);
-                i += value.length - 1;
-            } else appendText(ch, "", i);
+            appendText(ch, "", i);
         }
     }
 
@@ -152,13 +220,17 @@ const buildMacroTokens = (text) => {
 
 const tokenHtml = (token) => {
     if (token.type === "bracket") return token.html;
-    if (token.text.includes("\n")) return escapeHtml(token.text).replace(/\n/g, "<br>");
     if (!token.className) return escapeHtml(token.text);
-
-    return span(token.className, token.text, "", -1, 0, token.pos);
+    return span(token.className, token.text, "", -1, 0, token.pos, token.className === "macro-name" ? token.text : "");
 };
 
 export const macroHighlighter = (text) => buildMacroTokens(text).map(tokenHtml).join("");
+
+export const getStoredVariables = (text) => {
+    const storedVariables = new Set();
+    buildMacroTokens(text, storedVariables);
+    return [...storedVariables];
+};
 
 export const updateMacroStaticHighlight = (element, text) => {
     if (!element) return;
