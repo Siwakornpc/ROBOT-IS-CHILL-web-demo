@@ -92,8 +92,8 @@ const customThemeColors = {
     syntaxBracketLayer1: { color: '#c85acc', blend: false }, 
     syntaxBracketLayer2: { color: '#5f94f5', blend: false },
 
-    renderFlagName: '#adec8b',
-    renderFlagValue: '#84cc7b',
+    renderFlagName: '#ecea8b',
+    renderFlagValue: '#79f86d',
     renderVariantName: '#be6ed4',
     renderVariantValue: '#ee5552',
 
