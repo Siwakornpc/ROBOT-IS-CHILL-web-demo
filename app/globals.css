@@ -3204,13 +3204,13 @@ tr:nth-child(odd) td {
         display: flex;
     }
 
-    .sb-right:not(.search-details-panel) {
+    .sb-right {
         position: absolute;
         right: 0;
         transform: translateX(200px);
         z-index: 100;
     }
-    [dir=rtl] .sb-right:not(.search-details-panel) {
+    [dir=rtl] .sb-right {
         position: absolute;
         transform: translateX(-200px);
         z-index: 100;
@@ -3225,36 +3225,53 @@ tr:nth-child(odd) td {
         transform: translateX(0);
     }
 
-    .sb-right:not(.search-details-panel) .nav-btn {
+    .sb-right .nav-btn {
         width: 180px;
         justify-content: flex-start;
         padding: 0 12px;
     }
 
-    .sb-right:not(.search-details-panel) .has-tooltip::after {
+    .sb-right .has-tooltip::after {
         display: none;
     }
 
-    .sb-right:not(.search-details-panel) .nav-btn-label {
+    .sb-right .nav-btn-label {
         display: inline;
     }
 }
 
-@media only screen and (min-width: 1200px) {
-    .nav-btn {
+@media only screen and (min-width: 1320px) {
+    .sb-left .nav-btn {
         width: 160px;
         justify-content: flex-start;
         padding: 0 12px;
     }
-    .nav-btn-label {
+    .sb-left .nav-btn-label {
         display: inline;
     }
 
-    .has-tooltip::after {
+    .sb-left .has-tooltip::after {
         display: none;
     }
 
 }
+
+@media only screen and (min-width: 1600px) {
+    .sb-right .nav-btn {
+        width: 160px;
+        justify-content: flex-start;
+        padding: 0 12px;
+    }
+    .sb-right .nav-btn-label {
+        display: inline;
+    }
+
+    .sb-right .has-tooltip::after {
+        display: none;
+    }
+
+}
+
 
 .screen-blur {
     position: absolute;
@@ -3273,7 +3290,7 @@ tr:nth-child(odd) td {
     pointer-events: auto;
 }
 
-@media only screen and (max-width: 1096px) {
+@media only screen and (max-width: 1024px) {
     .search-details-panel {
         width: calc(100vw - (56px * 2)) !important;
         min-width: 0 !important;
@@ -3291,6 +3308,22 @@ tr:nth-child(odd) td {
         border-radius: 0;
     }
 
+    @media only screen and (max-width: 700px) {
+        .search-details-panel {
+            width: calc(100vw - 56px) !important;
+            inset-inline-start: 0;
+        }
+    }
+
+    @media only screen and (max-width: 560px) {
+        .search-details-panel {
+            width: 100vw !important;
+            inset-inline-start: 0;
+        }
+    }
+}
+
+@media only screen and (max-width: 1180px) {
     .filter-controls {
         display: flex;
         position: absolute;
@@ -3315,22 +3348,6 @@ tr:nth-child(odd) td {
     }
 
     @media only screen and (max-width: 700px) {
-        .search-details-panel {
-            width: calc(100vw - 56px) !important;
-            inset-inline-start: 0;
-        }
-
-        .fc-fxb {
-            inset-inline-start: 0;
-        }
-    }
-
-    @media only screen and (max-width: 560px) {
-        .search-details-panel {
-            width: 100vw !important;
-            inset-inline-start: 0;
-        }
-
         .fc-fxb {
             inset-inline-start: 0;
         }
