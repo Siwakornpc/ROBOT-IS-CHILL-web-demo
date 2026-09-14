@@ -1562,8 +1562,9 @@ main:has(.main-body) {
     height: calc(100dvh - 56px);
 }
 
-main:has([name*="scroll-"]) .main-body {
-    height: stretch;
+main:has(.ascroll-y) .main-body {
+    height: auto;
+    padding: 20px !important;
 }
 
 .align-layout {

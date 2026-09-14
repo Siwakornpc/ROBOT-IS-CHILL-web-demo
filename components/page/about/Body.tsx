@@ -1,4 +1,24 @@
+import React, { useState, useEffect, useRef } from "react";
+import { updateMacroStaticHighlight } from "@/components/highlight/macro-highlight-static.js";
+
 import { DiscordMarkdown } from '../../DiscordMarkdown';
+
+function MacroCode({ children }: { children: string }) {
+    const elementRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (elementRef.current) {
+            updateMacroStaticHighlight(elementRef.current, children);
+        }
+    }, [children]);
+
+    return (
+        <div
+            ref={elementRef}
+            className="search-details-detailbox macro"
+        />
+    );
+}
 
 export default function Body() {
     return (
@@ -7,10 +27,31 @@ export default function Body() {
                 <h2 className="text-label">About this website</h2>
                 <hr />
                 <DiscordMarkdown>{
-`This website project was made to allow users to use parts of the bot, which includes the basic parts: **Macrosia**, **render** and **Search**.
+`This website project was made to allow users to use parts of the bot, which includes the basic parts: **Macrosia**, **Render** and **Search**.
 
-It was made on the idea of the existing Macrosia Web Demo by <@581685961205874718>, which by default, only allows you to execute the code.`
+It was made on the idea of the existing Macrosia Web Demo by <@581685961205874718>, which by default, only allows you to execute the code. You can also see the docs for Macrosia In Rust (implementation in Rust), what crate they use and how it works. The actual information for the macros was placed directly in the editor, allows you to look up and see the info of that macro.
+
+In this website, we made not just the code stuff, but we also made searching easier by revealing every items from the database, and from GitHub source when possible. We also allow users to search and filter from specific metadatas to make it find much more easier.`
                 }</DiscordMarkdown>
+                <h3 className="text-label">History</h3>
+                <hr />
+                <DiscordMarkdown>{
+`It started when I was working on a custom highlighting for Macrosia and Render-exclusive parts (\`:variants\` and \`--flags\`), and so then I need to use the keywords from the source so that it explicitly highlights on the Render-exclusive parts, but not for macros, since Macrosia has 2 parts: 1. The built-ins from Rust 2. Stored macros from database. I eventually make it just check on first index before the slash.
+
+I originally started to write with \`=m x ...\` so that it is similar to what we do in the bot. But while developing for a while, I realised that you don't have to do that.
+
+When I tried to do the rendering, it was on a test page, using \`<canvas>\` + gify library to make it render. But since the rendering from the actual bot is much more complicated, I decided to scrape that kind of code away.`
+                }</DiscordMarkdown>
+                <h3 className="text-label">Why this website?</h3>
+                <hr />
+                <DiscordMarkdown>{
+`It uses a syntax highlighting that is easy to read, and makes users understand which part of the Macrosia code is.
+
+Example code:`
+                }</DiscordMarkdown>
+                <MacroCode>{
+`[store/x/0][unescape/[repeat/10/\\[store\\/x\\/\\[add\\/\\[load\\/x\\]\\/1\\]\\]\\[load\\/x\\]/ ]]`
+                }</MacroCode>
             </div>
         </main>
     );
