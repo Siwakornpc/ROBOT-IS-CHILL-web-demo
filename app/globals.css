@@ -171,10 +171,6 @@ h1, h2, h3, h4, h5, h6 {
 .discord-markdown p {
     white-space: pre-wrap;
 }
-.discord-markdown p:not(:first-child) {
-    margin-top: 1.2rem;
-}
-
 .discord-markdown .discord-text-part,
 .discord-markdown span,
 .discord-markdown a,

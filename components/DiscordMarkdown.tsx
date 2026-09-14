@@ -26,6 +26,9 @@ type DiscordToken =
         content: string;
     } |
     {
+        type: "blankLine";
+    } |
+    {
         type: "user";
         id: string;
     } |
@@ -829,18 +832,90 @@ function protectUnsupportedGfmSyntax(source: string): string {
     return output.join("\n");
 }
 
+function preserveDiscordEmptyLines(
+    source: string,
+    tokens: DiscordTokenStore
+): string {
+    const lines = source.replace(/\r\n?/g, "\n").split("\n");
+    const output: string[] = [];
+
+    let inFence = false;
+    let fenceChar = "";
+    let fenceLength = 0;
+
+    const isFence = (line: string) =>
+        line.match(/^ {0,3}(`{3,}|~{3,})(?:.*)?$/);
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const fence = isFence(line);
+
+        if (fence) {
+            if (!inFence) {
+                inFence = true;
+                fenceChar = fence[1][0];
+                fenceLength = fence[1].length;
+            } else if (
+                fence[1][0] === fenceChar &&
+                fence[1].length >= fenceLength
+            ) {
+                inFence = false;
+                fenceChar = "";
+                fenceLength = 0;
+            }
+
+            output.push(line);
+            continue;
+        }
+
+        if (inFence) {
+            output.push(line);
+            continue;
+        }
+
+        if (line.trim() === "") {
+            let count = 1;
+
+            while (
+                i + 1 < lines.length &&
+                lines[i + 1].trim() === ""
+            ) {
+                count++;
+                i++;
+            }
+
+            output.push(
+                Array.from({ length: count }, () =>
+                    makeToken(tokens, { type: "blankLine" })
+                ).join("")
+            );
+            continue;
+        }
+
+        output.push(line);
+        if (i < lines.length - 1) {
+            output.push("\n");
+        }
+    }
+
+    return output.join("");
+}
+
 function prepareSource(
     source: string,
     tokens: DiscordTokenStore
 ): string {
     source = source.replace(/\r\n?/g, "\n");
 
-    const normalized = protectUnsupportedGfmSyntax(
-        normalizeListMarkerTypes(
-            normalizeDiscordLists(
-                escapeEmptyListMarkers(source)
+    const normalized = preserveDiscordEmptyLines(
+        protectUnsupportedGfmSyntax(
+            normalizeListMarkerTypes(
+                normalizeDiscordLists(
+                    escapeEmptyListMarkers(source)
+                )
             )
-        )
+        ),
+        tokens
     );
     
     const lines = normalized.split("\n");
@@ -1236,6 +1311,9 @@ function renderToken(
                 </span>
             );
         }
+
+        case "blankLine":
+            return <br key={key} />;
 
         case "user": {
             const name = context.resolveUser?.(token.id) ?? token.id;
