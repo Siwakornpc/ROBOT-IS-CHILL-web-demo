@@ -1171,10 +1171,11 @@ hr {
     background: rgb(var(--md-color-surface-container-low));
     box-shadow: var(--elevation-3);
     transform: scale(.95);
-    opacity: 0;
+    opacity: 0.2;
     z-index: 86 !important;
     transition: all .2s, top, left;
     color: var(--normal);
+    visibility: visible !important;
 }
 .menu-size-small {
     --menu-item-height: 36px;

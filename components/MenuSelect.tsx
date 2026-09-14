@@ -667,7 +667,7 @@ export default function MenuSelect<T extends string>({
     useLayoutEffect(() => {
         if (!isOpen) {
             setMenuStyle((prev) => ({...prev, visibility: "hidden"}));
-            return;
+            // return;
         }
 
         const schedulePositionUpdate = () => {
