@@ -1558,12 +1558,12 @@ main:has(.main-body) {
 .align-layout {
     flex: 100%;
     display: grid;
-    grid-template-areas: 'nav main details';
-    grid-auto-columns: auto 1fr auto;
+    grid-template-areas: 'nav main sb-right sb-right-search';
+    grid-auto-columns: auto 1fr auto auto;
 }
 .align-layout:has(.nav-btn.selected[aria-label="Search"]) {
-    grid-template-areas: 'nav filters main details';
-    grid-auto-columns: auto auto 1fr auto;
+    grid-template-areas: 'nav filters main sb-right sb-right-search';
+    grid-auto-columns: auto auto 1fr auto auto;
 }
 .align-layout > main {
     grid-area: main;
@@ -1659,11 +1659,13 @@ main:has(.main-body) {
 .sb-left {
     grid-area: nav;
 }
+.sb-right-search {
+    grid-area: sb-right;
+}
 .sb-right.sb-wrapper-top,
 .sb-right.sb-wrapper-bottom,
-.sb-right,
-.sb-right-search {
-    grid-area: details;
+.sb-right {
+    grid-area: sb-right-search;
 }
 
 .nav-btn {
