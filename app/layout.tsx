@@ -126,12 +126,6 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
                 geistMono,
             ].map((font) => font.variable).join(" ")} h-full antialiased`}
         >
-            <head>
-                <meta
-                    name="viewport"
-                    content="width=device-width, initial-scale=1"
-                />
-            </head>
             <body className="min-h-full flex flex-col bg-background text-foreground">
                 <ThemeScript /> <FontScript />
                 <MenuProvider><ThemeProvider><FontProvider>
