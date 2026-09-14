@@ -99,7 +99,52 @@ export function LeftBar() {
 }
 
 export function RightBar() {
-    return <div className="sb-right"></div>
+    const { isRightMenuOpen, closeRightMenu } = useMenu();
+    const [isFlexibleMenu, setIsFlexibleMenu] = useState(false);
+
+    useEffect(() => {
+        function handleResize() {
+            setIsFlexibleMenu(window.innerWidth < 560);
+        }
+
+        // Set initial state
+        handleResize();
+        window.addEventListener("resize", handleResize);
+
+        // Cleanup
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    return (
+        <>
+            {isFlexibleMenu
+                ? <div className={`screen-blur ${isRightMenuOpen ? "true" : ""}`} onClick={closeRightMenu} />
+                : ""
+            }
+            <div className={`sb-right ${isFlexibleMenu ? "sb-right-fxb" : ""} ${isRightMenuOpen ? "opened" : ""}`}>
+                <div className="sb-wrapper-top">
+                    <Link
+                        href="../docs"
+                        className="nav-btn has-tooltip"
+                        aria-label="Docs"
+                        onClick={(e) => navigateWithCode(e, "/docs")}
+                    >
+                        <i className="icon">description</i>
+                        <span className="nav-btn-label">Docs</span>
+                    </Link>
+                    <Link
+                        href="../about"
+                        className="nav-btn has-tooltip"
+                        aria-label="About"
+                        onClick={(e) => navigateWithCode(e, "/about")}
+                    >
+                        <i className="icon">info</i>
+                        <span className="nav-btn-label">About</span>
+                    </Link>
+                </div>
+            </div>
+        </>
+    );
 }
 
 export function RightBarSearch({children}: {children?: ReactNode}) {
