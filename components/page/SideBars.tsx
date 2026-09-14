@@ -220,7 +220,7 @@ export function RightBarSearch({children}: {children?: ReactNode}) {
     return (
         <div
             ref={panelRef}
-            className={`sb-right ${isFlexibleMenu ? "sb-right-fxb" : ""} search-details-panel ascroll-y ${sheetOffset === 0 ? "to-top" : ""}`}
+            className={`sb-right-search ${isFlexibleMenu ? "sb-right-fxb" : ""} search-details-panel ascroll-y ${sheetOffset === 0 ? "to-top" : ""}`}
             style={{"--sheet-offset": `${sheetOffset}px`} as React.CSSProperties}
         >
             {isFlexibleMenu &&

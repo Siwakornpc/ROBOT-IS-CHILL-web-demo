@@ -3,7 +3,7 @@
 import Body, { FilterPanel } from "@/components/page/search/Body";
 import { type SearchMode } from "@/components/page/search/SearchSelect";
 import { type SelectedSearchResult } from "@/components/page/search/SearchResultsGrid";
-import { LeftBar, RightBarSearch } from "@/components/page/SideBars";
+import { LeftBar, RightBarSearch, RightBar } from "@/components/page/SideBars";
 import { Details } from "@/components/page/search/TileDetails";
 import { readSearchUrlState, writeSearchUrlState } from "@/components/url_state/searchUrlState";
 import { useState, useEffect, useRef } from "react";
@@ -147,6 +147,8 @@ export default function Home() {
                     <Details selected={selected} allResults={allResults} />
                 </RightBarSearch>
             }
+            
+            <RightBar />
         </main>
     );
 }
