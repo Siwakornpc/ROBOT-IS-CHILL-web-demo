@@ -886,6 +886,7 @@ function prepareSource(
         }
         return line;
     });
+
     return protectDiscordSyntax(withSubtext.join("\n"), tokens);
 }
 
@@ -1083,7 +1084,6 @@ function formatDiscordTimestamp(
 
 function isBlockNode(node: any): boolean {
     return [
-        "paragraph",
         "heading",
         "blockquote",
         "list",
@@ -1703,13 +1703,13 @@ function renderNode(
             }
 
             return (
-                <span key={key}>
+                <p key={key}>
                     {renderChildren(
                         node.children,
                         key,
                         context
                     )}
-                </span>
+                </p>
             );
         }
 

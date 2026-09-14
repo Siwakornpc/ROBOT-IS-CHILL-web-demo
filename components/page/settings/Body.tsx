@@ -102,14 +102,14 @@ export default function Body() {
             style={{ width: "stretch" }}
         >
             <div className="main-body">
-                <p className="text-label">Settings</p>
+                <h2 className="text-label">Settings</h2>
                 <hr />
 
                 {
                     // Fonts Section
                 }
 
-                <p className="text-label text-xl">Fonts</p>
+                <h3 className="text-label">Fonts</h3>
 
                 <div className="box-hole">
                     <span className="row-group">
@@ -163,7 +163,7 @@ export default function Body() {
                     // Theme Section
                 }
 
-                <p className="text-label text-xl">Theme</p>
+                <h3 className="text-label">Theme</h3>
                 <div className="box-hole">
                     
                     <div className="row-group">

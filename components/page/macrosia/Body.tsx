@@ -31,7 +31,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                     <MacroInitializer />
                 </div>
 
-                <div className="flex flex-col gap-[8px] h-full">
+                <div className="flex flex-col gap-[8px] h-full min-h-0">
                     <p className="text-label">Output</p>
                     <hr />
                     <RenderScreen />

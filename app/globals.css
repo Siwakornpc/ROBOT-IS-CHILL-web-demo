@@ -132,6 +132,10 @@ ul {
     height: auto;
 }
 
+h1, h2, h3, h4, h5, h6 {
+    font-size: revert;
+}
+
 /*
     discord markdown
 */
@@ -162,6 +166,13 @@ ul {
 }
 .discord-markdown h2 {
     font-size: 1.25rem;
+}
+
+.discord-markdown p {
+    white-space: pre-wrap;
+}
+.discord-markdown p:not(:first-child) {
+    margin-top: 1.2rem;
 }
 
 .discord-markdown .discord-text-part,
@@ -1555,6 +1566,10 @@ main:has(.main-body) {
     height: calc(100dvh - 56px);
 }
 
+main:has([name*="scroll-"]) .main-body {
+    height: stretch;
+}
+
 .align-layout {
     flex: 100%;
     display: grid;
@@ -2859,12 +2874,6 @@ main:has(.main-body) {
     border-radius: 8px;
     background: rgb(var(--md-color-surface));
     outline: 1px solid var(--editor-outline);
-}
-.search-details-detailbox p {
-    white-space: pre-wrap;
-}
-.search-details-detailbox p:not(:first-child) {
-    margin-top: 1.2rem;
 }
 .search-details-detailbox.macro,
 .search-details-detailbox.variant,
