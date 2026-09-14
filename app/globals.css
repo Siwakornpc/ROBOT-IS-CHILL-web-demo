@@ -1198,24 +1198,24 @@ hr {
 .menu.anchor-tr,
 .menu.anchor-st,
 .menu.anchor-et {
-    transform: translateY(-4px) scale(.95);
+    transform: translateY(4px) scale(.95);
 }
 .menu.anchor-b,
 .menu.anchor-bl,
 .menu.anchor-br,
 .menu.anchor-sb,
 .menu.anchor-eb {
-    transform: translateY(4px) scale(.95);
+    transform: translateY(-4px) scale(.95);
 }
 .menu.anchor-l,
 .menu.anchor-s,
 [dir=rtl] .menu.anchor-e {
-    transform: translateX(-4px) scale(.95);
+    transform: translateX(4px) scale(.95);
 }
 .menu.anchor-r,
 .menu.anchor-e,
 [dir=rtl] .menu.anchor-s {
-    transform: translateX(4px) scale(.95);
+    transform: translateX(-4px) scale(.95);
 }
 .submenu-popout.anchor-l,
 .submenu-popout.anchor-tl,
@@ -1441,7 +1441,7 @@ hr {
 .anchor-st,
 .anchor-sb,
 [dir=rtl] :is(.anchor-e, .anchor-et, .anchor-eb) {
-    --anchor-x: 100%;
+    --anchor-x: 0;
 }
 .anchor-r,
 .anchor-tr,
@@ -1450,7 +1450,7 @@ hr {
 .anchor-et,
 .anchor-eb,
 [dir=rtl] :is(.anchor-s, .anchor-st, .anchor-sb) {
-    --anchor-x: 0;
+    --anchor-x: 100%;
 }
 .anchor-t,
 .anchor-tl,

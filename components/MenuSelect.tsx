@@ -157,62 +157,71 @@ function calculateMenuPosition(
     
     const isRtl = window.getComputedStyle(document.documentElement).direction === "rtl";
 
+    const topGap = gap + 16;
+
     switch (actualPlacement) {
         case "bottom-left":
             top = boxRect.bottom + gap;
             left = boxRect.left;
+            maxHeight = Math.max(60, spaceBelow);
             break;
 
         case "bottom-right":
             top = boxRect.bottom + gap;
             left = boxRect.right - elementWidth;
+            maxHeight = Math.max(60, spaceBelow);
             break;
 
         case "bottom-center":
             top = boxRect.bottom + gap;
             left = boxRect.left + (boxWidth - elementWidth) / 2;
+            maxHeight = Math.max(60, spaceBelow);
             break;
 
         case "bottom-start":
             top = boxRect.bottom + gap;
             left = boxRect.left;
             if (isRtl) left = boxRect.right - elementWidth;
+            maxHeight = Math.max(60, spaceBelow);
             break;
 
         case "bottom-end":
             top = boxRect.bottom + gap;
             left = boxRect.right - elementWidth;
             if (isRtl) left = boxRect.left;
+            maxHeight = Math.max(60, spaceBelow);
             break;
 
         case "top-left":
-            top = boxRect.top - elementHeight - gap;
+            top = boxRect.top - elementHeight + topGap;
             left = boxRect.left;
             maxHeight = Math.max(60, spaceAbove);
             break;
 
         case "top-right":
-            top = boxRect.top - elementHeight - gap;
+            top = boxRect.top - elementHeight - topGap;
             left = boxRect.right - elementWidth;
             maxHeight = Math.max(60, spaceAbove);
             break;
 
         case "top-center":
-            top = boxRect.top - elementHeight + gap;
+            top = boxRect.top - elementHeight - topGap;
             left = boxRect.left + (boxWidth - elementWidth) / 2;
-            maxHeight = Math.max(60, spaceBelow);
+            maxHeight = Math.max(60, spaceAbove);
             break;
 
         case "top-start":
-            top = boxRect.top - elementHeight - gap;
+            top = boxRect.top - elementHeight - topGap;
             left = boxRect.left;
             if (isRtl) left = boxRect.right - elementWidth;
+            maxHeight = Math.max(60, spaceAbove);
             break;
 
         case "top-end":
-            top = boxRect.top - elementHeight - gap;
+            top = boxRect.top - elementHeight - topGap;
             left = boxRect.right - elementWidth;
             if (isRtl) left = boxRect.left;
+            maxHeight = Math.max(60, spaceAbove);
             break;
 
         case "right-down":
@@ -240,22 +249,8 @@ function calculateMenuPosition(
             break;
     }
 
-    /*
-     * Keep the menu inside the viewport.
-     *
-     * The placement calculation above decides which side to use.
-     * This part only prevents the menu from overflowing horizontally
-     * or vertically.
-     */
-    left = Math.max(
-        margin,
-        Math.min(left, viewportWidth - elementWidth - margin)
-    );
-
-    top = Math.max(
-        margin,
-        Math.min(top, viewportHeight - margin)
-    );
+    left = Math.max(margin, Math.min(left, viewportWidth - elementWidth - margin));
+    top = Math.max(margin, Math.min(top, viewportHeight - elementHeight - margin));
 
     return {
         left: Math.round(left),
@@ -322,6 +317,7 @@ function MenuItem<T extends string>({
     const [placementClass, setPlacementClass] = useState("anchor-tr");
     const triggerRef = useRef<HTMLDivElement>(null);
     const submenuRef = useRef<HTMLDivElement>(null);
+    const frameRef = useRef<number | null>(null);
     const isCoarsePointer = useIsCoarsePointer();
     const hasChildren = Boolean(item.children?.length);
     const isSelected = item.value === selectedValue;
@@ -394,7 +390,19 @@ function MenuItem<T extends string>({
             return;
         }
 
+        const schedulePositionUpdate = () => {
+            if (frameRef.current !== null) {
+                cancelAnimationFrame(frameRef.current);
+            }
+            frameRef.current = requestAnimationFrame(updateSubmenuPosition);
+        };
+
+        const handleLoad = () => schedulePositionUpdate();
+
         updateSubmenuPosition();
+        schedulePositionUpdate();
+        window.addEventListener("load", handleLoad);
+
         let animationFrame = 0;
         const update = (e: Event) => {
             if (e.type === "scroll") {
@@ -409,9 +417,14 @@ function MenuItem<T extends string>({
         window.addEventListener("scroll", update, { passive: true, capture: true });
 
         return () => {
+            window.removeEventListener("load", handleLoad);
             window.removeEventListener("resize", update);
             window.removeEventListener("scroll", update, true);
             cancelAnimationFrame(animationFrame);
+            if (frameRef.current !== null) {
+                cancelAnimationFrame(frameRef.current);
+            }
+            frameRef.current = null;
         };
     }, [isSubmenuOpen, submenuPlacement, pageMargin, menuGap]);
 
@@ -567,7 +580,6 @@ interface MenuSelectProps<T extends string> {
     pageMargin?: number;
     menuGap?: number;
     closeOnSelect?: boolean;
-    size?: "small" | "medium" | "large";
 }
 
 export default function MenuSelect<T extends string>({
@@ -586,7 +598,6 @@ export default function MenuSelect<T extends string>({
     pageMargin = 12,
     menuGap = 4,
     closeOnSelect = true,
-    size = "medium",
 }: MenuSelectProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
@@ -599,6 +610,7 @@ export default function MenuSelect<T extends string>({
     const [closeSignal, setCloseSignal] = useState(0);
     const menuRef = useRef<HTMLDivElement>(null);
     const triggerRef = useRef<HTMLElement>(null);
+    const frameRef = useRef<number | null>(null);
     const instanceId = useId();
 
     /* ---------------------
@@ -612,15 +624,7 @@ export default function MenuSelect<T extends string>({
 
         const boxRect = box.getBoundingClientRect();
         const elementRect = measureElement(menu);
-        const widthFromTrigger = Math.max(180, Math.min(boxRect.width, window.innerWidth - pageMargin * 2));
-        const menuWidth = Math.max(elementRect.width, widthFromTrigger);
-        const effectiveRect = {
-            ...elementRect,
-            width: menuWidth,
-            height: Math.max(elementRect.height, 0),
-        } as DOMRect;
-
-        const position = calculateMenuPosition(boxRect, effectiveRect, {
+        const position = calculateMenuPosition(boxRect, elementRect, {
             placement,
             margin: pageMargin,
             gap: menuGap,
@@ -655,7 +659,6 @@ export default function MenuSelect<T extends string>({
             position: "fixed",
             left: position.left,
             top: position.top,
-            width: menuWidth,
             maxHeight: position.maxHeight,
             visibility: "visible",
         });
@@ -667,7 +670,19 @@ export default function MenuSelect<T extends string>({
             return;
         }
 
+        const schedulePositionUpdate = () => {
+            if (frameRef.current !== null) {
+                cancelAnimationFrame(frameRef.current);
+            }
+            frameRef.current = requestAnimationFrame(updateMenuPosition);
+        };
+
+        const handleLoad = () => schedulePositionUpdate();
+
         updateMenuPosition();
+        schedulePositionUpdate();
+        window.addEventListener("load", handleLoad);
+
         let animationFrame = 0;
         const update = (e: Event) => {
             if (e.type === "scroll") {
@@ -681,9 +696,14 @@ export default function MenuSelect<T extends string>({
         window.addEventListener("resize", update);
         window.addEventListener("scroll", update, { passive: true, capture: true });
         return () => {
+            window.removeEventListener("load", handleLoad);
             window.removeEventListener("resize", update);
             window.removeEventListener("scroll", update, true);
             cancelAnimationFrame(animationFrame);
+            if (frameRef.current !== null) {
+                cancelAnimationFrame(frameRef.current);
+            }
+            frameRef.current = null;
         };
     }, [isOpen, placement, pageMargin, menuGap]);
 
@@ -796,7 +816,6 @@ export default function MenuSelect<T extends string>({
             className={[
                 "menu-trigger",
                 className || "dropdown-trigger",
-                `menu-trigger-${size}`,
                 id || "",
                 isOpen ? "clicked" : "",
             ].filter(Boolean).join(" ")}
@@ -815,7 +834,6 @@ export default function MenuSelect<T extends string>({
                     data-menu-instance={instanceId}
                     className={[
                         "menu",
-                        `menu-size-${size}`,
                         placementClass,
                         "ascroll-y",
                         "inset-scrollbar",
