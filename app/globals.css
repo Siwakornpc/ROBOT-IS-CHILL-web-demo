@@ -3252,7 +3252,7 @@ tr:nth-child(odd) td {
     }
 }
 
-@media only screen and (min-width: 1320px) {
+@media only screen and (min-width: 1600px) {
     .sb-left .nav-btn {
         width: 160px;
         justify-content: flex-start;
@@ -3268,7 +3268,7 @@ tr:nth-child(odd) td {
 
 }
 
-@media only screen and (min-width: 1600px) {
+@media only screen and (min-width: 1320px) {
     .sb-right .nav-btn {
         width: 160px;
         justify-content: flex-start;

@@ -306,6 +306,7 @@ export function FilterPanel({
                             { value: "character", label: "Character" },
                             { value: "tiling", label: "Tiling" },
                             { value: "diagonal_tiling", label: "Diagonal Tiling" },
+                            { value: "custom", label: "Custom" },
                         ]}
                         onChange={(newValue) => handleValueChange(type, index, newValue)}
                     />
