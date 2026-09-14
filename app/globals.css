@@ -3290,7 +3290,7 @@ tr:nth-child(odd) td {
     pointer-events: auto;
 }
 
-@media only screen and (max-width: 1024px) {
+@media only screen and (max-width: 960px) {
     .search-details-panel {
         width: calc(100vw - (56px * 2)) !important;
         min-width: 0 !important;
