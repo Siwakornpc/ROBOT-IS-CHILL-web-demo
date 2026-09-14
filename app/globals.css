@@ -3180,6 +3180,12 @@ tr:nth-child(odd) td {
     }
 }
 
+@media only screen and (max-width: 560px) {
+    .sb-right:not(.search-details-panel) {
+        display:none;
+    }
+}
+
 @media only screen and (min-width: 1200px) {
     .nav-btn {
         width: 160px;
