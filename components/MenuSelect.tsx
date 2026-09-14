@@ -567,6 +567,7 @@ interface MenuSelectProps<T extends string> {
     pageMargin?: number;
     menuGap?: number;
     closeOnSelect?: boolean;
+    size?: "small" | "medium" | "large";
 }
 
 export default function MenuSelect<T extends string>({
@@ -585,6 +586,7 @@ export default function MenuSelect<T extends string>({
     pageMargin = 12,
     menuGap = 4,
     closeOnSelect = true,
+    size = "medium",
 }: MenuSelectProps<T>) {
     const [isOpen, setIsOpen] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
@@ -610,7 +612,15 @@ export default function MenuSelect<T extends string>({
 
         const boxRect = box.getBoundingClientRect();
         const elementRect = measureElement(menu);
-        const position = calculateMenuPosition(boxRect, elementRect, {
+        const widthFromTrigger = Math.max(180, Math.min(boxRect.width, window.innerWidth - pageMargin * 2));
+        const menuWidth = Math.max(elementRect.width, widthFromTrigger);
+        const effectiveRect = {
+            ...elementRect,
+            width: menuWidth,
+            height: Math.max(elementRect.height, 0),
+        } as DOMRect;
+
+        const position = calculateMenuPosition(boxRect, effectiveRect, {
             placement,
             margin: pageMargin,
             gap: menuGap,
@@ -645,6 +655,7 @@ export default function MenuSelect<T extends string>({
             position: "fixed",
             left: position.left,
             top: position.top,
+            width: menuWidth,
             maxHeight: position.maxHeight,
             visibility: "visible",
         });
@@ -785,6 +796,7 @@ export default function MenuSelect<T extends string>({
             className={[
                 "menu-trigger",
                 className || "dropdown-trigger",
+                `menu-trigger-${size}`,
                 id || "",
                 isOpen ? "clicked" : "",
             ].filter(Boolean).join(" ")}
@@ -803,6 +815,7 @@ export default function MenuSelect<T extends string>({
                     data-menu-instance={instanceId}
                     className={[
                         "menu",
+                        `menu-size-${size}`,
                         placementClass,
                         "ascroll-y",
                         "inset-scrollbar",
