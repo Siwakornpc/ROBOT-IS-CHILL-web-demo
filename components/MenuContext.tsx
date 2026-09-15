@@ -19,10 +19,12 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
 
     function toggleMenu() {
         setIsMenuOpen(prev => !prev);
+        setIsRightMenuOpen(false);
     }
 
     function toggleRightMenu() {
         setIsRightMenuOpen(prev => !prev);
+        setIsMenuOpen(false);
     }
 
     function closeMenu() {
