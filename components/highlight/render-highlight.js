@@ -1,38 +1,25 @@
+import { loadUpstream } from "@/data/ric_metadata";
 import { loadVariants } from "../editor/getVariantName.js";
 
 export let variants = [];
 export let flags = [];
 
-const sourceUrls = {
-    flags: "https://raw.githubusercontent.com/ROBOT-IS-CHILL/robot-is-chill/main/src/cogs/flags.py",
-};
-
 export async function loadFlags() {
     if (typeof window === "undefined") return;
 
-    const flagsSource = await fetch(sourceUrls.flags).then((response) => response.text());
+    const { variables, flags: flagsSource } = await loadUpstream();
 
-    const parsedFlags = [
-        ...flagsSource.matchAll(/--[\w-]+|-[\w-]+/g),
-        ...flagsSource.matchAll(/@flags\.register\(match=r"([^"]+)"/g),
-    ].flatMap((match) => {
-        if (match[0].startsWith("@flags.register")) {
-            const pattern = match[1];
+    if (!flagsSource) return;
 
-            return pattern
-                .replace(/^\(\?:/, "")
-                .replace(/\)$/, "")
-                .split("|")
-                .map((part) => part.trim())
-                .filter(Boolean);
-        }
+    const flagsMatch = Object.values(flagsSource)
+        .flatMap(flag =>
+            flag.syntax?.match(/--[\w-]+|-[\w-]+/g) ?? []
+        );
 
-        return [match[0]];
-    });
+    flags = flagsMatch;
 
-    flags = [...new Set(parsedFlags)];
+    console.log(flags);
 }
-
 
 export async function loadVariantData() {
     if (typeof window === "undefined") return [];

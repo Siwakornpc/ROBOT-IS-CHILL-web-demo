@@ -13,7 +13,7 @@ const IMAGE_SUCCESS_DELAY = 150;
 const IMAGE_ERROR_DELAY = 2000;
 const MAX_IMAGE_RETRIES = 4;
 
-const {variants, flags} = await loadUpstream();
+const { variants, flags } = await loadUpstream();
 const overlays = getOverlays();
 
 const endpoints: Partial<Record<SearchMode, string>> = {
