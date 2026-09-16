@@ -66,7 +66,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
             <div className={`main-body ${isMounted ? splitscreen : "top-bottom"}`}>
                 <div className="flex flex-col gap-[8px] this-s">
                     <div className="run-controls">
-                        <div className="flex gap-[8px]">
+                        <div className="flex gap-[8px] justify-center">
                             <p className="text-label">Execute</p>
                             <ExecutionModeSelect />
                         </div>
