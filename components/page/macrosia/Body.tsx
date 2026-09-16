@@ -22,19 +22,33 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
 
     useEffect(() => {
         setIsMounted(true);
-        
-        const saved = localStorage.getItem("splitscreen");
-        if (saved) setSplitscreen(saved);
-        
-        const checkScreenSize = () => setIsSmallScreen(window.innerWidth < 640);
+
+        try {
+            const saved = localStorage.getItem("splitscreen");
+            if (saved === "top-bottom" || saved === "left-right") {
+                setSplitscreen(saved);
+            }
+        } catch {
+            // localStorage unavailable/full
+        }
+
+        const checkScreenSize = () => {
+            setIsSmallScreen(window.innerWidth < 640);
+        };
+
         checkScreenSize();
         window.addEventListener("resize", checkScreenSize);
+
         return () => window.removeEventListener("resize", checkScreenSize);
     }, []);
 
     useEffect(() => {
-        if (isMounted) {
+        if (!isMounted) return;
+
+        try {
             localStorage.setItem("splitscreen", splitscreen);
+        } catch (error) {
+            console.warn("Could not save splitscreen preference:", error);
         }
     }, [splitscreen, isMounted]);
     
