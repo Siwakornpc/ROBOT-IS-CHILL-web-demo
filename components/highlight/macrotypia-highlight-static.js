@@ -146,7 +146,7 @@ const buildMacroTokens = (text, storedVariables = new Set()) => {
         else if (ch === "\\" && next && escapable.has(next)) {
             const state = curr ? (curr.argIndex > 0 ? "value" : "name") : "";
             const escapeClass = state === "value" ? "macro-value-escape" : "escape";
-            if (curr && state === "value" && curr.argIndex === 1) {
+            if (curr && state === "value" && curr.argIndex === 0) {
                 curr.arg1Buffer.push({ ch: ch + next, pos: i, empty: curr.empty });
                 curr.currentArgText += ch + next;
             } else {
