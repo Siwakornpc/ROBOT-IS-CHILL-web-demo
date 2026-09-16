@@ -327,24 +327,12 @@ function normalizeListMarkerTypes(source: string): string {
 
     const isFence = (line: string) => line.match(/^ {0,3}(`{3,}|~{3,})(?:.*)?$/);
 
-    // No leading whitespace on purpose: we only normalize top-level list
-    // runs. Indented (nested) items are recognized by anyMarkerRe below,
-    // but otherwise pass through unchanged.
-    const bulletRe = /^([-*])(\s+)(.*)$/;
-    const orderedRe = /^(\d+)([.)])(\s+)(.*)$/;
-
-    // Any list marker, indented or not - used only to tell a genuine
-    // (possibly nested) list line apart from plain text.
-    const anyMarkerRe = /^\s*(?:[-*]\s+|\d+[.)]\s+)/;
+    const bulletRe = /^ {0,3}([-*])(\s+)(.*)$/;
+    const orderedRe = /^ {0,3}(\d+)([.)])(\s+)(.*)$/;
+    const topLevelMarkerRe = /^\s*(?:[-*]\s+|\d+[.)]\s+)/;
+    const indentedContinuationRe = /^\s{2,}\S/;
 
     let i = 0;
-
-    // Whether the line we just emitted was the last line of a top-level
-    // list run. CommonMark would normally "lazily continue" an unmarked
-    // line right after a list item into that item's paragraph (rendered
-    // as a <br> inside the <li> once remark-breaks runs). Discord does not
-    // do this: a bare line after a list item ends the list. We reproduce
-    // that by forcing a block break (blank line) before such a line.
     let justEndedTopLevelList = false;
 
     while (i < lines.length) {
@@ -381,10 +369,7 @@ function normalizeListMarkerTypes(source: string): string {
         const orderedMatch = line.match(orderedRe);
 
         if (bulletMatch || orderedMatch) {
-            // Start of a list run - its type is locked in by this first line.
-            const blockType: "ordered" | "bullet" = orderedMatch
-                ? "ordered"
-                : "bullet";
+            const blockType: "ordered" | "bullet" = orderedMatch ? "ordered" : "bullet";
             const bulletChar = bulletMatch ? bulletMatch[1] : "-";
             let n = orderedMatch ? Number(orderedMatch[1]) : 1;
 
@@ -411,11 +396,13 @@ function normalizeListMarkerTypes(source: string): string {
             continue;
         }
 
-        if (
+        const shouldBreakList =
             justEndedTopLevelList &&
             line.trim() !== "" &&
-            !anyMarkerRe.test(line)
-        ) {
+            !topLevelMarkerRe.test(line) &&
+            !indentedContinuationRe.test(line);
+
+        if (shouldBreakList) {
             output.push("");
         }
 
@@ -846,6 +833,12 @@ function preserveDiscordEmptyLines(
     const isFence = (line: string) =>
         line.match(/^ {0,3}(`{3,}|~{3,})(?:.*)?$/);
 
+    const isListItemLine = (line: string) =>
+        /^ {0,3}(?:[-*]\s+|\d+[.)]\s+)/.test(line);
+
+    const isIndentedContinuation = (line: string) =>
+        /^\s{2,}\S/.test(line);
+
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         const fence = isFence(line);
@@ -874,6 +867,26 @@ function preserveDiscordEmptyLines(
         }
 
         if (line.trim() === "") {
+            const prev = [...lines.slice(0, i)]
+                .reverse()
+                .find((candidate) => candidate.trim() !== "");
+            const next = lines
+                .slice(i + 1)
+                .find((candidate) => candidate.trim() !== "");
+
+            const isListBoundaryBreak =
+                typeof prev === "string" &&
+                isListItemLine(prev) &&
+                typeof next === "string" &&
+                next.trim() !== "" &&
+                !isListItemLine(next) &&
+                !isIndentedContinuation(next);
+
+            if (isListBoundaryBreak) {
+                output.push("\n");
+                continue;
+            }
+
             let count = 1;
 
             while (
