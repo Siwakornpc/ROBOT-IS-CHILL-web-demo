@@ -72,7 +72,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                             <StatusBar small={isSmallScreen} />
                             
                             {isMounted && splitscreen === "top-bottom" && (
-                                <div className="status-bar">
+                                <div className="status-bar splitscreen">
                                     <button
                                         type="button"
                                         className="status status-btn"
@@ -97,7 +97,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                         <p className="text-label">Output</p>
 
                         {isMounted && splitscreen === "left-right" && (
-                            <div className="status-bar">
+                            <div className="status-bar splitscreen">
                                 <button
                                     type="button"
                                     className="status status-btn"

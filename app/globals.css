@@ -2100,17 +2100,25 @@ main.ascroll-y .main-body {
     orientation thing
 */
 
-.main-body.left-right {
-    flex-direction: row;
+@media only screen and (max-width: 1000px) {
+    .splitscreen {
+        display: none;
+    }
 }
 
-.left-right .this-s,
-.left-right .this-e {
-    width: 50%;
-}
+@media only screen and (min-width: 1000px) {
+    .main-body.left-right {
+        flex-direction: row;
+    }
 
-.left-right .this-s .editor-code {
-    height: 100%;
+    .left-right .this-s,
+    .left-right .this-e {
+        width: 50%;
+    }
+
+    .left-right .this-s .editor-code {
+        height: 100%;
+    }
 }
 
 /*
