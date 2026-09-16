@@ -146,6 +146,7 @@ export function createRenderer(deps: RendererDeps) {
 
     function render(start: number, end = start, options: { scrollToCaret?: boolean } = {}) {
         const gen = ++state.renderGen;
+        const wasFocused = document.activeElement === editorArea;
 
         const normalizedValue = normalizeNewlines(state.value);
         if (state.value !== normalizedValue) {
@@ -168,8 +169,10 @@ export function createRenderer(deps: RendererDeps) {
         const s = clamp(start, 0, state.value.length);
         const e = clamp(end, 0, state.value.length);
 
-        setRange(editorArea, lines, s, e);
-        if (options.scrollToCaret !== false) {
+        if (wasFocused) {
+            setRange(editorArea, lines, s, e);
+        }
+        if (wasFocused && options.scrollToCaret !== false) {
             scrollCaretIntoView(scrollEl);
         }
 

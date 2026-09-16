@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { EditorScreen } from "@/components/editor/EditorScreen";
 import ExecutionModeSelect from "@/components/page/render/ExecutionModeSelect";
 import MacroInitializer from "@/components/macro/MacroInitializer";
@@ -11,6 +11,17 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
     const [isSmallScreen, setIsSmallScreen] = useState(false);
 
     const [isMounted, setIsMounted] = useState(false);
+
+    const min_size = 300;
+
+    const [splitPosition, setSplitPosition] = useState(() => {
+        if (typeof window !== "undefined") {
+            const saved = Number(localStorage.getItem("split-position"));
+            return saved >= min_size ? saved : min_size;
+        }
+        return min_size;
+    });
+    const mainBodyRef = useRef<HTMLDivElement>(null);
 
     const [splitscreen, setSplitscreen] = useState(() => {
         if (typeof window !== "undefined") {
@@ -27,6 +38,11 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
             const saved = localStorage.getItem("splitscreen");
             if (saved === "top-bottom" || saved === "left-right") {
                 setSplitscreen(saved);
+            }
+
+            const savedPosition = Number(localStorage.getItem("split-position"));
+            if (savedPosition >= min_size) {
+                setSplitPosition(savedPosition);
             }
         } catch {
             // localStorage unavailable/full
@@ -51,19 +67,63 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
             console.warn("Could not save splitscreen preference:", error);
         }
     }, [splitscreen, isMounted]);
+
+    useEffect(() => {
+        if (!isMounted) return;
+
+        try {
+            localStorage.setItem("split-position", String(splitPosition));
+        } catch {
+            // localStorage unavailable/full
+        }
+    }, [splitPosition, isMounted]);
     
-    const handleOnClick = async () => {
-        setSplitscreen((prev) =>
-            (prev === "top-bottom"
-                ? "left-right"
-                : "top-bottom"
-            )
-        );
+    const clampSplitPosition = (position: number, axisSize: number) => {
+        const endLimit = axisSize - min_size;
+
+        if (endLimit < min_size) {
+            return axisSize / 2;
+        }
+
+        return Math.min(endLimit, Math.max(min_size, position));
+    };
+
+    const handleOnClick = () => {
+        const nextSplitscreen = splitscreen === "top-bottom" ? "left-right" : "top-bottom";
+        const bounds = mainBodyRef.current?.getBoundingClientRect();
+
+        if (bounds) {
+            const currentAxisSize = splitscreen === "left-right" ? bounds.width : bounds.height;
+            const nextAxisSize = nextSplitscreen === "left-right" ? bounds.width : bounds.height;
+            const relativePosition = currentAxisSize > 0 ? splitPosition / currentAxisSize : 0.5;
+
+            setSplitPosition(clampSplitPosition(relativePosition * nextAxisSize, nextAxisSize));
+        }
+
+        setSplitscreen(nextSplitscreen);
+    };
+
+    const handleSplitPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+        if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
+
+        const bounds = mainBodyRef.current?.getBoundingClientRect();
+        if (!bounds) return;
+
+        const axisSize = splitscreen === "left-right" ? bounds.width : bounds.height;
+        const position = splitscreen === "left-right"
+            ? event.clientX - bounds.left
+            : event.clientY - bounds.top;
+
+        setSplitPosition(clampSplitPosition(position, axisSize));
     };
 
     return (
         <main style={{ width: "stretch" }}>
-            <div className={`main-body ${isMounted ? splitscreen : "top-bottom"}`}>
+            <div
+                ref={mainBodyRef}
+                className={`main-body ${isMounted ? splitscreen : "top-bottom"}`}
+                style={{ "--split-position": `${splitPosition}px` } as React.CSSProperties}
+            >
                 <div className="flex flex-col gap-[8px] this-s">
                     <div className="run-controls">
                         <div className="flex gap-[8px] items-center">
@@ -75,7 +135,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                             <StatusBar small={isSmallScreen} />
                             
                             {isMounted && splitscreen === "top-bottom" && (
-                                <div className="status-bar">
+                                <div className="status-bar splitscreen">
                                     <button
                                         type="button"
                                         className="status status-btn"
@@ -95,12 +155,24 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                     <MacroInitializer />
                 </div>
 
+                <div
+                    className="split-handle"
+                    role="separator"
+                    aria-orientation={splitscreen === "left-right" ? "vertical" : "horizontal"}
+                    aria-valuemin={min_size}
+                    aria-valuenow={Math.round(splitPosition)}
+                    onPointerDown={(event) => {
+                        event.currentTarget.setPointerCapture(event.pointerId);
+                    }}
+                    onPointerMove={handleSplitPointerMove}
+                />
+
                 <div className="flex flex-col gap-[8px] h-full min-h-0 this-e">
                     <div className="run-controls">
                         <p className="text-label">Output</p>
 
                         {isMounted && splitscreen === "left-right" && (
-                            <div className="status-bar">
+                            <div className="status-bar splitscreen">
                                 <button
                                     type="button"
                                     className="status status-btn"

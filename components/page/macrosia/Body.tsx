@@ -9,28 +9,16 @@ import type { WindowWithEditor } from "../../editor/types";
 
 export default function Body({ onCodeChange }: { onCodeChange?: (code: string) => void }) {
     const [isSmallScreen, setIsSmallScreen] = useState(false);
+    const [isSideBySideSupported, setIsSideBySideSupported] = useState(false);
 
     const [isMounted, setIsMounted] = useState(false);
 
-    const start_lim = 40;
-    const end_lim = 70;
+    const min_size = 300;
 
-    const [splitPosition, setSplitPosition] = useState(() => {
-        if (typeof window !== "undefined") {
-            const saved = Number(localStorage.getItem("split-position"));
-            return saved >= start_lim && saved <= end_lim ? saved : 40;
-        }
-        return 50;
-    });
+    const [splitPosition, setSplitPosition] = useState(min_size);
     const mainBodyRef = useRef<HTMLDivElement>(null);
 
-    const [splitscreen, setSplitscreen] = useState(() => {
-        if (typeof window !== "undefined") {
-            const saved = localStorage.getItem("splitscreen");
-            return saved || "top-bottom";
-        }
-        return "top-bottom";
-    });
+    const [splitscreen, setSplitscreen] = useState("top-bottom");
 
     useEffect(() => {
         setIsMounted(true);
@@ -42,7 +30,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
             }
 
             const savedPosition = Number(localStorage.getItem("split-position"));
-            if (savedPosition >= start_lim && savedPosition <= end_lim) {
+            if (savedPosition >= min_size) {
                 setSplitPosition(savedPosition);
             }
         } catch {
@@ -51,6 +39,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
 
         const checkScreenSize = () => {
             setIsSmallScreen(window.innerWidth < 640);
+            setIsSideBySideSupported(window.innerWidth >= 1000);
         };
 
         checkScreenSize();
@@ -78,14 +67,52 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
             // localStorage unavailable/full
         }
     }, [splitPosition, isMounted]);
+
+    const activeSplitscreen = isMounted && isSideBySideSupported
+        ? splitscreen
+        : "top-bottom";
     
-    const handleOnClick = async () => {
-        setSplitscreen((prev) =>
-            (prev === "top-bottom"
-                ? "left-right"
-                : "top-bottom"
-            )
-        );
+    const clampSplitPosition = (position: number, axisSize: number) => {
+        const endLimit = axisSize - min_size;
+
+        if (endLimit < min_size) {
+            return axisSize / 2;
+        }
+
+        return Math.min(endLimit, Math.max(min_size, position));
+    };
+
+    const getSplitAxisMetrics = (orientation: string, bounds: DOMRect) => {
+        const mainBody = mainBodyRef.current;
+        if (!mainBody) return null;
+
+        const styles = window.getComputedStyle(mainBody);
+        const isLeftRight = orientation === "left-right";
+        const startInset = parseFloat(isLeftRight ? styles.paddingLeft : styles.paddingTop);
+        const endInset = parseFloat(isLeftRight ? styles.paddingRight : styles.paddingBottom);
+        const axisSize = (isLeftRight ? bounds.width : bounds.height) - startInset - endInset;
+        const axisStart = (isLeftRight ? bounds.left : bounds.top) + startInset;
+
+        return { axisSize, axisStart };
+    };
+
+    const handleOnClick = () => {
+        const nextSplitscreen = activeSplitscreen === "top-bottom" ? "left-right" : "top-bottom";
+        const bounds = mainBodyRef.current?.getBoundingClientRect();
+
+        if (bounds) {
+            const currentAxis = getSplitAxisMetrics(activeSplitscreen, bounds);
+            const nextAxis = getSplitAxisMetrics(nextSplitscreen, bounds);
+            if (currentAxis && nextAxis) {
+                const relativePosition = currentAxis.axisSize > 0
+                    ? splitPosition / currentAxis.axisSize
+                    : 0.5;
+
+                setSplitPosition(clampSplitPosition(relativePosition * nextAxis.axisSize, nextAxis.axisSize));
+            }
+        }
+
+        setSplitscreen(nextSplitscreen);
     };
 
     const handleSplitPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -94,19 +121,22 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
         const bounds = mainBodyRef.current?.getBoundingClientRect();
         if (!bounds) return;
 
-        const position = splitscreen === "left-right"
-            ? ((event.clientX - bounds.left) / bounds.width) * 100
-            : ((event.clientY - bounds.top) / bounds.height) * 100;
+        const axis = getSplitAxisMetrics(activeSplitscreen, bounds);
+        if (!axis) return;
 
-        setSplitPosition(Math.min(end_lim, Math.max(start_lim, position)));
+        const position = activeSplitscreen === "left-right"
+            ? event.clientX - axis.axisStart
+            : event.clientY - axis.axisStart;
+
+        setSplitPosition(clampSplitPosition(position, axis.axisSize));
     };
 
     return (
         <main style={{ width: "stretch" }}>
             <div
                 ref={mainBodyRef}
-                className={`main-body ${isMounted ? splitscreen : "top-bottom"}`}
-                style={{ "--split-position": `${splitPosition}%` } as React.CSSProperties}
+                className={`main-body ${activeSplitscreen}`}
+                style={{ "--split-position": `${splitPosition}px` } as React.CSSProperties}
             >
                 <div className="flex flex-col gap-[8px] this-s">
                     <div className="run-controls">
@@ -115,7 +145,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                         <div className="flex gap-[8px]">
                             <StatusBar small={isSmallScreen} />
                             
-                            {isMounted && splitscreen === "top-bottom" && (
+                            {isMounted && activeSplitscreen === "top-bottom" && (
                                 <div className="status-bar splitscreen">
                                     <button
                                         type="button"
@@ -139,9 +169,8 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                 <div
                     className="split-handle"
                     role="separator"
-                    aria-orientation={splitscreen === "left-right" ? "vertical" : "horizontal"}
-                    aria-valuemin={start_lim}
-                    aria-valuemax={end_lim}
+                    aria-orientation={activeSplitscreen === "left-right" ? "vertical" : "horizontal"}
+                    aria-valuemin={min_size}
                     aria-valuenow={Math.round(splitPosition)}
                     onPointerDown={(event) => {
                         event.currentTarget.setPointerCapture(event.pointerId);
@@ -153,7 +182,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                     <div className="run-controls">
                         <p className="text-label">Output</p>
 
-                        {isMounted && splitscreen === "left-right" && (
+                        {isMounted && activeSplitscreen === "left-right" && (
                             <div className="status-bar splitscreen">
                                 <button
                                     type="button"

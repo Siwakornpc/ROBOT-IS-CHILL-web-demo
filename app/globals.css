@@ -1567,7 +1567,7 @@ hr {
 .split-handle {
     cursor: row-resize;
     touch-action: none;
-    border-radius: 4px;
+    border-radius: 8px;
     transition: 0.2s ease;
 }
 
