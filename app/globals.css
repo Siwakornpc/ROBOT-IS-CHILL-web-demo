@@ -1558,7 +1558,7 @@ hr {
 .main-body {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
     position: relative;
     height: calc(100dvh - 56px);
     padding: 12px;
@@ -2029,6 +2029,7 @@ main.ascroll-y .main-body {
 
 .run-controls {
     display: flex;
+    justify-content: space-between;
     align-items: center;
     position: relative;
     gap: 8px;
@@ -2038,7 +2039,6 @@ main.ascroll-y .main-body {
 .status-bar {
     display: flex;
     align-items: center;
-    position: absolute;
     inset-inline-end: 0;
     height: 24px;
     font-size: .9rem;
@@ -2097,7 +2097,24 @@ main.ascroll-y .main-body {
 }
 
 /*
-    palette color picker thing
+    orientation thing
+*/
+
+.main-body.left-right {
+    flex-direction: row;
+}
+
+.left-right .this-s,
+.left-right .this-e {
+    width: 50%;
+}
+
+.left-right .this-s .editor-code {
+    height: 100%;
+}
+
+/*
+    palette color picker on search filters
 */
 
 .palette-color-picker-container {
