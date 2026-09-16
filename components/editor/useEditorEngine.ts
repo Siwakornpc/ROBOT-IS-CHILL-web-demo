@@ -448,7 +448,10 @@ export function useEditorEngine({
         };
 
         const layoutResizeObserver = typeof ResizeObserver !== "undefined"
-            ? new ResizeObserver(() => handleACSelectionChange())
+            ? new ResizeObserver(() => {
+                handleResize();
+                handleACSelectionChange();
+            })
             : null;
         layoutResizeObserver?.observe(editorArea);
         layoutResizeObserver?.observe(scrollEl);

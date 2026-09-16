@@ -12,7 +12,6 @@ export type WriteSearchUrlState = Omit<SearchUrlState, "mode"> & {
     mode?: SearchMode | null;
 };
 
-const CODE_STORAGE_PREFIX = "ric_url_code_";
 const URL_CODE_PREFIX = "h1_";
 
 const modeHashes: Record<SearchMode, string> = {
@@ -47,7 +46,9 @@ function encodeUrlSafeBase64(input: string): string {
 function decodeUrlSafeBase64(input: string): string | null {
     try {
         const normalized = input.replace(/-/g, "+").replace(/_/g, "/");
-        const padded = normalized + "=".repeat((4 - (normalized.length % 4)) % 4);
+        const padded =
+            normalized + "=".repeat((4 - (normalized.length % 4)) % 4);
+
         const binary = atob(padded);
         const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
 
@@ -57,58 +58,22 @@ function decodeUrlSafeBase64(input: string): string | null {
     }
 }
 
-function getLegacyHashString(input: string): string {
-    let hash = 2166136261;
-
-    for (let i = 0; i < input.length; i++) {
-        hash ^= input.charCodeAt(i);
-        hash = Math.imul(hash, 16777619);
-    }
-
-    return (hash >>> 0).toString(36);
-}
-
 export function encodeCodeForUrl(code: string): string {
-    const token = `${URL_CODE_PREFIX}${encodeUrlSafeBase64(code)}`;
-
-    if (typeof window !== "undefined" && "localStorage" in window) {
-        try {
-            window.localStorage.setItem(`${CODE_STORAGE_PREFIX}${token}`, code);
-            window.localStorage.setItem(`${CODE_STORAGE_PREFIX}${getLegacyHashString(code)}`, code);
-        } catch {} // Fall back to the raw value if storage is unavailable.
-    }
-
-    return token;
+    return `${URL_CODE_PREFIX}${encodeUrlSafeBase64(code)}`;
 }
 
 export function readCodeFromUrlParam(codeParam: string | null): string | null {
-    if (codeParam === null || codeParam === "")
+    if (!codeParam) {
         return null;
-
-    if (typeof window !== "undefined" && "localStorage" in window) {
-        try {
-            const storedCode = window.localStorage.getItem(`${CODE_STORAGE_PREFIX}${codeParam}`);
-            if (storedCode !== null)
-                return storedCode;
-        } catch {}
     }
 
     if (codeParam.startsWith(URL_CODE_PREFIX)) {
-        const decoded = decodeUrlSafeBase64(codeParam.slice(URL_CODE_PREFIX.length));
-        if (decoded !== null)
-            return decoded;
+        return decodeUrlSafeBase64(
+            codeParam.slice(URL_CODE_PREFIX.length),
+        );
     }
 
     return codeParam;
-}
-
-export function clearCodeFromUrlStorage(codeParam: string | null) {
-    if (typeof window === "undefined" || !("localStorage" in window) || codeParam === null)
-        return;
-
-    try {
-        window.localStorage.removeItem(`${CODE_STORAGE_PREFIX}${codeParam}`);
-    } catch {} // Ignore storage errors.
 }
 
 export function readSearchUrlState(): SearchUrlState {
@@ -122,9 +87,13 @@ export function readSearchUrlState(): SearchUrlState {
         };
     }
 
-    const [hashName, hashQuery = ""] = window.location.hash.slice(1).split("?", 2);
+    const [hashName, hashQuery = ""] = window.location.hash
+        .slice(1)
+        .split("?", 2);
+
     const hashParams = new URLSearchParams(hashQuery);
     const searchParams = new URLSearchParams(window.location.search);
+
     const searchCode = readCodeFromUrlParam(searchParams.get("code"));
     const hashCode = readCodeFromUrlParam(hashParams.get("code"));
 
@@ -141,22 +110,30 @@ export function writeSearchUrlState(state: WriteSearchUrlState) {
     const url = new URL(window.location.href);
     const hashParams = new URLSearchParams();
 
-    if (state.query) hashParams.set("query", state.query);
-    if (state.regex) hashParams.set("regex", "true");
-    if (state.details !== null) hashParams.set("details", state.details);
+    if (state.query) {
+        hashParams.set("query", state.query);
+    }
+
+    if (state.regex) {
+        hashParams.set("regex", "true");
+    }
+
+    if (state.details !== null) {
+        hashParams.set("details", state.details);
+    }
 
     const paramString = hashParams.toString();
     const modeSegment = state.mode ? modeHashes[state.mode] : "";
 
-    url.hash = modeSegment || paramString
-        ? `${modeSegment}${paramString ? `?${paramString}` : ""}`
-        : "";
+    url.hash =
+        modeSegment || paramString
+            ? `${modeSegment}${paramString ? `?${paramString}` : ""}`
+            : "";
 
     url.searchParams.delete("details");
 
     if (state.code !== null) {
-        const encodedCode = encodeCodeForUrl(state.code);
-        url.searchParams.set("code", encodedCode);
+        url.searchParams.set("code", encodeCodeForUrl(state.code));
     } else {
         url.searchParams.delete("code");
     }

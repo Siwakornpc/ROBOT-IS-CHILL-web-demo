@@ -53,12 +53,6 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
     }, [splitscreen, isMounted]);
     
     const handleOnClick = async () => {
-        const editorReady = (window as WindowWithEditor).editorReady;
-        if (editorReady) {
-            const editor = await editorReady;
-            onCodeChange?.(editor.value);
-        }
-
         setSplitscreen((prev) =>
             (prev === "top-bottom"
                 ? "left-right"
