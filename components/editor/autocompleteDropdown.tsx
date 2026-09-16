@@ -16,7 +16,7 @@ interface AutocompleteProps {
     suggestions: SuggestionItem[];
     position: { top: number; left: number };
     triggerChar?: string;
-    onSelect: (item: SuggestionItem) => void;
+    onSelect: (item: SuggestionItem, source: "mouse" | "keyboard") => void;
     onClose: () => void;
 }
 
@@ -90,7 +90,7 @@ export function AutocompleteDropdown({
                 e.stopPropagation();
                 e.stopImmediatePropagation();
                 if (visibleSuggestions[selectedIndex])
-                    onSelect(visibleSuggestions[selectedIndex]);
+                    onSelect(visibleSuggestions[selectedIndex], "keyboard");
             }
             else if (e.key === "Escape") {
                 e.preventDefault();
@@ -135,7 +135,7 @@ export function AutocompleteDropdown({
                         className={`ac-dropdown-option ${item.type === "var" ? "macro-variable" : `${item.type}-name`} ${isSelected ? "selected" : ""}`}
                         onClick={(e) => {
                             e.preventDefault();
-                            onSelect(item);
+                            onSelect(item, "mouse");
                         }}
                     >
                         <span className="flex gap-[4px]">

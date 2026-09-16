@@ -33,7 +33,7 @@ type EditorRefs = {
     scrollElRef: RefObject<HTMLDivElement | null>;
     onCodeChange?: (code: string) => void;
     onAutocompleteChange?: (state: AutocompleteState) => void;
-    onInsertSuggestionRef?: React.RefObject<((startIndex: number, text: string) => void) | null>;
+    onInsertSuggestionRef?: React.RefObject<((startIndex: number, text: string, focusEditor: boolean) => void) | null>;
 };
 
 export type AutocompleteState = {
@@ -460,7 +460,7 @@ export function useEditorEngine({
         visualViewport?.addEventListener("resize", handleACSelectionChange);
         scrollEl.addEventListener("scroll", handleACSelectionChange);
         
-        const insertSuggestion = (startIndex: number, text: string) => {
+        const insertSuggestion = (startIndex: number, text: string, focusEditor: boolean) => {
             isACLetterTypingRef.current = false;
             isAutocompleteOpenRef.current = false;
 
@@ -486,7 +486,8 @@ export function useEditorEngine({
             const newPos = startIndex + insertText.length;
             saveState(newPos, newPos);
             render(newPos, newPos);
-            editorArea.focus();
+            if (focusEditor)
+                editorArea.focus();
             editorArea.dispatchEvent(new Event("input", { bubbles: true }));
         };
 

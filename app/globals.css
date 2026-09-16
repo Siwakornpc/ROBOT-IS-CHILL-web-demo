@@ -1556,12 +1556,27 @@ hr {
 */
 
 .main-body {
-    display: flex;
+    display: grid;
     flex-direction: column;
-    gap: 12px;
+    grid-template-rows: minmax(0, calc(var(--split-position) - 4px)) 8px minmax(0, calc(100% - var(--split-position) - 4px));
     position: relative;
     height: calc(100dvh - 56px);
     padding: 12px;
+}
+
+.split-handle {
+    cursor: row-resize;
+    touch-action: none;
+    border-radius: 4px;
+    transition: 0.2s ease;
+}
+
+.split-handle:hover {
+    background: var(--surface-hovered);
+}
+
+.split-handle:active {
+    background: var(--surface-pressed);
 }
 
 main:has(.main-body) {
@@ -1765,7 +1780,7 @@ main.ascroll-y .main-body {
     flex-direction: column;
     position: relative;
     width: 100%;
-    height: 16rem;
+    height: stretch;
     min-height: 16rem;
     border-radius: 8px;
     background: var(--editor-body);
@@ -2108,12 +2123,17 @@ main.ascroll-y .main-body {
 
 @media only screen and (min-width: 1000px) {
     .main-body.left-right {
-        flex-direction: row;
+        grid-template-columns: minmax(0, calc(var(--split-position) - 4px)) 8px minmax(0, calc(100% - var(--split-position) - 4px));
+        grid-template-rows: minmax(0, 1fr);
     }
 
     .left-right .this-s,
     .left-right .this-e {
-        width: 50%;
+        width: auto;
+    }
+
+    .left-right .split-handle {
+        cursor: col-resize;
     }
 
     .left-right .this-s .editor-code {
