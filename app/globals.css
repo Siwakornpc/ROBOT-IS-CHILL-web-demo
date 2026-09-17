@@ -2115,6 +2115,7 @@ main.ascroll-y .main-body {
 */
 
 .is-o {
+    display: grid;
     grid-template-rows: minmax(0, calc(var(--split-position) - 4px)) 8px minmax(0, calc(100% - var(--split-position) - 4px));
 }
 
