@@ -1561,6 +1561,11 @@ hr {
     position: relative;
     height: calc(100dvh - 56px);
     padding: 12px;
+    gap: 2px;
+}
+
+.main-body:not(.is-o) {
+    gap: 8px;
 }
 
 .split-handle {
