@@ -96,6 +96,36 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
         return { axisSize, axisStart };
     };
 
+    useEffect(() => {
+        if (!isMounted) return;
+
+        const mainBody = mainBodyRef.current;
+        if (!mainBody) return;
+
+        const clampToContainer = () => {
+            const axis = getSplitAxisMetrics(activeSplitscreen, mainBody.getBoundingClientRect());
+            if (!axis) return;
+
+            setSplitPosition((currentPosition) =>
+                clampSplitPosition(currentPosition, axis.axisSize)
+            );
+        };
+
+        const animationFrame = window.requestAnimationFrame(clampToContainer);
+        const resizeObserver = typeof ResizeObserver !== "undefined"
+            ? new ResizeObserver(clampToContainer)
+            : null;
+
+        resizeObserver?.observe(mainBody);
+        if (!resizeObserver) window.addEventListener("resize", clampToContainer);
+
+        return () => {
+            window.cancelAnimationFrame(animationFrame);
+            resizeObserver?.disconnect();
+            if (!resizeObserver) window.removeEventListener("resize", clampToContainer);
+        };
+    }, [activeSplitscreen, isMounted]);
+
     const handleOnClick = () => {
         const nextSplitscreen = activeSplitscreen === "top-bottom" ? "left-right" : "top-bottom";
         const bounds = mainBodyRef.current?.getBoundingClientRect();
