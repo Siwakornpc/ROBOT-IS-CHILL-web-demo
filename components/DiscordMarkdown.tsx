@@ -26,6 +26,11 @@ type DiscordToken =
         content: string;
     } |
     {
+        type: "codeBlock";
+        lang?: string;
+        content: string;
+    } |
+    {
         type: "blankLine";
     } |
     {
@@ -261,8 +266,12 @@ function normalizeDiscordLists(source: string): string {
  * is a single homogeneous list. Only top-level (non-indented) list lines are
  * handled here - indented/nested items are left untouched.
  *
- * NOTE: this intentionally does not attempt nested-list normalization; see
- * the caller for why.
+ * This is a top-level-only rewrite by design: nested list items keep
+ * whatever newline/indentation semantics remark already gives them. Nesting
+ * itself is supported (see the module doc comment), but that does not mean
+ * a nested item's own text can contain a raw newline the way this
+ * normalization pass handles top-level marker runs - it can't, any more
+ * than it could before this rewrite.
  */
 function escapeEmptyListMarkers(source: string): string {
     const lines = source.replace(/\r\n?/g, "\n").split("\n");
@@ -420,6 +429,71 @@ function normalizeListMarkerTypes(source: string): string {
  * --------------------------------------------------------------------------
  */
 
+/**
+ * Try to read a Discord-style triple-backtick code block starting at the
+ * very beginning of `rest`.
+ *
+ * Discord recognizes ``` anywhere - not just at the start of a line - so
+ * this is called at every position where we see three backticks, not only
+ * ones preceded by a newline. Two shapes are recognized:
+ *
+ *   ```lang
+ *   content
+ *   ```
+ *
+ * A language tag is only honored when it is immediately followed by a
+ * newline, i.e. the fence is opened on "its own line" even if that line
+ * itself is in the middle of a larger message:
+ *
+ *   Hello ```js
+ *   console.log("JavaScript!");
+ *   ``` Language!
+ *
+ * -> lang "js", content `console.log("JavaScript!");`, with "Hello " and
+ * " Language!" left as ordinary surrounding text.
+ *
+ * If there is no newline directly after the opening fence, everything
+ * up to the closing ``` is treated as plain content and nothing is
+ * treated as a language tag - so ```this text``` does NOT pick "this" as
+ * a language, it's all just content.
+ */
+function tryReadCodeFence(
+    rest: string
+): { matchedLength: number; lang?: string; content: string } | null {
+    const withLang = rest.match(/^```(\w+)\n([\s\S]*?)```/);
+
+    if (withLang) {
+        let content = withLang[2];
+
+        // The newline immediately before the closing fence is part of the
+        // fence syntax, not the code, per how fenced code blocks are
+        // normally read.
+        if (content.endsWith("\n")) content = content.slice(0, -1);
+
+        return {
+            matchedLength: withLang[0].length,
+            lang: withLang[1],
+            content,
+        };
+    }
+
+    const plain = rest.match(/^```([\s\S]*?)```/);
+
+    if (plain) {
+        let content = plain[1];
+
+        if (content.startsWith("\n")) content = content.slice(1);
+        if (content.endsWith("\n")) content = content.slice(0, -1);
+
+        return {
+            matchedLength: plain[0].length,
+            content,
+        };
+    }
+
+    return null;
+}
+
 function protectDiscordSyntax(
     source: string,
     tokens: DiscordTokenStore
@@ -427,9 +501,6 @@ function protectDiscordSyntax(
     let result = "";
 
     let i = 0;
-    let inFence = false;
-    let fenceChar = "";
-    let fenceLength = 0;
 
     while (i < source.length) {
         /*
@@ -437,44 +508,23 @@ function protectDiscordSyntax(
          * Fenced code blocks
          * --------------------------------------------------------------
          *
-         * Discord spoilers/mentions/etc. must not be interpreted inside
-         * code blocks.
+         * Checked first, and at *any* position (not just the start of a
+         * line) so a fence can sit in the middle of a sentence. See
+         * tryReadCodeFence() for the exact rules. Turned into a token so
+         * it flows inline with whatever text surrounds it, the same way
+         * spoilers/mentions/etc. do.
          */
-        if (i === 0 || source[i - 1] === "\n") {
-            const rest = source.slice(i);
-
-            // ```lang\ncode``` — Discord (unlike CommonMark) allows the closing
-            // fence to sit on the same line as the last line of code, e.g.
-            //   ```js
-            //   code```
-            // remark won't recognize that as closed, so we extract the pieces
-            // ourselves and re-emit a fence with the closing marker forced onto
-            // its own line, which remark is guaranteed to parse correctly.
-            const fence = rest.match(
-                /^```(?:(\w+)\n)?([\s\S]*?)```/
-            );
+        if (source.startsWith("```", i)) {
+            const fence = tryReadCodeFence(source.slice(i));
 
             if (fence) {
-                const lang = fence[1] ?? "";
-                let content = fence[2];
+                result += makeToken(tokens, {
+                    type: "codeBlock",
+                    lang: fence.lang,
+                    content: fence.content,
+                });
 
-                // When there's no language token, the newline that terminates the
-                // opening ``` line ends up captured as a leading "\n" in content
-                // instead of being consumed separately — strip it back out.
-                if (!lang && content.startsWith("\n")) {
-                    content = content.slice(1);
-                }
-
-                const normalized =
-                    "```" +
-                    lang +
-                    "\n" +
-                    content +
-                    (content.endsWith("\n") ? "" : "\n") +
-                    "```";
-
-                result += normalized;
-                i += fence[0].length;
+                i += fence.matchedLength;
                 continue;
             }
         }
@@ -739,6 +789,14 @@ function protectUnsupportedGfmSyntax(source: string): string {
      *
      * Escape only syntax that is unambiguously one of those unsupported
      * constructs, and leave ordinary text alone.
+     *
+     * NOTE: this still only recognizes a code fence when it starts its own
+     * line (with up to 3 leading spaces), same as before. That's a separate,
+     * narrower concept from the "fence anywhere" handling in
+     * protectDiscordSyntax()/tryReadCodeFence(): this pass runs earlier, on
+     * raw source, purely to stop list/blank-line normalization from
+     * reaching inside a block-style fence. Inline (same-line) fences aren't
+     * fences by this pass's definition and are handled later, as tokens.
      */
     const lines = source.replace(/\r\n?/g, "\n").split("\n");
     const output = [...lines];
@@ -858,11 +916,17 @@ function preserveDiscordEmptyLines(
             }
 
             output.push(line);
+            if (i < lines.length - 1) {
+                output.push("\n");
+            }
             continue;
         }
 
         if (inFence) {
             output.push(line);
+            if (i < lines.length - 1) {
+                output.push("\n");
+            }
             continue;
         }
 
@@ -874,10 +938,27 @@ function preserveDiscordEmptyLines(
                 .slice(i + 1)
                 .find((candidate) => candidate.trim() !== "");
 
+            /*
+             * Trailing blank line(s) with nothing after them (the rest of
+             * the message, if anything, is blank too) don't represent a
+             * visible break - there's no following line to separate from,
+             * so there's nothing to render a <br> in front of. This also
+             * covers a list that ends the message: the blank line(s) after
+             * its last item shouldn't produce stray <br>s.
+             */
+            if (typeof next !== "string") {
+                while (
+                    i + 1 < lines.length &&
+                    lines[i + 1].trim() === ""
+                ) {
+                    i++;
+                }
+                continue;
+            }
+
             const isListBoundaryBreak =
                 typeof prev === "string" &&
                 isListItemLine(prev) &&
-                typeof next === "string" &&
                 next.trim() !== "" &&
                 !isListItemLine(next) &&
                 !isIndentedContinuation(next);
@@ -930,7 +1011,7 @@ function prepareSource(
         ),
         tokens
     );
-    
+
     const lines = normalized.split("\n");
 
     let inFence = false;
@@ -967,10 +1048,15 @@ function prepareSource(
             return line;
         }
         if (!inFence && line.startsWith("-# ")) {
-            return makeToken(tokens, {
+            const token = makeToken(tokens, {
                 type: "subtext",
                 content: line.slice(3),
             });
+
+            // A Discord subtext line is a block, not a soft line break in
+            // the surrounding paragraph. Separate it before remark parses
+            // the source so it reaches the standalone <p> renderer below.
+            return `\n\n${token}\n\n`;
         }
         return line;
     });
@@ -1310,20 +1396,49 @@ function renderToken(
                 ...context,
                 tokens: nested.tokens,
             };
+            const nestedParagraph = nested.tree.children.find(
+                (child) => child.type === "paragraph"
+            );
 
             return (
                 <span
                     key={key}
                     className="discord-subtext"
                 >
-                    {renderChildren(
-                        nested.tree.children,
-                        `${key}-subtext`,
-                        nestedContext
-                    )}
+                    {nestedParagraph
+                        ? renderChildren(
+                            nestedParagraph.children,
+                            `${key}-subtext`,
+                            nestedContext
+                        )
+                        : token.content}
                 </span>
             );
         }
+
+        case "codeBlock":
+            /*
+             * This token can end up nested inside a <p>, a heading, a
+             * <span> (subtext), or a <label> (spoiler) - all of which only
+             * allow phrasing content. <pre> is NOT phrasing content and
+             * React/the browser will reject it there (hydration error:
+             * "<pre> cannot be a descendant of <p>"). <code> IS phrasing
+             * content and is legal in all of those, so we render the block
+             * as a <code> and get the same visual box via CSS
+             * (white-space: pre-wrap + display: block) instead of <pre>.
+             * No nested Markdown parsing and no manual <br> insertion -
+             * white-space: pre-wrap preserves literal newlines on its own.
+             */
+            return (
+                <code
+                    key={key}
+                    className="discord-code-block"
+                    data-language={token.lang}
+                    style={{ whiteSpace: "pre-wrap", display: "block" }}
+                >
+                    {token.content}
+                </code>
+            );
 
         case "blankLine":
             return <br key={key} />;
@@ -1467,6 +1582,10 @@ function renderText(
     function pushText(text: string, baseKey: string) {
         if (!text) return;
 
+        // Any literal newline that survives to this point (e.g. inside
+        // token content that was re-parsed, rather than a standard
+        // paragraph break already turned into a "break" node by
+        // remark-breaks) still renders as a visible line break.
         const lines = text.split("\n");
 
         lines.forEach((line, index) => {
@@ -1631,20 +1750,27 @@ function renderNode(
                 </code>
             );
 
-        /* Code block */
+        /*
+         * Code block
+         *
+         * Triple-backtick fences are normally consumed by
+         * protectDiscordSyntax() into "codeBlock" tokens before remark ever
+         * runs (see tryReadCodeFence()), so this case is a defensive
+         * fallback rather than the primary path.
+         */
         case "code":
+            // Same reasoning as the "codeBlock" token case above: this can
+            // land inside a blockquote's (phrasing-only) content span, so
+            // it uses <code> + CSS instead of <pre>.
             return (
-                <pre
+                <code
                     key={key}
                     className="discord-code-block"
+                    data-language={node.lang ?? undefined}
+                    style={{ whiteSpace: "pre-wrap", display: "block" }}
                 >
-                    <code
-                        data-language={
-                            node.lang ?? undefined
-                        }
-                    >{node.value}
-                    </code>
-                </pre>
+                    {node.value}
+                </code>
             );
 
         /* Link */
@@ -1778,16 +1904,27 @@ function renderNode(
                 const token = context.tokens[tokenIndex];
 
                 if (token?.type === "subtext") {
+                    const nested = parseMarkdown(token.content);
+                    const nestedContext: RenderContext = {
+                        ...context,
+                        tokens: nested.tokens,
+                    };
+                    const nestedParagraph = nested.tree.children.find(
+                        (child) => child.type === "paragraph"
+                    );
+
                     return (
                         <p
                             key={key}
                             className="discord-subtext"
                         >
-                            {renderToken(
-                                token,
-                                key,
-                                context
-                            )}
+                            {nestedParagraph
+                                ? renderChildren(
+                                    nestedParagraph.children,
+                                    `${key}-subtext`,
+                                    nestedContext
+                                )
+                                : token.content}
                         </p>
                     );
                 }
