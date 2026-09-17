@@ -52,7 +52,7 @@ export default function Body() {
             return updated;
         });
     };
-    const handleDefault = () => updateTheme(DEFAULT_THEME);
+    const handleDefaultTheme = () => updateTheme(DEFAULT_THEME);
 
     useEffect(() => {
         if (!loaded) return;
@@ -88,6 +88,8 @@ export default function Body() {
             return updated;
         });
     };
+
+    const handleDefaultFont = () => updateFont(DEFAULT_FONT_STATE);
     
     useEffect(() => {
         if (!loaded) return;
@@ -102,14 +104,14 @@ export default function Body() {
             style={{ width: "stretch" }}
         >
             <div className="main-body">
-                <h2 className="text-label">Settings</h2>
+                <h2 className="text-label font-bold">Settings</h2>
                 <hr />
 
                 {
                     // Fonts Section
                 }
 
-                <h3 className="text-label">Fonts</h3>
+                <h3 className="text-label font-bold">Fonts</h3>
 
                 <div className="box-hole">
                     <span className="row-group">
@@ -157,13 +159,23 @@ export default function Body() {
                     </span>
                 </div>
 
+                {
+                    // Reset Defalt for Fonts
+                }
+                <button
+                    type="button"
+                    className="btn small btn-filled !w-48 !justify-center mb-[8px]"
+                    onClick={handleDefaultFont}
+                >Reset Default
+                </button>
+
                 <hr />
 
                 {
                     // Theme Section
                 }
 
-                <h3 className="text-label">Theme</h3>
+                <h3 className="text-label font-bold">Theme</h3>
                 <div className="box-hole">
                     
                     <div className="row-group">
@@ -206,13 +218,17 @@ export default function Body() {
                             onChange={(newValue) => updateTheme({ contrast: newValue })}
                         />
                     </div>
-                    <button
-                        type="button"
-                        className="btn small btn-filled !w-48 !justify-center"
-                        onClick={handleDefault}
-                    >Reset Default
-                    </button>
                 </div>
+
+                {
+                    // Reset Defalt for Theme
+                }
+                <button
+                    type="button"
+                    className="btn small btn-filled !w-48 !justify-center"
+                    onClick={handleDefaultTheme}
+                >Reset Default
+                </button>
             </div>
         </main>
     );
