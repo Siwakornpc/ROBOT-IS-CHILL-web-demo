@@ -135,7 +135,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
         <main style={{ width: "stretch" }}>
             <div
                 ref={mainBodyRef}
-                className={`main-body ${activeSplitscreen}`}
+                className={`main-body ${activeSplitscreen} is-o`}
                 style={{ "--split-position": `${splitPosition}px` } as React.CSSProperties}
             >
                 <div className="flex flex-col gap-[8px] this-s">
