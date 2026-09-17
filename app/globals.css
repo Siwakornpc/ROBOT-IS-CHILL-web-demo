@@ -1556,7 +1556,7 @@ hr {
 */
 
 .main-body {
-    display: grid;
+    display: flex;
     flex-direction: column;
     position: relative;
     height: calc(100dvh - 56px);
@@ -2125,7 +2125,7 @@ main.ascroll-y .main-body {
 }
 
 @media only screen and (min-width: 1000px) {
-    .main-body.left-right {
+    .is-o.left-right {
         grid-template-columns: minmax(0, calc(var(--split-position) - 4px)) 8px minmax(0, calc(100% - var(--split-position) - 4px));
         grid-template-rows: minmax(0, 1fr);
     }
