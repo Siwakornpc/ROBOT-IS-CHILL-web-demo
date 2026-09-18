@@ -162,7 +162,7 @@ export function RightBarSearch({children}: {children?: ReactNode}) {
 
     useEffect(() => {
         function handleResize() {
-            setIsFlexibleMenu(window.innerWidth <= 1096);
+            setIsFlexibleMenu(window.innerWidth <= 960);
 
             if (viewHeight < height) setViewHeight(height);
             if (sheetOffset > height) setSheetOffset(height);
