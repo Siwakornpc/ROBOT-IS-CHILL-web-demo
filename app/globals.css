@@ -2938,6 +2938,8 @@ main.ascroll-y .main-body {
 .search-details-detailbox.flag {
     font-family: var(--font-family-code);
     font-size: var(--font-size-code);
+    white-space: pre;
+    overflow-wrap: anywhere;
 }
 
 .search-details-label {
