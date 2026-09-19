@@ -1884,6 +1884,7 @@ main.ascroll-y .main-body {
     content: "subdirectory_arrow_left";
     font-family: "Material Symbols Outlined";
     color: var(--editor-outline);
+    pointer-events: none;
 }
 
 .editor-line:has(.br):not(:last-child)::before {
@@ -1892,6 +1893,7 @@ main.ascroll-y .main-body {
     content: "subdirectory_arrow_left";
     font-family: "Material Symbols Outlined";
     color: var(--editor-outline);
+    pointer-events: none;
 }
 /*
     syntax highlighting
