@@ -21,7 +21,7 @@ function escapeHtml(text: string) {
 
 // wraps one already-highlighted line's HTML, or a bare <br> for an empty line height.
 function renderLineHtml(highlightedLine: string) {
-    return highlightedLine.length === 0 ? "<br>" : highlightedLine;
+    return highlightedLine.length === 0 ? "<br class=\"br\">" : highlightedLine;
 }
 
 // Highlights the whole document in a single pass (not line-by-line) so that

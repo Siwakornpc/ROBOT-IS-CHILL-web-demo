@@ -1878,7 +1878,21 @@ main.ascroll-y .main-body {
     color: var(--normal);
     background: var(--editor-current-line);
 }
+.editor-line:not(:last-child, :has(.br))::after {
+    position: absolute;
+    font-size: 1.425em;
+    content: "keyboard_return";
+    font-family: "Material Symbols Outlined";
+    color: var(--editor-outline);
+}
 
+.editor-line:has(.br):not(:last-child)::before {
+    position: absolute;
+    font-size: 1.425em;
+    content: "keyboard_return";
+    font-family: "Material Symbols Outlined";
+    color: var(--editor-outline);
+}
 /*
     syntax highlighting
 */
@@ -2938,8 +2952,7 @@ main.ascroll-y .main-body {
 .search-details-detailbox.flag {
     font-family: var(--font-family-code);
     font-size: var(--font-size-code);
-    white-space: pre;
-    overflow-wrap: anywhere;
+    white-space: pre-wrap;
 }
 
 .search-details-label {
