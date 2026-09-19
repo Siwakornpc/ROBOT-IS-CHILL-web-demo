@@ -1879,16 +1879,15 @@ main.ascroll-y .main-body {
 }
 .editor-line:not(:last-child, :has(.br))::after {
     position: absolute;
-    font-size: 1.25em;
+    font-size: 0.75em;
     content: "subdirectory_arrow_left";
     font-family: "Material Symbols Outlined";
     color: var(--editor-outline);
     pointer-events: none;
 }
-
 .editor-line:has(.br):not(:last-child)::before {
     position: absolute;
-    font-size: 1.25em;
+    font-size: 0.75em;
     content: "subdirectory_arrow_left";
     font-family: "Material Symbols Outlined";
     color: var(--editor-outline);
