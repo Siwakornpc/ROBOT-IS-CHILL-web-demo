@@ -1880,16 +1880,16 @@ main.ascroll-y .main-body {
 }
 .editor-line:not(:last-child, :has(.br))::after {
     position: absolute;
-    font-size: 1.425em;
-    content: "keyboard_return";
+    font-size: 1.25em;
+    content: "subdirectory_arrow_left";
     font-family: "Material Symbols Outlined";
     color: var(--editor-outline);
 }
 
 .editor-line:has(.br):not(:last-child)::before {
     position: absolute;
-    font-size: 1.425em;
-    content: "keyboard_return";
+    font-size: 1.25em;
+    content: "subdirectory_arrow_left";
     font-family: "Material Symbols Outlined";
     color: var(--editor-outline);
 }
