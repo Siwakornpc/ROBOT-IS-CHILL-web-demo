@@ -5,16 +5,36 @@ import ColorPicker from "@/components/ColorPicker";
 import MenuSelect from "@/components/MenuSelect";
 import Slider from "@/components/slider";
 
-import { DEFAULT_THEME } from "@/components/themescript";
-import type { ThemeState } from "@/components/themescript";
+import { applySyntaxHighlightColors, DEFAULT_SYNTAX_HIGHLIGHT, DEFAULT_THEME } from "@/components/themescript";
+import type { SyntaxHighlightKey, SyntaxHighlightState, ThemeState } from "@/components/themescript";
 
 import { DEFAULT_FONT_STATE, FONT_SANS_OPTIONS, FONT_CODE_OPTIONS } from "@/components/fontscript";
 import type { FontState } from "@/components/fontscript";
+
+type SelectionCollapsable = {
+    isOpen: boolean,
+    id: string,
+}
+
+const SYNTAX_HIGHLIGHT_OPTIONS: { key: SyntaxHighlightKey; label: string }[] = [
+    { key: "syntaxName", label: "Macro Name" },
+    { key: "syntaxValue", label: "Macro Value" },
+    { key: "syntaxEscaped", label: "Escaped Value" },
+    { key: "syntaxVariable", label: "Macro Variable" },
+    { key: "syntaxBracketLayer0", label: "Bracket Layer 1" },
+    { key: "syntaxBracketLayer1", label: "Bracket Layer 2" },
+    { key: "syntaxBracketLayer2", label: "Bracket Layer 3" },
+    { key: "renderFlagName", label: "Render Flag Name" },
+    { key: "renderFlagValue", label: "Render Flag Value" },
+    { key: "renderVariantName", label: "Render Variant Name" },
+    { key: "renderVariantValue", label: "Render Variant Value" },
+];
 
 export default function Body() {
     const [theme, setTheme] = useState<ThemeState>(DEFAULT_THEME);
     const [loaded, setLoaded] = useState(false);
     const [font, setFontState] = useState<FontState>(DEFAULT_FONT_STATE);
+    const [syntaxHighlight, setSyntaxHighlight] = useState<SyntaxHighlightState>(DEFAULT_SYNTAX_HIGHLIGHT);
 
     useEffect(() => {
         try {
@@ -36,6 +56,14 @@ export default function Body() {
                     code: parsed?.code ?? DEFAULT_FONT_STATE.code,
                     sansSize: parsed?.sansSize ?? DEFAULT_FONT_STATE.sansSize,
                     codeSize: parsed?.codeSize ?? DEFAULT_FONT_STATE.codeSize,
+                });
+            }
+
+            const savedSyntaxRaw = localStorage.getItem("syntaxHighlight");
+            if (savedSyntaxRaw) {
+                setSyntaxHighlight({
+                    ...DEFAULT_SYNTAX_HIGHLIGHT,
+                    ...JSON.parse(savedSyntaxRaw),
                 });
             }
         } catch (e) {
@@ -90,6 +118,24 @@ export default function Body() {
     };
 
     const handleDefaultFont = () => updateFont(DEFAULT_FONT_STATE);
+
+    const updateSyntaxHighlight = (key: SyntaxHighlightKey, color: string) => {
+        setSyntaxHighlight((prev) => {
+            const updated = { ...prev, [key]: color };
+            localStorage.setItem("syntaxHighlight", JSON.stringify(updated));
+            return updated;
+        });
+    };
+
+    const handleDefaultSyntaxHighlight = () => {
+        localStorage.setItem("syntaxHighlight", JSON.stringify(DEFAULT_SYNTAX_HIGHLIGHT));
+        setSyntaxHighlight(DEFAULT_SYNTAX_HIGHLIGHT);
+    };
+
+    useEffect(() => {
+        if (!loaded) return;
+        applySyntaxHighlightColors(syntaxHighlight);
+    }, [syntaxHighlight, loaded]);
     
     useEffect(() => {
         if (!loaded) return;
@@ -97,6 +143,15 @@ export default function Body() {
         if (typeof applyFont !== "function") return;
         applyFont(font.sans, font.code, font.sansSize, font.codeSize);
     }, [font, loaded]);
+
+    const [isCollapsableOpen, setIsCollapsableOpen] = useState<SelectionCollapsable>();
+
+    const handleOnClickCollapsable = (id: string) => {
+        setIsCollapsableOpen({
+            isOpen: !isCollapsableOpen?.isOpen,
+            id,
+        });
+    }
 
     return (
         <main
@@ -112,6 +167,9 @@ export default function Body() {
                 }
 
                 <h3 className="text-label font-bold">Fonts</h3>
+                <hr style={{ borderColor: "rgb(var(--md-color-surface-container))" }} />
+
+                <h4 className="text-label font-bold">Size</h4>
 
                 <div className="box-hole">
                     <span className="row-group">
@@ -136,6 +194,8 @@ export default function Body() {
                         />
                     </span>
                 </div>
+
+                <h4 className="text-label font-bold">Fontface</h4>
 
                 <div className="box-hole">
                     <span className="row-group">
@@ -176,6 +236,11 @@ export default function Body() {
                 }
 
                 <h3 className="text-label font-bold">Theme</h3>
+
+                <hr style={{ borderColor: "rgb(var(--md-color-surface-container))" }} />
+
+                <h4 className="text-label font-bold">Appearance</h4>
+
                 <div className="box-hole">
                     
                     <div className="row-group">
@@ -225,22 +290,83 @@ export default function Body() {
                 }
                 <button
                     type="button"
-                    className="btn small btn-filled !w-48 !justify-center"
+                    className="btn small btn-filled !w-48 !justify-center mb-[8px]"
                     onClick={handleDefaultTheme}
                 >Reset Default
                 </button>
 
+                <h4 className="text-label font-bold">Syntax Highlights</h4>
+
+                <div className="box-hole">
+                    <div
+                        className="selection-collapsable"
+                        onClick={() => handleOnClickCollapsable("1")}
+                    >
+                        Code Editor
+                    </div>
+                    {isCollapsableOpen && isCollapsableOpen.isOpen && isCollapsableOpen.id === "1" && 
+                        (<div
+                            className={`this selection-collapsable-content flex flex-col gap-[8px]` /* woah, tailwind hidden */}
+                        >
+                            {SYNTAX_HIGHLIGHT_OPTIONS.map(({ key, label }) => (
+                                <span className="row-group-unr" key={key}>
+                                    <p className="text-label text-main-name">{label}</p>
+                                    <MenuSelect
+                                        id={`syntax-${key}`}
+                                        value="color"
+                                        options={[{ value: "color", label }]}
+                                        trigger={({ getInputProps }) => (
+                                            <button
+                                                {...getInputProps({
+                                                    type: "button",
+                                                    className: "selection-color-label",
+                                                    "aria-label": `Choose ${label} color`,
+                                                })}
+                                                style={{ backgroundColor: syntaxHighlight[key] }}
+                                            />
+                                        )}
+                                        content={
+                                            <div className="ml-[12px] mr-[12px] mt-[8px] mb-[8px]">
+                                                <ColorPicker
+                                                    value={syntaxHighlight[key]}
+                                                    onChange={(color) => {
+                                                        if (color !== null) updateSyntaxHighlight(key, color);
+                                                    }}
+                                                    hasNone={false}
+                                                />
+                                            </div>
+                                        }
+                                        onChange={() => undefined}
+                                    />
+                                </span>
+                            ))}
+                        </div>)
+                    }
+                </div>
+
+                <button
+                    type="button"
+                    className="btn small btn-filled !w-48 !justify-center mb-[8px]"
+                    onClick={handleDefaultSyntaxHighlight}
+                >Reset Default
+                </button>
+
+                <hr />
+
                 {
                     // Reset All To Default
                 }
-                <h2 className="text-label font-bold">Default</h2>
-                <hr />
+                <h3 className="text-label font-bold">Default</h3>
+
+                <hr style={{ borderColor: "rgb(var(--md-color-surface-container))" }} />
+
                 <button
                     type="button"
                     className="btn small btn-filled !w-48 !justify-center"
                     onClick={() => {
                         handleDefaultFont();
                         handleDefaultTheme();
+                        handleDefaultSyntaxHighlight();
                     }}
                 >Reset All To Default
                 </button>

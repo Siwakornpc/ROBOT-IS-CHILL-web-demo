@@ -15,6 +15,45 @@ export const DEFAULT_THEME: ThemeState = {
     contrast: 'system',
 };
 
+export type SyntaxHighlightKey =
+    | 'syntaxName'
+    | 'syntaxValue'
+    | 'syntaxEscaped'
+    | 'syntaxVariable'
+    | 'syntaxBracketLayer0'
+    | 'syntaxBracketLayer1'
+    | 'syntaxBracketLayer2'
+    | 'renderFlagName'
+    | 'renderFlagValue'
+    | 'renderVariantName'
+    | 'renderVariantValue'
+    | 'typeArgumentname'
+    | 'typeIdentifier'
+    | 'typeFunction'
+    | 'typeString'
+    | 'typeNumber';
+
+export type SyntaxHighlightState = Record<SyntaxHighlightKey, string>;
+
+export const DEFAULT_SYNTAX_HIGHLIGHT: SyntaxHighlightState = {
+    syntaxName: '#72a5e7',
+    syntaxValue: '#ffcb22',
+    syntaxEscaped: '#ff8147',
+    syntaxVariable: '#1ccad7',
+    syntaxBracketLayer0: '#f1c43e',
+    syntaxBracketLayer1: '#c85acc',
+    syntaxBracketLayer2: '#5f94f5',
+    renderFlagName: '#ecea8b',
+    renderFlagValue: '#79f86d',
+    renderVariantName: '#be6ed4',
+    renderVariantValue: '#ee5552',
+    typeArgumentname: '#3a7bf5',
+    typeIdentifier: '#0fa7a4',
+    typeFunction: '#fcff36',
+    typeString: '#ffb325',
+    typeNumber: '#5aff44',
+};
+
 const ThemeContext = createContext<{
     theme: ThemeState;
     updateTheme: (updates: Partial<ThemeState>) => void;
@@ -84,28 +123,46 @@ export const useTheme = () => {
 
 const customThemeColors = {
     success: '#84cc7b',
-    syntaxName: '#72a5e7',
-    syntaxValue: '#ffcb22',
-    syntaxEscaped: '#ff8147',
-    syntaxVariable: '#1ccad7',
-    syntaxBracketLayer0: { color: '#f1c43e', blend: false }, 
-    syntaxBracketLayer1: { color: '#c85acc', blend: false }, 
-    syntaxBracketLayer2: { color: '#5f94f5', blend: false },
+    syntaxName: { color: DEFAULT_SYNTAX_HIGHLIGHT.syntaxName, blend: false },
+    syntaxValue: { color: DEFAULT_SYNTAX_HIGHLIGHT.syntaxValue, blend: false },
+    syntaxEscaped: { color: DEFAULT_SYNTAX_HIGHLIGHT.syntaxEscaped, blend: false },
+    syntaxVariable: { color: DEFAULT_SYNTAX_HIGHLIGHT.syntaxVariable, blend: false },
+    syntaxBracketLayer0: { color: DEFAULT_SYNTAX_HIGHLIGHT.syntaxBracketLayer0, blend: false },
+    syntaxBracketLayer1: { color: DEFAULT_SYNTAX_HIGHLIGHT.syntaxBracketLayer1, blend: false },
+    syntaxBracketLayer2: { color: DEFAULT_SYNTAX_HIGHLIGHT.syntaxBracketLayer2, blend: false },
 
-    renderFlagName: '#ecea8b',
-    renderFlagValue: '#79f86d',
-    renderVariantName: '#be6ed4',
-    renderVariantValue: '#ee5552',
+    renderFlagName: { color: DEFAULT_SYNTAX_HIGHLIGHT.renderFlagName, blend: false },
+    renderFlagValue: { color: DEFAULT_SYNTAX_HIGHLIGHT.renderFlagValue, blend: false },
+    renderVariantName: { color: DEFAULT_SYNTAX_HIGHLIGHT.renderVariantName, blend: false },
+    renderVariantValue: { color: DEFAULT_SYNTAX_HIGHLIGHT.renderVariantValue, blend: false },
 
-    typeArgumentname: '#3a7bf5',
-    typeIdentifier: '#0fa7a4',
-    typeFunction: '#fcff36',
-    typeString: '#ffb325',
-    typeNumber: '#5aff44',
+    typeArgumentname: { color: DEFAULT_SYNTAX_HIGHLIGHT.typeArgumentname, blend: false },
+    typeIdentifier: { color: DEFAULT_SYNTAX_HIGHLIGHT.typeIdentifier, blend: false },
+    typeFunction: { color: DEFAULT_SYNTAX_HIGHLIGHT.typeFunction, blend: false },
+    typeString: { color: DEFAULT_SYNTAX_HIGHLIGHT.typeString, blend: false },
+    typeNumber: { color: DEFAULT_SYNTAX_HIGHLIGHT.typeNumber, blend: false },
 };
 
 function isValidHex(hex: string): boolean {
     return /^#?([0-9A-F]{3}|[0-9A-F]{6}|[0-9A-F]{8})$/i.test(hex);
+}
+
+export function applySyntaxHighlightColors(colors: Partial<SyntaxHighlightState>) {
+    if (typeof document === 'undefined') return;
+
+    Object.entries({ ...DEFAULT_SYNTAX_HIGHLIGHT, ...colors }).forEach(([name, hex]) => {
+        const normalized = hex.length === 4
+            ? hex.replace(/([0-9a-f])/gi, '$1$1')
+            : hex;
+        if (!isValidHex(normalized)) return;
+
+        const value = normalized.replace('#', '');
+        const rgb = [0, 2, 4]
+            .map((offset) => parseInt(value.slice(offset, offset + 2), 16))
+            .join(', ');
+        const cssName = name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+        document.documentElement.style.setProperty(`--md-color-${cssName}`, rgb);
+    });
 }
 
 export default function ThemeScript() {
@@ -255,6 +312,14 @@ export default function ThemeScript() {
                 target.style.setProperty(`--md-color-${kebabName}-container`, rgbStr(themeGroup.colorContainer));
                 target.style.setProperty(`--md-color-on-${kebabName}-container`, rgbStr(themeGroup.onColorContainer));
             });
+
+            let savedSyntax: Partial<SyntaxHighlightState> = {};
+            try {
+                savedSyntax = JSON.parse(localStorage.getItem('syntaxHighlight') || '{}');
+            } catch {
+                savedSyntax = {};
+            }
+            applySyntaxHighlightColors(savedSyntax);
         }
 
         let savedTheme: Partial<ThemeState> = {};
@@ -269,6 +334,7 @@ export default function ThemeScript() {
             : DEFAULT_THEME.color;
 
         (window as any).setTheme = setTheme;
+        (window as any).setSyntaxHighlightColors = applySyntaxHighlightColors;
         setTheme(
             initialColor,
             savedTheme.scheme || DEFAULT_THEME.scheme,

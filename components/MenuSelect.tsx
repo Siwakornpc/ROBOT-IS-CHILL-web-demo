@@ -569,6 +569,7 @@ interface MenuSelectProps<T extends string> {
     title?: string;
     value: T;
     options: readonly MenuOption<T>[] | MenuOption<T>[];
+    content?: ReactNode;
     onChange: (value: T) => void;
     triggerValue?: (selectedOption: MenuOption<T>) => ReactNode;
     trigger?: (props: any) => ReactNode;
@@ -587,6 +588,7 @@ export default function MenuSelect<T extends string>({
     title,
     value,
     options,
+    content,
     onChange,
     triggerValue,
     trigger,
@@ -844,7 +846,7 @@ export default function MenuSelect<T extends string>({
                     onMouseDown={(event) => event.stopPropagation()}
                 >
                     {title && <div className="menu-title">{title}</div>}
-                    {options.map((item) =>
+                    {content ?? options.map((item) =>
                         <MenuItem
                             key={item.value}
                             item={item}

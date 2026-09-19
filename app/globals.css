@@ -3090,7 +3090,8 @@ tr:nth-child(odd) td {
     flex-direction: column;
     gap: 8px;
 }
-.row-group {
+.row-group,
+.row-group-unr {
     display: flex;
     gap: 8px;
 }
@@ -3140,6 +3141,41 @@ tr:nth-child(odd) td {
     rotate: 180deg;
 }
 
+.selection-collapsable {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    padding: 12px;
+    border-radius: 12px;
+    background: rgb(var(--md-color-surface));
+    user-select: none;
+    color: var(--label);
+}
+.selection-collapsable:hover {
+    background: var(--surface-hovered);
+}
+.selection-collapsable:active {
+    background: var(--surface-pressed);
+}
+.selection-collapsable::after {
+    content: "arrow_drop_down";
+    font-family: "Material Symbols Outlined";
+    font-size: 24px;
+    position: absolute;
+    right: 12px;
+    transition: 0.2s ease;
+}
+.selection-color-label {
+    box-sizing: content-box;
+    width: 20px;
+    height: 20px;
+    padding: 12px;
+    border-radius: 8px;
+    background: var(--this-label-color);
+    box-shadow: var(--elevation-2);
+}
+
 /*
     autocomplete popup
 */
@@ -3150,7 +3186,7 @@ tr:nth-child(odd) td {
     width: 400px;
     max-height: 200px;
     font-family: var(--font-family-code);
-    font-size: var(--font-size-code);
+    font-size: var(--font-size);
     line-height: var(--editor-line-height);
     padding: 4px;
     margin: -4px;
