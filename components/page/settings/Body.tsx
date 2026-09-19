@@ -229,6 +229,21 @@ export default function Body() {
                     onClick={handleDefaultTheme}
                 >Reset Default
                 </button>
+
+                {
+                    // Reset All To Default
+                }
+                <h2 className="text-label font-bold">Default</h2>
+                <hr />
+                <button
+                    type="button"
+                    className="btn small btn-filled !w-48 !justify-center"
+                    onClick={() => {
+                        handleDefaultFont();
+                        handleDefaultTheme();
+                    }}
+                >Reset All To Default
+                </button>
             </div>
         </main>
     );
