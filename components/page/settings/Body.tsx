@@ -309,21 +309,40 @@ export default function Body() {
                             className={`this selection-collapsable-content flex flex-col gap-[8px]` /* woah, tailwind hidden */}
                         >
                             {SYNTAX_HIGHLIGHT_OPTIONS.map(({ key, label }) => (
-                                <span className="row-group-unr" key={key}>
-                                    <p className="text-label text-main-name">{label}</p>
+                                <span className="row-group-unr items-center" key={key}>
+                                    <p className="text-label text-main-name" style={{ height: "stretch" }}>{label}</p>
                                     <MenuSelect
                                         id={`syntax-${key}`}
                                         value="color"
                                         options={[{ value: "color", label }]}
                                         trigger={({ getInputProps }) => (
-                                            <button
-                                                {...getInputProps({
-                                                    type: "button",
-                                                    className: "selection-color-label",
-                                                    "aria-label": `Choose ${label} color`,
-                                                })}
-                                                style={{ backgroundColor: syntaxHighlight[key] }}
-                                            />
+                                            <>
+                                                <button
+                                                    {...getInputProps({
+                                                        type: "button",
+                                                        className: "selection-color-label",
+                                                        "aria-label": `Choose ${label} color`,
+                                                    })}
+                                                    style={{ "--this-label-color": syntaxHighlight[key] } as React.CSSProperties}
+                                                />
+                                                <span className="ml-[4px] mr-[4px] text-label">Visibly:</span>
+                                                <button
+                                                    {...getInputProps({
+                                                        type: "button",
+                                                        className: "selection-color-label",
+                                                        "aria-label": `Choose ${label} color`,
+                                                    })}
+                                                    style={{ "--this-label-color": `rgb(var(--md-color-${
+                                                        label.toLowerCase()
+                                                            .replaceAll(" ", "-")
+                                                            .replace("macro", "syntax")
+                                                            .replace("escaped-value", "syntax-escaped")
+                                                            .replace(/(bracket-layer)-(\d+)$/, (match, p1, p2) => {
+                                                                return `syntax-${p1}${Number(p2) - 1}`;
+                                                            })
+                                                    }))` }}
+                                                />
+                                            </>
                                         )}
                                         content={
                                             <div className="ml-[12px] mr-[12px] mt-[8px] mb-[8px]">
@@ -338,6 +357,13 @@ export default function Body() {
                                         }
                                         onChange={() => undefined}
                                     />
+
+                                    <button
+                                        type="button"
+                                        className="box-content w-[20px] h-[20px] p-[12px] flex justify-center"
+                                    >
+                                        <span className="icon">refresh</span>
+                                    </button>
                                 </span>
                             ))}
                         </div>)

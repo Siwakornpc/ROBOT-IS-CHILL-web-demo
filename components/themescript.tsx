@@ -123,24 +123,24 @@ export const useTheme = () => {
 
 const customThemeColors = {
     success: '#84cc7b',
-    syntaxName: { color: DEFAULT_SYNTAX_HIGHLIGHT.syntaxName, blend: false },
-    syntaxValue: { color: DEFAULT_SYNTAX_HIGHLIGHT.syntaxValue, blend: false },
-    syntaxEscaped: { color: DEFAULT_SYNTAX_HIGHLIGHT.syntaxEscaped, blend: false },
-    syntaxVariable: { color: DEFAULT_SYNTAX_HIGHLIGHT.syntaxVariable, blend: false },
+    syntaxName: DEFAULT_SYNTAX_HIGHLIGHT.syntaxName,
+    syntaxValue: DEFAULT_SYNTAX_HIGHLIGHT.syntaxValue,
+    syntaxEscaped: DEFAULT_SYNTAX_HIGHLIGHT.syntaxEscaped,
+    syntaxVariable: DEFAULT_SYNTAX_HIGHLIGHT.syntaxVariable,
     syntaxBracketLayer0: { color: DEFAULT_SYNTAX_HIGHLIGHT.syntaxBracketLayer0, blend: false },
     syntaxBracketLayer1: { color: DEFAULT_SYNTAX_HIGHLIGHT.syntaxBracketLayer1, blend: false },
     syntaxBracketLayer2: { color: DEFAULT_SYNTAX_HIGHLIGHT.syntaxBracketLayer2, blend: false },
 
-    renderFlagName: { color: DEFAULT_SYNTAX_HIGHLIGHT.renderFlagName, blend: false },
-    renderFlagValue: { color: DEFAULT_SYNTAX_HIGHLIGHT.renderFlagValue, blend: false },
-    renderVariantName: { color: DEFAULT_SYNTAX_HIGHLIGHT.renderVariantName, blend: false },
-    renderVariantValue: { color: DEFAULT_SYNTAX_HIGHLIGHT.renderVariantValue, blend: false },
+    renderFlagName: DEFAULT_SYNTAX_HIGHLIGHT.renderFlagName,
+    renderFlagValue: DEFAULT_SYNTAX_HIGHLIGHT.renderFlagValue,
+    renderVariantName: DEFAULT_SYNTAX_HIGHLIGHT.renderVariantName,
+    renderVariantValue: DEFAULT_SYNTAX_HIGHLIGHT.renderVariantValue,
 
-    typeArgumentname: { color: DEFAULT_SYNTAX_HIGHLIGHT.typeArgumentname, blend: false },
-    typeIdentifier: { color: DEFAULT_SYNTAX_HIGHLIGHT.typeIdentifier, blend: false },
-    typeFunction: { color: DEFAULT_SYNTAX_HIGHLIGHT.typeFunction, blend: false },
-    typeString: { color: DEFAULT_SYNTAX_HIGHLIGHT.typeString, blend: false },
-    typeNumber: { color: DEFAULT_SYNTAX_HIGHLIGHT.typeNumber, blend: false },
+    typeArgumentname: DEFAULT_SYNTAX_HIGHLIGHT.typeArgumentname,
+    typeIdentifier: DEFAULT_SYNTAX_HIGHLIGHT.typeIdentifier,
+    typeFunction: DEFAULT_SYNTAX_HIGHLIGHT.typeFunction,
+    typeString: DEFAULT_SYNTAX_HIGHLIGHT.typeString,
+    typeNumber: DEFAULT_SYNTAX_HIGHLIGHT.typeNumber,
 };
 
 function isValidHex(hex: string): boolean {
@@ -148,21 +148,10 @@ function isValidHex(hex: string): boolean {
 }
 
 export function applySyntaxHighlightColors(colors: Partial<SyntaxHighlightState>) {
-    if (typeof document === 'undefined') return;
+    if (typeof window === 'undefined') return;
 
-    Object.entries({ ...DEFAULT_SYNTAX_HIGHLIGHT, ...colors }).forEach(([name, hex]) => {
-        const normalized = hex.length === 4
-            ? hex.replace(/([0-9a-f])/gi, '$1$1')
-            : hex;
-        if (!isValidHex(normalized)) return;
-
-        const value = normalized.replace('#', '');
-        const rgb = [0, 2, 4]
-            .map((offset) => parseInt(value.slice(offset, offset + 2), 16))
-            .join(', ');
-        const cssName = name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
-        document.documentElement.style.setProperty(`--md-color-${cssName}`, rgb);
-    });
+    const apply = (window as any).setSyntaxHighlightColors;
+    if (typeof apply === 'function') apply(colors);
 }
 
 export default function ThemeScript() {
@@ -286,9 +275,18 @@ export default function ThemeScript() {
             
             // custom color harmonization
             // Custom color processing with per-color blending option
+            let savedSyntax: Partial<SyntaxHighlightState> = {};
+            try {
+                savedSyntax = JSON.parse(localStorage.getItem('syntaxHighlight') || '{}');
+            } catch {
+                savedSyntax = {};
+            }
+
             Object.entries(customThemeColors).forEach(([name, config]) => {
                 // Normalize string vs object config
-                const hex = typeof config === 'string' ? config : config.color;
+                const savedColor = savedSyntax[name as SyntaxHighlightKey];
+                const configuredColor = typeof config === 'string' ? config : config.color;
+                const hex = savedColor && isValidHex(savedColor) ? savedColor : configuredColor;
                 const blend = typeof config === 'string' ? true : config.blend;
 
                 const designArgb = MCU.argbFromHex(hex);
@@ -313,13 +311,6 @@ export default function ThemeScript() {
                 target.style.setProperty(`--md-color-on-${kebabName}-container`, rgbStr(themeGroup.onColorContainer));
             });
 
-            let savedSyntax: Partial<SyntaxHighlightState> = {};
-            try {
-                savedSyntax = JSON.parse(localStorage.getItem('syntaxHighlight') || '{}');
-            } catch {
-                savedSyntax = {};
-            }
-            applySyntaxHighlightColors(savedSyntax);
         }
 
         let savedTheme: Partial<ThemeState> = {};
@@ -334,7 +325,22 @@ export default function ThemeScript() {
             : DEFAULT_THEME.color;
 
         (window as any).setTheme = setTheme;
-        (window as any).setSyntaxHighlightColors = applySyntaxHighlightColors;
+        (window as any).setSyntaxHighlightColors = (colors: Partial<SyntaxHighlightState>) => {
+            localStorage.setItem('syntaxHighlight', JSON.stringify(colors));
+
+            let currentTheme: Partial<ThemeState> = {};
+            try {
+                currentTheme = JSON.parse(localStorage.getItem('theme') || '{}');
+            } catch {
+                currentTheme = {};
+            }
+
+            setTheme(
+                currentTheme.color || DEFAULT_THEME.color,
+                currentTheme.scheme || DEFAULT_THEME.scheme,
+                currentTheme.contrast || DEFAULT_THEME.contrast
+            );
+        };
         setTheme(
             initialColor,
             savedTheme.scheme || DEFAULT_THEME.scheme,
