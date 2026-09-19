@@ -13,7 +13,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
 
     const [isMounted, setIsMounted] = useState(false);
 
-    const min_size = 300;
+    const min_size = 200;
 
     const [splitPosition, setSplitPosition] = useState(min_size);
     const mainBodyRef = useRef<HTMLDivElement>(null);

@@ -1785,7 +1785,6 @@ main.ascroll-y .main-body {
     position: relative;
     width: 100%;
     height: stretch;
-    min-height: 16rem;
     border-radius: 8px;
     background: var(--editor-body);
     border: 1px solid rgb(var(--md-color-outline-variant));
@@ -1967,13 +1966,13 @@ main.ascroll-y .main-body {
 /* bracket layers (only brackets) */
 
 .bracket-level-0 {
-    color: var(--macro-bracket-layer-0);
+    color: var(--macro-bracket-layer-0, --macro-brackets);
 }
 .bracket-level-1 {
-    color: var(--macro-bracket-layer-1);
+    color: var(--macro-bracket-layer-1, --macro-brackets);
 }
 .bracket-level-2 {
-    color: var(--macro-bracket-layer-2);
+    color: var(--macro-bracket-layer-2, --macro-brackets);
 }
 .flag-name {
     color: var(--flag-name)
@@ -2035,7 +2034,6 @@ main.ascroll-y .main-body {
 
     width: stretch;
     height: stretch;
-    min-height: 12rem;
     padding: 8px 12px;
 
     background: var(--editor-body);
