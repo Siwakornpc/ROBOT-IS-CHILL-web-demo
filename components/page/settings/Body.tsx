@@ -5,11 +5,26 @@ import ColorPicker from "@/components/ColorPicker";
 import MenuSelect from "@/components/MenuSelect";
 import Slider from "@/components/slider";
 
-import { applySyntaxHighlightColors, DEFAULT_SYNTAX_HIGHLIGHT, DEFAULT_THEME } from "@/components/themescript";
-import type { SyntaxHighlightKey, SyntaxHighlightState, ThemeState } from "@/components/themescript";
+import {
+    applySyntaxHighlightColors,
+    DEFAULT_SYNTAX_HIGHLIGHT,
+    DEFAULT_SYNTAX_BLEND,
+    DEFAULT_SYNTAX_REAL,
+    DEFAULT_THEME,
+} from "@/components/themescript";
+import type {
+    SyntaxHighlightKey,
+    SyntaxHighlightState,
+    SyntaxBlendState,
+    SyntaxRealState,
+    ThemeState,
+} from "@/components/themescript";
 
 import { DEFAULT_FONT_STATE, FONT_SANS_OPTIONS, FONT_CODE_OPTIONS } from "@/components/fontscript";
 import type { FontState } from "@/components/fontscript";
+
+import { THEME_PRESETS, resolvePreset } from "@/components/themepresets";
+import type { ThemePreset, PresetColor } from "@/components/themepresets";
 
 type SelectionCollapsable = {
     isOpen: boolean,
@@ -35,6 +50,8 @@ export default function Body() {
     const [loaded, setLoaded] = useState(false);
     const [font, setFontState] = useState<FontState>(DEFAULT_FONT_STATE);
     const [syntaxHighlight, setSyntaxHighlight] = useState<SyntaxHighlightState>(DEFAULT_SYNTAX_HIGHLIGHT);
+    const [syntaxBlend, setSyntaxBlend] = useState<SyntaxBlendState>(DEFAULT_SYNTAX_BLEND);
+    const [syntaxReal, setSyntaxReal] = useState<SyntaxRealState>(DEFAULT_SYNTAX_REAL);
 
     useEffect(() => {
         try {
@@ -64,6 +81,22 @@ export default function Body() {
                 setSyntaxHighlight({
                     ...DEFAULT_SYNTAX_HIGHLIGHT,
                     ...JSON.parse(savedSyntaxRaw),
+                });
+            }
+
+            const savedBlendRaw = localStorage.getItem("syntaxBlend");
+            if (savedBlendRaw) {
+                setSyntaxBlend({
+                    ...DEFAULT_SYNTAX_BLEND,
+                    ...JSON.parse(savedBlendRaw),
+                });
+            }
+
+            const savedRealRaw = localStorage.getItem("syntaxReal");
+            if (savedRealRaw) {
+                setSyntaxReal({
+                    ...DEFAULT_SYNTAX_REAL,
+                    ...JSON.parse(savedRealRaw),
                 });
             }
         } catch (e) {
@@ -127,15 +160,35 @@ export default function Body() {
         });
     };
 
+    const updateSyntaxBlend = (key: SyntaxHighlightKey, value: boolean) => {
+        setSyntaxBlend((prev) => {
+            const updated = { ...prev, [key]: value };
+            localStorage.setItem("syntaxBlend", JSON.stringify(updated));
+            return updated;
+        });
+    };
+
+    const updateSyntaxReal = (key: SyntaxHighlightKey, value: boolean) => {
+        setSyntaxReal((prev) => {
+            const updated = { ...prev, [key]: value };
+            localStorage.setItem("syntaxReal", JSON.stringify(updated));
+            return updated;
+        });
+    };
+
     const handleDefaultSyntaxHighlight = () => {
         localStorage.setItem("syntaxHighlight", JSON.stringify(DEFAULT_SYNTAX_HIGHLIGHT));
+        localStorage.setItem("syntaxBlend", JSON.stringify(DEFAULT_SYNTAX_BLEND));
+        localStorage.setItem("syntaxReal", JSON.stringify(DEFAULT_SYNTAX_REAL));
         setSyntaxHighlight(DEFAULT_SYNTAX_HIGHLIGHT);
+        setSyntaxBlend(DEFAULT_SYNTAX_BLEND);
+        setSyntaxReal(DEFAULT_SYNTAX_REAL);
     };
 
     useEffect(() => {
         if (!loaded) return;
-        applySyntaxHighlightColors(syntaxHighlight);
-    }, [syntaxHighlight, loaded]);
+        applySyntaxHighlightColors(syntaxHighlight, syntaxBlend, syntaxReal);
+    }, [syntaxHighlight, syntaxBlend, syntaxReal, loaded]);
     
     useEffect(() => {
         if (!loaded) return;
@@ -152,6 +205,75 @@ export default function Body() {
             id,
         });
     }
+
+    const isSyntaxHighlightDefault = (key: SyntaxHighlightKey) =>
+        syntaxHighlight[key].toLowerCase() === DEFAULT_SYNTAX_HIGHLIGHT[key].toLowerCase() &&
+        syntaxBlend[key] === DEFAULT_SYNTAX_BLEND[key] &&
+        syntaxReal[key] === DEFAULT_SYNTAX_REAL[key];
+
+    const handleDefaultSyntaxHighlightKey = (key: SyntaxHighlightKey) => {
+        updateSyntaxHighlight(key, DEFAULT_SYNTAX_HIGHLIGHT[key]);
+        updateSyntaxBlend(key, DEFAULT_SYNTAX_BLEND[key]);
+        updateSyntaxReal(key, DEFAULT_SYNTAX_REAL[key]);
+    };
+
+    const handleApplyPreset = (presetId: string) => {
+        const preset = THEME_PRESETS.find((p) => p.id === presetId);
+        if (!preset) return; // "custom" does nothing
+
+        const { highlight, blend, real } = resolvePreset(preset);
+
+        if (preset.theme) updateTheme(preset.theme);
+
+        localStorage.setItem("syntaxHighlight", JSON.stringify(highlight));
+        localStorage.setItem("syntaxBlend", JSON.stringify(blend));
+        localStorage.setItem("syntaxReal", JSON.stringify(real));
+        setSyntaxHighlight(highlight);
+        setSyntaxBlend(blend);
+        setSyntaxReal(real);
+    };
+
+    const matchesPreset = (p: ThemePreset) => {
+        const { highlight, blend, real } = resolvePreset(p);
+
+        const themeMatches = Object.entries(p.theme ?? {}).every(
+            ([k, v]) => String(theme[k as keyof ThemeState]).toLowerCase() === String(v).toLowerCase()
+        );
+
+        return (
+            themeMatches &&
+            (Object.keys(highlight) as SyntaxHighlightKey[]).every(
+                (k) =>
+                    syntaxHighlight[k].toLowerCase() === highlight[k].toLowerCase() &&
+                    syntaxReal[k] === real[k] &&
+                    (real[k] || syntaxBlend[k] === blend[k])
+            )
+        );
+    };
+
+    const currentPresetId = THEME_PRESETS.find(matchesPreset)?.id ?? "custom";
+
+    const handlePrintPreset = () => {
+        const colors: Partial<Record<SyntaxHighlightKey, PresetColor>> = {};
+
+        for (const { key } of SYNTAX_HIGHLIGHT_OPTIONS) {
+            const entry: PresetColor = {};
+
+            if (syntaxHighlight[key].toLowerCase() !== DEFAULT_SYNTAX_HIGHLIGHT[key].toLowerCase())
+                entry.color = syntaxHighlight[key];
+            if (syntaxReal[key] !== DEFAULT_SYNTAX_REAL[key])
+                entry.real = syntaxReal[key];
+            // blend is irrelevant while Real is on, so skip it
+            if (!syntaxReal[key] && syntaxBlend[key] !== DEFAULT_SYNTAX_BLEND[key])
+                entry.blend = syntaxBlend[key];
+
+            if (Object.keys(entry).length > 0) colors[key] = entry;
+        }
+
+        console.log(
+            JSON.stringify({ id: "my-preset", label: "My Preset", theme: { color: theme.color }, colors }, null, 4)
+        );
+    };
 
     return (
         <main
@@ -333,13 +455,7 @@ export default function Body() {
                                                         "aria-label": `Choose ${label} color`,
                                                     })}
                                                     style={{ "--this-label-color": `rgb(var(--md-color-${
-                                                        label.toLowerCase()
-                                                            .replaceAll(" ", "-")
-                                                            .replace("macro", "syntax")
-                                                            .replace("escaped-value", "syntax-escaped")
-                                                            .replace(/(bracket-layer)-(\d+)$/, (match, p1, p2) => {
-                                                                return `syntax-${p1}${Number(p2) - 1}`;
-                                                            })
+                                                        key.replace(/([A-Z])/g, "-$1").toLowerCase()
                                                     }))` }}
                                                 />
                                             </>
@@ -358,9 +474,36 @@ export default function Body() {
                                         onChange={() => undefined}
                                     />
 
+                                    <label className="ml-[4px] mr-[4px] checkbox">
+                                        <input
+                                            type="checkbox"
+                                            checked={syntaxReal[key]}
+                                            onChange={(e) => updateSyntaxReal(key, e.target.checked)}
+                                        />
+                                        <span>Real</span>
+                                    </label>
+
+                                    <label
+                                        className="ml-[4px] mr-[4px] checkbox"
+                                        style={{ opacity: syntaxReal[key] ? 0.4 : 1 }}
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            checked={syntaxBlend[key]}
+                                            disabled={syntaxReal[key]}
+                                            onChange={(e) => updateSyntaxBlend(key, e.target.checked)}
+                                        />
+                                        <span>MD3 Blend</span>
+                                    </label>
+
                                     <button
                                         type="button"
-                                        className="box-content w-[20px] h-[20px] p-[12px] flex justify-center"
+                                        className={`box-content w-[20px] h-[20px] !p-[2px] btn ibtn small btn-text ${isSyntaxHighlightDefault(key) ? "disabled" : ""}`}
+                                        aria-label={`Reset ${label} color`}
+                                        title={`Reset ${label}`}
+                                        disabled={isSyntaxHighlightDefault(key)}
+                                        style={{ opacity: isSyntaxHighlightDefault(key) ? 0.4 : 1 }}
+                                        onClick={() => handleDefaultSyntaxHighlightKey(key)}
                                     >
                                         <span className="icon">refresh</span>
                                     </button>
@@ -376,6 +519,23 @@ export default function Body() {
                     onClick={handleDefaultSyntaxHighlight}
                 >Reset Default
                 </button>
+
+                <h4 className="text-label font-bold">Set Themes</h4>
+
+                <div className="box-hole">
+                    <span className="row-group">
+                        <p className="text-label text-main-name">Presets</p>
+                        <MenuSelect
+                            id="theme-preset"
+                            value={currentPresetId}
+                            options={[
+                                ...THEME_PRESETS.map((p) => ({ value: p.id, label: p.label })),
+                                { value: "custom", label: "Custom" },
+                            ]}
+                            onChange={handleApplyPreset}
+                        />
+                    </span>
+                </div>
 
                 <hr />
 
@@ -395,6 +555,12 @@ export default function Body() {
                         handleDefaultSyntaxHighlight();
                     }}
                 >Reset All To Default
+                </button>
+                <button
+                    type="button"
+                    className="btn small btn-filled !w-48 !justify-center"
+                    onClick={handlePrintPreset}
+                >Print Log
                 </button>
             </div>
         </main>

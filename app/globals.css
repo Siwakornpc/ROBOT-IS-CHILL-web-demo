@@ -571,6 +571,12 @@ hr {
     width: 0;
     margin-right: 0;
 }
+.btn.disabled {
+    opacity: 0.5;
+    background: transparent !important;
+    cursor: default;
+    transition: background 0.2s ease;
+}
 .btn > input[type="checkbox"]:checked ~ :nth-child(1 of .btn-label):has(~ .btn-label),
 .btn > input[type="checkbox"]:not(:checked) ~ :nth-child(2 of .btn-label),
 .btn > input[type="checkbox"]:checked ~ :nth-child(1 of .icon):has(~ .icon),
