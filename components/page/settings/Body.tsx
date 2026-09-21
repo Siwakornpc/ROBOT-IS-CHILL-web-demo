@@ -540,7 +540,7 @@ export default function Body() {
                             id="theme-preset"
                             value={currentPresetId}
                             options={[
-                                ...THEME_PRESETS.map((p) => ({ value: p.id, label: p.label })),
+                                ...THEME_PRESETS.map((p) => ({ value: p.id, label: p.label, description: p.description })),
                                 { value: "custom", label: "Custom" },
                             ]}
                             onChange={handleApplyPreset}

@@ -21,6 +21,7 @@ export type PresetColor = {
 export type ThemePreset = {
     id: string;
     label: string;
+    description?: string;
     theme?: Partial<ThemeState>;
     colors?: Partial<Record<SyntaxHighlightKey, PresetColor>>;
 };
@@ -31,6 +32,7 @@ export const THEME_PRESETS: ThemePreset[] = [
     {
         id: "on-dark",
         label: "On Dark",
+        description: "Default",
         theme: {
             color: DEFAULT_THEME.color,
             scheme: DEFAULT_THEME.scheme,
