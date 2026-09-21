@@ -33,6 +33,32 @@ export const THEME_PRESETS: ThemePreset[] = [
         label: "Default",
         theme: { color: DEFAULT_THEME.color },
     },
+    
+    {
+        id: "def-robust",
+        label: "Default Robust",
+        theme: {
+            color: "#3024db"
+        },
+        colors: {
+            syntaxName: {
+                color: "#88b9f8",
+                real: true
+            },
+            syntaxEscaped: {
+                real: true
+            },
+            renderFlagName: {
+                real: true
+            },
+            renderFlagValue: {
+                real: true
+            },
+            renderVariantName: {
+                real: true
+            }
+        }
+    },
 
     {
         id: "monakii",

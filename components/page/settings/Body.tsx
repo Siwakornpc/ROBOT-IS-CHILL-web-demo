@@ -431,82 +431,84 @@ export default function Body() {
                             className={`this selection-collapsable-content flex flex-col gap-[8px]` /* woah, tailwind hidden */}
                         >
                             {SYNTAX_HIGHLIGHT_OPTIONS.map(({ key, label }) => (
-                                <span className="row-group-unr items-center" key={key}>
+                                <span className="row-group items-center" key={key}>
                                     <p className="text-label text-main-name" style={{ height: "stretch" }}>{label}</p>
-                                    <MenuSelect
-                                        id={`syntax-${key}`}
-                                        value="color"
-                                        options={[{ value: "color", label }]}
-                                        trigger={({ getInputProps }) => (
-                                            <>
-                                                <button
-                                                    {...getInputProps({
-                                                        type: "button",
-                                                        className: "selection-color-label",
-                                                        "aria-label": `Choose ${label} color`,
-                                                    })}
-                                                    style={{ "--this-label-color": syntaxHighlight[key] } as React.CSSProperties}
-                                                />
-                                                <span className="ml-[4px] mr-[4px] text-label">Visibly:</span>
-                                                <button
-                                                    {...getInputProps({
-                                                        type: "button",
-                                                        className: "selection-color-label",
-                                                        "aria-label": `Choose ${label} color`,
-                                                    })}
-                                                    style={{ "--this-label-color": `rgb(var(--md-color-${
-                                                        key.replace(/([A-Z])/g, "-$1").toLowerCase()
-                                                    }))` }}
-                                                />
-                                            </>
-                                        )}
-                                        content={
-                                            <div className="ml-[12px] mr-[12px] mt-[8px] mb-[8px]">
-                                                <ColorPicker
-                                                    value={syntaxHighlight[key]}
-                                                    onChange={(color) => {
-                                                        if (color !== null) updateSyntaxHighlight(key, color);
-                                                    }}
-                                                    hasNone={false}
-                                                />
-                                            </div>
-                                        }
-                                        onChange={() => undefined}
-                                    />
-
-                                    <label className="ml-[4px] mr-[4px] checkbox">
-                                        <input
-                                            type="checkbox"
-                                            checked={syntaxReal[key]}
-                                            onChange={(e) => updateSyntaxReal(key, e.target.checked)}
+                                    <div className="flex gap-[8px] items-center">
+                                        <MenuSelect
+                                            id={`syntax-${key}`}
+                                            value="color"
+                                            options={[{ value: "color", label }]}
+                                            trigger={({ getInputProps }) => (
+                                                <>
+                                                    <button
+                                                        {...getInputProps({
+                                                            type: "button",
+                                                            className: "selection-color-label",
+                                                            "aria-label": `Choose ${label} color`,
+                                                        })}
+                                                        style={{ "--this-label-color": syntaxHighlight[key] } as React.CSSProperties}
+                                                    />
+                                                    <span className="ml-[4px] mr-[4px] text-label">Visibly:</span>
+                                                    <button
+                                                        {...getInputProps({
+                                                            type: "button",
+                                                            className: "selection-color-label",
+                                                            "aria-label": `Choose ${label} color`,
+                                                        })}
+                                                        style={{ "--this-label-color": `rgb(var(--md-color-${
+                                                            key.replace(/([A-Z])/g, "-$1").toLowerCase()
+                                                        }))` }}
+                                                    />
+                                                </>
+                                            )}
+                                            content={
+                                                <div className="ml-[12px] mr-[12px] mt-[8px] mb-[8px]">
+                                                    <ColorPicker
+                                                        value={syntaxHighlight[key]}
+                                                        onChange={(color) => {
+                                                            if (color !== null) updateSyntaxHighlight(key, color);
+                                                        }}
+                                                        hasNone={false}
+                                                    />
+                                                </div>
+                                            }
+                                            onChange={() => undefined}
                                         />
-                                        <span>Real</span>
-                                    </label>
 
-                                    <label
-                                        className="ml-[4px] mr-[4px] checkbox"
-                                        style={{ opacity: syntaxReal[key] ? 0.4 : 1 }}
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            checked={syntaxBlend[key]}
-                                            disabled={syntaxReal[key]}
-                                            onChange={(e) => updateSyntaxBlend(key, e.target.checked)}
-                                        />
-                                        <span>MD3 Blend</span>
-                                    </label>
+                                        <label className="ml-[4px] mr-[4px] checkbox">
+                                            <input
+                                                type="checkbox"
+                                                checked={syntaxReal[key]}
+                                                onChange={(e) => updateSyntaxReal(key, e.target.checked)}
+                                            />
+                                            <span>Real</span>
+                                        </label>
 
-                                    <button
-                                        type="button"
-                                        className={`box-content w-[20px] h-[20px] !p-[2px] btn ibtn small btn-text ${isSyntaxHighlightDefault(key) ? "disabled" : ""}`}
-                                        aria-label={`Reset ${label} color`}
-                                        title={`Reset ${label}`}
-                                        disabled={isSyntaxHighlightDefault(key)}
-                                        style={{ opacity: isSyntaxHighlightDefault(key) ? 0.4 : 1 }}
-                                        onClick={() => handleDefaultSyntaxHighlightKey(key)}
-                                    >
-                                        <span className="icon">refresh</span>
-                                    </button>
+                                        <label
+                                            className="ml-[4px] mr-[4px] checkbox"
+                                            style={{ opacity: syntaxReal[key] ? 0.4 : 1 }}
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={syntaxBlend[key]}
+                                                disabled={syntaxReal[key]}
+                                                onChange={(e) => updateSyntaxBlend(key, e.target.checked)}
+                                            />
+                                            <span>MD3 Blend</span>
+                                        </label>
+
+                                        <button
+                                            type="button"
+                                            className={`box-content w-[20px] h-[20px] !p-[2px] btn ibtn small btn-text ${isSyntaxHighlightDefault(key) ? "disabled" : ""}`}
+                                            aria-label={`Reset ${label} color`}
+                                            title={`Reset ${label}`}
+                                            disabled={isSyntaxHighlightDefault(key)}
+                                            style={{ opacity: isSyntaxHighlightDefault(key) ? 0.4 : 1 }}
+                                            onClick={() => handleDefaultSyntaxHighlightKey(key)}
+                                        >
+                                            <span className="icon">refresh</span>
+                                        </button>
+                                    </div>
                                 </span>
                             ))}
                         </div>)
@@ -536,6 +538,13 @@ export default function Body() {
                         />
                     </span>
                 </div>
+
+                <button
+                    type="button"
+                    className="btn small btn-filled !w-48 !justify-center mb-[8px]"
+                    onClick={() => handleApplyPreset("default")}
+                >Reset Default
+                </button>
 
                 <hr />
 
