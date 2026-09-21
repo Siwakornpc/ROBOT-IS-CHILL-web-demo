@@ -24,7 +24,7 @@ export async function initMacro() {
 
     const editor = await window.editorReady;
     const editorArea = document.getElementById("editor-area");
-    const output = document.getElementById("render-output");
+    const output = document.getElementById("render-output") ?? document.getElementById("macrosia-output");
     const run_button = document.getElementById("run-button");
     const statusTime = document.getElementById("status-time");
     const statusSteps = document.getElementById("status-steps");

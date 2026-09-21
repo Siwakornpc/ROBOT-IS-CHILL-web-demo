@@ -2046,7 +2046,6 @@ main.ascroll-y .main-body {
     border: 1px solid var(--editor-outline);
     border-radius: 8px;
 }
-
 #render-output {
     display: flex;
     position: sticky;
@@ -2058,8 +2057,29 @@ main.ascroll-y .main-body {
 
     margin: auto 0;
 }
-#render-output.complete {
+#render-output.complete,
+#macrosia-output.complete {
     color: var(--success);
+}
+
+.output-screen {
+    box-sizing: border-box;
+    position: relative;
+
+    width: stretch;
+    height: stretch;
+    padding: 8px 12px;
+
+    background: var(--editor-body);
+    border: 1px solid var(--editor-outline);
+    border-radius: 8px;
+}
+#macrosia-output {
+    font-family: var(--font-family-code);
+    font-size: var(--font-size-code);
+    word-wrap: break-word;
+    white-space: break-spaces;
+    overflow-wrap: anywhere;
 }
 
 /*
