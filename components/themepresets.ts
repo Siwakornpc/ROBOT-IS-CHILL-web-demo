@@ -29,16 +29,22 @@ export type ThemePreset = {
 
 export const THEME_PRESETS: ThemePreset[] = [
     {
-        id: "default",
-        label: "Default",
-        theme: { color: DEFAULT_THEME.color },
+        id: "on-dark",
+        label: "On Dark",
+        theme: {
+            color: DEFAULT_THEME.color,
+            scheme: DEFAULT_THEME.scheme,
+            contrast: DEFAULT_THEME.contrast,
+        },
     },
     
     {
-        id: "def-robust",
-        label: "Default Robust",
+        id: "od-robust",
+        label: "On Dark Robust",
         theme: {
-            color: "#3024db"
+            color: "#3024db",
+            scheme: "dark",
+            contrast: DEFAULT_THEME.contrast,
         },
         colors: {
             syntaxName: {
@@ -59,12 +65,60 @@ export const THEME_PRESETS: ThemePreset[] = [
             }
         }
     },
+    
+    {
+        id: "ol-robust",
+        label: "On Light Robust",
+        theme: {
+            color: "#3024db",
+            scheme: "light",
+            contrast: DEFAULT_THEME.contrast,
+        },
+        colors: {
+            syntaxName: {
+                color: "#308bff",
+                real: true
+            },
+            syntaxValue: {
+                color: "#d7933d",
+                real: true
+            },
+            syntaxEscaped: {
+                color: "#ca5218",
+                real: true
+            },
+            syntaxVariable: {
+                color: "#1f9fa9",
+                real: true
+            },
+            syntaxBracketLayer0: {
+                color: "#5f94f5"
+            },
+            syntaxBracketLayer1: {
+                color: "#4c8a34",
+                real: true
+            },
+            syntaxBracketLayer2: {
+                color: "#b6822f",
+                real: true
+            },
+            renderFlagName: {
+                color: "#c0aa3a",
+                real: true
+            },
+            renderFlagValue: {
+                color: "#899c39",
+                real: true
+            }
+        }
+    },
 
     {
         id: "monakii",
         label: "Monakii", // Monokai
         theme: {
-            color: "#938d68"
+            color: "#938d68",
+            scheme: "dark",
         },
         colors: {
             syntaxName: {
@@ -102,10 +156,11 @@ export const THEME_PRESETS: ThemePreset[] = [
     },
 
     {
-        id: "aoy", // Atom One
-        label: "Aoy",
+        id: "aoy-dark", // Atom One
+        label: "Aoy Dark",
         theme: {
-            color: "#598fd5"
+            color: "#598fd5",
+            scheme: "dark",
         },
         colors: {
             syntaxName: {
@@ -150,10 +205,11 @@ export const THEME_PRESETS: ThemePreset[] = [
     },
 
     {
-        id: "kimbab", // Kimbie
-        label: "Kimbab",
+        id: "kimbab-dark", // Kimbie
+        label: "Kimbab Dark",
         theme: {
-            color: "#f09722"
+            color: "#f09722",
+            scheme: "dark",
         },
         colors: {
             syntaxName: {
@@ -200,10 +256,11 @@ export const THEME_PRESETS: ThemePreset[] = [
     },
 
     {
-        id: "gitly",
-        label: "Gitly",
+        id: "gitly-dark",
+        label: "Gitly Dark",
         theme: {
-            color: "#0f0097"
+            color: "#0f0097",
+            scheme: "dark",
         },
         colors: {
             syntaxName: {
@@ -253,7 +310,8 @@ export const THEME_PRESETS: ThemePreset[] = [
         id: "sunburn",
         label: "Sunburn", // Sunburst (oldest set)
         theme: {
-            color: "#53b4d9"
+            color: "#53b4d9",
+            scheme: "dark",
         },
         colors: {
             syntaxName: {
@@ -297,7 +355,7 @@ export const THEME_PRESETS: ThemePreset[] = [
                 real: true
             }
         }
-    }
+    },
 ];
 
 // Unspecified keys fall back to defaults, so switching presets never leaves leftovers

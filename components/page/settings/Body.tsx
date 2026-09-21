@@ -271,7 +271,16 @@ export default function Body() {
         }
 
         console.log(
-            JSON.stringify({ id: "my-preset", label: "My Preset", theme: { color: theme.color }, colors }, null, 4)
+            JSON.stringify({
+                id: "my-preset",
+                label: "My Preset",
+                theme: {
+                    color: theme.color,
+                    scheme: theme.scheme,
+                    contrast: theme.contrast,
+                },
+                colors
+            }, null, 4)
         );
     };
 
