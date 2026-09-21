@@ -250,23 +250,19 @@ export default function SearchResults({
                         const safeName = String(name ?? "").trim();
                         if (!safeName) continue;
 
-                        const key = safeName.toLowerCase();
-
-                        macroMap.set(key, [
+                        macroMap.set(safeName, [
                             safeName,
                             { ...(macro as Record<string, unknown>), builtin: true },
                         ]);
                     }
 
-                    // Add API macros only if they aren't already present.
                     for (const [name, macro] of Object.entries(data)) {
                         const safeName = String(name ?? "").trim();
                         if (!safeName) continue;
 
-                        const key = safeName.toLowerCase();
-                        if (macroMap.has(key)) continue;
+                        if (macroMap.has(safeName)) continue;
 
-                        macroMap.set(key, [
+                        macroMap.set(safeName, [
                             safeName,
                             {
                                 ...(macro as Record<string, unknown>),
