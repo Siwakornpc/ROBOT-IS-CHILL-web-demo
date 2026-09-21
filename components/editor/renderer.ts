@@ -1,7 +1,7 @@
 import type { EditorState, WindowWithEditor } from "./types";
 import { clamp, normalizeNewlines } from "./lineUtils";
 import { offsetToLineColumn } from "./lineModel";
-import { setRange, getCaretCoordinates } from "./caretUtils";
+import { setRange, getCaret, getCaretCoordinates } from "./caretUtils";
 import { updateGutter, updateCurrentLineClass, syncGutterScroll } from "./domUpdaters";
 import { highlight, updateCaretMatch } from "./highlighting";
 
@@ -193,6 +193,17 @@ export function createRenderer(deps: RendererDeps) {
             }
         });
     }
+    
+    function relayout() {
+        const lines = state.value.split("\n");
+        const { start } = getCaret(editorArea, lines);
+        const { lineIndex } = offsetToLineColumn(lines, start);
+        const lineEls = Array.from(editorArea.children) as HTMLElement[];
 
-    return render;
+        updateGutter(gutterEl, lineEls, lineIndex);
+        updateCurrentLineClass(lineEls, lineIndex);
+        syncGutterScroll(gutterWrap, editorArea);
+    }
+
+    return Object.assign(render, { relayout });
 }

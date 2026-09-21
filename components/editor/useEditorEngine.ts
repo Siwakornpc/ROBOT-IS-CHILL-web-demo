@@ -259,7 +259,7 @@ export function useEditorEngine({
         };
 
         const handleResize = () => {
-            render(state.value.length, state.value.length, { scrollToCaret: false });
+            render.relayout();
             handleACSelectionChange();
         };
 
@@ -448,10 +448,7 @@ export function useEditorEngine({
         };
 
         const layoutResizeObserver = typeof ResizeObserver !== "undefined"
-            ? new ResizeObserver(() => {
-                handleResize();
-                handleACSelectionChange();
-            })
+            ? new ResizeObserver(handleResize)
             : null;
         layoutResizeObserver?.observe(editorArea);
         layoutResizeObserver?.observe(scrollEl);
