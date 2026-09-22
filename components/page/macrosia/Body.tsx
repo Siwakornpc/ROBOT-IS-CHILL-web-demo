@@ -10,6 +10,7 @@ import type { WindowWithEditor } from "../../editor/types";
 export default function Body({ onCodeChange }: { onCodeChange?: (code: string) => void }) {
     const [isSmallScreen, setIsSmallScreen] = useState(false);
     const [isSmallLeftSplitScreen, setIsSmallLeftSplitScreen] = useState(false);
+    const [sLSSWidthSize, setSLSSWidthSize] = useState(0);
     const [isSideBySideSupported, setIsSideBySideSupported] = useState(false);
 
     const [isMounted, setIsMounted] = useState(false);
@@ -124,6 +125,8 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
             setIsSmallLeftSplitScreen(
                 activeSplitscreen === "left-right" && width < 400
             );
+
+            setSLSSWidthSize(width);
         };
 
         const animationFrame = window.requestAnimationFrame(updateLayout);
@@ -198,7 +201,10 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                         <p className="text-label">Execute</p>
 
                         <div className="flex gap-[8px]">
-                            <StatusBar small={isSmallScreen || isSmallLeftSplitScreen} />
+                            <StatusBar
+                                small={isSmallScreen || isSmallLeftSplitScreen}
+                                collapse={activeSplitscreen && sLSSWidthSize < 240 || window.innerWidth < 300}
+                            />
                             
                             {isMounted && activeSplitscreen === "top-bottom" && (
                                 <div className="status-bar splitscreen">
