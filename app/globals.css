@@ -1872,7 +1872,6 @@ main.ascroll-y .main-body {
     word-wrap: break-word;
     white-space: break-spaces;
     overflow-wrap: anywhere;
-    word-break: break-all;
 }
 
 .editor-line {
@@ -2979,7 +2978,6 @@ main.ascroll-y .main-body {
     font-family: var(--font-family-code);
     font-size: var(--font-size-code);
     white-space: pre-wrap;
-    word-break: break-all;
 }
 
 .search-details-label {
