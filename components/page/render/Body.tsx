@@ -4,8 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { EditorScreen } from "@/components/editor/EditorScreen";
 import MacroInitializer from "@/components/macro/MacroInitializer";
 import ExecutionModeSelect from "@/components/page/render/ExecutionModeSelect";
-import { RenderScreen } from "@/components/render-screen/macrosia/RenderScreen";
-import { StatusBar } from "../../editor/statsbar/macrosia/StatusBar";
+import { RenderScreen } from "@/components/render-screen/render/RenderScreen";
+import { StatusBar } from "../../editor/statsbar/render/StatusBar";
 import type { WindowWithEditor } from "../../editor/types";
 
 export default function Body({ onCodeChange }: { onCodeChange?: (code: string) => void }) {
