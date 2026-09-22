@@ -9,6 +9,7 @@ import type { WindowWithEditor } from "../../editor/types";
 
 export default function Body({ onCodeChange }: { onCodeChange?: (code: string) => void }) {
     const [isSmallScreen, setIsSmallScreen] = useState(false);
+    const [isSmallLeftSplitScreen, setIsSmallLeftSplitScreen] = useState(false);
     const [isSideBySideSupported, setIsSideBySideSupported] = useState(false);
 
     const [isMounted, setIsMounted] = useState(false);
@@ -19,6 +20,8 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
     const mainBodyRef = useRef<HTMLDivElement>(null);
 
     const [splitscreen, setSplitscreen] = useState("top-bottom");
+
+    const thisSRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         setIsMounted(true);
@@ -100,31 +103,53 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
         if (!isMounted) return;
 
         const mainBody = mainBodyRef.current;
-        if (!mainBody) return;
+        const thisS = thisSRef.current;
 
-        const clampToContainer = () => {
-            const axis = getSplitAxisMetrics(activeSplitscreen, mainBody.getBoundingClientRect());
-            if (!axis) return;
+        if (!mainBody || !thisS) return;
 
-            setSplitPosition((currentPosition) =>
-                clampSplitPosition(currentPosition, axis.axisSize)
+        const updateLayout = () => {
+            const axis = getSplitAxisMetrics(
+                activeSplitscreen,
+                mainBody.getBoundingClientRect()
+            );
+
+            if (axis) {
+                setSplitPosition((currentPosition) =>
+                    clampSplitPosition(currentPosition, axis.axisSize)
+                );
+            }
+
+            const width = thisS.getBoundingClientRect().width;
+
+            setIsSmallLeftSplitScreen(
+                activeSplitscreen === "left-right" && width < 400
             );
         };
 
-        const animationFrame = window.requestAnimationFrame(clampToContainer);
-        const resizeObserver = typeof ResizeObserver !== "undefined"
-            ? new ResizeObserver(clampToContainer)
-            : null;
+        const animationFrame = window.requestAnimationFrame(updateLayout);
+
+        const resizeObserver =
+            typeof ResizeObserver !== "undefined"
+                ? new ResizeObserver(updateLayout)
+                : null;
 
         resizeObserver?.observe(mainBody);
-        if (!resizeObserver) window.addEventListener("resize", clampToContainer);
+        resizeObserver?.observe(thisS);
+
+        if (!resizeObserver) {
+            window.addEventListener("resize", updateLayout);
+        }
 
         return () => {
             window.cancelAnimationFrame(animationFrame);
             resizeObserver?.disconnect();
-            if (!resizeObserver) window.removeEventListener("resize", clampToContainer);
+
+            if (!resizeObserver) {
+                window.removeEventListener("resize", updateLayout);
+            }
         };
     }, [activeSplitscreen, isMounted]);
+
 
     const handleOnClick = () => {
         const nextSplitscreen = activeSplitscreen === "top-bottom" ? "left-right" : "top-bottom";
@@ -168,12 +193,12 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                 className={`main-body ${activeSplitscreen} is-o`}
                 style={{ "--split-position": `${splitPosition}px` } as React.CSSProperties}
             >
-                <div className="flex flex-col gap-[8px] this-s">
+                <div ref={thisSRef} className="flex flex-col gap-[8px] this-s">
                     <div className="run-controls">
                         <p className="text-label">Execute</p>
 
                         <div className="flex gap-[8px]">
-                            <StatusBar small={isSmallScreen} />
+                            <StatusBar small={isSmallScreen || isSmallLeftSplitScreen} />
                             
                             {isMounted && activeSplitscreen === "top-bottom" && (
                                 <div className="status-bar splitscreen">
