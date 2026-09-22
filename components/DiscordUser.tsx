@@ -10,7 +10,7 @@ type DiscordUserProps = {
 const userCache = new Map<string, DiscordUserData>();
 const userPromises = new Map<string, Promise<DiscordUserData>>();
 
-function fetchDiscordUser(id: string): Promise<DiscordUserData> {
+export function fetchDiscordUser(id: string): Promise<DiscordUserData> {
     const cached = userCache.get(id);
     if (cached) return Promise.resolve(cached);
 

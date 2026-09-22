@@ -7,6 +7,8 @@ import JSONbig from "json-bigint";
 import applyOverflowFade from "@/components/OverflowFade";
 import { loadUpstream, getOverlays, type Overlay } from "@/data/ric_metadata";
 import { type Palette } from "@/data/palette_colors";
+import { fetchDiscordUser } from "@/components/DiscordUser";
+import { type DiscordUser as DiscordUserData } from "@/lib/discord-client";
 
 const BATCH_SIZE = 32;
 const IMAGE_SUCCESS_DELAY = 150;
@@ -125,6 +127,27 @@ function isFilterRecord(value: unknown): value is FilterRecord {
         && "upload_time" in value;
 }
 
+// Matches a typed filter value against a creator/author id, its resolved
+// Discord username, or its resolved display name (case-insensitive
+// substring). The raw id always stays matchable, so a direct id still works
+// even once the username has resolved, and username/display name become
+// matchable as soon as they resolve.
+function matchesUserFilter(
+    id: string,
+    validValues: string[],
+    resolvedUsers: Record<string, DiscordUserData | null>
+): boolean {
+    const user = resolvedUsers[id];
+
+    return validValues.some((val) => {
+        const query = val.toLowerCase();
+        if (id.toLowerCase().includes(query)) return true;
+        if (!user) return false;
+        return user.username.toLowerCase().includes(query)
+            || (user.display_name?.toLowerCase().includes(query) ?? false);
+    });
+}
+
 function isVariantRecord(value: unknown): value is VariantRecord {
     return typeof value === "object"
         && value !== null
@@ -200,6 +223,10 @@ export default function SearchResults({
     // hammering the API and tripping its rate limit. Keep settled names so
     // filtering does not replace already-loaded images with placeholders.
     const [settledImages, setSettledImages] = useState<Set<string>>(new Set());
+
+    // Resolved Discord users (id -> user) for the "User" filter, which matches
+    // on username / display name rather than the raw id stored on each entry.
+    const [resolvedUsers, setResolvedUsers] = useState<Record<string, DiscordUserData | null>>({});
 
     function settleImage(name: string) {
         setSettledImages((settled) => {
@@ -342,6 +369,40 @@ export default function SearchResults({
             : [];
     }, [results]);
 
+    // Only bother resolving usernames once the "User" filter is actually in use.
+    const creatorFilterActive = (filters.creator ?? []).some((v) => v !== "");
+
+    useEffect(() => {
+        if (!creatorFilterActive) return;
+        if (mode !== "macros" && mode !== "filters") return;
+
+        const ids = new Set<string>();
+        for (const [, data] of allEntries) {
+            if (mode === "macros" && isMacroRecord(data) && data.creator) {
+                ids.add(data.creator.toString());
+            }
+            if (mode === "filters" && isFilterRecord(data) && data.author) {
+                ids.add(data.author);
+            }
+        }
+
+        let cancelled = false;
+
+        ids.forEach((id) => {
+            fetchDiscordUser(id)
+                .then((user) => {
+                    if (!cancelled) setResolvedUsers((prev) => ({ ...prev, [id]: user }));
+                })
+                .catch(() => {
+                    if (!cancelled) setResolvedUsers((prev) => ({ ...prev, [id]: null }));
+                });
+        });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [allEntries, mode, creatorFilterActive]);
+
     const allResults = useMemo<SelectedSearchResult[]>(() => {
         return allEntries.flatMap(([name, data]): SelectedSearchResult[] => {
             const safeName = String(name ?? "").trim();
@@ -434,7 +495,8 @@ export default function SearchResults({
 
                 if (mode === "macros" && isMacroRecord(data)) {
                     if (filterKey === "creator") {
-                        if (!data.creator || !validValues.includes(data.creator.toString())) return false;
+                        if (!data.creator) return false;
+                        if (!matchesUserFilter(data.creator.toString(), validValues, resolvedUsers)) return false;
                     }
 
                     if (filterKey === "builtin") {
@@ -454,7 +516,7 @@ export default function SearchResults({
 
                 if (mode === "filters" && isFilterRecord(data)) {
                     if (filterKey === "creator") {
-                        if (!validValues.includes(data.author)) return false;
+                        if (!matchesUserFilter(data.author, validValues, resolvedUsers)) return false;
                     }
 
                     if (filterKey === "mode") {
@@ -490,7 +552,7 @@ export default function SearchResults({
 
             return true;
         });
-    }, [allEntries, searchQuery, filters, useRegex, mode]);
+    }, [allEntries, searchQuery, filters, useRegex, mode, resolvedUsers]);
 
     useEffect(() => {
         if (!detailsName || !["tiles", "macros", "filters", "variants", "flags", "palettes"].includes(mode)) {

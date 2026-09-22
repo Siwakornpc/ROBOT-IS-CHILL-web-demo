@@ -97,7 +97,7 @@ export function FilterPanel({
             { value: "tags", label: "Tags" },
         ],
         macros: [
-            { value: "creator", label: "Creator" },
+            { value: "creator", label: "User" },
             { value: "desc", label: "Description" },
             { value: "value", label: "Value" },
             { value: "builtin", label: "Builtin" },
@@ -110,7 +110,7 @@ export function FilterPanel({
             { value: "anim", label: "Animatable" },
         ],
         filters: [
-            { value: "creator", label: "Creator" },
+            { value: "creator", label: "User" },
             { value: "mode", label: "Mode" },
             { value: "date", label: "Upload Date" },
         ],
@@ -212,6 +212,19 @@ export function FilterPanel({
                             onChange={(e) => handleValueChange(type, index, e.target.checked ? "true" : "false")}
                         />
                         <span>Is Builtin</span>
+                    </label>
+                );
+
+            case "creator":
+                return (
+                    <label className="text-field small has-placeholder">
+                        <input
+                            type="text"
+                            placeholder="Username, display name, or ID..."
+                            value={value}
+                            onChange={(e) => handleValueChange(type, index, e.target.value)}
+                            autoComplete="off"
+                        />
                     </label>
                 );
 
