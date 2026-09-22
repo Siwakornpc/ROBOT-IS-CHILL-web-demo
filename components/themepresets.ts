@@ -183,6 +183,115 @@ export const THEME_PRESETS: ThemePreset[] = [
     },
 
     {
+        id: "on-colorblind-dark",
+        label: "On Colorblind Dark",
+        theme: {
+            color: "#3024db",
+            scheme: "system",
+            brightness: 2
+        },
+        colors: {
+            syntaxName: {
+                color: "#00ff47"
+            },
+            syntaxValue: {
+                color: "#6b6bf2",
+                real: true
+            },
+            syntaxEscaped: {
+                color: "#312077",
+                real: true
+            },
+            syntaxVariable: {
+                color: "#ffffff",
+                real: true
+            },
+            syntaxBracketLayer0: {
+                color: "#ffffff",
+                real: true
+            },
+            syntaxBracketLayer1: {
+                color: "#ffffff",
+                real: true
+            },
+            syntaxBracketLayer2: {
+                color: "#ffffff",
+                real: true
+            },
+            renderFlagName: {
+                color: "#8becec"
+            },
+            renderFlagValue: {
+                color: "#f4f86d",
+                real: true
+            },
+            renderVariantName: {
+                color: "#ff2323",
+                real: true
+            },
+            renderVariantValue: {
+                color: "#e53eee",
+                real: true
+            }
+        }
+    },
+
+    {
+        id: "on-colorblind-light",
+        label: "On Colorblind Light",
+        theme: {
+            color: "#3024db",
+            scheme: "light",
+            brightness: -2
+        },
+        colors: {
+            syntaxName: {
+                color: "#00b8a8",
+                real: true
+            },
+            syntaxValue: {
+                color: "#ff8e00",
+                real: true
+            },
+            syntaxEscaped: {
+                color: "#ba0000",
+                real: true
+            },
+            syntaxVariable: {
+                color: "#0005ae",
+                real: true
+            },
+            syntaxBracketLayer0: {
+                color: "#000000",
+                real: true
+            },
+            syntaxBracketLayer1: {
+                color: "#000000",
+                real: true
+            },
+            syntaxBracketLayer2: {
+                color: "#000000",
+                real: true
+            },
+            renderFlagName: {
+                color: "#8becec"
+            },
+            renderFlagValue: {
+                color: "#edd22b",
+                real: true
+            },
+            renderVariantName: {
+                color: "#ff0909",
+                real: true
+            },
+            renderVariantValue: {
+                color: "#e53eee",
+                real: true
+            }
+        }
+    },
+
+    {
         id: "monakii",
         label: "Monakii", // Monokai
         theme: {
@@ -486,7 +595,7 @@ export const THEME_PRESETS: ThemePreset[] = [
                 real: true
             }
         }
-    }
+    },
 ];
 
 // Unspecified keys fall back to defaults, so switching presets never leaves leftovers
