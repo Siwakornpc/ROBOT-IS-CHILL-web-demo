@@ -206,7 +206,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                         <div className="flex gap-[8px]">
                             <StatusBar
                                 small={isSmallScreen || isSmallLeftSplitScreen}
-                                collapse={activeSplitscreen && sLSSWidthSize < 240 || window.innerWidth < 380}
+                                collapse={activeSplitscreen && sLSSWidthSize < 340 || window.innerWidth < 380}
                             />
                             
                             {isMounted && activeSplitscreen === "top-bottom" && (
