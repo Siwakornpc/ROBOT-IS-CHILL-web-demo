@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { updateMacroStaticHighlight } from "@/components/highlight/macro-highlight-static.js";
 import ColorPicker from "@/components/ColorPicker";
 import MenuSelect from "@/components/MenuSelect";
 import Slider from "@/components/slider";
@@ -44,6 +45,24 @@ const SYNTAX_HIGHLIGHT_OPTIONS: { key: SyntaxHighlightKey; label: string }[] = [
     { key: "renderVariantName", label: "Render Variant Name" },
     { key: "renderVariantValue", label: "Render Variant Value" },
 ];
+
+function MacroCode({ children }: { children: string }) {
+    const elementRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (elementRef.current) {
+            updateMacroStaticHighlight(elementRef.current, children);
+        }
+    }, [children]);
+
+    return (
+        <div
+            ref={elementRef}
+            className="search-details-detailbox macro max-w-[400px]"
+            style={{ background: "var(--editor-body)" }}
+        />
+    );
+}
 
 export default function Body() {
     const [theme, setTheme] = useState<ThemeState>(DEFAULT_THEME);
@@ -545,6 +564,44 @@ export default function Body() {
                             ))}
                         </div>)
                     }
+                    <span className="row-group">
+                        <p className="text-label text-main-name"> Code Preview</p>
+                        <div className="flex flex-col gap-[8px]">
+                            <MacroCode>{
+`[store/x/0][unescape/[repeat/10/\\[store\\/x\\/\\[add\\/\\[load\\/x\\]\\/1\\]\\]\\[load\\/x\\]/ ]]
+
+[store/x/0][/
+][unescape/[/
+    ][repeat/10/[/
+        ]\\[store\\/x\\/[/
+            ]\\[add\\/[/
+                ]\\[load\\/x\\]\\/1\\][/
+            ]\\][/
+        ]\\[load\\/x\\][/
+        ] /[/
+    ]][/
+]]`
+                            }</MacroCode>
+                            <div
+                                className="search-details-detailbox macro max-w-[400px]"
+                                style={{ background: "var(--editor-body)" }}
+                            >
+                                <span className="flag-name">-f</span>=
+                                <span className="flag-value">png</span>{` `}
+                                baba
+                                <span className="variant-name">:crop</span>
+                                <span className="variant-value">0</span>/
+                                <span className="variant-value">0</span>/
+                                <span className="variant-value">24</span>/
+                                <span className="variant-value">12</span>&belt
+                                <span className="variant-name">:crop</span>
+                                <span className="variant-value">0</span>/
+                                <span className="variant-value">12</span>/
+                                <span className="variant-value">24</span>/
+                                <span className="variant-value">24</span>
+                            </div>
+                        </div>
+                    </span>
                 </div>
 
                 <button

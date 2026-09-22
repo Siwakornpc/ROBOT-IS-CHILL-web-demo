@@ -188,7 +188,8 @@ export const THEME_PRESETS: ThemePreset[] = [
         theme: {
             color: "#3024db",
             scheme: "system",
-            brightness: 2
+            contrast: "mc",
+            brightness: 7
         },
         colors: {
             syntaxName: {
@@ -199,7 +200,7 @@ export const THEME_PRESETS: ThemePreset[] = [
                 real: true
             },
             syntaxEscaped: {
-                color: "#312077",
+                color: "#050039",
                 real: true
             },
             syntaxVariable: {
@@ -242,19 +243,20 @@ export const THEME_PRESETS: ThemePreset[] = [
         theme: {
             color: "#3024db",
             scheme: "light",
+            contrast: "mc",
             brightness: -2
         },
         colors: {
             syntaxName: {
-                color: "#00b8a8",
+                color: "#009c8e",
                 real: true
             },
             syntaxValue: {
-                color: "#ff8e00",
+                color: "#a69300",
                 real: true
             },
             syntaxEscaped: {
-                color: "#ba0000",
+                color: "#860000",
                 real: true
             },
             syntaxVariable: {
@@ -277,15 +279,15 @@ export const THEME_PRESETS: ThemePreset[] = [
                 color: "#8becec"
             },
             renderFlagValue: {
-                color: "#edd22b",
+                color: "#ff5c00",
                 real: true
             },
             renderVariantName: {
-                color: "#ff0909",
+                color: "#b05821",
                 real: true
             },
             renderVariantValue: {
-                color: "#e53eee",
+                color: "#9400c5",
                 real: true
             }
         }
