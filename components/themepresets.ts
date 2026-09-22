@@ -37,6 +37,7 @@ export const THEME_PRESETS: ThemePreset[] = [
             color: DEFAULT_THEME.color,
             scheme: DEFAULT_THEME.scheme,
             contrast: DEFAULT_THEME.contrast,
+            brightness: 0,
         },
     },
     
@@ -47,6 +48,7 @@ export const THEME_PRESETS: ThemePreset[] = [
             color: "#3024db",
             scheme: "dark",
             contrast: DEFAULT_THEME.contrast,
+            brightness: 0,
         },
         colors: {
             syntaxName: {
@@ -67,14 +69,79 @@ export const THEME_PRESETS: ThemePreset[] = [
             }
         }
     },
+
+    {
+        id: "on-darkest",
+        label: "On Darkest",
+        theme: {
+            color: DEFAULT_THEME.color,
+            scheme: DEFAULT_THEME.scheme,
+            contrast: DEFAULT_THEME.contrast,
+            brightness: -4,
+        },
+    },
+    
+    {
+        id: "odt-robust",
+        label: "On Darkest Robust",
+        theme: {
+            color: "#3024db",
+            scheme: "dark",
+            contrast: DEFAULT_THEME.contrast,
+            brightness: -4,
+        },
+        colors: {
+            syntaxName: {
+                color: "#88b9f8",
+                real: true
+            },
+            syntaxEscaped: {
+                real: true
+            },
+            renderFlagName: {
+                real: true
+            },
+            renderFlagValue: {
+                real: true
+            },
+            renderVariantName: {
+                real: true
+            }
+        }
+    },
+
+    {
+        id: "on-light",
+        label: "On Light",
+        theme: {
+            color: DEFAULT_THEME.color,
+            scheme: "light",
+            contrast: DEFAULT_THEME.contrast,
+            brightness: 0,
+        },
+        colors: {
+            syntaxBracketLayer0: {
+                color: "#5f94f5"
+            },
+            syntaxBracketLayer1: {
+                color: "#4c8a34",
+                real: true
+            },
+            syntaxBracketLayer2: {
+                color: "#b6822f",
+                real: true
+            },
+        }
+    },
     
     {
         id: "ol-robust",
         label: "On Light Robust",
         theme: {
-            color: "#3024db",
+            color: DEFAULT_THEME.color,
             scheme: "light",
             contrast: DEFAULT_THEME.contrast,
+            brightness: 0,
         },
         colors: {
             syntaxName: {
@@ -121,6 +188,7 @@ export const THEME_PRESETS: ThemePreset[] = [
         theme: {
             color: "#938d68",
             scheme: "dark",
+            brightness: 2,
         },
         colors: {
             syntaxName: {
@@ -163,6 +231,7 @@ export const THEME_PRESETS: ThemePreset[] = [
         theme: {
             color: "#598fd5",
             scheme: "dark",
+            brightness: 2,
         },
         colors: {
             syntaxName: {
@@ -212,6 +281,7 @@ export const THEME_PRESETS: ThemePreset[] = [
         theme: {
             color: "#f09722",
             scheme: "dark",
+            brightness: 1,
         },
         colors: {
             syntaxName: {
@@ -261,8 +331,9 @@ export const THEME_PRESETS: ThemePreset[] = [
         id: "gitly-dark",
         label: "Gitly Dark",
         theme: {
-            color: "#0f0097",
+            color: "#004797",
             scheme: "dark",
+            brightness: -3,
         },
         colors: {
             syntaxName: {
@@ -314,6 +385,7 @@ export const THEME_PRESETS: ThemePreset[] = [
         theme: {
             color: "#53b4d9",
             scheme: "dark",
+            brightness: -4,
         },
         colors: {
             syntaxName: {
@@ -358,6 +430,63 @@ export const THEME_PRESETS: ThemePreset[] = [
             }
         }
     },
+
+    {
+        id: "autnun",
+        label: "Autnun",
+        theme: {
+            color: "#ff6c00",
+            scheme: "dark",
+            contrast: "system",
+            brightness: -3,
+        },
+        colors: {
+            syntaxName: {
+                color: "#de8536",
+                real: true
+            },
+            syntaxValue: {
+                color: "#e1a843",
+                real: true
+            },
+            syntaxEscaped: {
+                color: "#c85a2a",
+                real: true
+            },
+            syntaxVariable: {
+                color: "#777721",
+                real: true
+            },
+            syntaxBracketLayer0: {
+                color: "#742417",
+                real: true
+            },
+            syntaxBracketLayer1: {
+                color: "#883114",
+                real: true
+            },
+            syntaxBracketLayer2: {
+                color: "#744017",
+                real: true
+            },
+            renderFlagName: {
+                color: "#b57c34",
+                real: true
+            },
+            renderFlagValue: {
+                color: "#6d7d1f",
+                real: true
+            },
+            renderVariantName: {
+                color: "#7c6925",
+                real: true
+            },
+            renderVariantValue: {
+                color: "#943f2e",
+                real: true
+            }
+        }
+    }
 ];
 
 // Unspecified keys fall back to defaults, so switching presets never leaves leftovers

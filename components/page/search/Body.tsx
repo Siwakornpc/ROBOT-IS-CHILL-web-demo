@@ -220,7 +220,7 @@ export function FilterPanel({
                     <label className="text-field small has-placeholder">
                         <input
                             type="text"
-                            placeholder="Username, display name, or ID..."
+                            placeholder="Username... | User ID..."
                             value={value}
                             onChange={(e) => handleValueChange(type, index, e.target.value)}
                             autoComplete="off"

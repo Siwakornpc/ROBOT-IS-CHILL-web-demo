@@ -7,12 +7,14 @@ export interface ThemeState {
     color: string;
     scheme: 'light' | 'dark' | 'system';
     contrast: 'normal' | 'mc' | 'hc' | 'system';
+    brightness: number ,
 }
 
 export const DEFAULT_THEME: ThemeState = {
     color: '#3024db',
     scheme: 'system',
     contrast: 'system',
+    brightness: 0,
 };
 
 export type SyntaxHighlightKey =
@@ -100,6 +102,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
                     color: parsed?.color ?? DEFAULT_THEME.color,
                     scheme: parsed?.scheme ?? DEFAULT_THEME.scheme,
                     contrast: parsed?.contrast ?? DEFAULT_THEME.contrast,
+                    brightness: parsed?.brightness ?? DEFAULT_THEME.brightness,
                 });
             }
         } catch (e) {
@@ -124,7 +127,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         const applyTheme = (window as any).setTheme;
         if (typeof applyTheme !== "function") return;
 
-        const triggerThemeUpdate = () => applyTheme(theme.color, theme.scheme, theme.contrast);
+        const triggerThemeUpdate = () => applyTheme(
+            theme.color,
+            theme.scheme,
+            theme.contrast,
+            theme.brightness
+        );
 
         triggerThemeUpdate();
 
@@ -193,7 +201,12 @@ export default function ThemeScript() {
         const rgbStr = (argb: number) =>
             `${MCU.redFromArgb(argb)}, ${MCU.greenFromArgb(argb)}, ${MCU.blueFromArgb(argb)}`;
 
-        function setTheme(sourceColor: string, scheme = 'light', contrast = 'normal') {
+        function setTheme(
+            sourceColor: string,
+            scheme = 'light',
+            contrast = 'normal',
+            brightness = 0
+        ) {
             document.documentElement.setAttribute('data-theme-variant', scheme);
             
             // Fall back to default color if sourceColor is empty or invalid hex
@@ -221,8 +234,11 @@ export default function ThemeScript() {
                 const wantsMoreContrast = typeof window !== 'undefined' && window.matchMedia('(prefers-contrast: more)').matches;
                 if (wantsMoreContrast) resolvedContrast = 'hc';
             }
-            if (contrast === 'mc') contrastLevel = 0.5;
-            if (contrast === 'hc') contrastLevel = 1.0;
+            if (resolvedContrast === 'mc') contrastLevel = 0.5;
+            if (resolvedContrast === 'hc') contrastLevel = 1.0;
+
+            // Positive = brighter, negative = darker. Clamped per-token below.
+            const brightnessDelta = brightness;
 
             const dynamicScheme = new MCU.DynamicScheme({
                 sourceColorHct: hct,
@@ -293,15 +309,28 @@ export default function ThemeScript() {
             ];
 
             tokens.forEach((token) => {
-                const camelToken = token.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+                const camelToken = token.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+
                 const dynamicColors = MCU.MaterialDynamicColors as Record<string, any>;
-                if (dynamicColors[camelToken]) {
-                    const argb = dynamicColors[camelToken].getArgb(dynamicScheme);
-                    target.style.setProperty(
-                        `--md-color-${token}`,
-                        rgbStr(argb)
+                const dynamicColor = dynamicColors[camelToken];
+
+                if (!dynamicColor) return;
+
+                let argb = dynamicColor.getArgb(dynamicScheme);
+
+                if (brightnessDelta !== 0) {
+                    const tokenHct = MCU.Hct.fromInt(argb);
+                    tokenHct.tone = Math.max(
+                        0,
+                        Math.min(100, tokenHct.tone + brightnessDelta)
                     );
+                    argb = tokenHct.toInt();
                 }
+
+                target.style.setProperty(
+                    `--md-color-${token}`,
+                    rgbStr(argb)
+                );
             });
             
             // custom color harmonization
@@ -399,13 +428,15 @@ export default function ThemeScript() {
             setTheme(
                 currentTheme.color || DEFAULT_THEME.color,
                 currentTheme.scheme || DEFAULT_THEME.scheme,
-                currentTheme.contrast || DEFAULT_THEME.contrast
+                currentTheme.contrast || DEFAULT_THEME.contrast,
+                currentTheme.brightness ?? DEFAULT_THEME.brightness,
             );
         };
         setTheme(
             initialColor,
             savedTheme.scheme || DEFAULT_THEME.scheme,
-            savedTheme.contrast || DEFAULT_THEME.contrast
+            savedTheme.contrast || DEFAULT_THEME.contrast,
+            savedTheme.brightness ?? DEFAULT_THEME.brightness,
         );
     }, []);
 

@@ -62,6 +62,7 @@ export default function Body() {
                     color: parsed?.color ?? DEFAULT_THEME.color,
                     scheme: parsed?.scheme ?? DEFAULT_THEME.scheme,
                     contrast: parsed?.contrast ?? DEFAULT_THEME.contrast,
+                    brightness: parsed?.brightness ?? DEFAULT_THEME.brightness
                 });
             }
 
@@ -125,7 +126,8 @@ export default function Body() {
             applyTheme(
                 theme.color,
                 currentScheme,
-                theme.contrast
+                theme.contrast,
+                theme.brightness,
             );
         };
 
@@ -278,6 +280,7 @@ export default function Body() {
                     color: theme.color,
                     scheme: theme.scheme,
                     contrast: theme.contrast,
+                    brightness: theme.brightness,
                 },
                 colors
             }, null, 4)
@@ -412,6 +415,26 @@ export default function Body() {
                                 { value: "hc", label: "High Contrast" },
                             ]}
                             onChange={(newValue) => updateTheme({ contrast: newValue })}
+                        />
+                    </div>
+
+                    <div className="row-group">
+                        <p className="text-label text-main-name">
+                            Brightness
+                        </p>
+
+                        <Slider
+                            value={
+                                theme.brightness
+                            }
+                            min={-30}
+                            max={30}
+                            step={1}
+                            onChange={(value) =>
+                                updateTheme(
+                                    { brightness: value }
+                                )
+                            }
                         />
                     </div>
                 </div>
@@ -551,7 +574,7 @@ export default function Body() {
                 <button
                     type="button"
                     className="btn small btn-filled !w-48 !justify-center mb-[8px]"
-                    onClick={() => handleApplyPreset("default")}
+                    onClick={() => handleApplyPreset("on-dark")}
                 >Reset Default
                 </button>
 
