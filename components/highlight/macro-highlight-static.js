@@ -37,6 +37,24 @@ const findBracketPairsInternal = (text) => {
     return { validPairs, topLevel };
 };
 
+const specialTokens = [
+    { regex: /^\$-?\d+/, className: "macro-custom-argument" },
+    { regex: /^\$!/, className: "macro-custom-executor-mode" },
+    { regex: /^\$#/, className: "macro-custom-argument-count" },
+];
+
+const matchSpecial = (text, i) => {
+    if (text[i] !== "$") return null;
+    const rest = text.slice(i);
+
+    for (const { regex, className } of specialTokens) {
+        const match = rest.match(regex);
+        if (match) return { value: match[0], className };
+    }
+
+    return null;
+};
+
 // Builds the raw token list (same tokens macroHighlighter used to build
 // inline). Kept separate so both macroHighlighter (joined string) and
 // macroHighlightSegments (positioned pieces, for combined-highlight.js)
@@ -129,7 +147,7 @@ const buildMacroTokens = (text, storedVariables = new Set()) => {
         }
 
         for (const item of curr.arg1Buffer) {
-            appendText(item.ch, resolvedClassName, item.pos);
+            appendText(item.ch, item.className || resolvedClassName, item.pos);
         }
         curr.arg1Buffer = [];
     };
@@ -199,19 +217,42 @@ const buildMacroTokens = (text, storedVariables = new Set()) => {
             appendText(ch, curr.empty ? "macro-empty" : "macro-arg-separator", i);
         }
         else if (curr) {
-            if (curr.argIndex === 0) {
+            // Specials only apply in value state (after the first "/")
+            const special = curr.argIndex > 0 ? matchSpecial(text, i) : null;
+
+            if (special) {
+                if (curr.argIndex === 1) {
+                    curr.currentArgText += special.value;
+                    curr.arg1Buffer.push({
+                        ch: special.value,
+                        pos: i,
+                        empty: curr.empty,
+                        className: special.className,
+                    });
+                } else {
+                    appendText(special.value, special.className, i);
+                }
+                i += special.value.length - 1;
+            }
+            else if (curr.argIndex === 0) {
                 curr.currentMacroName += ch;
                 appendText(ch, curr.empty ? "macro-empty" : "macro-name", i);
             } else if (curr.argIndex === 1) {
                 curr.currentArgText += ch;
                 curr.arg1Buffer.push({ ch, pos: i, empty: curr.empty });
             } else {
-                let className = curr.empty ? "macro-empty" : "macro-value";
-                appendText(ch, className, i);
+                appendText(ch, curr.empty ? "macro-empty" : "macro-value", i);
             }
         }
         else {
-            appendText(ch, "", i);
+            const special = matchSpecial(text, i);
+
+            if (special) {
+                appendText(special.value, special.className, i);
+                i += special.value.length - 1;
+            } else {
+                appendText(ch, "", i);
+            }
         }
     }
 
