@@ -196,7 +196,7 @@ function normalizeDiscordLists(source: string): string {
 
     for (const line of lines) {
         const fence = line.match(
-            /^ {0,3}(`{3,}|~{3,})(?:.*)?$/
+            /^ {0,3}(`{3,})(?:.*)?$/
         );
 
         if (fence) {
@@ -283,7 +283,7 @@ function escapeEmptyListMarkers(source: string): string {
     return lines
         .map((line) => {
             const fence = line.match(
-                /^ {0,3}(`{3,}|~{3,})(?:.*)?$/
+                /^ {0,3}(`{3,})(?:.*)?$/
             );
 
             if (fence) {
@@ -334,7 +334,7 @@ function normalizeListMarkerTypes(source: string): string {
     let fenceChar = "";
     let fenceLength = 0;
 
-    const isFence = (line: string) => line.match(/^ {0,3}(`{3,}|~{3,})(?:.*)?$/);
+    const isFence = (line: string) => line.match(/^ {0,3}(`{3,})(?:.*)?$/);
 
     const bulletRe = /^ {0,3}([-*])(\s+)(.*)$/;
     const orderedRe = /^ {0,3}(\d+)([.)])(\s+)(.*)$/;
@@ -806,7 +806,7 @@ function protectUnsupportedGfmSyntax(source: string): string {
     let fenceLength = 0;
 
     const isFence = (line: string) =>
-        line.match(/^ {0,3}(`{3,}|~{3,})(?:.*)?$/);
+        line.match(/^ {0,3}(`{3,})(?:.*)?$/);
 
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
@@ -889,7 +889,7 @@ function preserveDiscordEmptyLines(
     let fenceLength = 0;
 
     const isFence = (line: string) =>
-        line.match(/^ {0,3}(`{3,}|~{3,})(?:.*)?$/);
+        line.match(/^ {0,3}(`{3,})(?:.*)?$/);
 
     const isListItemLine = (line: string) =>
         /^ {0,3}(?:[-*]\s+|\d+[.)]\s+)/.test(line);
@@ -1021,7 +1021,7 @@ function prepareSource(
      * Escapes any '>' at line start (with up to 3 leading spaces) that is NOT followed by a space, newline, or '>'.
      */
     const strictBlockquotes = lines.map((line) => {
-        const fence = line.match(/^ {0,3}(`{3,}|~{3,})/);
+        const fence = line.match(/^ {0,3}(`{3,})/);
 
         if (fence) {
             inFence = !inFence;
@@ -1041,7 +1041,7 @@ function prepareSource(
     inFence = false;
 
     const withSubtext = strictBlockquotes.map((line) => {
-        const fence = line.match(/^ {0,3}(`{3,}|~{3,})/);
+        const fence = line.match(/^ {0,3}(`{3,})/);
 
         if (fence) {
             inFence = !inFence;
