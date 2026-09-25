@@ -699,8 +699,12 @@ export default function SearchResults({
 
         return parts.map((part, index) => {
             const match = part.match(/^<(a?):(\w+):(\d+)>$/);
-            if (!match) return part;
-            const [animated, name, id] = match;
+
+            if (!match) {
+                return part;
+            }
+
+            const [, animated, name, id] = match;
 
             return (
                 <span key={id} className="discord-markdown">
