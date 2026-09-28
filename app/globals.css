@@ -2163,30 +2163,22 @@ main.ascroll-y .main-body {
     grid-template-rows: minmax(0, calc(var(--split-position) - 4px)) 8px minmax(0, calc(100% - var(--split-position) - 4px));
 }
 
-@media only screen and (max-width: 1000px) {
-    .splitscreen {
-        display: none;
-    }
+.is-o.left-right {
+    grid-template-columns: minmax(0, calc(var(--split-position) - 4px)) 8px minmax(0, calc(100% - var(--split-position) - 4px));
+    grid-template-rows: minmax(0, 1fr);
 }
 
-@media only screen and (min-width: 1000px) {
-    .is-o.left-right {
-        grid-template-columns: minmax(0, calc(var(--split-position) - 4px)) 8px minmax(0, calc(100% - var(--split-position) - 4px));
-        grid-template-rows: minmax(0, 1fr);
-    }
+.left-right .this-s,
+.left-right .this-e {
+    width: auto;
+}
 
-    .left-right .this-s,
-    .left-right .this-e {
-        width: auto;
-    }
+.left-right .split-handle {
+    cursor: col-resize;
+}
 
-    .left-right .split-handle {
-        cursor: col-resize;
-    }
-
-    .left-right .this-s .editor-code {
-        height: 100%;
-    }
+.left-right .this-s .editor-code {
+    height: 100%;
 }
 
 /*
@@ -3206,7 +3198,7 @@ tr:nth-child(odd) td {
     autocomplete popup
 */
 
-.ac-dropdown {
+.ac-dropdown, .hover-tooltip {
     position: fixed;
     overflow-y: auto;
     width: 400px;

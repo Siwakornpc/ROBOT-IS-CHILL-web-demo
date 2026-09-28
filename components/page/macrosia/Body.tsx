@@ -43,7 +43,10 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
 
         const checkScreenSize = () => {
             setIsSmallScreen(window.innerWidth < 640);
-            setIsSideBySideSupported(window.innerWidth >= 1000);
+            setIsSideBySideSupported(window.innerHeight < 520
+                ? window.innerWidth >= 380
+                : window.innerWidth >= 820
+            );
         };
 
         checkScreenSize();
@@ -206,7 +209,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                                 collapse={activeSplitscreen && sLSSWidthSize < 240 || window.innerWidth < 300}
                             />
                             
-                            {isMounted && activeSplitscreen === "top-bottom" && (
+                            {isMounted && isSideBySideSupported && activeSplitscreen === "top-bottom" && (
                                 <div className="status-bar splitscreen">
                                     <button
                                         type="button"
@@ -243,7 +246,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                     <div className="run-controls">
                         <p className="text-label">Output</p>
 
-                        {isMounted && activeSplitscreen === "left-right" && (
+                        {isMounted && isSideBySideSupported && activeSplitscreen === "left-right" && (
                             <div className="status-bar splitscreen">
                                 <button
                                     type="button"
