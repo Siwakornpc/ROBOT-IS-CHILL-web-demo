@@ -34,7 +34,32 @@ type EditorRefs = {
     onCodeChange?: (code: string) => void;
     onAutocompleteChange?: (state: AutocompleteState) => void;
     onInsertSuggestionRef?: React.RefObject<((startIndex: number, text: string, focusEditor: boolean) => void) | null>;
+    onHoverChange?: (state: HoverState) => void;
+    onHoverControlsRef?: React.RefObject<HoverControls | null>;
 };
+
+export type HoverState =
+    | { isOpen: false }
+    | {
+        isOpen: true;
+        name: string;
+        description: string;
+        value?: string;
+        creator: string | null;
+        builtin: boolean;
+        anchor: { top: number; bottom: number; left: number };
+    };
+
+/* Lets the tooltip component keep itself open while the mouse is over it. */
+export type HoverControls = {
+    hold: () => void;
+    release: () => void;
+};
+
+type MacroInfo = { label: string; builtin?: boolean; creator: string; description?: string; value?: string  };
+
+const HOVER_SHOW_DELAY = 300;
+const HOVER_HIDE_DELAY = 300;
 
 export type AutocompleteState = {
     isOpen: boolean;
@@ -54,6 +79,8 @@ export function useEditorEngine({
     onCodeChange,
     onAutocompleteChange,
     onInsertSuggestionRef,
+    onHoverChange,
+    onHoverControlsRef,
 }: EditorRefs) {
     const isLetterTypingRef = useRef(false);
     const isACLetterTypingRef = useRef(false);
@@ -299,12 +326,94 @@ export function useEditorEngine({
         document.addEventListener("keyup", handleVariableReferenceKeyup);
         document.addEventListener("mousedown", handleMouseDown);
 
-        let macroList: Array<{ label: string; builtin?: boolean; creator: string }> = [];
+        let macroList: MacroInfo[] = [];
+        let macroInfo = new Map<string, MacroInfo>();
+
+        // hover tooltip thing
+        let showTimer: number | undefined;
+        let hideTimer: number | undefined;
+        let hoveredName: string | null = null;
+        let hoverHeld = false;
+
+        const isAutocompleteBlockingHover = () =>
+            isAutocompleteOpenRef.current && document.activeElement === editorArea;
+
+        const closeHover = () => {
+            window.clearTimeout(showTimer);
+            window.clearTimeout(hideTimer);
+            hoveredName = null;
+            hoverHeld = false;
+            onHoverChange?.({ isOpen: false });
+        };
+
+        const scheduleHide = () => {
+            if (hoverHeld) return;
+            window.clearTimeout(showTimer);
+            window.clearTimeout(hideTimer);
+            hideTimer = window.setTimeout(closeHover, HOVER_HIDE_DELAY);
+        };
+
+        const handleTooltipHover = (e: MouseEvent) => {
+            if (hoverHeld) return;
+            const name = getMacroDefinitionNameFromElement(e.target);
+            if (!name) {
+                scheduleHide();
+                return;
+            }
+
+            window.clearTimeout(hideTimer);
+            if (name === hoveredName) return;
+            hoveredName = name;
+            window.clearTimeout(showTimer);
+
+            const info = macroInfo.get(name);
+            const description = info?.description?.trim();
+            if (!info || !description || isAutocompleteBlockingHover()) return;
+
+            const el = (e.target as Element).closest(".macro-name");
+            if (!el) return;
+            const rect = el.getBoundingClientRect();
+
+            showTimer = window.setTimeout(() => {
+                if (hoveredName !== name || isAutocompleteBlockingHover()) return;
+                onHoverChange?.({
+                    isOpen: true,
+                    name,
+                    description,
+                    value: info.value,
+                    creator: info.creator ?? null,
+                    builtin: Boolean(info.builtin),
+                    anchor: { top: rect.top, bottom: rect.bottom, left: rect.left },
+                });
+            }, HOVER_SHOW_DELAY);
+        };
+
+        const handleHoverKeydown = (e: KeyboardEvent) => {
+            if (["Control", "Meta", "Alt", "Shift"].includes(e.key)) return;
+            closeHover();
+        };
+
+        const handleHoverMouseDown = (e: MouseEvent) => {
+            if (e.target instanceof Element && e.target.closest(".hover-tooltip")) return;
+            closeHover();
+        };
+
+        if (onHoverControlsRef) onHoverControlsRef.current = {
+            hold: () => {
+                hoverHeld = true;
+                window.clearTimeout(hideTimer);
+                window.clearTimeout(showTimer);
+            },
+            release: () => {
+                hoverHeld = false;
+                scheduleHide();
+            },
+        };
 
         async function fetchAutocompleteData() {
             try {
                 await loadVariants();
-                const macroMap = new Map<string, { label: string; builtin?: boolean; creator: string }>();
+                const macroMap = new Map<string, MacroInfo>();
 
                 try {
                     const res = await fetch("https://ric-api.sno.mba/macros.json");
@@ -318,6 +427,10 @@ export function useEditorEngine({
                                 label: key,
                                 builtin: isBuiltin,
                                 creator: isBuiltin ? "builtin" : (val as any)?.creator,
+                                description: typeof (val as any)?.description === "string"
+                                    ? (val as any).description
+                                    : undefined,
+                                value: typeof (val as any)?.value === "string" ? (val as any).value : undefined,
                             });
                         }
                     }
@@ -328,13 +441,14 @@ export function useEditorEngine({
                 try {
                     const stdMacros = await stdlib_macros();
                     for (const [name, info] of stdMacros) {
-                        macroMap.set(name, { label: name, builtin: info.builtin, creator: "builtin" });
+                        macroMap.set(name, { label: name, builtin: info.builtin, creator: "builtin", description: info.description });
                     }
                 } catch (err) {
                     console.error("Failed to load stdlib macros:", err);
                 }
 
                 macroList = Array.from(macroMap.values());
+                macroInfo = new Map(macroList.map(m => [m.label, m]));
                 handleACSelectionChange();
             } catch (err) {
                 console.error("Failed to load autocomplete data:", err);
@@ -423,6 +537,7 @@ export function useEditorEngine({
                         const position = getAutocompletePosition(rect);
 
                         isAutocompleteOpenRef.current = true;
+                        closeHover();
                         onAutocompleteChange({
                             isOpen: true,
                             query: context.query,
@@ -501,6 +616,12 @@ export function useEditorEngine({
         editorArea.addEventListener("click", handleMacroDefinition);
         editorArea.addEventListener("mouseover", handleVariableHover);
         editorArea.addEventListener("click", handleVariableDefinition);
+        editorArea.addEventListener("mouseover", handleTooltipHover);
+        editorArea.addEventListener("mouseleave", scheduleHide);
+        editorArea.addEventListener("beforeinput", closeHover);
+        scrollEl.addEventListener("scroll", closeHover);
+        document.addEventListener("keydown", handleHoverKeydown);
+        document.addEventListener("mousedown", handleHoverMouseDown);
 
         const api: EditorApi = {
             get value() { return state.value },
@@ -553,6 +674,14 @@ export function useEditorEngine({
             editorArea.removeEventListener("click", handleMacroDefinition);
             editorArea.removeEventListener("mouseover", handleVariableHover);
             editorArea.removeEventListener("click", handleVariableDefinition);
+            editorArea.removeEventListener("mouseover", handleTooltipHover);
+            editorArea.removeEventListener("mouseleave", scheduleHide);
+            editorArea.removeEventListener("beforeinput", closeHover);
+            scrollEl.removeEventListener("scroll", closeHover);
+            document.removeEventListener("keydown", handleHoverKeydown);
+            document.removeEventListener("mousedown", handleHoverMouseDown);
+            window.clearTimeout(showTimer);
+            window.clearTimeout(hideTimer);
             scrollEl.removeEventListener("scroll", handleACSelectionChange);
             layoutResizeObserver?.disconnect();
             visualViewport?.removeEventListener("resize", handleACSelectionChange);

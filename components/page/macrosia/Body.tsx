@@ -43,7 +43,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
 
         const checkScreenSize = () => {
             setIsSmallScreen(window.innerWidth < 640);
-            setIsSideBySideSupported(window.innerHeight < 520
+            setIsSideBySideSupported(window.innerHeight < 580
                 ? window.innerWidth >= 380
                 : window.innerWidth >= 820
             );

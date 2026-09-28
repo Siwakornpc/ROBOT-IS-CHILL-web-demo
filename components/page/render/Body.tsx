@@ -44,7 +44,10 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
 
         const checkScreenSize = () => {
             setIsSmallScreen(window.innerWidth < 640);
-            setIsSideBySideSupported(window.innerWidth >= 1000);
+            setIsSideBySideSupported(window.innerHeight < 580
+                ? window.innerWidth >= 380
+                : window.innerWidth >= 820
+            );
         };
 
         checkScreenSize();
@@ -124,7 +127,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
             const width = thisS.getBoundingClientRect().width;
 
             setIsSmallLeftSplitScreen(
-                activeSplitscreen === "left-right" && width < 560
+                activeSplitscreen === "left-right" && width < 400
             );
 
             setSLSSWidthSize(width);
@@ -153,6 +156,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
             }
         };
     }, [activeSplitscreen, isMounted]);
+
 
     const handleOnClick = () => {
         const nextSplitscreen = activeSplitscreen === "top-bottom" ? "left-right" : "top-bottom";
@@ -206,10 +210,10 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                         <div className="flex gap-[8px]">
                             <StatusBar
                                 small={isSmallScreen || isSmallLeftSplitScreen}
-                                collapse={activeSplitscreen && sLSSWidthSize < 340 || window.innerWidth < 380}
+                                collapse={activeSplitscreen && sLSSWidthSize < 240 || window.innerWidth < 300}
                             />
                             
-                            {isMounted && activeSplitscreen === "top-bottom" && (
+                            {isMounted && isSideBySideSupported && activeSplitscreen === "top-bottom" && (
                                 <div className="status-bar splitscreen">
                                     <button
                                         type="button"
@@ -246,7 +250,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                     <div className="run-controls">
                         <p className="text-label">Output</p>
 
-                        {isMounted && activeSplitscreen === "left-right" && (
+                        {isMounted && isSideBySideSupported && activeSplitscreen === "left-right" && (
                             <div className="status-bar splitscreen">
                                 <button
                                     type="button"

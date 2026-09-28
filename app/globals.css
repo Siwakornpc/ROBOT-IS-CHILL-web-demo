@@ -3198,7 +3198,7 @@ tr:nth-child(odd) td {
     autocomplete popup
 */
 
-.ac-dropdown, .hover-tooltip {
+.ac-dropdown {
     position: fixed;
     overflow-y: auto;
     width: 400px;
@@ -3286,6 +3286,33 @@ tr:nth-child(odd) td {
 
 .ac-icon {
     font-size: 20px;
+}
+
+/*
+    hover tooltip
+*/
+
+.hover-tooltip {
+    position: fixed;
+    overflow-y: auto;
+    width: 400px;
+    max-height: 200px;
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-code);
+    line-height: var(--editor-line-height);
+    padding: 8px 10px;
+    margin: -4px;
+    border-radius: 12px;
+    background: rgb(var(--md-color-surface));
+    box-shadow: var(--elevation-3);
+    z-index: 10002000000;
+    --scrollbar-inset-size: 4px;
+}
+
+.hover-tooltip-value {
+    font-family: var(--font-family-code);
+    font-size: var(--font-size-code);
+    word-wrap: break-word;
 }
 
 /*

@@ -1,8 +1,9 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { useEditorEngine } from "./useEditorEngine";
+import { useEditorEngine, type HoverState, type HoverControls } from "./useEditorEngine";
 import { AutocompleteDropdown, SuggestionItem } from "./autocompleteDropdown";
+import { HoverTooltip } from "./hoverTooltip";
 import "./editorReady";
 
 export function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) => void }) {
@@ -11,6 +12,9 @@ export function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) =
     const gutterWrapRef = useRef<HTMLDivElement | null>(null);
     const scrollElRef = useRef<HTMLDivElement | null>(null);
     const insertSuggestionRef = useRef<((startIndex: number, text: string, focusEditor: boolean) => void) | null>(null);
+
+    const hoverControlsRef = useRef<HoverControls | null>(null);
+    const [hover, setHover] = useState<HoverState>({ isOpen: false });
 
     const [autoComplete, setAutoComplete] = useState({
         isOpen: false,
@@ -36,6 +40,8 @@ export function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) =
         onCodeChange,
         onAutocompleteChange: (state: any) => setAutoComplete(state),
         onInsertSuggestionRef: insertSuggestionRef,
+        onHoverChange: setHover,
+        onHoverControlsRef: hoverControlsRef,
     });
 
     return (
@@ -69,6 +75,21 @@ export function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) =
                 onSelect={handleSelectSuggestion}
                 onClose={() => setAutoComplete(prev => ({ ...prev, isOpen: false }))}
             />
+
+            {hover.isOpen && (
+                <HoverTooltip
+                    key={hover.name}
+                    isOpen
+                    name={hover.name}
+                    description={hover.description}
+                    value={hover.value}
+                    creator={hover.creator}
+                    builtin={hover.builtin}
+                    anchor={hover.anchor}
+                    onMouseEnter={() => hoverControlsRef.current?.hold()}
+                    onMouseLeave={() => hoverControlsRef.current?.release()}
+                />
+            )}
         </div>
     );
 }
