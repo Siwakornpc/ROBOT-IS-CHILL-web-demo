@@ -60,6 +60,7 @@ type MacroInfo = { label: string; builtin?: boolean; creator: string; descriptio
 
 const HOVER_SHOW_DELAY = 300;
 const HOVER_HIDE_DELAY = 300;
+const HOVER_HIGHLIGHT_CLASS = "macro-name-hovered";
 
 export type AutocompleteState = {
     isOpen: boolean;
@@ -338,11 +339,18 @@ export function useEditorEngine({
         const isAutocompleteBlockingHover = () =>
             isAutocompleteOpenRef.current && document.activeElement === editorArea;
 
+        const unhighlight = () => {
+            editorArea.querySelectorAll(`.${HOVER_HIGHLIGHT_CLASS}`).forEach(node => {
+                node.classList.remove(HOVER_HIGHLIGHT_CLASS)
+            });
+        };
+
         const closeHover = () => {
             window.clearTimeout(showTimer);
             window.clearTimeout(hideTimer);
             hoveredName = null;
             hoverHeld = false;
+            unhighlight();
             onHoverChange?.({ isOpen: false });
         };
 
@@ -365,6 +373,7 @@ export function useEditorEngine({
             if (name === hoveredName) return;
             hoveredName = name;
             window.clearTimeout(showTimer);
+            unhighlight();
 
             const info = macroInfo.get(name);
             const description = info?.description?.trim();
@@ -374,8 +383,10 @@ export function useEditorEngine({
             if (!el) return;
             const rect = el.getBoundingClientRect();
 
+
             showTimer = window.setTimeout(() => {
                 if (hoveredName !== name || isAutocompleteBlockingHover()) return;
+                el.classList.add(HOVER_HIGHLIGHT_CLASS);
                 onHoverChange?.({
                     isOpen: true,
                     name,

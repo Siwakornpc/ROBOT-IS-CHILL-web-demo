@@ -3315,6 +3315,10 @@ tr:nth-child(odd) td {
     word-wrap: break-word;
 }
 
+.macro-name-hovered {
+    background: rgb(var(--md-color-on-primary), 0.1);
+}
+
 /*
 *
 *       FLEXIBILITY
