@@ -5,9 +5,11 @@ import { LeftBar, RightBar } from "@/components/page/SideBars";
 import { useState, useEffect } from "react";
 import { nav_btn_select } from "@/components/nav_select";
 import { readSearchUrlState, writeSearchUrlState } from "@/components/url_state/searchUrlState";
+import type { RenderMode } from "@/components/page/render/get_render";
 
 export default function Home() {
     const [code, setCode] = useState<string | null>(null);
+    const [renderMode, setRenderMode] = useState<RenderMode>("t");
 
     useEffect(() => {
         nav_btn_select("Render");
@@ -15,6 +17,7 @@ export default function Home() {
         const syncUrlState = () => {
             const nextState = readSearchUrlState();
             setCode(nextState.code);
+            setRenderMode(nextState.renderMode ?? "t");
         };
 
         syncUrlState();
@@ -44,17 +47,25 @@ export default function Home() {
     const handleCodeChange = (newCode: string) => {
         setCode(newCode);
         writeSearchUrlState({
-            query: "",
-            regex: false,
+            renderMode,
             details: null,
             code: newCode || null,
         });
+    };
+    const handleRenderModeChange = (newMode: RenderMode) => {
+        setRenderMode(newMode);
+        writeSearchUrlState({ renderMode: newMode, code });
     };
 
     return (
         <main className="align-layout">
             <LeftBar />
-            <Body onCodeChange={handleCodeChange} />
+            <Body
+                scene={code ?? ""}
+                onCodeChange={handleCodeChange}
+                renderMode={renderMode}
+                onRenderModeChange={handleRenderModeChange}
+            />
             <RightBar />
         </main>
     );

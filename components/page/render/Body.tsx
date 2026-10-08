@@ -2,17 +2,29 @@
 
 import { useState, useEffect, useRef } from "react";
 import { EditorScreen } from "@/components/editor/EditorScreen";
-import MacroInitializer from "@/components/macro/MacroInitializer";
 import ExecutionModeSelect from "@/components/page/render/ExecutionModeSelect";
 import { RenderScreen } from "@/components/render-screen/render/RenderScreen";
 import { StatusBar } from "../../editor/statsbar/render/StatusBar";
-import type { WindowWithEditor } from "../../editor/types";
+import { getRender, type RenderMode } from "./get_render";
 
-export default function Body({ onCodeChange }: { onCodeChange?: (code: string) => void }) {
+export default function Body({
+    onCodeChange,
+    renderMode,
+    onRenderModeChange,
+    scene = "",
+}: {
+    onCodeChange?: (code: string) => void;
+    renderMode: RenderMode;
+    onRenderModeChange: (mode: RenderMode) => void;
+    scene?: string;
+}) {
     const [isSmallScreen, setIsSmallScreen] = useState(false);
     const [isSmallLeftSplitScreen, setIsSmallLeftSplitScreen] = useState(false);
     const [sLSSWidthSize, setSLSSWidthSize] = useState(0);
     const [isSideBySideSupported, setIsSideBySideSupported] = useState(false);
+    const [renderedImageUrl, setRenderedImageUrl] = useState<string | null>(null);
+    const [renderError, setRenderError] = useState<string | null>(null);
+    const [isRendering, setIsRendering] = useState(false);
 
     const [isMounted, setIsMounted] = useState(false);
 
@@ -20,10 +32,69 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
 
     const [splitPosition, setSplitPosition] = useState(min_size);
     const mainBodyRef = useRef<HTMLDivElement>(null);
+    const renderedImageUrlRef = useRef<string | null>(null);
 
     const [splitscreen, setSplitscreen] = useState("top-bottom");
 
     const thisSRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!scene.trim()) {
+            if (renderedImageUrlRef.current) {
+                URL.revokeObjectURL(renderedImageUrlRef.current);
+                renderedImageUrlRef.current = null;
+            }
+
+            return;
+        }
+
+        const controller = new AbortController();
+        const timeout = window.setTimeout(async () => {
+            setIsRendering(true);
+            setRenderError(null);
+
+            try {
+                const image = await getRender(renderMode, scene, controller.signal);
+                if (controller.signal.aborted) return;
+
+                const nextImageUrl = URL.createObjectURL(image);
+                if (renderedImageUrlRef.current) {
+                    URL.revokeObjectURL(renderedImageUrlRef.current);
+                }
+                renderedImageUrlRef.current = nextImageUrl;
+                setRenderedImageUrl(nextImageUrl);
+                setIsRendering(false);
+            } catch (error) {
+                if (controller.signal.aborted) return;
+                setRenderError(error instanceof Error ? error.message : "Could not render the scene.");
+                setIsRendering(false);
+            }
+        }, 500);
+
+        return () => {
+            window.clearTimeout(timeout);
+            controller.abort();
+        };
+    }, [renderMode, scene]);
+
+    useEffect(() => () => {
+        if (renderedImageUrlRef.current) {
+            URL.revokeObjectURL(renderedImageUrlRef.current);
+        }
+    }, []);
+
+    const handleCodeChange = (code: string) => {
+        setRenderError(null);
+        setIsRendering(Boolean(code.trim()));
+        if (!code.trim()) {
+            setRenderedImageUrl(null);
+            if (renderedImageUrlRef.current) {
+                URL.revokeObjectURL(renderedImageUrlRef.current);
+                renderedImageUrlRef.current = null;
+            }
+        }
+        onCodeChange?.(code);
+    };
 
     useEffect(() => {
         setIsMounted(true);
@@ -127,7 +198,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
             const width = thisS.getBoundingClientRect().width;
 
             setIsSmallLeftSplitScreen(
-                activeSplitscreen === "left-right" && width < 400
+                activeSplitscreen === "left-right" && width < 520
             );
 
             setSLSSWidthSize(width);
@@ -204,13 +275,13 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                     <div className="run-controls">
                         <div className="flex gap-[8px] items-center">
                             <p className="text-label">Execute</p>
-                            <ExecutionModeSelect />
+                            <ExecutionModeSelect mode={renderMode} onModeChange={onRenderModeChange} />
                         </div>
 
                         <div className="flex gap-[8px]">
                             <StatusBar
                                 small={isSmallScreen || isSmallLeftSplitScreen}
-                                collapse={activeSplitscreen && sLSSWidthSize < 240 || window.innerWidth < 300}
+                                collapse={activeSplitscreen && sLSSWidthSize < 340 || window.innerWidth < 340}
                             />
                             
                             {isMounted && isSideBySideSupported && activeSplitscreen === "top-bottom" && (
@@ -229,9 +300,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                         </div>
                     </div>
                     <hr />
-                    <EditorScreen onCodeChange={onCodeChange} />
-                    
-                    <MacroInitializer />
+                    <EditorScreen onCodeChange={handleCodeChange} />
                 </div>
 
                 <div
@@ -265,7 +334,11 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                         )}
                     </div>
                     <hr />
-                    <RenderScreen />
+                    <RenderScreen
+                        imageUrl={scene.trim() ? renderedImageUrl : null}
+                        isRendering={!!scene.trim() && isRendering}
+                        error={scene.trim() ? renderError : null}
+                    />
                 </div>
             </div>
         </main>

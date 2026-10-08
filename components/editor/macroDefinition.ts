@@ -1,11 +1,11 @@
+import { buildSearchUrlHash, readSearchUrlState } from "@/components/url_state/searchUrlState";
+
 export function buildMacroDefinitionUrl(name: string): string {
     const macroName = String(name ?? "").trim();
     if (!macroName) return "/search";
 
-    const codeParam = typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("code");
-    const codeQuery = codeParam === null ? "" : `&code=${encodeURIComponent(codeParam)}`;
-
-    return `/search#macros?details=${encodeURIComponent(macroName)}${codeQuery}`;
+    const state = readSearchUrlState();
+    return `/search#${buildSearchUrlHash({ ...state, mode: "macros", details: macroName }, "/search")}`;
 }
 
 export function getMacroDefinitionNameFromElement(target: EventTarget | null): string | null {
@@ -24,10 +24,8 @@ export function buildVariableDefinitionUrl(name: string): string {
     const variableName = String(name ?? "").trim();
     if (!variableName) return "/search";
 
-    const codeParam = typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("code");
-    const codeQuery = codeParam === null ? "" : `&code=${encodeURIComponent(codeParam)}`;
-
-    return `/search#macros?details=${encodeURIComponent(variableName)}${codeQuery}`;
+    const state = readSearchUrlState();
+    return `/search#${buildSearchUrlHash({ ...state, mode: "macros", details: variableName }, "/search")}`;
 }
 
 export function getVariableDefinitionNameFromElement(target: EventTarget | null): string | null {

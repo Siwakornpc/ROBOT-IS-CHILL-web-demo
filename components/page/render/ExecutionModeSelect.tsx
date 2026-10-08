@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import MenuSelect, { MenuOption } from "@/components/MenuSelect";
+import type { RenderMode } from "@/components/page/render/get_render";
+import type { WindowWithEditor } from "@/components/editor/types";
 
 const options = [
     { value: "=t", label: "Render Tiles" },
@@ -10,13 +12,19 @@ const options = [
 
 type ExecutionMode = (typeof options)[number]["value"];
 
-export default function Executionoptionselect() {
-    const [mode, setMode] = useState<ExecutionMode>("=t");
+export default function Executionoptionselect({
+    mode,
+    onModeChange,
+}: {
+    mode: RenderMode;
+    onModeChange: (mode: RenderMode) => void;
+}) {
+    const selectedMode: ExecutionMode = mode === "t" ? "=t" : "=r";
 
     useEffect(() => {
-        (window as any).executionMode = mode;
+        (window as WindowWithEditor).executionMode = selectedMode;
         window.dispatchEvent(new Event("executionmodechange"));
-    }, [mode]);
+    }, [selectedMode]);
 
     const renderBadge = (item: MenuOption<ExecutionMode>) => <span>=<span className="emph">{item.value.slice(1)}</span></span>;
 
@@ -24,9 +32,11 @@ export default function Executionoptionselect() {
         <MenuSelect
             id="execution-mode-select"
             title="Execution Mode"
-            value={mode}
+            value={selectedMode}
             options={options}
-            onChange={setMode}
+            onChange={(nextMode) => {
+                onModeChange(nextMode === "=t" ? "t" : "r");
+            }}
             className="kill-styling"
             triggerValue={renderBadge}
             optionIcon={renderBadge}

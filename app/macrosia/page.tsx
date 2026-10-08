@@ -5,6 +5,7 @@ import { LeftBar, RightBar } from "@/components/page/SideBars";
 import { useState, useEffect } from "react";
 import { nav_btn_select } from "@/components/nav_select";
 import { readSearchUrlState, writeSearchUrlState, } from "@/components/url_state/searchUrlState";
+import { type SearchMode } from "@/components/page/search/SearchSelect";
 
 export default function Home() {
     const [code, setCode] = useState<string | null>(null);
@@ -20,6 +21,7 @@ export default function Home() {
     >("tiles");
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [useRegex, setUseRegex] = useState<boolean>(false);
+    const [filters, setFilters] = useState<Record<SearchMode, Record<string, string[]>>>(readSearchUrlState().filters);
     const [detailsName, setDetailsName] = useState<string | null>(null);
     const [selected, setSelected] = useState<string | null>(null);
 
@@ -31,6 +33,7 @@ export default function Home() {
             setMode(nextState.mode);
             setSearchQuery(nextState.query);
             setUseRegex(nextState.regex);
+            setFilters(nextState.filters);
             setDetailsName(nextState.details);
             setCode(nextState.code);
             setSelected(null);
@@ -63,8 +66,10 @@ export default function Home() {
     const handleCodeChange = (newCode: string) => {
         setCode(newCode);
         writeSearchUrlState({
+            mode,
             query: searchQuery,
             regex: useRegex,
+            filters,
             details: detailsName,
             code: newCode || null,
         });

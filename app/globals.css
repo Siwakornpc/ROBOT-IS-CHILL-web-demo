@@ -2056,9 +2056,31 @@ main.ascroll-y .main-body {
 
     margin: auto 0;
 }
+.render-preview {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    filter: var(--f-elevation-2) var(--f-elevation-1);
+}
 #render-output.complete,
 #macrosia-output.complete {
     color: var(--success);
+}
+.render-loading {
+    animation: render-loading 1s linear infinite;
+}
+
+@keyframes render-loading {
+    0% {
+        opacity: 0.2;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 0.2;
+    }
 }
 
 .output-screen {
@@ -2079,6 +2101,25 @@ main.ascroll-y .main-body {
     word-wrap: break-word;
     white-space: break-spaces;
     overflow-wrap: anywhere;
+}
+
+.display-text {
+    position: absolute;
+    display: flex;
+    width: stretch;
+    height: stretch;
+    justify-content: center;
+    align-items: center;
+
+    font-family: var(--font-family-code);
+    font-size: var(--font-size-code);
+}
+
+.display-text p {
+    background: rgb(var(--md-color-surface-container), 0.8);
+    border-radius: 4px;
+    border: 1px solid rgb(var(--md-color-outline-variant), 0.8);
+    padding: 4px 8px;
 }
 
 /*

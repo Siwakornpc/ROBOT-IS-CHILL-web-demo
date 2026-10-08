@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { type ReactNode, useEffect, useState, useRef } from "react";
 import { useMenu } from "@/components/MenuContext";
+import { buildSearchUrlHash, readSearchUrlState } from "@/components/url_state/searchUrlState";
 
 function navigateWithCode(
     event: React.MouseEvent<HTMLAnchorElement>,
@@ -19,9 +20,9 @@ function navigateWithCode(
 
     event.preventDefault();
 
-    const codeParam = new URLSearchParams(window.location.search).get("code");
     const target = new URL(path, window.location.href);
-    if (codeParam !== null) target.searchParams.set("code", codeParam);
+    const state = readSearchUrlState();
+    target.hash = buildSearchUrlHash({ ...state, details: null }, target.pathname, false);
 
     window.location.href = target.toString();
 }

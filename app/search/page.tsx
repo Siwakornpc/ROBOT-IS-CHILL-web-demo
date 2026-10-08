@@ -44,6 +44,7 @@ export default function Home() {
             setMode(nextState.mode);
             setSearchQuery(nextState.query ?? "");
             setUseRegex(nextState.regex);
+            setModeFilters(nextState.filters);
             setDetailsName(nextState.details);
             setCode(nextState.code);
             setSelected(null);
@@ -64,6 +65,7 @@ export default function Home() {
         nextSearchQuery: string,
         nextUseRegex: boolean,
         nextDetailsName: string | null,
+        nextFilters = modeFilters,
     ) => {
         if (urlTimerRef.current) clearTimeout(urlTimerRef.current);
         urlTimerRef.current = setTimeout(() => {
@@ -72,6 +74,7 @@ export default function Home() {
                 mode: nextMode,
                 query: nextSearchQuery,
                 regex: nextUseRegex,
+                filters: nextFilters,
                 details: nextDetailsName,
                 code,
             });
@@ -116,6 +119,10 @@ export default function Home() {
                 onModeChange={handleModeChange}
                 filters={modeFilters[mode] ?? {}}
                 onFiltersChange={(updatedFilters) => {
+                    updateUrl(mode, searchQuery, useRegex, detailsName, {
+                        ...modeFilters,
+                        [mode]: updatedFilters,
+                    });
                     setModeFilters((prev) => ({
                         ...prev,
                         [mode]: updatedFilters,
