@@ -47,14 +47,13 @@ export default function Home() {
     const handleCodeChange = (newCode: string) => {
         setCode(newCode);
         writeSearchUrlState({
-            renderMode,
             details: null,
             code: newCode || null,
         });
     };
     const handleRenderModeChange = (newMode: RenderMode) => {
         setRenderMode(newMode);
-        writeSearchUrlState({ renderMode: newMode, code });
+        writeSearchUrlState({ renderMode: newMode });
     };
 
     return (
