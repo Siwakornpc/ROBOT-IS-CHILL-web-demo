@@ -2113,6 +2113,9 @@ main.ascroll-y .main-body {
 
     font-family: var(--font-family-code);
     font-size: var(--font-size-code);
+
+    user-select: none;
+    pointer-events: none;
 }
 
 .display-text p {
