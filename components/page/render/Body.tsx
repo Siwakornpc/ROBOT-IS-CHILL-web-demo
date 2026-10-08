@@ -7,6 +7,15 @@ import { RenderScreen } from "@/components/render-screen/render/RenderScreen";
 import { StatusBar } from "../../editor/statsbar/render/StatusBar";
 import { getRender, type RenderMode } from "./get_render";
 
+function getRenderFilename(image: Blob): string {
+    const date = new Date();
+    const pad = (value: number) => String(value).padStart(2, "0");
+    const timestamp = `${String(date.getFullYear()).padStart(4, "0")}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}_${pad(date.getHours())}.${pad(date.getMinutes())}.${pad(date.getSeconds())}`;
+    const format = image.type.slice("image/".length).split("+")[0] || "png";
+
+    return `render_${timestamp}.${format}`;
+}
+
 export default function Body({
     onCodeChange,
     renderMode,
@@ -23,6 +32,7 @@ export default function Body({
     const [sLSSWidthSize, setSLSSWidthSize] = useState(0);
     const [isSideBySideSupported, setIsSideBySideSupported] = useState(false);
     const [renderedImageUrl, setRenderedImageUrl] = useState<string | null>(null);
+    const [renderedImageDownloadName, setRenderedImageDownloadName] = useState<string | null>(null);
     const [renderError, setRenderError] = useState<string | null>(null);
     const [isRendering, setIsRendering] = useState(false);
 
@@ -63,6 +73,7 @@ export default function Body({
                 }
                 renderedImageUrlRef.current = nextImageUrl;
                 setRenderedImageUrl(nextImageUrl);
+                setRenderedImageDownloadName(getRenderFilename(image));
                 setIsRendering(false);
             } catch (error) {
                 if (controller.signal.aborted) return;
@@ -88,6 +99,7 @@ export default function Body({
         setIsRendering(Boolean(code.trim()));
         if (!code.trim()) {
             setRenderedImageUrl(null);
+            setRenderedImageDownloadName(null);
             if (renderedImageUrlRef.current) {
                 URL.revokeObjectURL(renderedImageUrlRef.current);
                 renderedImageUrlRef.current = null;
@@ -319,19 +331,34 @@ export default function Body({
                     <div className="run-controls">
                         <p className="text-label">Output</p>
 
-                        {isMounted && isSideBySideSupported && activeSplitscreen === "left-right" && (
-                            <div className="status-bar splitscreen">
-                                <button
-                                    type="button"
-                                    className="status status-btn"
-                                    onClick={handleOnClick}
-                                >
-                                    <span className="icon">
-                                        splitscreen_bottom
-                                    </span>
-                                </button>
-                            </div>
-                        )}
+                        <div className="flex gap-[4px]">
+                            {isMounted && isSideBySideSupported && activeSplitscreen === "left-right" && (
+                                <div className="status-bar splitscreen">
+                                    <button
+                                        type="button"
+                                        className="status status-btn"
+                                        onClick={handleOnClick}
+                                    >
+                                        <span className="icon">
+                                            splitscreen_bottom
+                                        </span>
+                                    </button>
+                                </div>
+                            )}
+                            {scene.trim() && renderedImageUrl && renderedImageDownloadName && (
+                                <div className="status-bar">
+                                    <a
+                                        className="status status-btn"
+                                        href={renderedImageUrl}
+                                        download={renderedImageDownloadName}
+                                        title={`Download ${renderedImageDownloadName}`}
+                                        aria-label={`Download ${renderedImageDownloadName}`}
+                                    >
+                                        <i className="icon">download</i>
+                                    </a>
+                                </div>
+                            )}
+                        </div>
                     </div>
                     <hr />
                     <RenderScreen

@@ -19,12 +19,14 @@ export async function loadFlags() {
     flags = flagsMatch;
 
     console.log(flags);
+    window.dispatchEvent(new Event("rendersyntaxloaded"));
 }
 
 export async function loadVariantData() {
     if (typeof window === "undefined") return [];
 
     variants = await loadVariants();
+    window.dispatchEvent(new Event("rendersyntaxloaded"));
     return variants;
 }
 
