@@ -6,6 +6,9 @@ import ExecutionModeSelect from "@/components/page/render/ExecutionModeSelect";
 import { RenderScreen } from "@/components/render-screen/render/RenderScreen";
 import { StatusBar } from "../../editor/statsbar/render/StatusBar";
 import { getRender, type RenderMode } from "./get_render";
+import type { WindowWithEditor } from "@/components/editor/types";
+
+const EXECUTION_DELAY_MS = 800;
 
 function getRenderFilename(image: Blob): string {
     const date = new Date();
@@ -35,6 +38,10 @@ export default function Body({
     const [renderedImageDownloadName, setRenderedImageDownloadName] = useState<string | null>(null);
     const [renderError, setRenderError] = useState<string | null>(null);
     const [isRendering, setIsRendering] = useState(false);
+    const [isWaitingForPause, setIsWaitingForPause] = useState(false);
+    const [manualRenderVersion, setManualRenderVersion] = useState(0);
+    const [isEditorReady, setIsEditorReady] = useState(false);
+    const [hasEditedCode, setHasEditedCode] = useState(false);
 
     const [isMounted, setIsMounted] = useState(false);
 
@@ -43,13 +50,37 @@ export default function Body({
     const [splitPosition, setSplitPosition] = useState(min_size);
     const mainBodyRef = useRef<HTMLDivElement>(null);
     const renderedImageUrlRef = useRef<string | null>(null);
+    const waitingTimeoutRef = useRef<number | null>(null);
+    const renderTimeoutRef = useRef<number | null>(null);
+    const renderControllerRef = useRef<AbortController | null>(null);
+    const runImmediatelyRef = useRef(false);
+    const skipNextRenderRef = useRef(false);
 
     const [splitscreen, setSplitscreen] = useState("top-bottom");
 
     const thisSRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        let active = true;
+        const editorReady = (window as WindowWithEditor).editorReady;
+
+        editorReady?.then(() => {
+            if (active) setIsEditorReady(true);
+        });
+
+        return () => {
+            active = false;
+        };
+    }, []);
+
+    const [renderTimings, setRenderTimings] = useState<{
+        startupMs?: number;
+        renderMs?: number;
+    } | null>(null);
+
+    useEffect(() => {
         if (!scene.trim()) {
+            skipNextRenderRef.current = false;
             if (renderedImageUrlRef.current) {
                 URL.revokeObjectURL(renderedImageUrlRef.current);
                 renderedImageUrlRef.current = null;
@@ -58,13 +89,32 @@ export default function Body({
             return;
         }
 
+        if (skipNextRenderRef.current) {
+            skipNextRenderRef.current = false;
+            return;
+        }
+
         const controller = new AbortController();
+        renderControllerRef.current = controller;
+
+        runImmediatelyRef.current = false;
+        waitingTimeoutRef.current = window.setTimeout(() => {
+                waitingTimeoutRef.current = null;
+                setIsWaitingForPause(true);
+                setIsRendering(true);
+            }, 0);
         const timeout = window.setTimeout(async () => {
+            renderTimeoutRef.current = null;
+            setIsWaitingForPause(false);
             setIsRendering(true);
             setRenderError(null);
 
             try {
-                const image = await getRender(renderMode, scene, controller.signal);
+                const {
+                    image,
+                    startupMs,
+                    renderMs,
+                } = await getRender(renderMode, scene, controller.signal);
                 if (controller.signal.aborted) return;
 
                 const nextImageUrl = URL.createObjectURL(image);
@@ -75,18 +125,35 @@ export default function Body({
                 setRenderedImageUrl(nextImageUrl);
                 setRenderedImageDownloadName(getRenderFilename(image));
                 setIsRendering(false);
+
+                setRenderTimings({ startupMs, renderMs });
             } catch (error) {
                 if (controller.signal.aborted) return;
                 setRenderError(error instanceof Error ? error.message : "Could not render the scene.");
                 setIsRendering(false);
+            } finally {
+                if (renderControllerRef.current === controller) {
+                    renderControllerRef.current = null;
+                }
             }
-        }, 500);
+        }, EXECUTION_DELAY_MS);
+        renderTimeoutRef.current = timeout;
 
         return () => {
+            if (waitingTimeoutRef.current !== null) {
+                window.clearTimeout(waitingTimeoutRef.current);
+                waitingTimeoutRef.current = null;
+            }
             window.clearTimeout(timeout);
+            if (renderTimeoutRef.current === timeout) {
+                renderTimeoutRef.current = null;
+            }
             controller.abort();
+            if (renderControllerRef.current === controller) {
+                renderControllerRef.current = null;
+            }
         };
-    }, [renderMode, scene]);
+    }, [renderMode, scene, manualRenderVersion]);
 
     useEffect(() => () => {
         if (renderedImageUrlRef.current) {
@@ -95,7 +162,9 @@ export default function Body({
     }, []);
 
     const handleCodeChange = (code: string) => {
+        setHasEditedCode(true);
         setRenderError(null);
+        setIsWaitingForPause(Boolean(code.trim()));
         setIsRendering(Boolean(code.trim()));
         if (!code.trim()) {
             setRenderedImageUrl(null);
@@ -106,6 +175,35 @@ export default function Body({
             }
         }
         onCodeChange?.(code);
+    };
+
+    const handleRun = () => {
+        if (!scene.trim()) return;
+
+        if (isRendering) {
+            const hasPendingRequest = renderTimeoutRef.current !== null || renderControllerRef.current !== null;
+            if (waitingTimeoutRef.current !== null) {
+                window.clearTimeout(waitingTimeoutRef.current);
+                waitingTimeoutRef.current = null;
+            }
+            if (renderTimeoutRef.current !== null) {
+                window.clearTimeout(renderTimeoutRef.current);
+                renderTimeoutRef.current = null;
+            }
+            renderControllerRef.current?.abort();
+            renderControllerRef.current = null;
+            if (!hasPendingRequest) {
+                skipNextRenderRef.current = true;
+            }
+            setIsWaitingForPause(false);
+            setIsRendering(false);
+            return;
+        }
+
+        runImmediatelyRef.current = true;
+        setIsWaitingForPause(false);
+        setIsRendering(true);
+        setManualRenderVersion((version) => version + 1);
     };
 
     useEffect(() => {
@@ -210,7 +308,7 @@ export default function Body({
             const width = thisS.getBoundingClientRect().width;
 
             setIsSmallLeftSplitScreen(
-                activeSplitscreen === "left-right" && width < 520
+                activeSplitscreen === "left-right" && width < 480
             );
 
             setSLSSWidthSize(width);
@@ -292,8 +390,12 @@ export default function Body({
 
                         <div className="flex gap-[8px]">
                             <StatusBar
+                                startupMs={renderTimings?.startupMs}
+                                renderMs={renderTimings?.renderMs}
                                 small={isSmallScreen || isSmallLeftSplitScreen}
                                 collapse={activeSplitscreen && sLSSWidthSize < 340 || window.innerWidth < 340}
+                                isRunning={isRendering}
+                                onRun={handleRun}
                             />
                             
                             {isMounted && isSideBySideSupported && activeSplitscreen === "top-bottom" && (
@@ -364,7 +466,9 @@ export default function Body({
                     <RenderScreen
                         imageUrl={scene.trim() ? renderedImageUrl : null}
                         isRendering={!!scene.trim() && isRendering}
+                        isWaitingForPause={!!scene.trim() && isWaitingForPause}
                         error={scene.trim() ? renderError : null}
+                        showReady={!hasEditedCode && isEditorReady}
                     />
                 </div>
             </div>

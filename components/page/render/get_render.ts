@@ -1,17 +1,27 @@
 export type RenderMode = "t" | "r";
 
-const RENDER_ENDPOINT = "https://robot-is-chill-browser-compatible.onrender.com/render";
+export type RenderResult = {
+    image: Blob;
+    startupMs?: number;
+    renderMs?: number;
+    totalMs: number;
+};
+
+const RENDER_ENDPOINT =
+    "https://robot-is-chill-browser-compatible.onrender.com/render";
 
 export async function getRender(
     mode: RenderMode,
     scene: string,
     signal?: AbortSignal,
-): Promise<Blob> {
+): Promise<RenderResult> {
+    const started = performance.now();
     const url = new URL(RENDER_ENDPOINT);
     url.searchParams.set("mode", mode);
     url.searchParams.set("scene", scene);
+    url.searchParams.set("fresh", "1");
 
-    const response = await fetch(url, { signal });
+    const response = await fetch(url, { signal, cache: "no-store" });
     if (!response.ok) {
         const body = await response.text();
         let message = body;
@@ -35,5 +45,18 @@ export async function getRender(
         throw new Error(`Expected an image response but received "${image.type || "unknown"}".`);
     }
 
-    return image;
+    const serverTiming = response.headers.get("Server-Timing") ?? "";
+    const getDuration = (name: string): number | undefined => {
+        const match = serverTiming.match(
+            new RegExp(`(?:^|,\\s*)${name};dur=([\\d.]+)`),
+        );
+        return match ? Number(match[1]) : undefined;
+    };
+
+    return {
+        image,
+        startupMs: getDuration("startup"),
+        renderMs: getDuration("render"),
+        totalMs: performance.now() - started,
+    };
 }

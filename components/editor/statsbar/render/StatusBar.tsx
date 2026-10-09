@@ -1,11 +1,23 @@
 import MenuSelect from "@/components/MenuSelect";
 
+function formatMs(value?: number) {
+    return value == null ? "0ms" : `${Math.round(value)}ms`;
+}
+
 export function StatusBar({
     small = false,
     collapse = false,
+    isRunning = false,
+    onRun,
+    startupMs,
+    renderMs,
 }: {
     small?: boolean;
     collapse?: boolean;
+    isRunning?: boolean;
+    onRun?: () => void;
+    startupMs?: number;
+    renderMs?: number;
 }) {
     return (
         <div className="status-bar">
@@ -13,24 +25,17 @@ export function StatusBar({
                 ?<>
                     <div className="status">
                         {small
-                            ? <span className="status-label icon emph">directions_walk</span>
-                            : <span className="status-label emph">Steps</span>
-                        }
-                        <span className="status-value" id="status-steps">0</span>
-                    </div>
-                    <div className="status">
-                        {small
                             ? <span className="status-label icon">speed</span>
-                            : <span className="status-label">Execution Time</span>
+                            : <span className="status-label">Startup Time</span>
                         }
-                        <span className="status-value" id="status-time">0ms</span>
+                        <span className="status-value">{formatMs(startupMs)}</span>
                     </div>
                     <div className="status">
                         {small
                             ? <span className="status-label icon">layers</span>
                             : <span className="status-label">Render Time</span>
                         }
-                        <span className="status-value" id="status-render-time">0ms</span>
+                        <span className="status-value">{formatMs(renderMs)}</span>
                     </div>
                 </>
                 :
@@ -47,18 +52,9 @@ export function StatusBar({
                             <div
                                 className="flex gap-[8px] items-center p-[12px]"
                             >
-                                <i className="icon menu-option-icon">directions_walk</i>
-                                <div>
-                                    <span className="status-value" id="status-steps">0</span>
-                                </div>
-                            </div>
-                            
-                            <div
-                                className="flex gap-[8px] items-center p-[12px]"
-                            >
                                 <i className="icon menu-option-icon">speed</i>
                                 <div>
-                                    <span className="status-value" id="status-steps">0</span>
+                                    <span className="status-value">{formatMs(startupMs)}</span>
                                 </div>
                             </div>
 
@@ -67,9 +63,10 @@ export function StatusBar({
                             >
                                 <i className="icon menu-option-icon">layers</i>
                                 <div>
-                                <span className="status-value" id="status-time">0ms</span>
+                                    <span className="status-value">{formatMs(renderMs)}</span>
                                 </div>
                             </div>
+
                         </div>
                     }
                     trigger={({getInputProps}) => (
@@ -84,9 +81,13 @@ export function StatusBar({
                 />
             }
             <button
+                type="button"
                 id="run-button"
                 className="status status-btn"
-            ><i className="icon">play_arrow</i>
+                onClick={onRun}
+                aria-label={isRunning ? "Stop render" : "Run render"}
+                title={isRunning ? "Stop render" : "Run render"}
+            ><i className="icon">{isRunning ? "stop" : "play_arrow"}</i>
             </button>
         </div>
     );
