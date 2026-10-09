@@ -5,7 +5,7 @@ import { EditorScreen } from "@/components/editor/EditorScreen";
 import ExecutionModeSelect from "@/components/page/render/ExecutionModeSelect";
 import { RenderScreen } from "@/components/render-screen/render/RenderScreen";
 import { StatusBar } from "../../editor/statsbar/render/StatusBar";
-import { getRender, type RenderMode } from "./get_render";
+import { getRender, RenderRequestError, type RenderMode } from "./get_render";
 import type { WindowWithEditor } from "@/components/editor/types";
 
 const EXECUTION_DELAY_MS = 800;
@@ -129,7 +129,11 @@ export default function Body({
                 setRenderTimings({ startupMs, renderMs });
             } catch (error) {
                 if (controller.signal.aborted) return;
-                setRenderError(error instanceof Error ? error.message : "Could not render the scene.");
+                const message = error instanceof Error ? error.message : "Could not render the scene.";
+                const duration = error instanceof RenderRequestError
+                    ? ` · ${Math.round(error.totalMs)} ms`
+                    : "";
+                setRenderError(`${message}${duration}`);
                 setIsRendering(false);
             } finally {
                 if (renderControllerRef.current === controller) {

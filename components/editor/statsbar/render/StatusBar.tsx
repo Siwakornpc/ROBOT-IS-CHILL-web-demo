@@ -1,7 +1,12 @@
 import MenuSelect from "@/components/MenuSelect";
 
 function formatMs(value?: number) {
-    return value == null ? "0ms" : `${Math.round(value)}ms`;
+    return value == null
+        ? "0ms"
+        : `${value.toLocaleString("en-US", {
+            minimumFractionDigits: 3,
+            maximumFractionDigits: 3,
+        })}ms`;
 }
 
 export function StatusBar({

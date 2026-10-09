@@ -11,6 +11,16 @@ export function RenderScreen({
     error: string | null;
     showReady: boolean;
 }) {
+    const statusText = isWaitingForPause
+        ? "Waiting for pause..."
+        : isRendering
+            ? "Rendering…"
+            : error
+                ? error
+                : showReady && !imageUrl
+                    ? "Ready to render!"
+                    : null;
+
     return (
         <div className="render-screen ascroll-x ascroll-y">
             <div id="render-output" aria-live="polite">
@@ -25,14 +35,7 @@ export function RenderScreen({
                 </div>
             </div>
             <div className="display-text">
-                {isWaitingForPause && <p>Waiting for pause...</p>}
-                {!isWaitingForPause && isRendering && (
-                    <p className="">Rendering…</p>
-                )}
-                {error && <p role="alert">{error}</p>}
-                {showReady && !imageUrl && !isWaitingForPause && !isRendering && !error && (
-                    <p>Ready to render!</p>
-                )}
+                {statusText && <p role={error && !isWaitingForPause && !isRendering ? "alert" : undefined}>{statusText}</p>}
             </div>
         </div>
     );
