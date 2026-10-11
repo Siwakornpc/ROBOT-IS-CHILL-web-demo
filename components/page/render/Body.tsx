@@ -97,12 +97,15 @@ export default function Body({
         const controller = new AbortController();
         renderControllerRef.current = controller;
 
+        const runImmediately = runImmediatelyRef.current;
         runImmediatelyRef.current = false;
-        waitingTimeoutRef.current = window.setTimeout(() => {
+        if (!runImmediately) {
+            waitingTimeoutRef.current = window.setTimeout(() => {
                 waitingTimeoutRef.current = null;
                 setIsWaitingForPause(true);
                 setIsRendering(true);
             }, 0);
+        }
         const timeout = window.setTimeout(async () => {
             renderTimeoutRef.current = null;
             setIsWaitingForPause(false);
@@ -130,17 +133,19 @@ export default function Body({
             } catch (error) {
                 if (controller.signal.aborted) return;
                 const message = error instanceof Error ? error.message : "Could not render the scene.";
-                const duration = error instanceof RenderRequestError
-                    ? ` · ${Math.round(error.totalMs)} ms`
-                    : "";
-                setRenderError(`${message}${duration}`);
+                const errorMs = error instanceof RenderRequestError ? error.totalMs : undefined;
+                setRenderTimings((current) => ({
+                    startupMs: current?.startupMs ?? 0,
+                    renderMs: errorMs ?? current?.renderMs ?? 0,
+                }));
+                setRenderError(message);
                 setIsRendering(false);
             } finally {
                 if (renderControllerRef.current === controller) {
                     renderControllerRef.current = null;
                 }
             }
-        }, EXECUTION_DELAY_MS);
+        }, runImmediately ? 0 : EXECUTION_DELAY_MS);
         renderTimeoutRef.current = timeout;
 
         return () => {
