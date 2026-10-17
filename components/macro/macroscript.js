@@ -26,8 +26,6 @@ export async function initMacro() {
     const editorArea = document.getElementById("editor-area");
     const output = document.getElementById("render-output") ?? document.getElementById("macrosia-output");
     const run_button = document.getElementById("run-button");
-    const statusTime = document.querySelectorAll("#status-time");
-    const statusSteps = document.querySelectorAll("#status-steps");
 
     if (!editor.value) {
         hasCodeInEditor = false;
@@ -161,21 +159,19 @@ ${Object.keys(dbMacros).length} macros.`;
                 const steps = [...result.matchAll(stepMatch)]
                     .map(match => Number(match[1]));
 
-                if (statusTime) {
-                    statusTime.forEach(time => time.textContent = `${executionTime}ms`);
-                }
+                document.querySelectorAll("#status-time").forEach(
+                    time => time.textContent = `${executionTime}ms`
+                );
 
-                if (statusSteps) {
-                    statusSteps.forEach(step => {
-                        if (result.includes("[MACRO ERROR]")) {
-                            step.classList.add("error");
-                            step.textContent = "Error";
-                        } else {
-                            step.classList.remove("error");
-                            step.textContent = steps[0].toLocaleString('us-US') ?? 0;
-                        }
-                    });
-                }
+                document.querySelectorAll("#status-steps").forEach(step => {
+                    if (result.includes("[MACRO ERROR]")) {
+                        step.classList.add("error");
+                        step.textContent = "Error";
+                    } else {
+                        step.classList.remove("error");
+                        step.textContent = steps[0]?.toLocaleString("en-US") ?? "0";
+                    }
+                });
 
                 output.classList.remove("error");
 
