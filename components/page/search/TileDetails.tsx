@@ -63,6 +63,10 @@ export function Details({ selected, allResults }: DetailsProps) {
     const paletteTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const isCopiedMobileRef = useRef(false);
 
+    const [copiedValue, setCopiedValue] = useState<string | null>(null);
+    const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const isCopiedValueRef = useRef(false);
+
     const handleCopyPalette = async (text: string, x: number, y: number) => {
         try {
             await navigator.clipboard.writeText(text);
@@ -109,6 +113,22 @@ export function Details({ selected, allResults }: DetailsProps) {
         }
         setCopiedPalette(null);
     };
+
+    const handleCopyValue = async (text: string) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+            setCopiedValue(text);
+
+            copyTimeoutRef.current = setTimeout(() => {
+                setCopiedValue(null);
+                copyTimeoutRef.current = null;
+            }, 1500);
+        } catch (err) {
+            console.error("Failed to copy text: ", err);
+        }
+        
+    }
 
     // syntaxes
     useEffect(() => {
@@ -405,14 +425,49 @@ export function Details({ selected, allResults }: DetailsProps) {
 
                 {selected.macro.creator && <DiscordUser id={selected.macro.creator} />}
 
-                <p className="search-details-label">Description</p>
+                <div className="flex justify-between">
+                    <p className="search-details-label">Description</p>
+                    <div className="status-bar">
+                        <button
+                            type="button"
+                            className="status status-btn"
+                            onClick={() => {
+                                if (selected.macro.description) {
+                                    void handleCopyValue(selected.macro.description);
+                                }
+                            }}
+                        >
+                            <span className="icon">
+                                {copiedValue !== selected.macro.description ? "content_copy" : "check"}
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
                 <div className="search-details-detailbox" id="description">
                     <DiscordMarkdown>{selected.macro.description}</DiscordMarkdown>
                 </div>
 
                 {!isBuiltin
                     ? <>
-                        <p className="search-details-label">Value</p>
+                        <div className="flex justify-between">
+                            <p className="search-details-label">Value</p>
+                            <div className="status-bar">
+                                <button
+                                    type="button"
+                                    className="status status-btn"
+                                    onClick={() => {
+                                        if (selected.macro.value) {
+                                            void handleCopyValue(selected.macro.value);
+                                        }
+                                    }}
+                                >
+                                    <span className="icon">
+                                        {copiedValue !== selected.macro.value ? "content_copy" : "check"}
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
                         <div
                             ref={macroElementRef}
                             className="search-details-detailbox macro"
