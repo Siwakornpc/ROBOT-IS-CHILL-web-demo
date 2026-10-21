@@ -55,6 +55,7 @@ export function Details({ selected, allResults }: DetailsProps) {
     const variantElementRef = useRef<HTMLDivElement>(null);
     const flagElementRef = useRef<HTMLDivElement>(null);
     const [tilingFrame, setTilingFrame] = useState(0);
+    const [customFrames, setCustomFrames] = useState<number[]>([]);
     const [select, setSelect] = useState<string | null>("one_tile");
     const [displaySize, setDisplaySize] = useState<string>("Loading...");
 
@@ -164,18 +165,59 @@ export function Details({ selected, allResults }: DetailsProps) {
         );
     }, [selected]);
 
+    // [customFrames, setCustomFrames]
+    useEffect(() => {
+        setCustomFrames([]);
+        if (!("tile" in selected) || selected.tile.tiling !== "custom") return;
+
+        const spriteName = selected.tile.sprite[0];
+        const tomlUrl = `https://raw.githubusercontent.com/ROBOT-IS-CHILL/robot-is-chill/main/data/custom/${spriteName}.toml`;
+        let cancelled = false;
+
+        async function loadCustomFrames() {
+            const response = await fetch(tomlUrl);
+            if (!response.ok) throw new Error(`TOML fetch failed: ${response.status}`);
+
+            const tomlText = await response.text();
+
+            if (!cancelled) {
+                const spriteKey = selected.name; // Replace if the TOML key uses a different field.
+                const escapeRegExp = (value: string) =>
+                    value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+                const regexp = new RegExp(
+                    `^\\s*${escapeRegExp(spriteKey)}\\s*=\\s*\\{[^}]*?\\bextra_frames\\s*=\\s*\\[([^\\]]*)\\]`,
+                    "m"
+                );
+
+                const frameList = tomlText.match(regexp)?.[1];
+                const frames = frameList
+                    ? frameList.split(",").map(value => Number(value.trim())).filter(Number.isInteger)
+                    : [];
+
+                setCustomFrames(frames);
+            }
+        }
+
+        void loadCustomFrames().catch(console.error);
+
+        return () => {
+            cancelled = true;
+        };
+    }, [selected]);
+
     // [tilingFrame, setTilingFrame]
     useEffect(() => {
         if (!("tile" in selected)) return;
         setTilingFrame(0);
 
-        const tiled = mapTiling(selected.name, selected.tile.tiling);
+        const tiled = mapTiling(selected.name, selected.tile.tiling, customFrames);
         const imageMap = tiled.imageMap.flat().filter(item => item !== "");
         if (imageMap.length <= 1) return;
 
         const interval = setInterval(() => setTilingFrame((frame) => (frame + 1) % imageMap.length), 1200);
         return () => clearInterval(interval);
-    }, [selected]);
+    }, [selected, customFrames]);
 
     // [showTiled, setShowTiled]
     function handleSelect(e: React.MouseEvent<HTMLButtonElement>) {
@@ -235,7 +277,7 @@ export function Details({ selected, allResults }: DetailsProps) {
     // Details for Tiles
 
     if ("tile" in selected) {
-        const tiled = mapTiling(selected.name, selected.tile.tiling);
+        const tiled = mapTiling(selected.name, selected.tile.tiling, customFrames);
         const imageMap = tiled.imageMap.flat();
         const indexMap = tiled.indexMap.flat();
 
@@ -397,6 +439,12 @@ export function Details({ selected, allResults }: DetailsProps) {
                             <td>{aliases.join(", ")}</td>
                         </tr>
                     }
+                    {selected.tile.tiling && (
+                        <tr>
+                            <td>Extra Frames</td>
+                            <td>{customFrames.join(", ")}</td>
+                        </tr>
+                    )}
                 </tbody>
             </table>
         </>);

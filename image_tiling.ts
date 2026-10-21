@@ -31,8 +31,12 @@ const TILINGS = {
 
 type TilingName = keyof typeof TILINGS;
 
-export function mapTiling(name: string, tiling: string) {
-    const mapped = TILINGS[tiling as TilingName] ?? TILINGS.none;
+export function mapTiling(
+    name: string, 
+    tiling: string,
+    customFrames: readonly number[] = [],
+) {
+    const mapped = tiling === "custom" ? customFrames : TILINGS[tiling as TilingName] ?? TILINGS.none;
     const imageMap: string[][] = [];
     const indexMap: number[][] = [];
 
