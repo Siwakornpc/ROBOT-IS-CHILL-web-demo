@@ -25,7 +25,8 @@ let miscv = [
     "black",
     "grey",
     "silver",
-    "white"
+    "white",
+    "cut",
 ];
 export let allv = [];
 

@@ -598,6 +598,62 @@ export const THEME_PRESETS: ThemePreset[] = [
             }
         }
     },
+        {
+        id: "so-dark-modern",
+        label: "So Dark Modern",
+        theme: {
+            color: "#8c7bb4",
+            scheme: "dark",
+            contrast: "system",
+            brightness: 2
+        },
+        colors: {
+            syntaxName: {
+                color: "#9CDCFE",
+                real: true
+            },
+            syntaxValue: {
+                color: "#CC9077",
+                real: true
+            },
+            syntaxEscaped: {
+                color: "#D7BA7D",
+                real: true
+            },
+            syntaxVariable: {
+                color: "#4FC1FF",
+                real: true
+            },
+            syntaxBracketLayer0: {
+                color: "#FFD70B",
+                real: true
+            },
+            syntaxBracketLayer1: {
+                color: "#DA70D6",
+                real: true
+            },
+            syntaxBracketLayer2: {
+                color: "#189FFF",
+                real: true
+            },
+            renderFlagName: {
+                color: "#DCDCAA",
+                real: true
+            },
+            renderFlagValue: {
+                color: "#B5CEA8",
+                real: true
+            },
+            renderVariantName: {
+                color: "#C586C0",
+                real: true
+            },
+            renderVariantValue: {
+                color: "#d16969",
+                real: true
+            }
+        }
+    },
 ];
 
 // Unspecified keys fall back to defaults, so switching presets never leaves leftovers
