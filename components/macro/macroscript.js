@@ -10,10 +10,8 @@ export async function initMacro() {
         "return import(url)"
     );
 
-    const mod = await dynamicImport(
-        "https://robot-is-chill.github.io/macrosia/pkg/glue.js"
-    );
-
+    const mod = await import("@/components/editor/glue/glue.js");
+    
     const {
         default: init,
         evaluate,
