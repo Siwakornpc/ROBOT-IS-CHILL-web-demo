@@ -7,7 +7,7 @@
 
     --body: rgb(var(--md-color-surface));
     --font-size-code: .875rem;
-    --editor-line-height: calc(var(--font-size-code) + 10px);
+    --editor-line-height: calc(var(--font-size-code));
     --editor-titlebar: rgb(var(--md-color-secondary-container));
 
     --normal: rgb(var(--md-color-on-surface));
