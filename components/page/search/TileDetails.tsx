@@ -439,7 +439,7 @@ export function Details({ selected, allResults }: DetailsProps) {
                             <td>{aliases.join(", ")}</td>
                         </tr>
                     }
-                    {selected.tile.tiling && (
+                    {selected.tile.tiling === "custom" && (
                         <tr>
                             <td>Extra Frames</td>
                             <td>{customFrames.join(", ")}</td>

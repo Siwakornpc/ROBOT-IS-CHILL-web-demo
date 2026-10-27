@@ -26,24 +26,23 @@ export function StatusBar({
 }) {
     return (
         <div className="status-bar">
-            {!collapse
-                ?<>
-                    <div className="status">
-                        {small
-                            ? <span className="status-label icon">speed</span>
-                            : <span className="status-label">Startup Time</span>
-                        }
-                        <span className="status-value">{formatMs(startupMs)}</span>
-                    </div>
-                    <div className="status">
-                        {small
-                            ? <span className="status-label icon">layers</span>
-                            : <span className="status-label">Render Time</span>
-                        }
-                        <span className="status-value">{formatMs(renderMs)}</span>
-                    </div>
-                </>
-                :
+            <div className={`flex overflow-hidden h-full ${!collapse ? "" : "hidden"}`}>
+                <div className="status">
+                    {small
+                        ? <span className="status-label icon">speed</span>
+                        : <span className="status-label">Startup Time</span>
+                    }
+                    <span className="status-value">{formatMs(startupMs)}</span>
+                </div>
+                <div className="status">
+                    {small
+                        ? <span className="status-label icon">layers</span>
+                        : <span className="status-label">Render Time</span>
+                    }
+                    <span className="status-value">{formatMs(renderMs)}</span>
+                </div>
+            </div>
+            <div className={`${collapse ? "" : "hidden"}`}>
                 <MenuSelect
                     id="status-collapsed"
                     title="Status:"
@@ -84,7 +83,7 @@ export function StatusBar({
                     )}
                     onChange={() => {}}
                 />
-            }
+            </div>
             <button
                 type="button"
                 id="run-button"

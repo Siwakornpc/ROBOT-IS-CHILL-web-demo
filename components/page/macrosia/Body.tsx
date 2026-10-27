@@ -4,13 +4,13 @@ import { useState, useEffect, useRef } from "react";
 import { EditorScreen } from "@/components/editor/EditorScreen";
 import MacroInitializer from "@/components/macro/MacroInitializer";
 import { RenderScreen } from "@/components/render-screen/macrosia/RenderScreen";
-import { StatusBar } from "../../editor/statsbar/macrosia/StatusBar";
+import { StatusBar } from '../../editor/statsbar/macrosia/StatusBar';
 import type { WindowWithEditor } from "../../editor/types";
 
 export default function Body({ onCodeChange }: { onCodeChange?: (code: string) => void }) {
     const [isSmallScreen, setIsSmallScreen] = useState(false);
     const [isSmallLeftSplitScreen, setIsSmallLeftSplitScreen] = useState(false);
-    const [sLSSWidthSize, setSLSSWidthSize] = useState(0);
+    const [isVerySmallLeftSplitScreen, setVerySmallLeftSplitScreen] = useState(false);
     const [isSideBySideSupported, setIsSideBySideSupported] = useState(false);
 
     const [isMounted, setIsMounted] = useState(false);
@@ -24,8 +24,19 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
 
     const thisSRef = useRef<HTMLDivElement>(null);
 
+    const statusBarRef = useRef<HTMLDivElement>(null);
+    const [isVerySmallScreen, setIsVerySmallScreen] = useState(false);
+
+    const statusBarSize = useRef("full");
+
+    const prevBarWidth = useRef({
+        s: 0,
+        vs: 0,
+    });
+
     useEffect(() => {
         setIsMounted(true);
+        const statusBar = statusBarRef.current;
 
         try {
             const saved = localStorage.getItem("splitscreen");
@@ -42,11 +53,34 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
         }
 
         const checkScreenSize = () => {
-            setIsSmallScreen(window.innerWidth < 640);
+            const barWidth = statusBar?.getBoundingClientRect().width ?? 0;
+
+            const toSmall = window.innerWidth - (prevBarWidth.current.s || barWidth) < 92;
+            
+            statusBarSize.current = toSmall ? "small" : "full";
+            console.log(prevBarWidth.current.s !== barWidth);
+            
+            const toVerySmall = (
+                statusBarSize.current === "small" &&
+                prevBarWidth.current.s !== barWidth
+            ) && window.innerWidth - (prevBarWidth.current.vs || barWidth) < 92
+
+
+            setIsSmallScreen(toSmall);
+            setIsVerySmallScreen(toVerySmall);
+
+            // this is for when you need the split screen option on smaller browser window size
+            // had to note bruhhh
             setIsSideBySideSupported(window.innerHeight < 580
                 ? window.innerWidth >= 380
                 : window.innerWidth >= 820
             );
+
+            if (window.innerWidth - (prevBarWidth.current.s || barWidth) > 92) prevBarWidth.current.s = barWidth;
+            if (window.innerWidth - (prevBarWidth.current.vs || barWidth) > 92 && (
+                statusBarSize.current === "small" &&
+                prevBarWidth.current.s !== barWidth
+            )) prevBarWidth.current.vs = barWidth;
         };
 
         checkScreenSize();
@@ -108,6 +142,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
 
         const mainBody = mainBodyRef.current;
         const thisS = thisSRef.current;
+        const statusBar = statusBarRef.current;
 
         if (!mainBody || !thisS) return;
 
@@ -124,36 +159,49 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
             }
 
             const width = thisS.getBoundingClientRect().width;
+            const barWidth = statusBar?.getBoundingClientRect().width ?? 0;
 
-            setIsSmallLeftSplitScreen(
-                activeSplitscreen === "left-right" && width < 400
-            );
+            const toSmall = 
+                activeSplitscreen === "left-right" &&
+                width - (prevBarWidth.current.s || barWidth) < 72;
 
-            setSLSSWidthSize(width);
-        };
+            statusBarSize.current = toSmall ? "small" : "full";
+            console.log(prevBarWidth.current.s !== barWidth);
 
-        const animationFrame = window.requestAnimationFrame(updateLayout);
+            const toVerySmall = 
+                activeSplitscreen === "left-right" && (
+                    statusBarSize.current === "small" &&
+                    prevBarWidth.current.s !== barWidth
+                ) && width - (prevBarWidth.current.vs || barWidth) < 72;
 
-        const resizeObserver =
-            typeof ResizeObserver !== "undefined"
-                ? new ResizeObserver(updateLayout)
-                : null;
+            setIsSmallLeftSplitScreen(toSmall);
 
-        resizeObserver?.observe(mainBody);
-        resizeObserver?.observe(thisS);
+            setVerySmallLeftSplitScreen(toVerySmall);
 
-        if (!resizeObserver) {
-            window.addEventListener("resize", updateLayout);
-        }
+            if (width - (prevBarWidth.current.s || barWidth) > 72) {
+                prevBarWidth.current.s = barWidth;
+            }
 
-        return () => {
-            window.cancelAnimationFrame(animationFrame);
-            resizeObserver?.disconnect();
-
-            if (!resizeObserver) {
-                window.removeEventListener("resize", updateLayout);
+            if (width - (prevBarWidth.current.vs || barWidth) > 72 &&(
+                statusBarSize.current === "small" &&
+                prevBarWidth.current.s !== barWidth
+            )) {
+                prevBarWidth.current.vs = barWidth;
             }
         };
+
+        updateLayout();
+
+        const resizeObserver = new ResizeObserver(updateLayout);
+
+        resizeObserver.observe(mainBody);
+        resizeObserver.observe(thisS);
+
+        if (statusBar) {
+            resizeObserver.observe(statusBar);
+        }
+
+        return () => resizeObserver.disconnect();
     }, [activeSplitscreen, isMounted]);
 
 
@@ -204,10 +252,12 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                         <p className="text-label">Execute</p>
 
                         <div className="flex gap-[8px]">
-                            <StatusBar
-                                small={isSmallScreen || isSmallLeftSplitScreen}
-                                collapse={activeSplitscreen && sLSSWidthSize < 240 || window.innerWidth < 300}
-                            />
+                            <div ref={statusBarRef} className="w-fit">
+                                <StatusBar
+                                    small={isSmallScreen || isSmallLeftSplitScreen}
+                                    collapse={isVerySmallLeftSplitScreen || isVerySmallScreen}
+                                />
+                            </div>
                             
                             {isMounted && isSideBySideSupported && activeSplitscreen === "top-bottom" && (
                                 <div className="status-bar splitscreen">

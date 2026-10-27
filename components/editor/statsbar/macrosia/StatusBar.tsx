@@ -9,24 +9,23 @@ export function StatusBar({
 }) {
     return (
         <div className="status-bar">
-            {!collapse
-                ?<>
-                    <div className="status">
-                        {small
-                            ? <span className="status-label icon emph">directions_walk</span>
-                            : <span className="status-label emph">Steps</span>
-                        }
-                        <span className="status-value" id="status-steps">0</span>
-                    </div>
-                    <div className="status">
-                        {small
-                            ? <span className="status-label icon">speed</span>
-                            : <span className="status-label">Time</span>
-                        }
-                        <span className="status-value" id="status-time">0ms</span>
-                    </div>
-                </>
-                :
+            <div className={`flex overflow-hidden h-full ${!collapse ? "" : "hidden"}`}>
+                <div className="status">
+                    {small
+                        ? <span className="status-label icon emph">directions_walk</span>
+                        : <span className="status-label emph">Steps</span>
+                    }
+                    <span className="status-value" id="status-steps">0</span>
+                </div>
+                <div className="status">
+                    {small
+                        ? <span className="status-label icon">speed</span>
+                        : <span className="status-label">Time</span>
+                    }
+                    <span className="status-value" id="status-time">0ms</span>
+                </div>
+            </div>
+            <div className={`${collapse ? "" : "hidden"}`}>
                 <MenuSelect
                     id="status-collapsed"
                     title="Status:"
@@ -66,7 +65,7 @@ export function StatusBar({
                     )}
                     onChange={() => {}}
                 />
-            }
+            </div>
             <button
                 id="run-button"
                 className="status status-btn"
