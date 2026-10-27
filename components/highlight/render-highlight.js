@@ -18,7 +18,6 @@ export async function loadFlags() {
 
     flags = flagsMatch;
 
-    console.log(flags);
     window.dispatchEvent(new Event("rendersyntaxloaded"));
 }
 

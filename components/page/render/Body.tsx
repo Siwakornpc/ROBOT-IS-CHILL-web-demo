@@ -355,7 +355,6 @@ export default function Body({
                 width - (prevBarWidth.current.s || barWidth) < 72;
 
             statusBarSize.current = toSmall ? "small" : "full";
-            console.log(statusBarSize);
 
             const toVerySmall = 
                 activeSplitscreen === "left-right" && (

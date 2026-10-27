@@ -164,8 +164,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                 width - (prevBarWidth.current.s || barWidth) < 72;
 
             statusBarSize.current = toSmall ? "small" : "full";
-            console.log(statusBarSize);
-
+            
             const toVerySmall = 
                 activeSplitscreen === "left-right" && (
                     statusBarSize.current === "small" &&
