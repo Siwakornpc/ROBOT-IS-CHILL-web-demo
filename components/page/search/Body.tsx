@@ -138,6 +138,7 @@ export function FilterPanel({
             filterType === "mode" ? "true" :
             filterType === "builtin" ? "true" :
             filterType === "tiling" ? "none" :
+            filterType === "date" ? "on;" :
             "";
         
         const updatedFilters = {
@@ -344,31 +345,35 @@ export function FilterPanel({
                     </div>
                 );
 
-            case "date":
+            case "date": {
+                const [dateMode = "on", dateValue = ""] = value.split(";", 2);
+
                 return (
-                    <div style={{display: "flex", gap: "4px"}}>
+                    <div className="flex flex-col gap-[4px]">
                         <MenuSelect
                             id={`date-mode-select-${index}`}
-                            value={value.split(";")[0]}
+                            value={dateMode}
                             options={[
                                 { value: "before", label: "Before" },
                                 { value: "on", label: "On" },
                                 { value: "after", label: "After" },
                             ]}
-                            onChange={(newValue) => handleValueChange(type, index, `${newValue};${value[1]}`)}
+                            onChange={(newValue) => handleValueChange(type, index, `${newValue};${dateValue}`)}
                         />
                         <label className="text-field">
                             <span className="text-field-label">Date</span>
                             <input
-                                type="text"
+                                type="datetime-local"
                                 placeholder=" "
-                                value={value.split(";")[1]}
-                                onChange={(e) => handleValueChange(type, index, `${value[0]};${e.target.value}`)}
+                                value={dateValue}
+                                onChange={(e) => handleValueChange(type, index, `${dateMode};${e.target.value}`)}
                                 autoComplete="off"
+                                className="w-full"
                             />
                         </label>
                     </div>
                 )
+            }
             
             case "hascolor":
                 return (

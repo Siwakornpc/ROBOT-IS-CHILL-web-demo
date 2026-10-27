@@ -1,0 +1,3 @@
+Macrosia runs inside the WASM Demo included inside the `macrosia-glue`. The file component `glue.js` however, is taken from `robot-is-chill.github.io`, which has been copied and placed inside this repository for tweaking, while the WASM component has been changed inside the glue to point to `robot-is-chill.github.io` instead. This also updates the incoming macros if Macrosia has been updated.
+
+It can also preserves the code in the URL using UTT (URL To Text) and TTU (Text To URL) system while switching to different pages.

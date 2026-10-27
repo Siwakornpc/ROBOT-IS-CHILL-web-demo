@@ -522,6 +522,27 @@ export default function SearchResults({
                     if (filterKey === "mode") {
                         if (data.absolute !== (filters.mode[0] === "true")) return false;
                     }
+
+                    if (filterKey === "date") {
+                        for (const dateFilter of validValues) {
+                            const [dateMode, dateValue] = dateFilter.split(";", 2);
+                            const normalizedDateValue = dateValue?.trim().toLowerCase();
+                            if (!normalizedDateValue
+                                || ["none", "null", "undefined"].includes(normalizedDateValue)) continue;
+
+                            const selectedTime = new Date(dateValue).getTime();
+                            if (Number.isNaN(selectedTime) || data.upload_time == null) return false;
+
+                            const uploadTime = data.upload_time > 1e12
+                                ? data.upload_time
+                                : data.upload_time * 1000;
+
+                            if (dateMode === "before" && uploadTime >= selectedTime) return false;
+                            if (dateMode === "after" && uploadTime <= selectedTime) return false;
+                            if (dateMode === "on"
+                                && Math.floor(uploadTime / 60000) !== Math.floor(selectedTime / 60000)) return false;
+                        }
+                    }
                 }
 
                 if (mode === "variants" && isVariantRecord(data)) {

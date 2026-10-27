@@ -956,6 +956,11 @@ function preserveDiscordEmptyLines(
                 continue;
             }
 
+            if (typeof prev !== "string") {
+                while (i + 1 < lines.length && lines[i + 1].trim() === "") i++;
+                continue;
+            }
+
             const isListBoundaryBreak =
                 typeof prev === "string" &&
                 isListItemLine(prev) &&
@@ -978,11 +983,18 @@ function preserveDiscordEmptyLines(
                 i++;
             }
 
+            const blockStart = /^ {0,3}(?:#{1,6}\s|>|[-*]\s|-#\s|\d+[.)]\s|(?:-{3,}|\*{3,})\s*$)/;
+
             output.push(
                 Array.from({ length: count }, () =>
                     makeToken(tokens, { type: "blankLine" })
                 ).join("")
             );
+
+            // Block syntax must start at the beginning of a line.
+            if (blockStart.test(lines[i + 1] ?? "")) {
+                output.push("\n");
+            }
             continue;
         }
 
@@ -990,6 +1002,7 @@ function preserveDiscordEmptyLines(
         if (i < lines.length - 1) {
             output.push("\n");
         }
+        continue;
     }
 
     return output.join("");

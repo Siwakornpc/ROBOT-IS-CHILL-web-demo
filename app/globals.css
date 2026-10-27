@@ -268,7 +268,7 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: 4px;
 
     font-family: var(--font-family-code);
-    font-size: var(--font-size-code);
+    font-size: 0.875em;
 }
 
 .discord-markdown .discord-code-block {
@@ -284,7 +284,7 @@ h1, h2, h3, h4, h5, h6 {
 .discord-markdown .discord-code-block code {
     display: inline;
     font-family: var(--font-family-code);
-    font-size: var(--font-size-code);
+    font-size: 0.875rem;
     white-space: pre-wrap;
 }
 
@@ -897,6 +897,40 @@ hr {
     border-bottom-right-radius: 68px;
 }
 
+.tab {
+    width: calc(30% - 8px);
+    min-width: calc(100px - 8px);
+    padding: 4px;
+    transition: 0.2s ease;
+    border-radius: 20px;
+    margin: 4px;
+    text-align: start;
+    padding-left: 8px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    text-wrap: nowrap;
+}
+.tab:hover {
+    background-color: rgb(var(--md-color-surface-container-high));
+    transition: 0.2s ease;
+}
+.tab.selected {
+    width: 30%;
+    min-width: 100px;
+    padding: 8px;
+    padding-left: 12px;
+    margin: 0;
+    background-color: rgb(var(--md-color-surface));
+    border-radius: 20px 20px 0 0;
+}
+.tab.selected:active {
+    border-radius: 8px 8px 0 0;
+}
+.tab:active {
+    border-radius: 8px;
+}
+
+
 /*
     checkbox
 */
@@ -991,6 +1025,34 @@ hr {
 }
 .text-field > input[type=number]::-webkit-inner-spin-button {
     appearance: none;
+}
+
+.text-field input[type="date"]::-webkit-calendar-picker-indicator,
+.text-field input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/c/ca/1x1.png');
+    position: absolute;
+    inset-inline-end: 0;
+    width: 48px;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+.text-field input[type="date"],
+.text-field input[type="datetime-local"] {
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/c/ca/1x1.png');
+    position: relative;
+    display: inline-flex;
+}
+.text-field input[type="date"]::after,
+.text-field input[type="datetime-local"]::after {
+    content: "calendar_month";
+    position: absolute;
+    inset-inline-end: 0;
+    font-family: "Material Symbols Outlined";
+    font-size: 24px;
+    line-height: 1;
+    font-feature-settings: "liga";
+    pointer-events: none;
 }
 
 /*
