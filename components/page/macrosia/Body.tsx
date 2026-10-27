@@ -58,13 +58,11 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
             const toSmall = window.innerWidth - (prevBarWidth.current.s || barWidth) < 92;
             
             statusBarSize.current = toSmall ? "small" : "full";
-            console.log(prevBarWidth.current.s !== barWidth);
             
             const toVerySmall = (
                 statusBarSize.current === "small" &&
                 prevBarWidth.current.s !== barWidth
             ) && window.innerWidth - (prevBarWidth.current.vs || barWidth) < 92
-
 
             setIsSmallScreen(toSmall);
             setIsVerySmallScreen(toVerySmall);
@@ -166,7 +164,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                 width - (prevBarWidth.current.s || barWidth) < 72;
 
             statusBarSize.current = toSmall ? "small" : "full";
-            console.log(prevBarWidth.current.s !== barWidth);
+            console.log(statusBarSize);
 
             const toVerySmall = 
                 activeSplitscreen === "left-right" && (
@@ -182,7 +180,7 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                 prevBarWidth.current.s = barWidth;
             }
 
-            if (width - (prevBarWidth.current.vs || barWidth) > 72 &&(
+            if (width - (prevBarWidth.current.vs || barWidth) > 72 && (
                 statusBarSize.current === "small" &&
                 prevBarWidth.current.s !== barWidth
             )) {
