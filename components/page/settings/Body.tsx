@@ -472,14 +472,14 @@ export default function Body() {
 
                 <div className="box-hole">
                     <div
-                        className="selection-collapsable"
+                        className="section-collapsable"
                         onClick={() => handleOnClickCollapsable("1")}
                     >
                         Code Editor
                     </div>
                     {isCollapsableOpen && isCollapsableOpen.isOpen && isCollapsableOpen.id === "1" && 
                         (<div
-                            className={`this selection-collapsable-content flex flex-col gap-[8px]` /* woah, tailwind hidden */}
+                            className={`this section-collapsable-content flex flex-col gap-[8px]` /* woah, tailwind hidden */}
                         >
                             {SYNTAX_HIGHLIGHT_OPTIONS.map(({ key, label }) => (
                                 <span className="row-group items-center" key={key}>
@@ -494,7 +494,7 @@ export default function Body() {
                                                     <button
                                                         {...getInputProps({
                                                             type: "button",
-                                                            className: "selection-color-label",
+                                                            className: "section-color-label",
                                                             "aria-label": `Choose ${label} color`,
                                                         })}
                                                         style={{ "--this-label-color": syntaxHighlight[key] } as React.CSSProperties}
@@ -503,7 +503,7 @@ export default function Body() {
                                                     <button
                                                         {...getInputProps({
                                                             type: "button",
-                                                            className: "selection-color-label",
+                                                            className: "section-color-label",
                                                             "aria-label": `Choose ${label} color`,
                                                         })}
                                                         style={{ "--this-label-color": `rgb(var(--md-color-${
@@ -672,7 +672,7 @@ export default function Body() {
 
                 <div className="box-hole">
                     <div
-                        className="selection"
+                        className="section"
                     >
                         Version: 0.120.1
                     </div>

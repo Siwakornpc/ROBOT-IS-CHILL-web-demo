@@ -3267,8 +3267,8 @@ tr:nth-child(odd) td {
     rotate: 180deg;
 }
 
-.selection-collapsable,
-.selection {
+.section-collapsable,
+.section {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -3279,13 +3279,13 @@ tr:nth-child(odd) td {
     user-select: none;
     color: var(--label);
 }
-.selection-collapsable:hover {
+.section-collapsable:hover {
     background: var(--surface-hovered);
 }
-.selection-collapsable:active {
+.section-collapsable:active {
     background: var(--surface-pressed);
 }
-.selection-collapsable::after {
+.section-collapsable::after {
     content: "arrow_drop_down";
     font-family: "Material Symbols Outlined";
     font-size: 24px;
@@ -3293,7 +3293,7 @@ tr:nth-child(odd) td {
     right: 12px;
     transition: 0.2s ease;
 }
-.selection-color-label {
+.section-color-label {
     box-sizing: content-box;
     width: 20px;
     height: 20px;
