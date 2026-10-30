@@ -763,7 +763,7 @@ export function Details({ selected, allResults }: DetailsProps) {
                                         </div>
                                     </td>
                                     <td className="discord-markdown before">
-                                        <code className="discord-inline-code">{getPaletteColorData.color?.toUpperCase() ?? "None"}</code>
+                                        <code className="discord-inline-code">{getPaletteColorData.color?.toUpperCase() ?? "None"}</code><br/>
                                         <code className="discord-inline-code">{getRgbPaletteColorData ? [
                                             getRgbPaletteColorData.r,
                                             getRgbPaletteColorData.g,
