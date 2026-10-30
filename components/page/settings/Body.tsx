@@ -660,6 +660,24 @@ export default function Body() {
                     onClick={handlePrintPreset}
                 >Print Log
                 </button>
+
+                <hr />
+
+                {
+                    // Info
+                }
+                <h3 className="text-label font-bold">About</h3>
+
+                <hr style={{ borderColor: "rgb(var(--md-color-surface-container))" }} />
+
+                <div className="box-hole">
+                    <div
+                        className="selection"
+                    >
+                        Version: 0.120.1
+                    </div>
+                </div>
+
             </div>
         </main>
     );

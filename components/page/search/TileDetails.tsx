@@ -230,6 +230,17 @@ export function Details({ selected, allResults }: DetailsProps) {
         setPaletteColorData(data);
     }
 
+    function hexToRgb(hex: string | null) {
+        if (!hex) return;
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16),
+        } : null;
+    }
+
     // [displaySize, setDisplaySize]
     useEffect(() => {
         if ("filter" in selected) {
@@ -656,6 +667,8 @@ export function Details({ selected, allResults }: DetailsProps) {
         const normalizedName = selected.name.replace(/^[^:]+:/, "");
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
+        const getRgbPaletteColorData = getPaletteColorData ? hexToRgb(getPaletteColorData.color) : null;
+
         return (<>
             <p className="text-label search-details-name">
                 {normalizedName}
@@ -751,6 +764,11 @@ export function Details({ selected, allResults }: DetailsProps) {
                                     </td>
                                     <td className="discord-markdown before">
                                         <code className="discord-inline-code">{getPaletteColorData.color?.toUpperCase() ?? "None"}</code>
+                                        <code className="discord-inline-code">{getRgbPaletteColorData ? [
+                                            getRgbPaletteColorData.r,
+                                            getRgbPaletteColorData.g,
+                                            getRgbPaletteColorData.b,
+                                        ].join(", ") : "None"}</code>
                                     </td>
                                 </>
                                 : <td

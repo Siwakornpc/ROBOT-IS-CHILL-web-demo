@@ -1785,6 +1785,7 @@ main.ascroll-y .main-body {
     color: rgb(var(--md-color-on-surface-variant));
 
     user-select: none;
+    transition: background 0.2s ease, border-radius 0.2s ease;
 }
 .nav-btn:hover {
     background: var(--surface-hovered);
@@ -1792,6 +1793,7 @@ main.ascroll-y .main-body {
 }
 .nav-btn:active {
     background: var(--surface-pressed);
+    border-radius: 10px;
 }
 .nav-btn.selected {
     cursor: default;
@@ -1831,6 +1833,7 @@ main.ascroll-y .main-body {
     background: rgb(var(--md-color-on-secondary-container), .08);
 
     cursor: pointer;
+    transition: background 0.2s ease, border-radius 0.2s ease;
 }
 .head-btn.left,
 .head-btn.right {
@@ -1841,6 +1844,7 @@ main.ascroll-y .main-body {
 }
 .head-btn:active {
     background: rgb(var(--md-color-on-secondary-container), .16);
+    border-radius: 10px;
 }
 
 /*
@@ -3263,7 +3267,8 @@ tr:nth-child(odd) td {
     rotate: 180deg;
 }
 
-.selection-collapsable {
+.selection-collapsable,
+.selection {
     display: flex;
     justify-content: space-between;
     align-items: center;

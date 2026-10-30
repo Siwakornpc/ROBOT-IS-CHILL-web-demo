@@ -106,8 +106,10 @@ export function FilterPanel({
             { value: "desc", label: "Description" },
             { value: "syntax", label: "Syntax" },
             { value: "applied", label: "Applied" },
-            { value: "type", label: "Type" },
-            { value: "anim", label: "Animatable" },
+        ],
+        flags: [
+            { value: "desc", label: "Description" },
+            { value: "syntax", label: "Syntax" },
         ],
         filters: [
             { value: "creator", label: "User" },

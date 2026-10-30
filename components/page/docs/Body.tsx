@@ -7,6 +7,7 @@ export default function Body() {
     const [selectedFile, setSelectedFile] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const docsPath = 'docs';
+    const [initialized, setInitialized] = useState(false);
 
     async function read(file: string) {
         setError(null);
@@ -27,6 +28,11 @@ export default function Body() {
     }
 
     useEffect(() => {
+        const url = new URL(window.location.href);
+        const page = url.searchParams.get("page");
+
+        console.log(page);
+
         fetch(`/api/read-files?path=${encodeURIComponent(docsPath)}`)
             .then(response => {
                 if (!response.ok) {
@@ -37,12 +43,35 @@ export default function Body() {
             .then(data => {
                 setFiles(data.files);
 
-                if (data.files.length > 0) {
-                    void read(`${docsPath}/${data.files[0]}`);
+                const selectedPage = page && data.files.includes(page)
+                    ? page
+                    : data.files[0];
+
+
+                if (selectedPage) {
+                    void read(`${docsPath}/${selectedPage}`);
                 }
+
+                setInitialized(true);
             })
-            .catch(() => setFiles([]));
+            .catch(() => {
+                setFiles([]);
+                setInitialized(true);
+            });
     }, []);
+
+    useEffect(() => {
+    if (!initialized) return;
+        const url = new URL(window.location.href);
+
+        if (selectedFile) {
+            url.searchParams.set("page", selectedFile);
+        } else {
+            url.searchParams.delete("page");
+        }
+
+        window.history.replaceState({}, "", url.toString());
+    }, [selectedFile, initialized]);
 
     return (
         <main className="ascroll-y w-full">
@@ -53,7 +82,7 @@ export default function Body() {
                             <button
                                 key={file} 
                                 type="button" 
-                                onClick={() => void read(`${docsPath}/${file}`)}
+                                onClick={() => selectedFile !== file ? void read(`${docsPath}/${file}`) : ""}
                                 className={`tab ${selectedFile === file ? "selected" : ""}`}
                             >
                                 {file}

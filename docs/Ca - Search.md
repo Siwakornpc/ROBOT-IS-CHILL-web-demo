@@ -1,5 +1,7 @@
 We use [`ric-api.sno.mba`](https://ric-api.sno.mba) to get the details that are easy to get. And for the hard part, it requires reading files and or directory straight from GitHub.
 
+The search allows you to search normally, or using RegExp to let you search for a more flexible range.
+
 # `/tiles.json`
 Gets the details from JSON map of all tiles in the bot's database, in the following schema:
 ```json
@@ -45,20 +47,20 @@ NAME: {
 For the same reason, ID has to be saved as string.
 The image loading is incredibly slow, since every image is a PNG, it is heavy than GIF
 
-# `flags` & `variants`
+# `variants` & `flags`
 It is taken from looking up skeletons on each defined variants in the GitHub, then it is compiled into
-```json
-MAIN_FLAG_NAME: {
-    "syntax": <string>,
-    "description": <string>
-}
-```
-and
 ```json
 MAIN_VARIANT_NAME: {
     "description": <string>,
     "syntax": <string>,
     "applied": <string>
+}
+```
+and
+```json
+MAIN_FLAG_NAME: {
+    "syntax": <string>,
+    "description": <string>
 }
 ```
 And the syntax is displayed in a custom "TypeScript"-like highlight.

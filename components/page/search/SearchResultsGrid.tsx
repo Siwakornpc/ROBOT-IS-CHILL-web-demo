@@ -435,7 +435,11 @@ export default function SearchResults({
                 : normalizedName;
 
             if (searchQuery) {
-                const searchTerms = mode === "variants" && isVariantRecord(data)
+                const searchTerms = (mode === "tiles" && isTileRecord(data))
+                    ? data.sprite?.[1]
+                        ? [data.sprite[1]]
+                        : []
+                    : (mode === "variants" && isVariantRecord(data))
                     ? data.syntax
                         ?.match(/^<([^>]*)>/)?.[1]
                         ?.split("|")

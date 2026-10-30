@@ -12,9 +12,10 @@ NAME: {
     "tags": TAGS <list[string]>
 }
 ```
+Searches by sprite name, or from original file name.
 `active_color`: Uses a palette panel, then check on any color in the palette to filter for that color.
 `inactive_color`: Uses a palette panel, then check on any color in the palette to filter for that color.
-`sprite`: Basically a source of the sprite, it is a dropdown-text input, which allows you to search for a specific source.
+`sprite [SOURCE]`: Filter for those sprites from a source.
 `tiling`: Filter tilings from a dropdown-text input, containing all tilings
 `tags`: Filter tags using a text type input.
 
@@ -44,16 +45,7 @@ NAME: {
 `absolute`: Filter from a tab which will filter for any filters that has relative mode or absolute mode.
 `upload_time`: Filter the filters that are being created in Date time local, and relatively before, on or after the time.
 
-# `flags` & `variants`
-```json
-MAIN_FLAG_NAME: {
-    "syntax": <string>,
-    "description": <string>
-}
-```
-`syntax`: Filter for any flags that has that string in the syntax.
-`dscription`: Filter for any flags that has that string in the description.
-
+# `variants` & `flags`
 ```json
 MAIN_VARIANT_NAME: {
     "description": <string>,
@@ -61,9 +53,20 @@ MAIN_VARIANT_NAME: {
     "applied": <string>
 }
 ```
-`dscription`: Filter for any variants that has that string in the description.
+Searches by display name, or from native variant name.
+`description`: Filter for any variants that has that string in the description.
 `syntax`: Filter for any variants that has that string in the syntax.
 `applied`: Filter for any variants that has that string in when applied.
+
+```json
+MAIN_FLAG_NAME: {
+    "syntax": <string>,
+    "description": <string>
+}
+```
+Searches by display name, or from native flag name.
+`syntax`: Filter for any flags that has that string in the syntax.
+`description`: Filter for any flags that has that string in the description.
 
 Both of them can be searched using native variant syntax in the search.
 
