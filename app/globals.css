@@ -2929,6 +2929,9 @@ main.ascroll-y .main-body {
     font-size: 1rem;
     color: var(--contrast, var(--normal));
     user-select: none;
+}
+
+.search-details-palette-this-color:has(.ison, .palette-index-label) {
     touch-action: none;
 }
 
@@ -3054,7 +3057,7 @@ main.ascroll-y .main-body {
     /* transform: translateY(-40px); */
     /* transform: translateZ(-1px); */
     transform: scale(0.5);
-    transition: transform 0.1s ease, background-image 0.1s ease;
+    transition: transform 0.2s ease, background-image 0.1s ease;
     z-index: 8;
 }
 
@@ -3076,9 +3079,9 @@ main.ascroll-y .main-body {
     --gradient-y: 0%;
     
     transition: 
-        transform 0.1s ease,
-        --gradient-radius 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-        --gradient-y 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        transform 0.2s ease,
+        --gradient-radius 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+        --gradient-y 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
     background-image:
         radial-gradient(

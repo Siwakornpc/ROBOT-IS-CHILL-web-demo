@@ -787,18 +787,29 @@ export function Details({ selected, allResults }: DetailsProps) {
                                             }
                                             : {
                                                 onPointerDown: (event: React.PointerEvent<HTMLDivElement>) => {
+                                                    if (!color) return;
                                                     handleCopyPaletteMobileOnPointerDown(event, i, j)
                                                 },
                                                 onPointerMove: (event: React.PointerEvent<HTMLDivElement>) => {
+                                                    if (!color) return;
                                                     handleCopyPaletteMobileOnPointerMove(event)
                                                 },
-                                                onPointerUp: () => color && handleCopyPaletteMobileOnPointerUp(color, j, i),
+                                                onPointerUp: () => {
+                                                    if (!color) return;
+
+                                                    const rgb = hexToRgb(color);
+                                                    const text = paletteColorSelectionValue === "rgb" && rgb
+                                                        ? `${rgb.r}, ${rgb.g}, ${rgb.b}`
+                                                        : color;
+                                                    
+                                                    handleCopyPaletteMobileOnPointerUp(text, j, i)
+                                                },
                                             }
                                         }
                                     >
                                         {isMobile &&
                                             <div
-                                                className={`search-details-palette-this-color-switch ${
+                                                className={`${color ?? "hidden"} search-details-palette-this-color-switch ${
                                                     longPressedColor?.x === j && longPressedColor.y === i ? "ison" : ""
                                                 } ${paletteColorSelectionValue}`}
                                                 style={{
