@@ -82,6 +82,9 @@ export function Details({ selected, allResults }: DetailsProps) {
     });
 
     const [longPressedColor, setLongPressedColor] = useState<{ x: number; y: number } | null>(null);
+    const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const holdStartRef = useRef<{ x: number; y: number } | null>(null);
+    const isPaletteHoldActiveRef = useRef(false);
 
     const handleCopyPalette = async (text: string, x: number, y: number) => {
         try {
@@ -98,96 +101,118 @@ export function Details({ selected, allResults }: DetailsProps) {
         }
     };
 
-    const handleCopyPaletteMobileOnPointerDown = (event: React.PointerEvent<HTMLDivElement>, i: number, j: number) => {
+    const handleCopyPaletteMobileOnPointerDown = (event: React.PointerEvent<HTMLDivElement>, i: number, j: number, color: string | null) => {
+        if (!thisColorElementRef.current || thisColorElementRef.current !== event.currentTarget) {
+            thisColorElementRef.current = event.currentTarget;
+        }
+
+        if (!event.currentTarget) return;
+
         isCopiedMobileRef.current = false;
         isThisPaletteColorStillOnTouch.current = false;
+        isPaletteHoldActiveRef.current = false;
         setPaletteColorSelectionValue("hex");
 
+        if (color == null) {
+            if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
+            if (paletteTimeoutRef.current) clearTimeout(paletteTimeoutRef.current);
+            holdTimerRef.current = null;
+            paletteTimeoutRef.current = null;
+            holdStartRef.current = null;
+            setLongPressedColor(null);
+            return;
+        }
+
         if (paletteTimeoutRef.current) clearTimeout(paletteTimeoutRef.current);
+        if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
 
-        // paletteTimeoutRef.current = setTimeout(async () => {
-        //     try {
-        //         await navigator.clipboard.writeText(text);
-        //         isCopiedMobileRef.current = true;
-        //         paletteTimeoutRef.current = null;
-        //         setCopiedPalette({ x, y });
-        //     } catch (err) {
-        //         console.error("Failed to copy text: ", err);
-        //         paletteTimeoutRef.current = null;
-        //     } finally {
-        //         paletteTimeoutRef.current = setTimeout(() => {
-        //             setCopiedPalette(null);
-        //             paletteTimeoutRef.current = null;
-        //         }, 1500);
-        //     }
-        // }, 1000);
-
-
-        console.log("test");
-        thisColorElementRef.current = event.currentTarget;
+        const tcp_rect = event.currentTarget.getBoundingClientRect();
 
         thisColorPointerPositionRef.current = {
             x: event.clientX,
             y: event.clientY,
         };
-        
-        const tcp_rect = thisColorElementRef.current.getBoundingClientRect();
-        
         thisColorPositionRef.current = {
             x: tcp_rect.left + tcp_rect.width / 2,
             y: tcp_rect.top + tcp_rect.height / 2,
         };
+        holdStartRef.current = {
+            x: event.clientX,
+            y: event.clientY,
+        };
 
-        console.log(thisColorPositionRef.current);
-        
         paletteTimeoutRef.current = setTimeout(() => {
             isThisPaletteColorStillOnTouch.current = true;
+            isPaletteHoldActiveRef.current = true;
             setLongPressedColor({ x: j, y: i });
-
-            console.log("Initial pointer:", thisColorPointerPositionRef.current);
-            console.log("Palette center:", thisColorPositionRef.current);
         }, 1000);
+
+        holdTimerRef.current = setTimeout(() => {
+            if (holdStartRef.current) {
+                setLongPressedColor({ x: j, y: i });
+            }
+        }, 1000);
+
+        event.currentTarget.setPointerCapture(event.pointerId);
     };
 
     const handleCopyPaletteMobileOnPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-        if (!isThisPaletteColorStillOnTouch.current) return;
-        if (!thisColorElementRef.current) return;
+        const start = holdStartRef.current;
+        if (!start) return;
+
+        if (!isPaletteHoldActiveRef.current) {
+            const dx = Math.abs(event.clientX - start.x);
+            const dy = Math.abs(event.clientY - start.y);
+
+            if (dx > 12 || dy > 12) {
+                if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
+                if (paletteTimeoutRef.current) clearTimeout(paletteTimeoutRef.current);
+                holdTimerRef.current = null;
+                paletteTimeoutRef.current = null;
+                holdStartRef.current = null;
+                isPaletteHoldActiveRef.current = false;
+                setLongPressedColor(null);
+                setPaletteColorSelectionValue("hex");
+                return;
+            }
+
+            return;
+        }
 
         thisColorPointerPositionRef.current = {
             x: event.clientX,
             y: event.clientY,
         };
 
-        if (thisColorPointerPositionRef.current.y >= thisColorPositionRef.current.y + 40) {
-            setPaletteColorSelectionValue("rgb");
-        } else {
-            setPaletteColorSelectionValue("hex");
-        }
-
-        console.log("Initial pointer:", thisColorPointerPositionRef.current);
-        console.log("Palette center:", thisColorPositionRef.current);
+        setPaletteColorSelectionValue(
+            thisColorPointerPositionRef.current.y >= thisColorPositionRef.current.y + 40 ? "rgb" : "hex"
+        );
     };
 
-    const handleCopyPaletteMobileOnPointerUp = async (text: string, x: number, y: number) => {
-        // if (isCopiedMobileRef.current) return;
+    const handleCopyPaletteMobileOnPointerUp = async (text: string | null, x: number, y: number) => {
+        if (holdTimerRef.current) {
+            clearTimeout(holdTimerRef.current);
+            holdTimerRef.current = null;
+        }
         if (paletteTimeoutRef.current) {
             clearTimeout(paletteTimeoutRef.current);
             paletteTimeoutRef.current = null;
         }
+
         setCopiedPalette(null);
         setLongPressedColor(null);
+        holdStartRef.current = null;
+        isPaletteHoldActiveRef.current = false;
 
         if (isThisPaletteColorStillOnTouch.current) {
             try {
-                await navigator.clipboard.writeText(text);
-                isCopiedMobileRef.current = true;
-                paletteTimeoutRef.current = null;
-                setCopiedPalette({ x, y });
+                if (text) {
+                    await navigator.clipboard.writeText(text);
+                    isCopiedMobileRef.current = true;
+                    setCopiedPalette({ x, y });
+                }
             } catch (err) {
                 console.error("Failed to copy text: ", err);
-                paletteTimeoutRef.current = null;
-                isThisPaletteColorStillOnTouch.current = false;
-                setPaletteColorSelectionValue("hex");
             } finally {
                 paletteTimeoutRef.current = setTimeout(() => {
                     setCopiedPalette(null);
@@ -787,22 +812,21 @@ export function Details({ selected, allResults }: DetailsProps) {
                                             }
                                             : {
                                                 onPointerDown: (event: React.PointerEvent<HTMLDivElement>) => {
-                                                    if (!color) return;
-                                                    handleCopyPaletteMobileOnPointerDown(event, i, j)
+                                                    handleCopyPaletteMobileOnPointerDown(event, i, j, color)
                                                 },
                                                 onPointerMove: (event: React.PointerEvent<HTMLDivElement>) => {
-                                                    if (!color) return;
                                                     handleCopyPaletteMobileOnPointerMove(event)
                                                 },
-                                                onPointerUp: () => {
-                                                    if (!color) return;
-
+                                                onPointerUp: (event: React.PointerEvent<HTMLDivElement>) => {
                                                     const rgb = hexToRgb(color);
-                                                    const text = paletteColorSelectionValue === "rgb" && rgb
+                                                    const text = color && paletteColorSelectionValue === "rgb" && rgb
                                                         ? `${rgb.r}, ${rgb.g}, ${rgb.b}`
                                                         : color;
-                                                    
-                                                    handleCopyPaletteMobileOnPointerUp(text, j, i)
+
+                                                    void handleCopyPaletteMobileOnPointerUp(text ?? null, j, i);
+                                                    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+                                                        event.currentTarget.releasePointerCapture(event.pointerId);
+                                                    }
                                                 },
                                             }
                                         }
@@ -817,6 +841,7 @@ export function Details({ selected, allResults }: DetailsProps) {
                                                     position: "absolute",
                                                     inset: 0,
                                                     zIndex: 0,
+                                                    "--switch-contrast": getContrastColor(color)
                                                 } as React.CSSProperties}
                                             >
                                                 <span className="palette-index-label">rgb</span>

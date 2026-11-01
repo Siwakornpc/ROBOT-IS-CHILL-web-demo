@@ -2929,11 +2929,12 @@ main.ascroll-y .main-body {
     font-size: 1rem;
     color: var(--contrast, var(--normal));
     user-select: none;
-}
-
-.search-details-palette-this-color:has(.ison, .palette-index-label) {
     touch-action: none;
 }
+
+/* .search-details-palette-this-color:active {
+    touch-action: none;
+} */
 
 .palette-index-label .index-x {
     position: absolute;
@@ -3062,23 +3063,23 @@ main.ascroll-y .main-body {
 }
 
 @property --gradient-radius {
-  syntax: '<percentage>';
-  inherits: false;
-  initial-value: 0%;
+    syntax: '<percentage>';
+    inherits: false;
+    initial-value: 0%;
 }
 
 @property --gradient-y {
-  syntax: '<percentage>';
-  inherits: false;
-  initial-value: 0%;
+    syntax: '<percentage>';
+    inherits: false;
+    initial-value: 0%;
 }
 
 .search-details-palette-this-color-switch.ison {
     transform: translateY(30px) scale(0.8);
     --gradient-radius: 0%;
     --gradient-y: 0%;
-    
-    transition: 
+
+    transition: color 0.4s ease,
         transform 0.2s ease,
         --gradient-radius 0.4s cubic-bezier(0.4, 0, 0.2, 1),
         --gradient-y 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -3096,6 +3097,10 @@ main.ascroll-y .main-body {
 .search-details-palette-this-color-switch.ison.rgb {
     --gradient-radius: 100%;
     --gradient-y: 50%;
+    color: var(--switch-contrast, var(--normal));
+}
+.search-details-palette-this-color-switch.ison.rgb .palette-index-label {
+    color: var(--switch-contrast, var(--normal));
 }
 
 .search-details-palette-wrapper-asize {
