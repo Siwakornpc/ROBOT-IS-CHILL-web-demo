@@ -2610,7 +2610,7 @@ main.ascroll-y .main-body {
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 }
 .search-results.palettes {
-    grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(136px, 1fr));
 }
 
 .search-item {
@@ -2732,7 +2732,7 @@ main.ascroll-y .main-body {
 }
 
 .search-item-palette {
-    max-width: 126px;
+    max-width: 112px;
     max-height: 180px;
     width: 100%;
     height: 100%;
@@ -2743,7 +2743,7 @@ main.ascroll-y .main-body {
     justify-content: center;
 }
 .search-item-palette-this-color {
-    width: 18px;
+    width: 16px;
     aspect-ratio: 1 / 1;
     background: var(--this-palette-color);
 }
