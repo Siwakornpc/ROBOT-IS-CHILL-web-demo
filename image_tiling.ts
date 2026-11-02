@@ -27,6 +27,14 @@ const TILINGS = {
         [10, 11, 15, 14, 18, 41, 33, 22, 38, 46, 31, 30],
         [ 2,  3,  7,  6, 29, 17, 21, 37, 16, 24, 20, 32],
     ],
+    diagonal_tiling_s: [
+        ["",  0,  9, 36, 27,  5, 13,  4],
+        [ 8,  1, 14, 38, 45, 26, 11, 12],
+        [35, 42, 43, 44, 46, 32, 37, 28],
+        [18, 24, 41, 33, 25, 23, 39, 31],
+        [10, 34, 30, 40, 29, 15, 19, 22],
+        [ 3, 17, 20, 16, 21,  7,  6,  2],
+    ],
 } as const;
 
 type TilingName = keyof typeof TILINGS;
@@ -36,7 +44,11 @@ export function mapTiling(
     tiling: string,
     customFrames: readonly number[] = [],
 ) {
-    const mapped = tiling === "custom" ? customFrames : TILINGS[tiling as TilingName] ?? TILINGS.none;
+    const mapped = name === "1typefull"
+        ? TILINGS.diagonal_tiling_s
+        : tiling === "custom"
+        ? customFrames
+        : TILINGS[tiling as TilingName] ?? TILINGS.none;
     const imageMap: string[][] = [];
     const indexMap: number[][] = [];
 

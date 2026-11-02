@@ -428,8 +428,8 @@ export function Details({ selected, allResults }: DetailsProps) {
             {selected.tile.tiling !== "none"
                 ? <>
                     <div
-                        ref={(el) => applyOverflowFade(el, "x")}
-                        className="search-details-image-wrapper ascroll-x"
+                        // ref={(el) => applyOverflowFade(el, "x")}
+                        className="search-details-image-wrapper ascroll-x ascroll-y"
                     >
                         {select === "one_tile"
                             ? <div className="search-details-image-asize" data-frame={currentIndex}>
@@ -921,9 +921,9 @@ export function Details({ selected, allResults }: DetailsProps) {
                                         <code className="discord-inline-code">{getPaletteColorData.color?.toUpperCase() ?? "None"}</code><br/>
                                         { getRgbPaletteColorData
                                             ? <>
-                                                <code className="discord-inline-code !inline-block !w-[2.4rem] text-center">{getRgbPaletteColorData.r}</code>
-                                                <code className="discord-inline-code !inline-block !w-[2.4rem] text-center">{getRgbPaletteColorData.g}</code>
-                                                <code className="discord-inline-code !inline-block !w-[2.4rem] text-center">{getRgbPaletteColorData.b}</code>
+                                                <code className="discord-inline-code inline-block! w-[2.4rem]! text-center">{getRgbPaletteColorData.r}</code>
+                                                <code className="discord-inline-code inline-block! w-[2.4rem]! text-center">{getRgbPaletteColorData.g}</code>
+                                                <code className="discord-inline-code inline-block! w-[2.4rem]! text-center">{getRgbPaletteColorData.b}</code>
                                             </> : "None"
                                         }
                                     </td>

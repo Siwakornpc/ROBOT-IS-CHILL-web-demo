@@ -2818,6 +2818,7 @@ main.ascroll-y .main-body {
 }
 
 .search-details-image-tiled {
+    margin: auto 0;
     filter: var(--f-elevation-2);
 }
 
@@ -3003,7 +3004,8 @@ main.ascroll-y .main-body {
     display: flex;
     align-items: center;
     padding: 2rem;
-    height: stretch;
+    height: max-content;
+    min-height: stretch;
     width: max-content;
     margin: 0 auto;
 }
