@@ -2963,7 +2963,8 @@ main.ascroll-y .main-body {
         opacity 0.2s ease;
     position: relative;
 }
-.search-details-palette-this-color:hover {
+.search-details-palette-this-color:hover,
+.search-details-palette-this-color:active {
     transform: scale(1.4);
     border-radius: 20px;
     z-index: 10;
