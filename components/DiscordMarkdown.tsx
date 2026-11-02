@@ -987,7 +987,7 @@ function preserveDiscordEmptyLines(
 
             output.push(
                 Array.from({ length: count }, () =>
-                    makeToken(tokens, { type: "blankLine" })
+                    `${makeToken(tokens, { type: "blankLine" })} `
                 ).join("")
             );
 
@@ -1122,6 +1122,12 @@ function markDiscordUnderline(
     root: Root,
     source: string
 ) {
+    function stripTokenMarkers(value: string): string {
+        return value
+            .replace(/^[\s\u200B]*(?:\uE000\d+\uE001)+/, "")
+            .replace(/(?:\uE000\d+\uE001)+[\s\u200B]*$/, "");
+    }
+
     function visit(node: any) {
         if (
             node.type === "strong" &&
@@ -1132,8 +1138,9 @@ function markDiscordUnderline(
                 node.position.start.offset,
                 node.position.end.offset
             );
+            const normalized = stripTokenMarkers(raw);
 
-            if (raw.startsWith("__") && raw.endsWith("__")) node.type = "discordUnderline";
+            if (normalized.startsWith("__") && normalized.endsWith("__")) node.type = "discordUnderline";
         }
 
         if (Array.isArray(node.children)) {
@@ -1591,9 +1598,15 @@ function renderText(
     let lastIndex = 0;
     let match: RegExpExecArray | null;
     let partIndex = 0;
+    let lastTokenWasBlankLine = false;
 
     function pushText(text: string, baseKey: string) {
         if (!text) return;
+
+        if (lastTokenWasBlankLine && text.startsWith(" ")) {
+            text = text.slice(1);
+        }
+        lastTokenWasBlankLine = false;
 
         // Any literal newline that survives to this point (e.g. inside
         // token content that was re-parsed, rather than a standard
@@ -1633,11 +1646,13 @@ function renderText(
                     context
                 )
             );
+            lastTokenWasBlankLine = token.type === "blankLine";
         } else {
             pushText(
                 match[0],
                 `${key}-unknown-${partIndex}`
             );
+            lastTokenWasBlankLine = false;
         }
 
         partIndex++;
