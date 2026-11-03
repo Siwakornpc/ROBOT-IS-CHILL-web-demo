@@ -546,13 +546,13 @@ export function Details({ selected, allResults }: DetailsProps) {
                         <td>Tags</td>
                         <td>
                             {selected.tile.tags.length
-                                ? selected.tile.tags.join(", ").toTitleCase()
+                                ? selected.tile.tags.map(tag => tag.split("_").map(word => word.toTitleCase()).join(" ")).join(", ")
                                 : "None"}
                         </td>
                     </tr>
                     <tr>
                         <td>Tiling</td>
-                        <td>{selected.tile.tiling.toTitleCase()}</td>
+                        <td>{selected.tile.tiling.split("_").map(word => word.toTitleCase()).join(" ")}</td>
                     </tr>
                     {aliases.length > 0 &&
                         <tr>
