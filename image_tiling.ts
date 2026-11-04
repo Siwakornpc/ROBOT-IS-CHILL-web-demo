@@ -52,8 +52,9 @@ export function mapTiling(
     const imageMap: string[][] = [];
     const indexMap: number[][] = [];
 
-    const createUrl = (map: number) =>
-        `https://ric-api.sno.mba/tiles/${typeof map === "number" ? name : "hide"}.gif${map !== 0 && typeof map === "number" ? `?frame=${map}` : ""}`;
+    const createUrl = (map: number) => typeof map === "number"
+        ? `https://ric-api.sno.mba/tiles/${name}.gif${map !== 0 && typeof map === "number" ? `?frame=${map}` : ""}`
+        : "";
 
     if (Array.isArray(mapped[0])) {
         const groups = mapped as readonly (readonly number[])[];

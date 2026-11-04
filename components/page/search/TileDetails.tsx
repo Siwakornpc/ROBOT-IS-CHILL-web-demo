@@ -399,8 +399,8 @@ export function Details({ selected, allResults }: DetailsProps) {
 
     if ("tile" in selected) {
         const tiled = mapTiling(selected.name, selected.tile.tiling, customFrames);
-        const imageMap = tiled.imageMap.flat();
-        const indexMap = tiled.indexMap.flat();
+        const imageMap = tiled.imageMap.flat().filter(item => item !== "");
+        const indexMap = tiled.indexMap.flat().filter((item): item is number => typeof item === "number");
 
         const currentFrame = imageMap[tilingFrame];
         const currentIndex = indexMap[tilingFrame];
