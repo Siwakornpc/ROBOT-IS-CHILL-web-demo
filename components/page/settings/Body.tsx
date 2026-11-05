@@ -674,7 +674,7 @@ export default function Body() {
                     <div
                         className="section"
                     >
-                        Version: 0.121.8
+                        Version: 0.121.9
                     </div>
                 </div>
 

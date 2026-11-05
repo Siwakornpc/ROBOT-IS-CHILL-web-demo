@@ -246,14 +246,14 @@ export default function Body({
         const checkScreenSize = () => {
             const barWidth = statusBar?.getBoundingClientRect().width ?? 0;
 
-            const toSmall = window.innerWidth - (prevBarWidth.current.s || barWidth) < 92;
+            const toSmall = window.innerWidth - (prevBarWidth.current.s || barWidth) < 142;
             
             statusBarSize.current = toSmall ? "small" : "full";
             
             const toVerySmall = (
                 statusBarSize.current === "small" &&
                 prevBarWidth.current.s !== barWidth
-            ) && window.innerWidth - (prevBarWidth.current.vs || barWidth) < 92
+            ) && window.innerWidth - (prevBarWidth.current.vs || barWidth) < 142
 
             setIsSmallScreen(toSmall);
             setIsVerySmallScreen(toVerySmall);
@@ -265,8 +265,8 @@ export default function Body({
                 : window.innerWidth >= 820
             );
 
-            if (window.innerWidth - (prevBarWidth.current.s || barWidth) > 92) prevBarWidth.current.s = barWidth;
-            if (window.innerWidth - (prevBarWidth.current.vs || barWidth) > 92 && (
+            if (window.innerWidth - (prevBarWidth.current.s || barWidth) > 142) prevBarWidth.current.s = barWidth;
+            if (window.innerWidth - (prevBarWidth.current.vs || barWidth) > 142 && (
                 statusBarSize.current === "small" &&
                 prevBarWidth.current.s !== barWidth
             )) prevBarWidth.current.vs = barWidth;
@@ -352,7 +352,7 @@ export default function Body({
 
             const toSmall = 
                 activeSplitscreen === "left-right" &&
-                width - (prevBarWidth.current.s || barWidth) < 72;
+                width - (prevBarWidth.current.s || barWidth) < 122;
 
             statusBarSize.current = toSmall ? "small" : "full";
 
@@ -360,17 +360,17 @@ export default function Body({
                 activeSplitscreen === "left-right" && (
                     statusBarSize.current === "small" &&
                     prevBarWidth.current.s !== barWidth
-                ) && width - (prevBarWidth.current.vs || barWidth) < 72;
+                ) && width - (prevBarWidth.current.vs || barWidth) < 122;
 
             setIsSmallLeftSplitScreen(toSmall);
 
             setVerySmallLeftSplitScreen(toVerySmall);
 
-            if (width - (prevBarWidth.current.s || barWidth) > 72) {
+            if (width - (prevBarWidth.current.s || barWidth) > 122) {
                 prevBarWidth.current.s = barWidth;
             }
 
-            if (width - (prevBarWidth.current.vs || barWidth) > 72 && (
+            if (width - (prevBarWidth.current.vs || barWidth) > 122 && (
                 statusBarSize.current === "small" &&
                 prevBarWidth.current.s !== barWidth
             )) {
