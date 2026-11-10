@@ -915,7 +915,7 @@ hr {
     text-wrap: nowrap;
 }
 .tab:hover {
-    background: var(--surface-hover);
+    background: var(--surface-hovered);
     transition: 0.2s ease;
 }
 .tab:active {
