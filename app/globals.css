@@ -121,19 +121,23 @@
 ol {
     list-style: decimal;
     padding-left: 1rem;
-    margin: 0.5rem;
+    margin: .5rem;
     height: auto;
 }
 
 ul {
     list-style: disc;
     padding-left: 1rem;
-    margin: 0.5rem;
+    margin: .5rem;
     height: auto;
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-size: revert;
+}
+
+s {
+    opacity: .5;
 }
 
 /*
