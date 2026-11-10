@@ -904,15 +904,14 @@ hr {
 .tab {
     width: calc(30% - 8px);
     min-width: calc(100px - 8px);
-    padding: 4px;
-    transition: 0.2s ease;
-    border-radius: 20px;
+    padding: 4px 8px;
     margin: 4px;
     text-align: start;
-    padding-left: 8px;
     text-overflow: ellipsis;
-    overflow: hidden;
     text-wrap: nowrap;
+    overflow: hidden;
+    border-radius: 20px;
+    transition: 0.2s ease;
 }
 .tab:hover {
     background: var(--surface-hovered);
@@ -924,13 +923,11 @@ hr {
 .tab.selected {
     width: 30%;
     min-width: 100px;
-    padding: 8px;
-    padding-left: 12px;
+    padding: 8px 12px;
     margin: 0;
-    background: rgb(var(--md-color-surface));
     border-radius: 20px 20px 0 0;
+    background: rgb(var(--md-color-surface));
 }
-
 
 /*
     checkbox
@@ -2259,7 +2256,7 @@ main.ascroll-y .main-body {
 }
 .status-btn > .icon {
     font-size: 20px;
-    --icon-FILL: 1;
+    color: rgb(var(--md-color-primary));
 }
 
 /*

@@ -42,7 +42,7 @@ export function StatusBar({
                     <span className="status-value">{formatMs(renderMs)}</span>
                 </div>
             </div>
-            <div className={`${collapse ? "" : "hidden"}`}>
+            <div className={collapse ? "" : "hidden"}>
                 <MenuSelect
                     id="status-collapsed"
                     title="Status:"
@@ -53,34 +53,25 @@ export function StatusBar({
                             className="flex flex-col ps-[4px]"
                             style={{ color: "rgb(var(--md-color-outline))" }}
                         >
-                            <div
-                                className="flex gap-[8px] items-center p-[12px]"
-                            >
+                            <div className="flex gap-[8px] items-center p-[12px]">
                                 <i className="icon menu-option-icon">speed</i>
-                                <div>
-                                    <span className="status-value">{formatMs(startupMs)}</span>
-                                </div>
+                                <div><span className="status-value">{formatMs(startupMs)}</span></div>
                             </div>
 
-                            <div
-                                className="flex gap-[8px] items-center p-[12px]"
-                            >
+                            <div className="flex gap-[8px] items-center p-[12px]">
                                 <i className="icon menu-option-icon">layers</i>
-                                <div>
-                                    <span className="status-value">{formatMs(renderMs)}</span>
-                                </div>
+                                <div><span className="status-value">{formatMs(renderMs)}</span></div>
                             </div>
 
                         </div>
                     }
-                    trigger={({getInputProps}) => (
+                    trigger={({getInputProps}) =>
                         <button
                             {...getInputProps()}
-                            type="button"
                             className="menu-trigger status status-btn"
                         ><i className="icon">more_horiz</i>
                         </button>
-                    )}
+                    }
                     onChange={() => {}}
                 />
             </div>

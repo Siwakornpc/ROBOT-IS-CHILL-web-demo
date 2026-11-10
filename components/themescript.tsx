@@ -143,11 +143,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         }
     }, [theme, loaded]);
 
-    return (
-        <ThemeContext.Provider value={{ theme, updateTheme, resetDefault }}>
-            {children}
-        </ThemeContext.Provider>
-    );
+    return <ThemeContext.Provider value={{ theme, updateTheme, resetDefault }}>{children}</ThemeContext.Provider>;
 }
 
 export const useTheme = () => {
@@ -251,21 +247,21 @@ export default function ThemeScript() {
                     hct.chroma * 0.8
                 ),
                 secondaryPalette: MCU.TonalPalette.fromHueAndChroma(
-                    hct.hue,
+                    hct.hue + 20,
                     hct.chroma * 0.4
                 ),
                 tertiaryPalette: MCU.TonalPalette.fromHueAndChroma(
-                    hct.hue + 60.0,
+                    hct.hue + 60,
                     hct.chroma * 0.6
                 ),
 
                 neutralPalette: MCU.TonalPalette.fromHueAndChroma(
                     hct.hue,
-                    Math.min(hct.chroma / 10, 8)
+                    Math.min(hct.chroma / 6, 16)
                 ),
                 neutralVariantPalette: MCU.TonalPalette.fromHueAndChroma(
                     hct.hue,
-                    Math.min(hct.chroma / 5, 16)
+                    Math.min(hct.chroma / 3, 32)
                 ),
             });
 

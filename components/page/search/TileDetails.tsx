@@ -621,21 +621,15 @@ export function Details({ selected, allResults }: DetailsProps) {
                     ? <>
                         <div className="flex justify-between">
                             <p className="search-details-label">Value</p>
-                            <div className="status-bar">
-                                <button
-                                    type="button"
-                                    className="status status-btn"
-                                    onClick={() => {
-                                        if (selected.macro.value) {
-                                            void handleCopyValue(selected.macro.value);
-                                        }
-                                    }}
-                                >
-                                    <span className="icon">
-                                        {copiedValue !== selected.macro.value ? "content_copy" : "check"}
-                                    </span>
-                                </button>
-                            </div>
+                            <button
+                                className="btn ibtn xsmall btn-tonal wide"
+                                onClick={() => {
+                                    if (selected.macro.value) {
+                                        void handleCopyValue(selected.macro.value);
+                                    }
+                                }}
+                            ><i className="icon">{copiedValue !== selected.macro.value ? "content_copy" : "check"}</i>
+                            </button>
                         </div>
                         <div
                             ref={macroElementRef}
