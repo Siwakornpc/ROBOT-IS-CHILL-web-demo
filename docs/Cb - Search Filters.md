@@ -1,6 +1,6 @@
 Every details explained in **Ca**, it is possible to filter them by other details:
 
-We use [`ric-api.sno.mba`](https://ric-api.sno.mba) to get the details that are easy to get. And for the hard part, it requires reading files and or directory straight from GitHub.
+We used [`ric-api.sno.mba`](https://ric-api.sno.mba) to find details that are easy to retrieve. And harder parts require reading files and/or directories straight from GitHub.
 
 # `/tiles.json`
 ```json
@@ -13,11 +13,11 @@ NAME: {
 }
 ```
 Searches by sprite name, or from original file name.
-`active_color`: Uses a palette panel, then check on any color in the palette to filter for that color.
-`inactive_color`: Uses a palette panel, then check on any color in the palette to filter for that color.
-`sprite [SOURCE]`: Filter for those sprites from a source.
+`active_color`: Uses a palette panel, then check each tile if its color is selected in the filter.
+`inactive_color`: Same as active_color but for inactive colors.
+`sprite [SOURCE]`: Filter sprites from a source.
 `tiling`: Filter tilings from a dropdown-text input, containing all tilings
-`tags`: Filter tags using a text type input.
+`tags`: Filter for a list of tags using a text type input.
 
 # `/macros.json`
 ```json
@@ -27,11 +27,10 @@ NAME: {
     "description" DESCRIPTION <string>
 }
 ```
-`creator`: Search any macros that is created by user by filtering it by User ID, or User's name.
-`value`: Filter for any macros that has that string in the value.
-`description`: Filter for any macros that has that string in the description.
-It is also filterable to check if a macro is builtin:
-`is_builtin`: Filter the show built-in macros from a checkbox.
+`creator`: Search for macros created by the user by filtering it by user ID, or username.
+`value`: Filter for any macros that contain the string in its value.
+`description`: Filter for any macros that contain the string in its description.
+`is_builtin`: Filter to show either built-in macros or user created macros with a checkbox.
 
 # `/filters.json`
 ```json
@@ -41,9 +40,9 @@ NAME: {
     "upload_time" UPLOAD_TIME <int>
 }
 ```
-`author`: Search any filters that is created by user by filtering it by User ID, or User's name.
-`absolute`: Filter from a tab which will filter for any filters that has relative mode or absolute mode.
-`upload_time`: Filter the filters that are being created in Date time local, and relatively before, on or after the time.
+`author`: Search for filterimages created by the user by filtering it by user ID, or username.
+`absolute`: Filter from 2 options for filterimages that have absolute or relative mode.
+`upload_time`: Filter for filterimages that are created before, on or after the Date time local.
 
 # `variants` & `flags`
 ```json
@@ -54,9 +53,9 @@ MAIN_VARIANT_NAME: {
 }
 ```
 Searches by display name, or from native variant name.
-`description`: Filter for any variants that has that string in the description.
-`syntax`: Filter for any variants that has that string in the syntax.
-`applied`: Filter for any variants that has that string in when applied.
+`description`: Filter for any variants that contain the string in its description.
+`syntax`: Filter for any variants that contain the string in its syntax.
+`applied`: Filter for any variants that match when its applied and the filter.
 
 ```json
 MAIN_FLAG_NAME: {
@@ -65,10 +64,10 @@ MAIN_FLAG_NAME: {
 }
 ```
 Searches by display name, or from native flag name.
-`syntax`: Filter for any flags that has that string in the syntax.
-`description`: Filter for any flags that has that string in the description.
+`syntax`: Filter for any flags that contains the string in its syntax.
+`description`: Filter for any flags that contains the string in its description.
 
-Both of them can be searched using native variant syntax in the search.
+Both can be searched using native variant syntax in the search.
 
 # `levels`
 This section is yet not implemented.
@@ -80,5 +79,5 @@ NAME: {
     "colors": COLORS <list[[string || null]]>
 }
 ```
-`source`: Filter sources from a dropdown-text input, containing all sources.
+`source`: Filter palettes from a source using a dropdown-text input, containing all sources.
 `colors`: Uses a color picker system to search for a specific color by looking up on `HEX`, `R|G|B` or `None`

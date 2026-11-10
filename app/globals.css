@@ -1045,7 +1045,7 @@ hr {
 }
 .text-field input[type="date"]::after,
 .text-field input[type="datetime-local"]::after {
-    content: "calendar_month";
+    content: "today";
     position: absolute;
     inset-inline-end: 0;
     font-family: "Material Symbols Outlined";
