@@ -311,20 +311,16 @@ export default function Body() {
             style={{ width: "stretch" }}
         >
             <div className="main-body">
-                <h2 className="text-label font-bold">Settings</h2>
-                <hr />
-
                 {
                     // Fonts Section
                 }
 
-                <h3 className="text-label font-bold">Fonts</h3>
-                <hr style={{ borderColor: "rgb(var(--md-color-surface-container))" }} />
+                <h2 className="text-label font-bold">Fonts</h2>
 
                 <h4 className="text-label font-bold">Size</h4>
 
                 <div className="box-hole">
-                    <span className="row-group">
+                    <div className="row-group">
                         <p className="text-label text-main-name">Font Size</p>
                         <Slider
                             value={font.sansSize}
@@ -333,9 +329,9 @@ export default function Body() {
                             step={1}
                             onChange={(value) => updateFont({ sansSize: value })}
                         />
-                    </span>
+                    </div>
 
-                    <span className="row-group">
+                    <div className="row-group">
                         <p className="text-label text-main-name">Monospace Font Size</p>
                         <Slider
                             value={font.codeSize}
@@ -344,13 +340,13 @@ export default function Body() {
                             step={1}
                             onChange={(value) => updateFont({ codeSize: value })}
                         />
-                    </span>
+                    </div>
                 </div>
 
                 <h4 className="text-label font-bold">Fontface</h4>
 
                 <div className="box-hole">
-                    <span className="row-group">
+                    <div className="row-group">
                         <p className="text-label text-main-name">Sans Serif Font</p>
                         <MenuSelect
                             id="font-sans"
@@ -358,9 +354,9 @@ export default function Body() {
                             options={FONT_SANS_OPTIONS}
                             onChange={(newValue) => updateFont({ sans: newValue })}
                         />
-                    </span>
+                    </div>
 
-                    <span className="row-group">
+                    <div className="row-group">
                         <p className="text-label text-main-name">Monospace Font</p>
                         <MenuSelect
                             id="font-code"
@@ -368,7 +364,7 @@ export default function Body() {
                             options={FONT_CODE_OPTIONS}
                             onChange={(newValue) => updateFont({ code: newValue })}
                         />
-                    </span>
+                    </div>
                 </div>
 
                 {
@@ -376,9 +372,9 @@ export default function Body() {
                 }
                 <button
                     type="button"
-                    className="btn small btn-filled !w-48 !justify-center mb-[8px]"
+                    className="btn medium btn-filled !w-48 !justify-center mb-[8px]"
                     onClick={handleDefaultFont}
-                >Reset Default
+                ><i className="icon">settings_backup_restore</i>Reset
                 </button>
 
                 <hr />
@@ -387,9 +383,7 @@ export default function Body() {
                     // Theme Section
                 }
 
-                <h3 className="text-label font-bold">Theme</h3>
-
-                <hr style={{ borderColor: "rgb(var(--md-color-surface-container))" }} />
+                <h2 className="text-label font-bold">Theme</h2>
 
                 <h4 className="text-label font-bold">Appearance</h4>
 
@@ -437,22 +431,13 @@ export default function Body() {
                     </div>
 
                     <div className="row-group">
-                        <p className="text-label text-main-name">
-                            Brightness
-                        </p>
-
+                        <p className="text-label text-main-name">Brightness</p>
                         <Slider
-                            value={
-                                theme.brightness
-                            }
+                            value={theme.brightness}
                             min={-30}
                             max={30}
                             step={1}
-                            onChange={(value) =>
-                                updateTheme(
-                                    { brightness: value }
-                                )
-                            }
+                            onChange={(value) => updateTheme({brightness: value})}
                         />
                     </div>
                 </div>
@@ -462,9 +447,9 @@ export default function Body() {
                 }
                 <button
                     type="button"
-                    className="btn small btn-filled !w-48 !justify-center mb-[8px]"
+                    className="btn medium btn-filled !w-48 !justify-center mb-[8px]"
                     onClick={handleDefaultTheme}
-                >Reset Default
+                ><i className="icon">settings_backup_restore</i>Reset
                 </button>
 
                 <h4 className="text-label font-bold">Syntax Highlights</h4>
@@ -473,13 +458,9 @@ export default function Body() {
                     <div
                         className="section-collapsable"
                         onClick={() => handleOnClickCollapsable("1")}
-                    >
-                        Code Editor
-                    </div>
+                    >Code Editor</div>
                     {isCollapsableOpen && isCollapsableOpen.isOpen && isCollapsableOpen.id === "1" && 
-                        (<div
-                            className={`this section-collapsable-content flex flex-col gap-[8px]` /* woah, tailwind hidden */}
-                        >
+                        (<div className={`this section-collapsable-content flex flex-col gap-[8px]` /* woah, tailwind hidden */}>
                             {SYNTAX_HIGHLIGHT_OPTIONS.map(({ key, label }) => (
                                 <span className="row-group items-center" key={key}>
                                     <p className="text-label text-main-name" style={{ height: "stretch" }}>{label}</p>
@@ -563,7 +544,7 @@ export default function Body() {
                             ))}
                         </div>)
                     }
-                    <span className="row-group">
+                    <div className="row-group">
                         <p className="text-label text-main-name"> Code Preview</p>
                         <div className="flex flex-col gap-[8px]">
                             <MacroCode>{
@@ -600,20 +581,20 @@ export default function Body() {
                                 <span className="variant-value">24</span>
                             </div>
                         </div>
-                    </span>
+                    </div>
                 </div>
 
                 <button
                     type="button"
-                    className="btn small btn-filled !w-48 !justify-center mb-[8px]"
+                    className="btn medium btn-filled !w-48 !justify-center mb-[8px]"
                     onClick={handleDefaultSyntaxHighlight}
-                >Reset Default
+                ><i className="icon">settings_backup_restore</i>Reset
                 </button>
 
-                <h4 className="text-label font-bold">Set Themes</h4>
+                <h3 className="text-label font-bold">Set Themes</h3>
 
                 <div className="box-hole">
-                    <span className="row-group">
+                    <div className="row-group">
                         <p className="text-label text-main-name">Presets</p>
                         <MenuSelect
                             id="theme-preset"
@@ -624,14 +605,14 @@ export default function Body() {
                             ]}
                             onChange={handleApplyPreset}
                         />
-                    </span>
+                    </div>
                 </div>
 
                 <button
                     type="button"
-                    className="btn small btn-filled !w-48 !justify-center mb-[8px]"
+                    className="btn medium btn-filled !w-48 !justify-center mb-[8px]"
                     onClick={() => handleApplyPreset("on-dark")}
-                >Reset Default
+                ><i className="icon">settings_backup_restore</i>Reset
                 </button>
 
                 <hr />
@@ -639,41 +620,37 @@ export default function Body() {
                 {
                     // Reset All To Default
                 }
-                <h3 className="text-label font-bold">Default</h3>
+                <h2 className="text-label font-bold">Default</h2>
 
-                <hr style={{ borderColor: "rgb(var(--md-color-surface-container))" }} />
-
-                <button
-                    type="button"
-                    className="btn small btn-filled !w-48 !justify-center"
-                    onClick={() => {
-                        handleDefaultFont();
-                        handleDefaultTheme();
-                        handleDefaultSyntaxHighlight();
-                    }}
-                >Reset All To Default
-                </button>
-                <button
-                    type="button"
-                    className="btn small btn-filled !w-48 !justify-center"
-                    onClick={handlePrintPreset}
-                >Print Log
-                </button>
+                <div className="flex gap-[8px]">
+                    <button
+                        type="button"
+                        className="btn medium btn-tonal !w-48 !justify-center"
+                        onClick={() => {
+                            handleDefaultFont();
+                            handleDefaultTheme();
+                            handleDefaultSyntaxHighlight();
+                        }}
+                    >Reset All
+                    </button>
+                    <button
+                        type="button"
+                        className="btn medium btn-outline !w-48 !justify-center"
+                        onClick={handlePrintPreset}
+                    >Print Log
+                    </button>
+                </div>
 
                 <hr />
 
                 {
                     // Info
                 }
-                <h3 className="text-label font-bold">About</h3>
-
-                <hr style={{ borderColor: "rgb(var(--md-color-surface-container))" }} />
-
+                <h2 className="text-label font-bold">About</h2>
                 <div className="box-hole">
-                    <div
-                        className="section"
-                    >
-                        Version: 0.121.9
+                    <div className="row-group">
+                        <h3 className="text-label text-main-name">Version:</h3>
+                        <div className="version">v0.121.9</div>
                     </div>
                 </div>
 

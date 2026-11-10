@@ -664,7 +664,7 @@ hr {
     gap: 8px;
     font-size: 14px;
     font-weight: 500;
-    line-height: 20px;
+    line-height: 24px;
     padding: 16px 24px;
     border-radius: 28px;
 }
@@ -3269,24 +3269,48 @@ tr:nth-child(odd) td {
     align-content: center;
     flex-shrink: 0;
     width: 180px;
-    padding-inline-start: 8px;
-    padding-inline-end: 8px;
-    border-inline-end: 1px solid rgb(var(--md-color-surface-container));
+    padding: 0 8px;
 }
 .box-hole {
-    padding: 12px;
-    background: rgb(var(--md-color-surface-container-lowest));
-    border-radius: 16px;
-    margin: 4px 0;
-
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 2px;
+    margin-bottom: 8px;
 }
-.row-group,
-.row-group-unr {
+.row-group, .row-group-unr {
     display: flex;
+    justify-content: space-between;
     gap: 8px;
+    padding: 12px;
+    border-radius: 4px;
+    background: rgb(var(--md-color-surface-container-lowest));
+}
+.row-group:first-child {
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+}
+.row-group:last-child {
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+}
+.text-label:has(+ .box-hole) {
+    margin-inline-start: 16px;
+}
+
+.version {
+    color: rgb(var(--md-color-on-tertiary-container));
+    background: rgb(var(--md-color-tertiary-container));
+    width: 8rem;
+    height: 8rem;
+    mask-image: url("/material%20shapes/arrow.svg");
+    mask-mode: alpha;
+    mask-position: center;
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    text-align: center;
+    align-content: center;
+    font-weight: 600;
+    font-size: 1rem;
 }
 
 .dropdown-trigger {
@@ -3705,6 +3729,5 @@ tr:nth-child(odd) td {
         padding: 0 0 6px 4px;
         border: none;
         width: 100%;
-        border-bottom: 1px solid rgb(var(--md-color-surface-container));
     }
 }
