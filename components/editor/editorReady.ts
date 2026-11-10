@@ -7,20 +7,13 @@ export function setResolveEditorReady(fn: (api: EditorApi) => void) {
 }
 
 export function ensureEditorReady() {
-    if (typeof window === "undefined") {
-        return null;
-    }
+    if (typeof window === "undefined") return null;
 
     const win = window as WindowWithEditor;
     if (!win.editorReady) {
-        win.editorReady = new Promise<EditorApi>((resolve) => {
-            resolveEditorReady = resolve;
-        });
+        win.editorReady = new Promise<EditorApi>((resolve) => resolveEditorReady = resolve);
     }
-
     return win.editorReady;
 }
 
-if (typeof window !== "undefined") {
-    ensureEditorReady();
-}
+if (typeof window !== "undefined") ensureEditorReady();

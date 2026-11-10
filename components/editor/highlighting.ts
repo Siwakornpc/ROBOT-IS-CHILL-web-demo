@@ -4,11 +4,7 @@ import { combinedHighlighter } from "@/components/highlight/combined-highlight.j
 
 export function highlight(win: WindowWithEditor, text: string) {
     const isRenderMode = win.executionMode === "=t" || win.executionMode === "=r";
-
-    if (!isRenderMode) {
-        return macroHighlighter(text);
-    }
-
+    if (!isRenderMode) return macroHighlighter(text);
     return combinedHighlighter(text);
 }
 

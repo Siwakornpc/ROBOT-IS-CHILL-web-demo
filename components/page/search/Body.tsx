@@ -2,8 +2,8 @@ import { CSSProperties, useEffect, useState } from "react";
 import SearchResults from "./SearchResultsGrid";
 import { type SelectedSearchResult } from "./SearchResultsGrid";
 import SearchSelect, { type SearchMode } from "./SearchSelect";
-import MenuSelect from "@/components/MenuSelect";
-import ColorPicker from "@/components/ColorPicker";
+import MenuSelect from "@/components/md3/MenuSelect";
+import ColorPicker from "@/components/md3/ColorPicker";
 import PaletteColorPicker from "@/components/PaletteColorPicker";
 import applyOverflowFade from "@/components/OverflowFade";
 

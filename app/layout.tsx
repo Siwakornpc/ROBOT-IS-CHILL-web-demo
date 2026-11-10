@@ -19,7 +19,7 @@ import {
 } from "next/font/google";
 import "./globals.css";
 import ThemeScript, { ThemeProvider } from '@/components/themescript';
-import { MenuProvider } from '@/components/MenuContext';
+import { MenuProvider } from '@/components/md3/MenuContext';
 import FontScript, { FontProvider } from '@/components/fontscript';
 import "material-symbols";
 

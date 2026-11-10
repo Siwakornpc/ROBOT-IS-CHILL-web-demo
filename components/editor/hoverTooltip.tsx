@@ -7,7 +7,6 @@ import { DiscordMarkdown } from "../DiscordMarkdown";
 
 function MacroCreator({ id }: { id: string }) {
     const { user, loading } = useDiscordUser(id);
-
     return <p className="hover-tooltip-creator">@{loading ? "loading..." : user?.username ?? id}</p>;
 }
 
@@ -46,7 +45,7 @@ export function HoverTooltip({
         if (!isOpen || !ref.current) return;
 
         const { width, height } = ref.current.getBoundingClientRect();
-        const gap = 2; // keep this small so the mouse can cross onto the tooltip
+        const gap = 2;
         const above = anchor.top - height - gap;
 
         setPos({
@@ -70,23 +69,15 @@ export function HoverTooltip({
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
         >
-            {!builtin && value && (
-                <>
-                    <div ref={valueRef} className="macro hover-tooltip-value" />
-                </>
-            )}
+            {!builtin && value && <div ref={valueRef} className="macro hover-tooltip-value" />}
             <div className="text-label select-none">
-                {!builtin ? creator && (
-                    <>
-                        <MacroCreator id={creator} />
+                {!builtin
+                    ? creator && <MacroCreator id={creator} />
+                    : <>
+                        <span className="icon !text-[1.42em] absolute">check</span>
+                        <span className="pl-[2.02em]">Valid Macrosia macro</span>
                     </>
-                ) : (
-                    <>
-                        <span className="icon !text-[1.42em] absolute">
-                            check
-                        </span><span className="pl-[2.02em]">Valid Macrosia macro</span>
-                    </>
-                )}
+                }
             </div>
             <hr/>
             <DiscordMarkdown>{description}</DiscordMarkdown>

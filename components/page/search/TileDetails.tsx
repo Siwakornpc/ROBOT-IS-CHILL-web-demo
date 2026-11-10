@@ -645,8 +645,7 @@ export function Details({ selected, allResults }: DetailsProps) {
                     </>
                     : <span className="discord-markdown">
                         <a href="" target="_blank" rel="noopener noreferrer">
-                            { /* they don't do anything yet */ }
-                            <span className="discord-text-part">Learn More</span>
+                            <span className="discord-text-part">Learn More</span>{/*they don't do anything yet*/}
                         </a>
                     </span>
                 }

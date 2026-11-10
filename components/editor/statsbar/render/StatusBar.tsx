@@ -1,4 +1,4 @@
-import MenuSelect from "@/components/MenuSelect";
+import MenuSelect from "@/components/md3/MenuSelect";
 
 function formatMs(value?: number) {
     return value == null

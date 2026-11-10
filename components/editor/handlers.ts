@@ -75,11 +75,7 @@ function removeOneIndentLevel(indent: string): string {
         const width = ch === "\t"
             ? INDENT_SIZE - (columns % INDENT_SIZE)
             : 1;
-
-        if (columns + width > INDENT_SIZE) {
-            break;
-        }
-
+        if (columns + width > INDENT_SIZE) break;
         columns += width;
         removeChars++;
     }
@@ -127,9 +123,7 @@ function unindentLine(
 
     const oldIndent = getLineIndent(line);
 
-    if (!oldIndent) {
-        return { value, position };
-    }
+    if (!oldIndent) return { value, position };
 
     const newIndent = removeOneIndentLevel(oldIndent);
     const removed = oldIndent.length - newIndent.length;
@@ -147,12 +141,7 @@ export function createKeydownHandler(deps: KeydownDeps) {
     const { editorArea, state, saveState, render, undo, redo, onCodeChange } = deps;
 
     return function handleKeydown(e: KeyboardEvent) {
-        if (
-            e.key === "ArrowLeft" ||
-            e.key === "ArrowRight" ||
-            e.key === "ArrowUp" ||
-            e.key === "ArrowDown"
-        ) {
+        if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) {
             clearLeftBracketStatesFromKeyDirections();
         }
 
@@ -165,9 +154,7 @@ export function createKeydownHandler(deps: KeydownDeps) {
             if (start === end) {
                 if (e.shiftKey) {
                     const { value, position } = unindentLine(state.value, start);
-
                     if (value === state.value) return;
-
                     state.value = value;
 
                     onCodeChange?.(state.value);
@@ -177,7 +164,6 @@ export function createKeydownHandler(deps: KeydownDeps) {
                 }
 
                 const result = indentAtCaret(state.value, start);
-
                 state.value = result.value;
 
                 onCodeChange?.(state.value);
@@ -211,27 +197,18 @@ export function createKeydownHandler(deps: KeydownDeps) {
                     const newIndent = removeOneIndentLevel(oldIndent);
                     const delta = newIndent.length - oldIndent.length;
 
-                    if (index === 0) {
-                        firstLineDelta = delta;
-                    }
-
+                    if (index === 0) firstLineDelta = delta;
                     totalDelta += delta;
-
                     return (newIndent + line.slice(oldIndent.length));
                 }
 
-                if (index === 0) {
-                    firstLineDelta = INDENT.length;
-                }
-
+                if (index === 0) firstLineDelta = INDENT.length;
                 totalDelta += INDENT.length;
                 return INDENT + line;
             });
 
             const replacement = newLines.join("\n");
-
             state.value = state.value.slice(0, firstLineStart) + replacement + state.value.slice(lastLineEnd);
-
             onCodeChange?.(state.value);
 
             const newStart = Math.max(firstLineStart, start + firstLineDelta);
@@ -259,7 +236,6 @@ export function createKeydownHandler(deps: KeydownDeps) {
                 e.preventDefault();
 
                 const { value, position } = unindentLine(state.value, start);
-
                 state.value = value;
 
                 onCodeChange?.(state.value);
@@ -272,9 +248,7 @@ export function createKeydownHandler(deps: KeydownDeps) {
                 e.preventDefault();
 
                 const deleteAt = start - 1;
-
                 state.value = state.value.slice(0, deleteAt) + state.value.slice(start);
-
                 const position = deleteAt;
 
                 onCodeChange?.(state.value);

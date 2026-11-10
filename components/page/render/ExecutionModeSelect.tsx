@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import MenuSelect, { MenuOption } from "@/components/MenuSelect";
+import MenuSelect, { MenuOption } from "@/components/md3/MenuSelect";
 import type { RenderMode } from "@/components/page/render/get_render";
 import type { WindowWithEditor } from "@/components/editor/types";
 

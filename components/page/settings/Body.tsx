@@ -2,10 +2,9 @@
 
 import { useState, useEffect, useRef } from "react";
 import { updateMacroStaticHighlight } from "@/components/highlight/macro-highlight-static.js";
-import ColorPicker from "@/components/ColorPicker";
-import MenuSelect from "@/components/MenuSelect";
-import Slider from "@/components/slider";
-
+import ColorPicker from "@/components/md3/ColorPicker";
+import MenuSelect from "@/components/md3/MenuSelect";
+import Slider from "@/components/md3/slider";
 import {
     applySyntaxHighlightColors,
     DEFAULT_SYNTAX_HIGHLIGHT,

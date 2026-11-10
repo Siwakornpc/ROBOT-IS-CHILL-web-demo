@@ -619,6 +619,8 @@ export function useEditorEngine({
         window.addEventListener("resize", handleResize);
         document.addEventListener("selectionchange", handleSelectionChangeWithScroll);
         document.addEventListener("selectionchange", handleACSelectionChange);
+        document.addEventListener("keydown", handleHoverKeydown);
+        document.addEventListener("mousedown", handleHoverMouseDown);
         editorArea.addEventListener("beforeinput", handleBeforeInput as EventListener);
         editorArea.addEventListener("keydown", handleKeydown);
         editorArea.addEventListener("click", handleClick);
@@ -631,8 +633,6 @@ export function useEditorEngine({
         editorArea.addEventListener("mouseleave", scheduleHide);
         editorArea.addEventListener("beforeinput", closeHover);
         scrollEl.addEventListener("scroll", closeHover);
-        document.addEventListener("keydown", handleHoverKeydown);
-        document.addEventListener("mousedown", handleHoverMouseDown);
 
         const api: EditorApi = {
             get value() { return state.value },
@@ -668,6 +668,8 @@ export function useEditorEngine({
             window.removeEventListener("pageshow", handleMacroReferencePageshowPersisted);
             window.removeEventListener("executionmodechange", refreshHighlighting);
             window.removeEventListener("rendersyntaxloaded", refreshHighlighting);
+            window.clearTimeout(showTimer);
+            window.clearTimeout(hideTimer);
             document.removeEventListener("keydown", handleGlobalKeydown);
             document.removeEventListener("keydown", handleACKeydown);
             document.removeEventListener("keydown", handleMacroReferenceKeydown);
@@ -677,6 +679,8 @@ export function useEditorEngine({
             document.removeEventListener("mousedown", handleMouseDown);
             document.removeEventListener("selectionchange", handleSelectionChangeWithScroll);
             document.removeEventListener("selectionchange", handleACSelectionChange);
+            document.removeEventListener("keydown", handleHoverKeydown);
+            document.removeEventListener("mousedown", handleHoverMouseDown);
             editorArea.removeEventListener("beforeinput", handleBeforeInput as EventListener);
             editorArea.removeEventListener("keydown", handleKeydown);
             editorArea.removeEventListener("click", handleClick);
@@ -689,10 +693,6 @@ export function useEditorEngine({
             editorArea.removeEventListener("mouseleave", scheduleHide);
             editorArea.removeEventListener("beforeinput", closeHover);
             scrollEl.removeEventListener("scroll", closeHover);
-            document.removeEventListener("keydown", handleHoverKeydown);
-            document.removeEventListener("mousedown", handleHoverMouseDown);
-            window.clearTimeout(showTimer);
-            window.clearTimeout(hideTimer);
             scrollEl.removeEventListener("scroll", handleACSelectionChange);
             layoutResizeObserver?.disconnect();
             visualViewport?.removeEventListener("resize", handleACSelectionChange);

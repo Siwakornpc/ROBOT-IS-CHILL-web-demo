@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { updateMacroStaticHighlight } from "@/components/highlight/macro-highlight-static.js";
-
 import { DiscordMarkdown } from '../../DiscordMarkdown';
 
 function MacroCode({ children }: { children: string }) {
@@ -12,12 +11,7 @@ function MacroCode({ children }: { children: string }) {
         }
     }, [children]);
 
-    return (
-        <div
-            ref={elementRef}
-            className="search-details-detailbox macro"
-        />
-    );
+    return <div ref={elementRef} className="search-details-detailbox macro"/>;
 }
 
 export default function Body() {
@@ -45,7 +39,7 @@ When I tried to do the rendering, it was on a test page, using \`<canvas>\` + gi
                 <h3 className="text-label font-bold">Why this website?</h3>
                 <hr />
                 <DiscordMarkdown>{
-`It uses a syntax highlighting that is easy to read, and makes users understand which part of the Macrosia code is.
+`It uses a syntax highlighting that is easy to read, and lets users understand parts of the Macrosia code.
 
 Example code:`
                 }</DiscordMarkdown>
@@ -97,9 +91,9 @@ It also has a syntax for variants and flags:`
                 </div>
                 <hr />
                 <DiscordMarkdown>{
-`It also has a more extended search, and lets you see their details easier to read.
+`It also has a more extended search functionality, and allows you to see their details easily.
 
-We also found that palettes are stored by source-first, so we have made it to store as \`source:name\` so it wouldn't overwrite with the other palettes, unlike how the bot's system does it.`
+We also found that palettes are stored by source-first, so we have made it to store as \`source:name\` so it wouldn't overwrite palettes with the same name, unlike how the bot's system does it.`
                 }</DiscordMarkdown>
             </div>
         </main>

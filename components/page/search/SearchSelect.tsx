@@ -1,6 +1,6 @@
 "use client";
 
-import MenuSelect from "@/components/MenuSelect";
+import MenuSelect from "@/components/md3/MenuSelect";
 
 const options = [
     { value: "tiles", label: "Tiles", },

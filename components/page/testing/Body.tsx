@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useRef } from "react";
 import { EditorScreen } from "@/components/editor/EditorScreen";
-import MenuSelect, { MenuOption } from "@/components/MenuSelect";
+import MenuSelect, { MenuOption } from "@/components/md3/MenuSelect";
 
 import { updateVariantStaticHighlight } from "@/components/highlight/metadata-hightlight.js"
-import Slider from "@/components/slider";
+import Slider from "@/components/md3/slider";
 
 const options = [
     { value: "option1", label: "Option 1" },

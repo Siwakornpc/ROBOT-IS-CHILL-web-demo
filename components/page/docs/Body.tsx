@@ -75,41 +75,28 @@ export default function Body() {
 
     return (
         <main className="ascroll-y w-full">
-            {files !== null && (
+            {files !== null &&
                 <div className="bg-[rgb(var(--md-color-surface-container))] w-full box-content ascroll-x h-[40px] scale-y-[-1] pb-[12px]">
                     <div className="flex scale-y-[-1]">
-                        {files.map(file => (
+                        {files.map(file => 
                             <button
                                 key={file} 
                                 type="button" 
                                 onClick={() => selectedFile !== file ? void read(`${docsPath}/${file}`) : ""}
                                 className={`tab ${selectedFile === file ? "selected" : ""}`}
-                            >
-                                {file}
+                            >{file}
                             </button>
-                        ))}
+                        )}
                     </div>
                 </div>
-            )}
+            }
             <div className="main-body">
-                {error !== null &&
-                    (<p role="alert">
-                        {error}
-                    </p>)
-                }
-                {selectedFile !== null &&
-                    (<>
-                        <h2 className="text-label font-bold">
-                            {selectedFile}
-                        </h2>
-                        <hr/>
-                    </>)
-                }
-                {fileText !== null &&
-                    (<DiscordMarkdown>
-                        {fileText}
-                    </DiscordMarkdown>)
-                }
+                {error !== null && <p role="alert">{error}</p>}
+                {selectedFile !== null && (<>
+                    <h2 className="text-label font-bold">{selectedFile}</h2>
+                    <hr/>
+                </>)}
+                {fileText !== null && <DiscordMarkdown>{fileText}</DiscordMarkdown>}
             </div>
         </main>
     );

@@ -1,4 +1,4 @@
-import MenuSelect from "@/components/MenuSelect";
+import MenuSelect from "@/components/md3/MenuSelect";
 
 export function StatusBar({
     small = false,
