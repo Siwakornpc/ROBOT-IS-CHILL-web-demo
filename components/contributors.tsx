@@ -57,7 +57,7 @@ export function Contributors() {
                     />
                     <div className="overflow-hidden" style={{paddingInlineEnd: "8px"}}>
                         <p className="font-medium text-sm truncate">{user.login}</p>
-                        <p className="text-xs">{user.contributions} {user.contributions === 1 ? "contribution" : "contributions"}</p>
+                        <p className="text-xs">{user.contributions} {user.contributions === 1 ? "commit" : "commits"}</p>
                     </div>
                 </a>
             ))}
