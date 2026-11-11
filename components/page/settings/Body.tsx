@@ -650,7 +650,7 @@ export default function Body() {
                 <div className="box-hole">
                     <div className="row-group">
                         <h3 className="text-label text-main-name">Version:</h3>
-                        <div className="version">v0.121.9</div>
+                        <div className="version">v0.122.6</div>
                     </div>
                 </div>
 
