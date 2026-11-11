@@ -31,7 +31,7 @@
     --editor-outline-selected: rgb(var(--md-color-primary));
     --editor-gutter-fg: rgb(var(--md-color-on-surface-variant));
     --editor-gutter-fg-active: rgb(var(--md-color-on-surface));
-    --editor-current-line: rgb(var(--md-color-surface-container-highest), 0.425);
+    --editor-current-line: rgb(var(--md-color-secondary-container), .5);
 
     --macro-bracket-layer-0: rgb(var(--md-color-syntax-bracket-layer0));
     --macro-bracket-layer-1: rgb(var(--md-color-syntax-bracket-layer1));
@@ -407,17 +407,23 @@ s {
     stuff
 */
 
-::selection,
-.selection {
+::selection, .selection {
     background: var(--selection);
 }
-
 ::placeholder {
     color: var(--variant);
 }
-
 .error {
     color: var(--error);
+}
+
+.stack {
+    display: grid;
+    grid-template-areas:
+        'stack';
+}
+.stack > * {
+    grid-area: stack;
 }
 
 html, body {
@@ -581,13 +587,14 @@ hr {
     cursor: default;
     transition: background 0.2s ease;
 }
-.btn > input[type="checkbox"]:checked ~ :nth-child(1 of .btn-label):has(~ .btn-label),
-.btn > input[type="checkbox"]:not(:checked) ~ :nth-child(2 of .btn-label),
-.btn > input[type="checkbox"]:checked ~ :nth-child(1 of .icon):has(~ .icon),
-.btn > input[type="checkbox"]:not(:checked) ~ :nth-child(2 of .icon) {
+.btn-false, .btn-true {
+    display: contents;
+}
+.btn > input[type="checkbox"]:checked ~ .btn-false,
+.btn > input[type="checkbox"]:not(:checked) ~ .btn-true {
     display: none;
 }
-.btn > .icon {
+.btn > .icon, .btn-true > .icon {
     --icon-FILL: 1;
 }
 .btn:has(input[type="checkbox"]:not(:checked)) > .icon {
@@ -1947,23 +1954,15 @@ main.ascroll-y .main-body {
     color: var(--normal);
     background: var(--editor-current-line);
 }
-.editor-line:not(:last-child, :has(.br))::after {
-    position: absolute;
-    font-size: 0.75em;
+.editor-line:not(:last-child,:has(.br)):after, .editor-line:has(.br):not(:last-child):before {
     content: "subdirectory_arrow_left";
-    font-family: "Material Symbols Outlined";
-    color: var(--editor-outline);
+    position: absolute;
     pointer-events: none;
-    transform: translateY(12%);
+    font-family: Material Symbols Outlined;
+    font-size: .75em;
     font-weight: 1000;
-}
-.editor-line:has(.br):not(:last-child)::before {
-    position: absolute;
-    font-size: 0.75em;
-    content: "subdirectory_arrow_left";
-    font-family: "Material Symbols Outlined";
     color: var(--editor-outline);
-    pointer-events: none;
+    transform: translateY(12%);
 }
 /*
     syntax highlighting
@@ -2575,20 +2574,22 @@ main.ascroll-y .main-body {
 */
 
 .search-results {
+    display: grid;
+    align-content: start;
+    justify-items: center;
+    gap: 16px;
+    scrollbar-gutter: stable both-edges;
+
+    position: relative;
     box-sizing: border-box;
     width: -webkit-fill-available;
     width: -moz-available;
-    border-radius: 8px;
-
     width: stretch;
     height: calc(100dvh - 153px);
-    padding: 8px 12px 64px;
-    display: grid;
-    position: relative;
-
-    gap: 16px;
-    align-content: start;
-    justify-items: center;
+    padding-block: 8px 64px;
+    margin: -12px;
+    margin-top: 0;
+    border-radius: 8px;
 }
 
 .search-results-label {
@@ -3149,7 +3150,7 @@ main.ascroll-y .main-body {
 }
 
 .search-details-label {
-    margin: 0;
+    align-content: end;
 }
 
 .search-details-user {
@@ -3296,21 +3297,6 @@ tr:nth-child(odd) td {
 }
 .text-label:has(+ .box-hole) {
     margin-inline-start: 16px;
-}
-
-.version {
-    color: rgb(var(--md-color-on-tertiary-container));
-    background: rgb(var(--md-color-tertiary-container));
-    width: 8rem;
-    height: 8rem;
-    mask-image: url("/material%20shapes/arrow.svg");
-    mask-position: center;
-    mask-size: contain;
-    mask-repeat: no-repeat;
-    text-align: center;
-    align-content: center;
-    font-weight: 600;
-    font-size: 1rem;
 }
 .contributors {
     display: grid;

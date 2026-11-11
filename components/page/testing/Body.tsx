@@ -6,6 +6,59 @@ import MenuSelect, { MenuOption } from "@/components/md3/MenuSelect";
 
 import { updateVariantStaticHighlight } from "@/components/highlight/metadata-hightlight.js"
 import Slider from "@/components/md3/slider";
+import MaterialShape from "@/components/md3/MaterialShape";
+
+const materialShapeNames = [
+    "4-leaf_clover",
+    "4-sided_cookie",
+    "6-sided_cookie",
+    "7-sided_cookie",
+    "8-leaf_clover",
+    "9-sided_cookie",
+    "12-sided_cookie",
+    "arch",
+    "arrow",
+    "boom",
+    "bun",
+    "burst",
+    "circle",
+    "clamshell",
+    "diamond",
+    "fan",
+    "flower",
+    "gem",
+    "ghost-ish",
+    "heart",
+    "oval",
+    "pentagon",
+    "pill",
+    "pixel_circle",
+    "pixel_triangle",
+    "puffy",
+    "puffy_diamond",
+    "semicircle",
+    "slanted",
+    "soft_boom",
+    "soft_burst",
+    "square",
+    "sunny",
+    "triangle",
+    "very_sunny",
+];
+
+const materialShapeOptions: MenuOption[] = materialShapeNames.map((name) => ({
+    value: name,
+    label: name.replace(/_/g, " "),
+}));
+
+const morphEasingOptions: MenuOption[] = [
+    { value: "linear", label: "Linear" },
+    { value: "ease", label: "Ease" },
+    { value: "ease-in", label: "Ease in" },
+    { value: "ease-out", label: "Ease out" },
+    { value: "ease-in-out", label: "Ease in-out" },
+    { value: "cubic-bezier(0.2, 0, 0, 1)", label: "Emphasized" },
+];
 
 const options = [
     { value: "option1", label: "Option 1" },
@@ -111,11 +164,41 @@ export default function Body() {
     const [sliderValue2, setSliderValue2] = useState(5);
     const [sliderValue3, setSliderValue3] = useState(0);
     const [sliderValue4, setSliderValue4] = useState(-5);
+    const [shapeName, setShapeName] = useState("circle");
+    const [morphDuration, setMorphDuration] = useState(400);
+    const [morphEasing, setMorphEasing] = useState("cubic-bezier(0.2, 0, 0, 1)");
+    const [outlined, setOutlined] = useState(false);
+    const [autoPlay, setAutoPlay] = useState(false);
+
     useEffect(() => {
         const element = variantElementRef.current;
         if (!element) return;
         updateVariantStaticHighlight(element, variantText);
     }, []);
+
+    useEffect(() => {
+        if (!autoPlay) return;
+
+        const interval = window.setInterval(() => {
+            setShapeName((currentName) => {
+                const currentIndex = materialShapeNames.indexOf(currentName);
+                return materialShapeNames[(currentIndex + 1) % materialShapeNames.length];
+            });
+        }, Math.max(850, morphDuration + 300));
+
+        return () => window.clearInterval(interval);
+    }, [autoPlay, morphDuration]);
+
+    const stepShape = (step: number) => {
+        setShapeName((currentName) => {
+            const currentIndex = materialShapeNames.indexOf(currentName);
+            return materialShapeNames[
+                (currentIndex + step + materialShapeNames.length) % materialShapeNames.length
+            ];
+        });
+    };
+
+    const shapeLabel = shapeName.replace(/_/g, " ");
 
     return (
         <main className="ascroll-y" style={{ width: "stretch" }}>
@@ -151,8 +234,6 @@ export default function Body() {
                     )}
                 />
 
-                <hr />
-
                 <div>
                     <strong>Active Selection:</strong> <code>{activeLabel}</code>
                 </div>
@@ -173,48 +254,151 @@ export default function Body() {
 
                 <hr />
                 
-                <Slider
-                    value={sliderValue}
-                    min={0}
-                    max={10}
-                    step={1}
-                    onChange={(value) => {
-                        setSliderValue(value);
-                        console.log("Slider Value:", value);
-                    }}
-                />
-                <Slider
-                    value={sliderValue2}
-                    min={-10}
-                    max={10}
-                    step={1}
-                    onChange={(value) => {
-                        setSliderValue2(value);
-                        console.log("Slider Value:", value);
-                    }}
-                    size="small"
-                    showTicks
-                />
-                <Slider
-                    value={sliderValue3}
-                    min={-1}
-                    max={1}
-                    onChange={(value) => {
-                        setSliderValue3(value);
-                        console.log("Slider Value:", value);
-                    }}
-                    size="medium"
-                />
-                <Slider
-                    value={sliderValue4}
-                    min={-10}
-                    max={-1}
-                    onChange={(value) => {
-                        setSliderValue4(value);
-                        console.log("Slider Value:", value);
-                    }}
-                    size="xlarge"
-                />
+                <div className="row-group flex-col">
+                    <Slider
+                        value={sliderValue}
+                        min={0}
+                        max={10}
+                        step={1}
+                        onChange={(value) => {
+                            setSliderValue(value);
+                            console.log("Slider Value:", value);
+                        }}
+                    />
+                    <Slider
+                        value={sliderValue2}
+                        min={-10}
+                        max={10}
+                        step={1}
+                        onChange={(value) => {
+                            setSliderValue2(value);
+                            console.log("Slider Value:", value);
+                        }}
+                        size="small"
+                        showTicks
+                    />
+                    <Slider
+                        value={sliderValue3}
+                        min={-1}
+                        max={1}
+                        onChange={(value) => {
+                            setSliderValue3(value);
+                            console.log("Slider Value:", value);
+                        }}
+                        size="medium"
+                    />
+                    <Slider
+                        value={sliderValue4}
+                        min={-10}
+                        max={-1}
+                        onChange={(value) => {
+                            setSliderValue4(value);
+                            console.log("Slider Value:", value);
+                        }}
+                        size="xlarge"
+                    />
+                </div>
+
+                <div className="row-group flex flex-wrap items-center">
+                    <div style={{
+                        display: "grid",
+                        placeItems: "center",
+                        width: 240,
+                        height: 240,
+                        borderRadius: 16,
+                        background: "var(--md-color-surface-container)",
+                    }}>
+                        <MaterialShape
+                            name={shapeName}
+                            morphDuration={morphDuration}
+                            morphEasing={morphEasing}
+                            outlined={outlined}
+                            background="rgb(var(--md-color-primary))"
+                            size={180}
+                            role="img"
+                            aria-label={`${shapeLabel} shape`}
+                        />
+                    </div>
+
+                    <div style={{ display: "grid", gap: 14, minWidth: 240, maxWidth: 400, flex: 1 }}>
+                        <div>
+                            <p className="text-label text-main-name">Shape</p>
+                            <MenuSelect
+                                id="material-shape-morph-select"
+                                title="Shape"
+                                value={shapeName}
+                                options={materialShapeOptions}
+                                onChange={setShapeName}
+                                style={{ width: "100%" }}
+                            />
+                        </div>
+
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                            <button
+                                type="button"
+                                className="btn small btn-tonal"
+                                onClick={() => stepShape(-1)}
+                            >
+                                <i className="icon">skip_previous</i>Previous
+                            </button>
+                            <button
+                                className="btn small btn-tonal"
+                                onClick={() => stepShape(1)}
+                            >
+                                <i className="icon">skip_next</i>Next
+                            </button>
+                            <label
+                                className={`btn small btn-filled`}
+                                onClick={() => setAutoPlay((playing) => !playing)}
+                                aria-pressed={autoPlay}
+                            >
+                                <input
+                                    type="checkbox"
+                                    className="hidden"
+                                    checked={autoPlay}
+                                    onChange={() => setAutoPlay((playing) => !playing)}
+                                />
+                                <span className="btn-false"><i className="icon">play_arrow</i>Play</span>
+                                <span className="btn-true"><i className="icon">pause</i>Pause</span>
+                            </label>
+                        </div>
+
+                        <div style={{ display: "grid", gap: 6 }}>
+                            <p className="text-label text-main-name">Morph duration</p>
+                            <Slider
+                                value={morphDuration}
+                                min={0}
+                                max={1600}
+                                step={50}
+                                size="medium"
+                                showTicks
+                                thumbLabel={`${morphDuration} ms`}
+                                onChange={setMorphDuration}
+                            />
+                        </div>
+
+                        <div>
+                            <p className="text-label text-main-name">Easing</p>
+                            <MenuSelect
+                                id="material-shape-morph-easing"
+                                title="Easing"
+                                value={morphEasing}
+                                options={morphEasingOptions}
+                                onChange={setMorphEasing}
+                                style={{ width: "100%" }}
+                            />
+                        </div>
+
+                        <label className="checkbox">
+                            <input
+                                type="checkbox"
+                                checked={outlined}
+                                onChange={(event) => setOutlined(event.target.checked)}
+                            />
+                            <span>Outlined</span>
+                        </label>
+                    </div>
+                </div>
             </div>
         </main>
     );

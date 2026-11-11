@@ -26,6 +26,7 @@ import type { FontState } from "@/components/fontscript";
 
 import { THEME_PRESETS, resolvePreset } from "@/components/themepresets";
 import type { ThemePreset, PresetColor } from "@/components/themepresets";
+import MaterialShape from "@/components/md3/MaterialShape";
 
 type SelectionCollapsable = {
     isOpen: boolean,
@@ -641,7 +642,29 @@ export default function Body() {
                 <div className="box-hole">
                     <div className="row-group">
                         <h3 className="text-label text-main-name">Version:</h3>
-                        <div className="version">v0.122.6</div>
+                        <div className="stack" style={{
+                            alignItems: "center",
+                            justifyItems: "center",
+                        }}>
+                            <MaterialShape
+                                name="12-sided_cookie"
+                                background="rgb(var(--md-color-tertiary-container))"
+                                size="8rem"
+                            />
+                            <MaterialShape
+                                name="arrow"
+                                outlined
+                                background="rgb(var(--md-color-tertiary))"
+                                size="8rem"
+                            />
+                            <div style={{
+                                fontWeight: 600,
+                                fontSize: "1rem",
+                                color: "rgb(var(--md-color-on-tertiary-container))",
+                                zIndex: 1,
+                            }}>v0.122.6</div>
+                        </div>
+                        
                     </div>
                     <div className="row-group">
                         <p className="text-label text-main-name">Github:</p>

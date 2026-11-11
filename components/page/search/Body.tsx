@@ -81,7 +81,6 @@ export function FilterPanel({
     const filteredPaletteSourceOptions = paletteSourceOptions.filter((option) =>
         option.label.toLowerCase().includes(sourceSearchQuery.toLowerCase())
     );
-    const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
         tilesSourcePromise.then(setTileSourceOptions);
@@ -501,8 +500,8 @@ export default function Body({
                             checked={showMenu}
                             onChange={(e) => onToggleFilter(e.currentTarget.checked)}
                         />
-                        <i className="icon">menu</i>
-                        <i className="icon">menu_open</i>
+                        <i className="icon btn-false">menu</i>
+                        <i className="icon btn-true">menu_open</i>
                     </label>
                     <input
                         className="searchbar"
