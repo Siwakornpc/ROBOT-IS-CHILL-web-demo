@@ -145,7 +145,7 @@ export default function Slider({
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerCancel={() => dragRef.current = false}
-        >{hasZero
+        >{hasZero && clampedValue !== 0
             ? <>
                 <div 
                     className="slider-track slider-start-track"
@@ -179,7 +179,7 @@ export default function Slider({
                 />
                 <div className="slider-handle" />
                 <div 
-                    className={`slider-track slider-end-track ${min >= 0 ? "" : "slider-track-filled"}`}
+                    className={`slider-track slider-end-track ${min < 0 && clampedValue !== 0 ? "slider-track-filled" : ""}`}
                     style={{flexGrow: 1 - ratio}} 
                 />
             </>}

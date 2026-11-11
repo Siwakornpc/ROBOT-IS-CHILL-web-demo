@@ -458,6 +458,19 @@ export default function Body() {
                             onChange={(value) => updateTheme({brightness: value})}
                         />
                     </div>
+                    
+                    <div className="row-group">
+                        <p className="text-label text-main-name">Presets</p>
+                        <MenuSelect
+                            id="theme-preset"
+                            value={currentPresetId}
+                            options={[
+                                ...THEME_PRESETS.map((p) => ({ value: p.id, label: p.label, description: p.description })),
+                                { value: "custom", label: "Custom" },
+                            ]}
+                            onChange={handleApplyPreset}
+                        />
+                    </div>
                 </div>
 
                 {
@@ -473,18 +486,6 @@ export default function Body() {
                 <h4 className="text-label font-bold">Syntax Highlights</h4>
 
                 <div className="box-hole">
-                    <div className="row-group">
-                        <p className="text-label text-main-name">Presets</p>
-                        <MenuSelect
-                            id="theme-preset"
-                            value={currentPresetId}
-                            options={[
-                                ...THEME_PRESETS.map((p) => ({ value: p.id, label: p.label, description: p.description })),
-                                { value: "custom", label: "Custom" },
-                            ]}
-                            onChange={handleApplyPreset}
-                        />
-                    </div>
                     <div
                         className="section-collapsable"
                         onClick={() => handleOnClickCollapsable("1")}
