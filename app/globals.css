@@ -3304,7 +3304,6 @@ tr:nth-child(odd) td {
     width: 8rem;
     height: 8rem;
     mask-image: url("/material%20shapes/arrow.svg");
-    mask-mode: alpha;
     mask-position: center;
     mask-size: contain;
     mask-repeat: no-repeat;
