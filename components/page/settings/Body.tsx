@@ -391,13 +391,30 @@ export default function Body() {
                     
                     <div className="row-group">
                         <p className="text-label text-main-name">Theme Color</p>
-                        <ColorPicker
-                            value={theme.color}
-                            onChange={(color) => {
-                                if (color !== null) updateTheme({ color });
-                            }}
-                            hasNone={false}
-                            orientation="horizontal"
+                        <MenuSelect
+                            value="color"
+                            options={[{ value: "color", label: "Theme Color" }]}
+                            trigger={({ getInputProps }) => (<>
+                                <button
+                                    {...getInputProps({
+                                        className: "section-color-label",
+                                        "aria-label": "Choose theme color",
+                                    })}
+                                    style={{ "--this-label-color": theme.color } as React.CSSProperties}
+                                />
+                            </>)}
+                            content={
+                                <div className="ml-[12px] mr-[12px] mt-[8px] mb-[8px]">
+                                    <ColorPicker
+                                        value={theme.color}
+                                        onChange={(color) => {
+                                            if (color !== null) updateTheme({ color });
+                                        }}
+                                        hasNone={false}
+                                    />
+                                </div>
+                            }
+                            onChange={() => undefined}
                         />
                     </div>
 
@@ -455,57 +472,28 @@ export default function Body() {
                 <h4 className="text-label font-bold">Syntax Highlights</h4>
 
                 <div className="box-hole">
+                    <div className="row-group">
+                        <p className="text-label text-main-name">Presets</p>
+                        <MenuSelect
+                            id="theme-preset"
+                            value={currentPresetId}
+                            options={[
+                                ...THEME_PRESETS.map((p) => ({ value: p.id, label: p.label, description: p.description })),
+                                { value: "custom", label: "Custom" },
+                            ]}
+                            onChange={handleApplyPreset}
+                        />
+                    </div>
                     <div
                         className="section-collapsable"
                         onClick={() => handleOnClickCollapsable("1")}
                     >Code Editor</div>
                     {isCollapsableOpen && isCollapsableOpen.isOpen && isCollapsableOpen.id === "1" && 
-                        (<div className={`this section-collapsable-content flex flex-col gap-[8px]` /* woah, tailwind hidden */}>
+                        (<div className={`this section-collapsable-content` /* woah, tailwind hidden */}>
                             {SYNTAX_HIGHLIGHT_OPTIONS.map(({ key, label }) => (
                                 <span className="row-group items-center" key={key}>
                                     <p className="text-label text-main-name" style={{ height: "stretch" }}>{label}</p>
                                     <div className="flex gap-[8px] items-center">
-                                        <MenuSelect
-                                            id={`syntax-${key}`}
-                                            value="color"
-                                            options={[{ value: "color", label }]}
-                                            trigger={({ getInputProps }) => (
-                                                <>
-                                                    <button
-                                                        {...getInputProps({
-                                                            type: "button",
-                                                            className: "section-color-label",
-                                                            "aria-label": `Choose ${label} color`,
-                                                        })}
-                                                        style={{ "--this-label-color": syntaxHighlight[key] } as React.CSSProperties}
-                                                    />
-                                                    <span className="ml-[4px] mr-[4px] text-label">Visibly:</span>
-                                                    <button
-                                                        {...getInputProps({
-                                                            type: "button",
-                                                            className: "section-color-label",
-                                                            "aria-label": `Choose ${label} color`,
-                                                        })}
-                                                        style={{ "--this-label-color": `rgb(var(--md-color-${
-                                                            key.replace(/([A-Z])/g, "-$1").toLowerCase()
-                                                        }))` }}
-                                                    />
-                                                </>
-                                            )}
-                                            content={
-                                                <div className="ml-[12px] mr-[12px] mt-[8px] mb-[8px]">
-                                                    <ColorPicker
-                                                        value={syntaxHighlight[key]}
-                                                        onChange={(color) => {
-                                                            if (color !== null) updateSyntaxHighlight(key, color);
-                                                        }}
-                                                        hasNone={false}
-                                                    />
-                                                </div>
-                                            }
-                                            onChange={() => undefined}
-                                        />
-
                                         <label className="ml-[4px] mr-[4px] checkbox">
                                             <input
                                                 type="checkbox"
@@ -525,19 +513,44 @@ export default function Body() {
                                                 disabled={syntaxReal[key]}
                                                 onChange={(e) => updateSyntaxBlend(key, e.target.checked)}
                                             />
-                                            <span>MD3 Blend</span>
+                                            <span>Harmonise</span>
                                         </label>
+                                        
+                                        <MenuSelect
+                                            id={`syntax-${key}`}
+                                            value="color"
+                                            options={[{ value: "color", label }]}
+                                            trigger={({ getInputProps }) => (<>
+                                                <button
+                                                    {...getInputProps({
+                                                        className: "section-color-label",
+                                                        "aria-label": `Choose ${label} color`,
+                                                    })}
+                                                    style={{ "--this-label-color": syntaxHighlight[key] } as React.CSSProperties}
+                                                />
+                                            </>)}
+                                            content={
+                                                <div className="ml-[12px] mr-[12px] mt-[8px] mb-[8px]">
+                                                    <ColorPicker
+                                                        value={syntaxHighlight[key]}
+                                                        onChange={(color) => {if (color !== null) updateSyntaxHighlight(key, color);}}
+                                                        hasNone={false}
+                                                    />
+                                                </div>
+                                            }
+                                            onChange={() => undefined}
+                                        />
+                                        <div className="section-color-label" style={{ "--this-label-color": `rgb(var(--md-color-${key.replace(/([A-Z])/g, "-$1").toLowerCase()}))` } as React.CSSProperties}/>
 
                                         <button
                                             type="button"
-                                            className={`box-content w-[20px] h-[20px] !p-[2px] btn ibtn small btn-text ${isSyntaxHighlightDefault(key) ? "disabled" : ""}`}
+                                            className={`btn ibtn small btn-text ${isSyntaxHighlightDefault(key) ? "disabled" : ""}`}
                                             aria-label={`Reset ${label} color`}
                                             title={`Reset ${label}`}
                                             disabled={isSyntaxHighlightDefault(key)}
                                             style={{ opacity: isSyntaxHighlightDefault(key) ? 0.4 : 1 }}
                                             onClick={() => handleDefaultSyntaxHighlightKey(key)}
-                                        >
-                                            <span className="icon">refresh</span>
+                                        ><span className="icon">refresh</span>
                                         </button>
                                     </div>
                                 </span>
@@ -591,30 +604,6 @@ export default function Body() {
                 ><i className="icon">settings_backup_restore</i>Reset
                 </button>
 
-                <h3 className="text-label font-bold">Set Themes</h3>
-
-                <div className="box-hole">
-                    <div className="row-group">
-                        <p className="text-label text-main-name">Presets</p>
-                        <MenuSelect
-                            id="theme-preset"
-                            value={currentPresetId}
-                            options={[
-                                ...THEME_PRESETS.map((p) => ({ value: p.id, label: p.label, description: p.description })),
-                                { value: "custom", label: "Custom" },
-                            ]}
-                            onChange={handleApplyPreset}
-                        />
-                    </div>
-                </div>
-
-                <button
-                    type="button"
-                    className="btn medium btn-filled !w-48 !justify-center mb-[8px]"
-                    onClick={() => handleApplyPreset("on-dark")}
-                ><i className="icon">settings_backup_restore</i>Reset
-                </button>
-
                 <hr />
 
                 {
@@ -631,13 +620,13 @@ export default function Body() {
                             handleDefaultTheme();
                             handleDefaultSyntaxHighlight();
                         }}
-                    >Reset All
+                    ><i className="icon">settings_backup_restore</i>Reset All
                     </button>
                     <button
                         type="button"
                         className="btn medium btn-outline !w-48 !justify-center"
                         onClick={handlePrintPreset}
-                    >Print Log
+                    ><i className="icon">download</i>Print Log
                     </button>
                 </div>
 

@@ -2433,6 +2433,7 @@ main.ascroll-y .main-body {
 
 .color-picker.horizontal {
     flex-direction: row;
+    width: 332px;
 }
 .color-picker.horizontal .color-picker-container {
     aspect-ratio: 1/1;
@@ -3268,7 +3269,7 @@ tr:nth-child(odd) td {
     display :inline-block;
     align-content: center;
     flex-shrink: 0;
-    width: 180px;
+    width: 140px;
     padding: 0 8px;
 }
 .box-hole {
@@ -3285,7 +3286,7 @@ tr:nth-child(odd) td {
     border-radius: 4px;
     background: rgb(var(--md-color-surface-container-lowest));
 }
-.row-group:first-child {
+:not(.section-collapsable-content) > .row-group:first-child {
     border-top-left-radius: 24px;
     border-top-right-radius: 24px;
 }
@@ -3366,15 +3367,15 @@ tr:nth-child(odd) td {
     position: relative;
     padding: 12px;
     border-radius: 12px;
-    background: rgb(var(--md-color-surface));
+    background: rgb(var(--md-color-surface-container-lowest));
     user-select: none;
     color: var(--label);
 }
 .section-collapsable:hover {
-    background: var(--surface-hovered);
+    background: rgb(var(--md-color-surface-container-low));
 }
 .section-collapsable:active {
-    background: var(--surface-pressed);
+    background: rgb(var(--md-color-surface-container));
 }
 .section-collapsable::after {
     content: "arrow_drop_down";
@@ -3384,14 +3385,21 @@ tr:nth-child(odd) td {
     right: 12px;
     transition: 0.2s ease;
 }
+.section-collapsable-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
 .section-color-label {
     box-sizing: content-box;
-    width: 20px;
-    height: 20px;
-    padding: 12px;
+    width: 44px;
+    height: 44px;
     border-radius: 8px;
     background: var(--this-label-color);
     box-shadow: var(--elevation-2);
+}
+button.section-color-label {
+    border-radius: 22px;
 }
 
 /*
