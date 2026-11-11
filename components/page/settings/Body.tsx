@@ -5,6 +5,7 @@ import { updateMacroStaticHighlight } from "@/components/highlight/macro-highlig
 import ColorPicker from "@/components/md3/ColorPicker";
 import MenuSelect from "@/components/md3/MenuSelect";
 import Slider from "@/components/md3/slider";
+import { Contributors } from "@/components/contributors";
 import {
     applySyntaxHighlightColors,
     DEFAULT_SYNTAX_HIGHLIGHT,
@@ -640,6 +641,16 @@ export default function Body() {
                     <div className="row-group">
                         <h3 className="text-label text-main-name">Version:</h3>
                         <div className="version">v0.122.6</div>
+                    </div>
+                    <div className="row-group">
+                        <p className="text-label text-main-name">Github:</p>
+                        <a className="btn small btn-tonal" href="https://github.com/Siwakornpc/ROBOT-IS-CHILL-web-demo" rel="noopener noreferrer" target="_blank">
+                            <i className="icon">open_in_new</i>Siwakornpc/ROBOT-IS-CHILL-web-demo
+                        </a>
+                    </div>
+                    <div className="row-group">
+                        <p className="text-label text-main-name">Contributors:</p>
+                        <Contributors />
                     </div>
                 </div>
 
