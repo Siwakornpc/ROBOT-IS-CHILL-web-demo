@@ -371,7 +371,7 @@ export default function Body() {
                                     min={0}
                                     max={1600}
                                     step={50}
-                                    size="medium"
+                                    size="xsmall"
                                     thumbLabel={`${morphDuration} ms`}
                                     onChange={setMorphDuration}
                                 />
