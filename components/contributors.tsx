@@ -39,7 +39,7 @@ export function Contributors() {
     }
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="contributors grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
             {contributors.map((user) => (
                 <a
                     key={user.id}
@@ -51,15 +51,13 @@ export function Contributors() {
                     <img
                         src={user.avatar_url}
                         alt={user.login}
-                        width={40}
-                        height={40}
+                        width={44}
+                        height={44}
                         className="rounded-full"
                     />
-                    <div className="overflow-hidden">
+                    <div className="overflow-hidden" style={{paddingInlineEnd: "8px"}}>
                         <p className="font-medium text-sm truncate">{user.login}</p>
-                        <p className="text-xs text-muted-foreground">
-                            {user.contributions} {user.contributions === 1 ? "contribution" : "contributions"}
-                        </p>
+                        <p className="text-xs">{user.contributions} {user.contributions === 1 ? "contribution" : "contributions"}</p>
                     </div>
                 </a>
             ))}

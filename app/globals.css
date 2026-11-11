@@ -3313,14 +3313,17 @@ tr:nth-child(odd) td {
     font-weight: 600;
     font-size: 1rem;
 }
+.contributors {
+    display: grid;
+    gap: 8px;
+}
 .contributor {
     display: flex;
     align-items: center;
     gap: 8px;
+    border-radius: 28px;
     color: rgb(var(--md-color-on-secondary-container));
     background: rgb(var(--md-color-secondary-container));
-    padding: 8px;
-    border-radius: 28px;
 }
 
 .dropdown-trigger {
