@@ -632,6 +632,9 @@ hr {
 .btn.xsmall.square:has(input[type="checkbox"]:checked) {
     border-radius: 16px;
 }
+.btn-group > .btn.xsmall {
+    margin-inline: 9px;
+}
 .btn.small {
     gap: 8px;
     font-size: 14px;
@@ -667,6 +670,9 @@ hr {
 .btn.small.square:has(input[type="checkbox"]:checked) {
     border-radius: 20px;
 }
+.btn-group > .btn.small {
+    margin-inline: 6px;
+}
 .btn.medium {
     gap: 8px;
     font-size: 14px;
@@ -693,6 +699,9 @@ hr {
 }
 .btn.medium.square:has(input[type="checkbox"]:checked) {
     border-radius: 28px;
+}
+.btn-group > .btn.medium {
+    margin-inline: 4px;
 }
 .btn.large {
     gap: 12px;
@@ -724,6 +733,9 @@ hr {
 .btn.large.square:has(input[type="checkbox"]:checked) {
     border-radius: 48px;
 }
+.btn-group > .btn.large {
+    margin-inline: 4px;
+}
 .btn.xlarge {
     gap: 16px;
     font-size: 32px;
@@ -753,6 +765,9 @@ hr {
 }
 .btn.xlarge.square:has(input[type="checkbox"]:checked) {
     border-radius: 68px;
+}
+.btn-group > .btn.xlarge {
+    margin-inline: 4px;
 }
 
 .btn-filled {
@@ -799,6 +814,16 @@ hr {
 }
 .btn-text:has(input[type="checkbox"]:not(:checked)):active, .ibtn.btn-text:active {
     background: rgb(var(--md-color-on-surface-variant), .1);
+}
+.btn-group {
+    display: flex;
+    align-items: center;
+}
+.btn-group > .btn:first-child {
+    margin-inline-start: 0;
+}
+.btn-group > .btn:last-child {
+    margin-inline-end: 0;
 }
 
 .cbtn-group {
@@ -1127,6 +1152,7 @@ hr {
     background: rgb(var(--md-color-primary));
     border-radius: 2px;
     transition: width 200ms cubic-bezier(0.2, 0.0, 0, 1.0);
+    z-index: 3;
 }
 .slider-container:active .slider-handle {
     width: 2px;

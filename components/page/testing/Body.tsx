@@ -254,149 +254,150 @@ export default function Body() {
 
                 <hr />
                 
-                <div className="row-group flex-col">
-                    <Slider
-                        value={sliderValue}
-                        min={0}
-                        max={10}
-                        step={1}
-                        onChange={(value) => {
-                            setSliderValue(value);
-                            console.log("Slider Value:", value);
-                        }}
-                    />
-                    <Slider
-                        value={sliderValue2}
-                        min={-10}
-                        max={10}
-                        step={1}
-                        onChange={(value) => {
-                            setSliderValue2(value);
-                            console.log("Slider Value:", value);
-                        }}
-                        size="small"
-                        showTicks
-                    />
-                    <Slider
-                        value={sliderValue3}
-                        min={-1}
-                        max={1}
-                        onChange={(value) => {
-                            setSliderValue3(value);
-                            console.log("Slider Value:", value);
-                        }}
-                        size="medium"
-                    />
-                    <Slider
-                        value={sliderValue4}
-                        min={-10}
-                        max={-1}
-                        onChange={(value) => {
-                            setSliderValue4(value);
-                            console.log("Slider Value:", value);
-                        }}
-                        size="xlarge"
-                    />
-                </div>
-
-                <div className="row-group flex flex-wrap items-center">
-                    <div style={{
-                        display: "grid",
-                        placeItems: "center",
-                        width: 240,
-                        height: 240,
-                        borderRadius: 16,
-                        background: "var(--md-color-surface-container)",
-                    }}>
-                        <MaterialShape
-                            name={shapeName}
-                            morphDuration={morphDuration}
-                            morphEasing={morphEasing}
-                            outlined={outlined}
-                            background="rgb(var(--md-color-primary))"
-                            size={180}
-                            role="img"
-                            aria-label={`${shapeLabel} shape`}
+                <div className="box-hole">
+                    <div className="row-group flex-col">
+                        <Slider
+                            value={sliderValue}
+                            min={0}
+                            max={10}
+                            step={1}
+                            onChange={(value) => {
+                                setSliderValue(value);
+                                console.log("Slider Value:", value);
+                            }}
+                        />
+                        <Slider
+                            value={sliderValue2}
+                            min={-10}
+                            max={10}
+                            step={1}
+                            onChange={(value) => {
+                                setSliderValue2(value);
+                                console.log("Slider Value:", value);
+                            }}
+                            size="small"
+                            showTicks
+                        />
+                        <Slider
+                            value={sliderValue3}
+                            min={-1}
+                            max={1}
+                            onChange={(value) => {
+                                setSliderValue3(value);
+                                console.log("Slider Value:", value);
+                            }}
+                            size="medium"
+                        />
+                        <Slider
+                            value={sliderValue4}
+                            min={-10}
+                            max={-1}
+                            onChange={(value) => {
+                                setSliderValue4(value);
+                                console.log("Slider Value:", value);
+                            }}
+                            size="xlarge"
                         />
                     </div>
 
-                    <div style={{ display: "grid", gap: 14, minWidth: 240, maxWidth: 400, flex: 1 }}>
-                        <div>
-                            <p className="text-label text-main-name">Shape</p>
-                            <MenuSelect
-                                id="material-shape-morph-select"
-                                title="Shape"
-                                value={shapeName}
-                                options={materialShapeOptions}
-                                onChange={setShapeName}
-                                style={{ width: "100%" }}
+                    <div className="row-group flex flex-wrap items-center">
+                        <div style={{
+                            display: "grid",
+                            placeItems: "center",
+                            width: 240,
+                            height: 240,
+                            borderRadius: 16,
+                            background: "var(--md-color-surface-container)",
+                        }}>
+                            <MaterialShape
+                                name={shapeName}
+                                morphDuration={morphDuration}
+                                morphEasing={morphEasing}
+                                outlined={outlined}
+                                background="rgb(var(--md-color-primary))"
+                                size={180}
+                                role="img"
+                                aria-label={`${shapeLabel} shape`}
                             />
                         </div>
 
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                            <button
-                                type="button"
-                                className="btn small btn-tonal"
-                                onClick={() => stepShape(-1)}
-                            >
-                                <i className="icon">skip_previous</i>Previous
-                            </button>
-                            <button
-                                className="btn small btn-tonal"
-                                onClick={() => stepShape(1)}
-                            >
-                                <i className="icon">skip_next</i>Next
-                            </button>
-                            <label
-                                className={`btn small btn-filled`}
-                                onClick={() => setAutoPlay((playing) => !playing)}
-                                aria-pressed={autoPlay}
-                            >
+                        <div style={{ display: "grid", gap: 14, minWidth: 240, maxWidth: 400, flex: 1 }}>
+                            <div>
+                                <p className="text-label text-main-name">Shape</p>
+                                <MenuSelect
+                                    id="material-shape-morph-select"
+                                    title="Shape"
+                                    value={shapeName}
+                                    options={materialShapeOptions}
+                                    onChange={setShapeName}
+                                    style={{ width: "100%" }}
+                                />
+                            </div>
+
+                            <div className="btn-group">
+                                <button
+                                    type="button"
+                                    className="btn ibtn small btn-outline wide"
+                                    onClick={() => stepShape(-1)}
+                                >
+                                    <i className="icon">skip_previous</i>
+                                </button>
+                                <label
+                                    className={`btn medium btn-filled`}
+                                    onClick={() => setAutoPlay((playing) => !playing)}
+                                    aria-pressed={autoPlay}
+                                >
+                                    <input
+                                        type="checkbox"
+                                        className="hidden"
+                                        checked={autoPlay}
+                                        onChange={() => setAutoPlay((playing) => !playing)}
+                                    />
+                                    <span className="btn-false"><i className="icon">play_arrow</i>Play</span>
+                                    <span className="btn-true"><i className="icon">pause</i>Pause</span>
+                                </label>
+                                <button
+                                    className="btn ibtn small btn-outline wide"
+                                    onClick={() => stepShape(1)}
+                                >
+                                    <i className="icon">skip_next</i>
+                                </button>
+                            </div>
+
+                            <div style={{ display: "grid", gap: 6 }}>
+                                <p className="text-label text-main-name">Morph duration</p>
+                                <Slider
+                                    value={morphDuration}
+                                    min={0}
+                                    max={1600}
+                                    step={50}
+                                    size="medium"
+                                    thumbLabel={`${morphDuration} ms`}
+                                    onChange={setMorphDuration}
+                                />
+                            </div>
+
+                            <div>
+                                <p className="text-label text-main-name">Easing</p>
+                                <MenuSelect
+                                    id="material-shape-morph-easing"
+                                    title="Easing"
+                                    value={morphEasing}
+                                    options={morphEasingOptions}
+                                    onChange={setMorphEasing}
+                                    style={{ width: "100%" }}
+                                />
+                            </div>
+
+                            <label className="checkbox">
                                 <input
                                     type="checkbox"
-                                    className="hidden"
-                                    checked={autoPlay}
-                                    onChange={() => setAutoPlay((playing) => !playing)}
+                                    checked={outlined}
+                                    onChange={(event) => setOutlined(event.target.checked)}
                                 />
-                                <span className="btn-false"><i className="icon">play_arrow</i>Play</span>
-                                <span className="btn-true"><i className="icon">pause</i>Pause</span>
+                                <span>Outlined</span>
                             </label>
                         </div>
-
-                        <div style={{ display: "grid", gap: 6 }}>
-                            <p className="text-label text-main-name">Morph duration</p>
-                            <Slider
-                                value={morphDuration}
-                                min={0}
-                                max={1600}
-                                step={50}
-                                size="medium"
-                                showTicks
-                                thumbLabel={`${morphDuration} ms`}
-                                onChange={setMorphDuration}
-                            />
-                        </div>
-
-                        <div>
-                            <p className="text-label text-main-name">Easing</p>
-                            <MenuSelect
-                                id="material-shape-morph-easing"
-                                title="Easing"
-                                value={morphEasing}
-                                options={morphEasingOptions}
-                                onChange={setMorphEasing}
-                                style={{ width: "100%" }}
-                            />
-                        </div>
-
-                        <label className="checkbox">
-                            <input
-                                type="checkbox"
-                                checked={outlined}
-                                onChange={(event) => setOutlined(event.target.checked)}
-                            />
-                            <span>Outlined</span>
-                        </label>
                     </div>
                 </div>
             </div>
