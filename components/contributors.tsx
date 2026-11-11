@@ -40,7 +40,7 @@ export function Contributors() {
 
     return (
         <div className="contributors grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {contributors.map((user) => (
+            {contributors.map((user) =>
                 <a
                     key={user.id}
                     href={user.html_url}
@@ -55,12 +55,12 @@ export function Contributors() {
                         height={44}
                         className="rounded-full"
                     />
-                    <div className="overflow-hidden" style={{paddingInlineEnd: "8px"}}>
+                    <div className="overflow-hidden" style={{paddingInlineEnd: "12px"}}>
                         <p className="font-medium text-sm truncate">{user.login}</p>
                         <p className="text-xs">{user.contributions} {user.contributions === 1 ? "commit" : "commits"}</p>
                     </div>
                 </a>
-            ))}
+            )}
         </div>
     );
 }

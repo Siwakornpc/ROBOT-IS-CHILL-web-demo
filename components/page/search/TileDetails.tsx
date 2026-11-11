@@ -598,17 +598,13 @@ export function Details({ selected, allResults }: DetailsProps) {
                     <p className="search-details-label">Description</p>
                     <div className="status-bar">
                         <button
-                            type="button"
-                            className="status status-btn"
+                            className="btn ibtn xsmall btn-tonal wide"
                             onClick={() => {
                                 if (selected.macro.description) {
                                     void handleCopyValue(selected.macro.description);
                                 }
                             }}
-                        >
-                            <span className="icon">
-                                {copiedValue !== selected.macro.description ? "content_copy" : "check"}
-                            </span>
+                        ><i className="icon">{copiedValue !== selected.macro.description ? "content_copy" : "check"}</i>
                         </button>
                     </div>
                 </div>
