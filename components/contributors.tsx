@@ -39,7 +39,7 @@ export function Contributors() {
     }
 
     return (
-        <div className="contributors grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+        <div className="contributors grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {contributors.map((user) => (
                 <a
                     key={user.id}
