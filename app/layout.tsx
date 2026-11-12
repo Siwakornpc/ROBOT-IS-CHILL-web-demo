@@ -43,6 +43,7 @@ const robotoFlex = Roboto_Flex({
 const googleSansFlex = Google_Sans_Flex({
     subsets: ["latin"],
     variable: "--font-google-sans-flex",
+    axes: ["GRAD", "slnt", "wdth", "ROND"]
 });
 const notoSans = Noto_Sans({
     subsets: ["latin"],

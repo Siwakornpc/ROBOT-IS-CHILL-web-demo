@@ -101,8 +101,15 @@
         "GRAD" var(--vfont-grad, 0),
         "slnt" var(--vfont-slnt, 0),
         "wdth" var(--vfont-wdth, 100),
-        "XOPQ" var(--vfont-thick-stroke, 96),
-        "YOPQ" var(--vfont-thin-stroke, 79);
+        "XOPQ" var(--vfont-vert, 96),
+        "YOPQ" var(--vfont-hori, 79);
+}
+[data-font-sans=--font-google-sans-flex] * {
+    font-variation-settings:
+        "GRAD" var(--vfont-grad, 0),
+        "slnt" var(--vfont-slnt, 0),
+        "wdth" var(--vfont-wdth, 100),
+        "ROND" var(--vfont-round, 100);
 }
 
 @theme inline {
@@ -1435,6 +1442,9 @@ hr {
     line-height: 16px;
     color: var(--description);
 }
+.menu-option.selected > div > .menu-option-desc {
+    color: rgb(var(--md-color-on-tertiary-container));
+}
 
 .menu-option > .icon {
     display: flex;
@@ -1685,10 +1695,12 @@ hr {
 main:has(.main-body) {
     height: calc(100dvh - 56px);
 }
-
+main.ascroll-y {
+    scrollbar-gutter: stable both-edges;
+}
 main.ascroll-y .main-body {
     height: auto;
-    padding: 20px !important;
+    padding: 20px 8px !important;
 }
 
 .align-layout {
@@ -1764,6 +1776,24 @@ main.ascroll-y .main-body {
     font-size: 2rem;
     font-weight: 1000;
     --vfont-wdth: 25;
+}
+
+[data-font-sans=--font-google-sans-flex] .title-name {
+    font-size: 1rem;
+    font-weight: 200;
+    --vfont-slnt: -10;
+    --vfont-wdth: 150;
+    --vfont-round: 50;
+}
+[data-font-sans=--font-google-sans-flex] .title-name:hover {
+    --vfont-round: 0;
+}
+[data-font-sans=--font-google-sans-flex] .title-name:active {
+    --vfont-round: 100;
+}
+[data-font-sans=--font-google-sans-flex] .title-name #name-1 {
+    font-size: 1rem;
+    font-weight: 800;
 }
 
 /*
@@ -3303,7 +3333,6 @@ tr:nth-child(odd) td {
     display: flex;
     flex-direction: column;
     gap: 2px;
-    margin-bottom: 8px;
 }
 .row-group, .row-group-unr {
     display: flex;
@@ -3322,6 +3351,7 @@ tr:nth-child(odd) td {
     border-bottom-right-radius: 24px;
 }
 .text-label:has(+ .box-hole) {
+    margin-top: 8px;
     margin-inline-start: 16px;
 }
 .contributors {
