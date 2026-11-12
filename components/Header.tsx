@@ -19,7 +19,7 @@ export function Header() {
             if (n1) n1.textContent = (window.innerWidth < 400) ? "RIC" : "ROBOT IS CHILL";
             if (n2) n2.textContent = (window.innerWidth < 270) ? "wd" : "web demo";
         };
-
+        handleResize();
         window.addEventListener("resize", handleResize);
 
         return () => {
