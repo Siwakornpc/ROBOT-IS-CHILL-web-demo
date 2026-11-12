@@ -662,7 +662,7 @@ export default function Body() {
                                 fontSize: "1rem",
                                 color: "rgb(var(--md-color-on-tertiary-container))",
                                 zIndex: 1,
-                            }}>v0.122.6</div>
+                            }}>v0.122.11</div>
                         </div>
                         
                     </div>
