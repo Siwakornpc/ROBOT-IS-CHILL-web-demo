@@ -610,35 +610,11 @@ export default function Body() {
                 <hr />
 
                 {
-                    // Reset All To Default
-                }
-                <h2 className="text-label font-bold">Default</h2>
-
-                <div className="flex gap-[8px]">
-                    <button
-                        type="button"
-                        className="btn medium btn-tonal !w-48 !justify-center"
-                        onClick={() => {
-                            handleDefaultFont();
-                            handleDefaultTheme();
-                            handleDefaultSyntaxHighlight();
-                        }}
-                    ><i className="icon">settings_backup_restore</i>Reset All
-                    </button>
-                    <button
-                        type="button"
-                        className="btn medium btn-outline !w-48 !justify-center"
-                        onClick={handlePrintPreset}
-                    ><i className="icon">download</i>Print Log
-                    </button>
-                </div>
-
-                <hr />
-
-                {
                     // Info
                 }
-                <h2 className="text-label font-bold">About</h2>
+                
+                <h4 className="text-label font-bold">About</h4>
+
                 <div className="box-hole">
                     <div className="row-group">
                         <h3 className="text-label text-main-name">Version:</h3>
@@ -676,6 +652,25 @@ export default function Body() {
                         <p className="text-label text-main-name">Contributors:</p>
                         <Contributors />
                     </div>
+                </div>
+
+                <div className="flex gap-[8px]">
+                    <button
+                        type="button"
+                        className="btn medium btn-tonal !w-48 !justify-center"
+                        onClick={() => {
+                            handleDefaultFont();
+                            handleDefaultTheme();
+                            handleDefaultSyntaxHighlight();
+                        }}
+                    ><i className="icon">settings_backup_restore</i>Reset All
+                    </button>
+                    <button
+                        type="button"
+                        className="btn medium btn-outline !w-48 !justify-center"
+                        onClick={handlePrintPreset}
+                    ><i className="icon">download</i>Print Log
+                    </button>
                 </div>
 
             </div>

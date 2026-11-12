@@ -13,7 +13,7 @@ export const FONT_SANS_OPTIONS: FontOption[] = [
     { value: "ibm-plex-sans", label: "IBM Plex Sans", cssVar: "--font-ibm-plex-sans" },
     { value: "inter", label: "Inter", cssVar: "--font-inter" },
     { value: "roboto-flex", label: "Roboto Flex", cssVar: "--font-roboto-flex" },
-    { value: "google-sans", label: "Google Sans", cssVar: "--font-google-sans" },
+    { value: "google-sans-flex", label: "Google Sans Flex", cssVar: "--font-google-sans-flex" },
     { value: "bytesized", label: "Bytesized", cssVar: "--font-bytesized" },
     { value: "noto-sans", label: "Noto Sans", cssVar: "--font-noto-sans" },
     { value: "geist", label: "Geist", cssVar: "--font-geist" },

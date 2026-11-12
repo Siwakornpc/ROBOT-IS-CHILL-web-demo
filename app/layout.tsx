@@ -5,7 +5,7 @@ import {
     IBM_Plex_Sans,
     Inter,
     Roboto_Flex,
-    Google_Sans,
+    Google_Sans_Flex,
     Noto_Sans,
     Geist,
     IBM_Plex_Mono,
@@ -40,9 +40,10 @@ const robotoFlex = Roboto_Flex({
     variable: "--font-roboto-flex",
     axes: ["GRAD", "slnt", "wdth", "XOPQ", "YOPQ"]
 });
-const googleSans = Google_Sans({
+const googleSansFlex = Google_Sans_Flex({
     subsets: ["latin"],
-    variable: "--font-google-sans",
+    variable: "--font-google-sans-flex",
+    axes: ["GRAD", "slnt", "wdth", "ROND"]
 });
 const notoSans = Noto_Sans({
     subsets: ["latin"],
@@ -109,7 +110,7 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
                 ibmPlexSans,
                 inter,
                 robotoFlex,
-                googleSans,
+                googleSansFlex,
                 notoSans,
                 geist,
 
