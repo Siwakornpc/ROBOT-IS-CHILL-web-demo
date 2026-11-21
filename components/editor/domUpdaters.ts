@@ -1,12 +1,11 @@
-/* Rebuilds the gutter to match each line's *actual* rendered height (handles wrapped lines),
- * mirroring the reference implementation's per-line offsetHeight measurement. */
+/* Rebuilds the gutter to match each line's actual fractional rendered height. */
 export function updateGutter(gutterEl: HTMLElement | null, lineEls: HTMLElement[], activeLine: number) {
     if (!gutterEl) return;
 
     let html = "";
 
     lineEls.forEach((lineEl, i) => {
-        const height = lineEl.offsetHeight;
+        const height = lineEl.getBoundingClientRect().height;
         html += `<div class="gutter-line${i === activeLine ? " active" : ""}" style="height:${height}px">${i + 1}</div>`;
     });
 
