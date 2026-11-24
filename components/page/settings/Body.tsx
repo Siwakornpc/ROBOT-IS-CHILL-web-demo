@@ -625,20 +625,20 @@ export default function Body() {
                             <MaterialShape
                                 name="12-sided_cookie"
                                 background="rgb(var(--md-color-tertiary-container))"
-                                size="8rem"
+                                size="12rem"
                             />
                             <MaterialShape
                                 name="arrow"
                                 outlined
                                 background="rgb(var(--md-color-tertiary))"
-                                size="8rem"
+                                size="12rem"
                             />
                             <div style={{
                                 fontWeight: 600,
-                                fontSize: "1rem",
+                                fontSize: "2rem",
                                 color: "rgb(var(--md-color-on-tertiary-container))",
                                 zIndex: 1,
-                            }}>v0.123</div>
+                            }}>v0.123.1</div>
                         </div>
                         
                     </div>
@@ -657,7 +657,7 @@ export default function Body() {
                 <div className="flex gap-[8px]">
                     <button
                         type="button"
-                        className="btn medium btn-tonal !w-48 !justify-center"
+                        className="btn medium btn-tonal !justify-center"
                         onClick={() => {
                             handleDefaultFont();
                             handleDefaultTheme();
@@ -667,7 +667,7 @@ export default function Body() {
                     </button>
                     <button
                         type="button"
-                        className="btn medium btn-outline !w-48 !justify-center"
+                        className="btn medium btn-outline !justify-center"
                         onClick={handlePrintPreset}
                     ><i className="icon">download</i>Print Log
                     </button>

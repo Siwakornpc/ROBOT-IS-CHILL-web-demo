@@ -81,7 +81,7 @@ export function LeftBar() {
                     <span className="nav-btn-label">Search</span>
                 </Link>
 
-                <div style={{flex: 1}} />
+                <div className="spacer" />
 
                 <Link
                     href="../settings"

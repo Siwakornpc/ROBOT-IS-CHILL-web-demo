@@ -488,6 +488,12 @@ hr {
     display: none !important;
 }
 
+.spacer {
+    flex: 1;
+    width: 0;
+    height: 0;
+}
+
 /*
     apply overflow fade (can-overflow)
 */
@@ -3368,7 +3374,7 @@ tr:nth-child(odd) td {
     display :inline-block;
     align-content: center;
     flex-shrink: 0;
-    width: 140px;
+    width: 200px;
     padding: 0 8px;
 }
 .box-hole {
@@ -3416,9 +3422,9 @@ tr:nth-child(odd) td {
     position: relative;
     width: 200px;
     min-height: 40px;
-    font-size: 14px;
+    font-size: calc(14px / 16px * var(--font-size));
     font-weight: 500;
-    line-height: 20px;
+    line-height: calc(14px / 16px * var(--font-size) + 6px);
     text-align: left;
     vertical-align: top;
     padding: 12px;

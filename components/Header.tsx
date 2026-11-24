@@ -64,7 +64,7 @@ export function Header() {
                 </Link>
             </div>
 
-            <div style={{ flex: 1 }} />
+            <div className="spacer" />
 
             <Link
                 href="../about"
