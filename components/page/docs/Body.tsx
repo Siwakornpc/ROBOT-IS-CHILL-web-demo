@@ -74,26 +74,26 @@ export default function Body() {
     }, [selectedFile, initialized]);
 
     return (
-        <main className="ascroll-y w-full">
+        <main className="flex w-full" style={{ paddingTop: "0" }}>
             {files !== null &&
-                <div className="bg-[rgb(var(--md-color-surface-container))] w-full box-content ascroll-x h-[40px] scale-y-[-1] pb-[12px]">
-                    <div className="flex scale-y-[-1]">
+                <div className="bg-[rgb(var(--md-color-surface-container))] h-full box-content ascroll-y h-[40px]" style={{ paddingTop: "56px" }}>
+                    <div className="flex flex-col">
                         {files.map(file => 
                             <button
                                 key={file} 
                                 type="button" 
                                 onClick={() => selectedFile !== file ? void read(`${docsPath}/${file}`) : ""}
-                                className={`tab ${selectedFile === file ? "selected" : ""}`}
-                            >{file}
+                                className={`tab-v ${selectedFile === file ? "selected" : ""}`}
+                            >{file.slice(0, -3)}
                             </button>
                         )}
                     </div>
                 </div>
             }
-            <div className="main-body">
+            <div className="main-body docs-page ascroll-y">
                 {error !== null && <p role="alert">{error}</p>}
                 {selectedFile !== null && (<>
-                    <h2 className="text-label font-bold">{selectedFile}</h2>
+                    <h2 className="text-label font-bold">{selectedFile.split("-")[1].slice(1, -3)}</h2>
                     <hr/>
                 </>)}
                 {fileText !== null && <DiscordMarkdown>{fileText}</DiscordMarkdown>}

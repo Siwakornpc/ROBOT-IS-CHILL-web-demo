@@ -1,8 +1,8 @@
 "use client";
 
 import Body from "@/components/page/about/Body";
-import { LeftBar, RightBar } from "@/components/page/SideBars";
-import { useState, useEffect } from "react";
+import { LeftBar } from "@/components/page/SideBars";
+import { useEffect } from "react";
 import { nav_btn_select } from "@/components/nav_select";
 
 export default function Home() {
@@ -14,7 +14,6 @@ export default function Home() {
         <main className="align-layout">
             <LeftBar />
             <Body />
-            <RightBar />
         </main>
     );
 }

@@ -3,6 +3,29 @@
 import Link from "next/link";
 import { useMenu } from "./md3/MenuContext";
 import { useEffect, useRef } from "react";
+import { buildSearchUrlHash, readSearchUrlState } from "@/components/url_state/searchUrlState";
+
+function navigateWithCode(
+    event: React.MouseEvent<HTMLAnchorElement>,
+    path: string
+) {
+    if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+    ) {return}
+
+    event.preventDefault();
+
+    const target = new URL(path, window.location.href);
+    const state = readSearchUrlState();
+    target.hash = buildSearchUrlHash({ ...state, details: null }, target.pathname, false);
+
+    window.location.href = target.toString();
+}
 
 export function Header() {
     const { toggleMenu, toggleRightMenu } = useMenu();
@@ -28,9 +51,9 @@ export function Header() {
     }, []);
 
     return (
-        <div className="topbar">
+        <div className="header w-full">
             <div className="flex gap-[8px] items-center">
-                <button className="head-btn left" onClick={toggleMenu} aria-label="Open left menu">
+                <button className="header-btn left" onClick={toggleMenu} aria-label="Open left menu">
                     <span className="icon">menu</span>
                 </button>
 
@@ -41,9 +64,26 @@ export function Header() {
                 </Link>
             </div>
 
-            <button className="head-btn right" onClick={toggleRightMenu} aria-label="Open right menu">
-                <span className="icon">menu</span>
-            </button>
+            <div style={{ flex: 1 }} />
+
+            <Link
+                href="../about"
+                className="header-link"
+                aria-label="About"
+                onClick={(e) => navigateWithCode(e, "/about")}
+            >
+                <i className="icon">info</i>
+                <span className="header-link-label">About</span>
+            </Link>
+            <Link
+                href="../docs"
+                className="header-link"
+                aria-label="Docs"
+                onClick={(e) => navigateWithCode(e, "/docs")}
+            >
+                <i className="icon">description</i>
+                <span className="header-link-label">Docs</span>
+            </Link>
         </div>
     );
 }

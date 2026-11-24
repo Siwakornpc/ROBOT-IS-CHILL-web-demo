@@ -51,98 +51,47 @@ export function LeftBar() {
                 : ""
             }
             <div className={`sb-left ${isFlexibleMenu ? "sb-left-fxb" : ""} ${isMenuOpen ? "opened" : ""}`}>
-                <div className="sb-wrapper-top">
-                    <Link
-                        href="../macrosia"
-                        className="nav-btn has-tooltip"
-                        aria-label="Macrosia"
-                        onClick={(e) => navigateWithCode(e, "/macrosia")}
-                    >
-                        <i className="icon custom">macrosia</i>
-                        <span className="nav-btn-label">Macrosia</span>
-                    </Link>
+                <Link
+                    href="../macrosia"
+                    className="nav-btn has-tooltip"
+                    aria-label="Macrosia"
+                    onClick={(e) => navigateWithCode(e, "/macrosia")}
+                >
+                    <i className="icon custom">macrosia</i>
+                    <span className="nav-btn-label">Macrosia</span>
+                </Link>
 
-                    <Link
-                        href="../render"
-                        className="nav-btn has-tooltip"
-                        aria-label="Render"
-                        onClick={(e) => navigateWithCode(e, "/render")}
-                    >
-                        <i className="icon custom">render</i>
-                        <span className="nav-btn-label">Render</span>
-                    </Link>
+                <Link
+                    href="../render"
+                    className="nav-btn has-tooltip"
+                    aria-label="Render"
+                    onClick={(e) => navigateWithCode(e, "/render")}
+                >
+                    <i className="icon custom">render</i>
+                    <span className="nav-btn-label">Render</span>
+                </Link>
 
-                    <Link
-                        href="../search"
-                        className="nav-btn has-tooltip"
-                        aria-label="Search"
-                        onClick={(e) => navigateWithCode(e, "/search")}
-                    >
-                        <i className="icon">search</i>
-                        <span className="nav-btn-label">Search</span>
-                    </Link>
-                </div>
+                <Link
+                    href="../search"
+                    className="nav-btn has-tooltip"
+                    aria-label="Search"
+                    onClick={(e) => navigateWithCode(e, "/search")}
+                >
+                    <i className="icon">search</i>
+                    <span className="nav-btn-label">Search</span>
+                </Link>
 
-                <div className="sb-wrapper-bottom">
-                    <Link
-                        href="../settings"
-                        className="nav-btn has-tooltip"
-                        aria-label="Settings"
-                        onClick={(e) => navigateWithCode(e, "/settings")}
-                    >
-                        <i className="icon">settings</i>
-                        <span className="nav-btn-label">Settings</span>
-                    </Link>
-                </div>
-            </div>
-        </>
-    );
-}
+                <div style={{flex: 1}} />
 
-export function RightBar() {
-    const { isRightMenuOpen, closeRightMenu } = useMenu();
-    const [isFlexibleMenu, setIsFlexibleMenu] = useState(false);
-
-    useEffect(() => {
-        function handleResize() {
-            setIsFlexibleMenu(window.innerWidth < 560);
-        }
-
-        // Set initial state
-        handleResize();
-        window.addEventListener("resize", handleResize);
-
-        // Cleanup
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
-
-    return (
-        <>
-            {isFlexibleMenu
-                ? <div className={`screen-blur ${isRightMenuOpen ? "true" : ""}`} onClick={closeRightMenu} />
-                : ""
-            }
-            <div className={`sb-right ${isFlexibleMenu ? "sb-right-fxb" : ""} ${isRightMenuOpen ? "opened" : ""}`}>
-                <div className="sb-wrapper-top">
-                    <Link
-                        href="../docs"
-                        className="nav-btn has-tooltip"
-                        aria-label="Docs"
-                        onClick={(e) => navigateWithCode(e, "/docs")}
-                    >
-                        <i className="icon">description</i>
-                        <span className="nav-btn-label">Docs</span>
-                    </Link>
-                    <Link
-                        href="../about"
-                        className="nav-btn has-tooltip"
-                        aria-label="About"
-                        onClick={(e) => navigateWithCode(e, "/about")}
-                    >
-                        <i className="icon">info</i>
-                        <span className="nav-btn-label">About</span>
-                    </Link>
-                </div>
+                <Link
+                    href="../settings"
+                    className="nav-btn has-tooltip"
+                    aria-label="Settings"
+                    onClick={(e) => navigateWithCode(e, "/settings")}
+                >
+                    <i className="icon">settings</i>
+                    <span className="nav-btn-label">Settings</span>
+                </Link>
             </div>
         </>
     );
