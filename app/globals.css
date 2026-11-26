@@ -450,6 +450,7 @@ s {
 ::placeholder {
     color: var(--variant);
 }
+
 .error {
     color: var(--error);
 }
@@ -461,6 +462,19 @@ s {
 }
 .stack > * {
     grid-area: stack;
+}
+
+.disabled {
+    cursor: initial !important;
+    color: rgb(var(--md-color-on-surface), .38);
+}
+.disabled .primary {
+    color: rgb(var(--md-color-on-surface), .38);
+    background: rgb(var(--md-color-on-surface), .38);
+}
+.disabled .secondary-container {
+    color: rgb(var(--md-color-on-surface), .38);
+    background: rgb(var(--md-color-on-surface), .1);
 }
 
 html, body {
@@ -1216,11 +1230,7 @@ hr {
     position: relative;
     pointer-events: none;
     border-radius: 2px;
-    background: rgb(var(--md-color-secondary-container));
     overflow: hidden;
-}
-.slider-track-filled {
-    background: rgb(var(--md-color-primary));
 }
 .slider-tick, .slider-start-track::after, .slider-end-track::after {
     content: "";
@@ -1231,7 +1241,7 @@ hr {
     height: 4px;
     margin: -2px;
     border-radius: 2px;
-    background: rgb(var(--md-color-on-secondary-container));
+    background: currentColor;
 }
 .slider-start-track::after {
     inset-inline-start: 6px;
@@ -1239,7 +1249,7 @@ hr {
 .slider-end-track::after {
     inset-inline-end: 6px;
 }
-.slider-tick-filled, .slider-track-filled::after {
+.slider-tick-filled {
     background: rgb(var(--md-color-on-primary));
 }
 .slider-handle {
@@ -1247,7 +1257,6 @@ hr {
     align-self: center;
     width: 4px;
     height: stretch;
-    background: rgb(var(--md-color-primary));
     border-radius: 2px;
     transform: translateX(-50%);
     transition: width 200ms var(--easing-standard);
@@ -1279,12 +1288,12 @@ hr {
     transition: all .2s var(--easing-decelerate), opacity var(--easing-fast-ex-effect);
     z-index: 20;
 }
-.slider-container:hover .slider-handle::after {
+.slider-container:hover:not(.disabled) .slider-handle::after {
     bottom: calc(100% + 4px);
     scale: 1;
     opacity: 1;
 }
-.slider-container:active .slider-handle:after {
+.slider-container:active:not(.disabled) .slider-handle:after {
     translate: calc(1px - 50%);
 }
 [dir=rtl] .slider-handle::after {

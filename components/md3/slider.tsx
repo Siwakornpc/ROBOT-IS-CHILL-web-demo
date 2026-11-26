@@ -108,13 +108,13 @@ export default function Slider({
             ? []
             : [{
                 key: "start",
-                className: "slider-track slider-start-track",
+                className: "slider-track slider-start-track secondary-container",
                 start: 0,
                 end: leftTrackEnd + 6,
             }]),
         {
             key: "start-fill",
-            className: `slider-track ${zeroAtStart ? "slider-start-track" : "slider-mid-track"} slider-track-filled`,
+            className: `slider-track ${zeroAtStart ? "slider-start-track" : "slider-mid-track"} primary`,
             start: zeroAtStart ? 0 : leftFillStart + 6,
             end: zeroAtStart
                 ? Math.max(leftFillStart + 6, leftFillEnd + 6)
@@ -122,7 +122,7 @@ export default function Slider({
         },
         {
             key: "end-fill",
-            className: `slider-track ${zeroAtEnd ? "slider-end-track" : "slider-mid-track"} slider-track-filled`,
+            className: `slider-track ${zeroAtEnd ? "slider-end-track" : "slider-mid-track"} primary`,
             start: zeroAtEnd
                 ? Math.min(rightFillStart + 6, rightFillEnd + 6)
                 : rightFillStart + 6,
@@ -132,7 +132,7 @@ export default function Slider({
             ? []
             : [{
                 key: "end",
-                className: "slider-track slider-end-track",
+                className: "slider-track slider-end-track secondary-container",
                 start: containerWidth,
                 end: rightTrackEnd + 6,
             }]),
@@ -245,7 +245,7 @@ export default function Slider({
                 />
             ))}
             <div
-                className="slider-handle"
+                className="slider-handle primary"
                 style={{
                     position: "absolute",
                     insetInlineStart: position + 6,
