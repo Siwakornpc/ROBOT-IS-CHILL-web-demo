@@ -90,8 +90,8 @@ export default function Body() {
                     </div>
                 </div>
             }
-            <main className="min-w-0 flex-1 ascroll-y">
-                <div className="main-body docs-page">
+            <main className="min-w-0 flex-1 ascroll-y docs-page">
+                <div className="main-body">
                     {error !== null && <p role="alert">{error}</p>}
                     {selectedFile !== null && (<>
                         <h2 className="text-label font-bold">{selectedFile.split("-")[1].slice(1, -3)}</h2>

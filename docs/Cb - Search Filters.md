@@ -1,4 +1,4 @@
-Every details explained in **Ca**, it is possible to filter them by other details:
+Every type explained in **Ca** can be filtered by other details:
 
 We used [`ric-api.sno.mba`](https://ric-api.sno.mba) to find details that are easy to retrieve. And harder parts require reading files and/or directories straight from GitHub.
 

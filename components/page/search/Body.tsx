@@ -207,14 +207,21 @@ export function FilterPanel({
 
             case "builtin":
                 return (
-                    <label className="checkbox">
-                        <input
-                            type="checkbox"
-                            checked={value === "true"}
-                            onChange={(e) => handleValueChange(type, index, e.target.checked ? "true" : "false")}
-                        />
-                        <span>Is Builtin</span>
-                    </label>
+                    <div className="cbtn-group small">
+                        <button
+                            type="button"
+                            className={`cbtn ${value === "true" ? "selected" : ""}`}
+                            onClick={() => handleValueChange(type, index, "true")}
+                        >Builtin
+                        </button>
+                        
+                        <button
+                            type="button"
+                            className={`cbtn ${value === "false" ? "selected" : ""}`}
+                            onClick={() => handleValueChange(type, index, "false")}
+                        >Custom
+                        </button>
+                    </div>
                 );
 
             case "creator":
@@ -505,8 +512,8 @@ export default function Body({
     return (
         <main style={{ width: "stretch" }}>
             <div className="main-body">
-                <div className="search">
-                    <label className="btn ibtn small btn-text search-menu-btn">
+                <div className="flex justify-between items-center gap-[4px]">
+                    <label className="btn ibtn medium btn-text search-menu-btn">
                         <input
                             type="checkbox"
                             className="hidden"
@@ -516,21 +523,24 @@ export default function Body({
                         <span className="btn-false"><i className="icon">menu</i></span>
                         <span className="btn-true"><i className="icon">menu_open</i></span>
                     </label>
-                    <input
-                        className="searchbar"
-                        placeholder="search for something..."
-                        value={searchQuery}
-                        onChange={(e) => onSearchQueryChange(e.target.value)}
-                    />
-                    <label className="btn ibtn small btn-text search-btn">
+                    <div className="search">
+                        <i className="icon">search</i>
                         <input
-                            type="checkbox"
-                            className="hidden"
-                            checked={useRegex}
-                            onChange={(e) => onRegexChange(e.target.checked)}
+                            className="searchbar"
+                            placeholder="search for something..."
+                            value={searchQuery}
+                            onChange={(e) => onSearchQueryChange(e.target.value)}
                         />
-                        <i className="icon">regular_expression</i>
-                    </label>
+                        <label className="btn ibtn small btn-text search-btn">
+                            <input
+                                type="checkbox"
+                                className="hidden"
+                                checked={useRegex}
+                                onChange={(e) => onRegexChange(e.target.checked)}
+                            />
+                            <i className="icon">regular_expression</i>
+                        </label>
+                    </div>
                 </div>
                 <hr />
                 <SearchResults

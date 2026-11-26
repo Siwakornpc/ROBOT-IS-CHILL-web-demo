@@ -750,10 +750,10 @@ export default function SearchResults({
     --------------------- */  
 
     return (<>
-            {results
-                ? <span className="search-results-label">
-                    {`${filteredEntries.length.toLocaleString('en-US')} results found`}
-                </span> : ""
+            {results && 
+                <span className="search-results-label">
+                    <h2>{filteredEntries.length.toLocaleString('en-US')}</h2>&nbsp;<span>results found</span>
+                </span>
             }
             <div
                 ref={(el) => {
@@ -765,12 +765,11 @@ export default function SearchResults({
             >
                 {!results
                     ? <div className="before-results">
-                        {filteredEntries.length === 0
-                            ? <span className="search-loading" role="status">
+                        {filteredEntries.length === 0 &&
+                            <span className="search-loading" role="status">
                                 <div className="search-loading-spinner" aria-hidden="true" />
                                 <span>Loading</span>
                             </span>
-                            : ""
                         }
                     </div>
                     : filteredEntries.length === 0

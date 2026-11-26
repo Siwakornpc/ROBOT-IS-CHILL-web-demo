@@ -325,7 +325,7 @@ export function Details({ selected, allResults }: DetailsProps) {
         const imageMap = tiled.imageMap.flat().filter(item => item !== "");
         if (imageMap.length <= 1) return;
 
-        const interval = setInterval(() => setTilingFrame((frame) => (frame + 1) % imageMap.length), 1200);
+        const interval = setInterval(() => setTilingFrame((frame) => (frame + 1) % imageMap.length), 2400);
         return () => clearInterval(interval);
     }, [selected, customFrames]);
 
@@ -429,12 +429,26 @@ export function Details({ selected, allResults }: DetailsProps) {
                 ? <>
                     <div className="search-details-image-wrapper ascroll-x ascroll-y">
                         {select === "one_tile"
-                            ? <div className="search-details-image-asize" data-frame={currentIndex}>
-                                <img
-                                    alt={selected.name}
-                                    className="search-details-image"
-                                    src={currentFrame}
-                                />
+                            ? <div className="flex p-[8px] w-full h-full">
+                                <button
+                                    type="button"
+                                    className="btn ibtn medium btn-text narrow !justify-center"
+                                    onClick={() => setTilingFrame((frame) => (frame - 1 + imageMap.length) % imageMap.length)}
+                                ><i className="icon">chevron_left</i>
+                                </button>
+                                <div className="search-details-image-asize" data-frame={currentIndex}>
+                                    <img
+                                        alt={selected.name}
+                                        className="search-details-image"
+                                        src={currentFrame}
+                                    />
+                                </div>
+                                <button
+                                    type="button"
+                                    className="btn ibtn medium btn-text narrow !justify-center"
+                                    onClick={() => setTilingFrame((frame) => (frame + 1) % imageMap.length)}
+                                ><i className="icon">chevron_right</i>
+                                </button>
                             </div>
                             : select === "full_tiling"
                             ? <div className="search-details-image-asize-tiled">
@@ -487,7 +501,7 @@ export function Details({ selected, allResults }: DetailsProps) {
                     <div className="search-details-image-asize">
                         <img
                             alt={selected.name}
-                            className={`search-details-image${selected.name === "bab_therealbabdictator" ? "-e" : ""}`}
+                            className="search-details-image"
                             src={`https://ric-api.sno.mba/tiles/${selected.name}.gif`}
                         />
                     </div>

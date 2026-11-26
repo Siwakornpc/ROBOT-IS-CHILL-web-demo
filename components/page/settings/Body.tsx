@@ -57,13 +57,7 @@ function MacroCode({ children }: { children: string }) {
         }
     }, [children]);
 
-    return (
-        <div
-            ref={elementRef}
-            className="search-details-detailbox macro max-w-[400px]"
-            style={{ background: "var(--editor-body)" }}
-        />
-    );
+    return <div ref={elementRef} className="search-details-detailbox macro max-w-[400px]" />;
 }
 
 export default function Body() {
@@ -324,7 +318,10 @@ export default function Body() {
 
                 <div className="box-hole">
                     <div className="row-group">
-                        <p className="text-label text-main-name">Font Size</p>
+                        <span className="text-main-name">
+                            <i className="icon">format_size</i>
+                            <p>Font Size</p>
+                        </span>
                         <Slider
                             value={font.sansSize}
                             min={12}
@@ -335,7 +332,10 @@ export default function Body() {
                     </div>
 
                     <div className="row-group">
-                        <p className="text-label text-main-name">Monospace Font Size</p>
+                        <span className="text-main-name">
+                            <i className="icon">format_size</i>
+                            <p>Code Font Size</p>
+                        </span>
                         <Slider
                             value={font.codeSize}
                             min={10}
@@ -350,7 +350,10 @@ export default function Body() {
 
                 <div className="box-hole">
                     <div className="row-group">
-                        <p className="text-label text-main-name">Sans Serif Font</p>
+                        <span className="text-main-name">
+                            <i className="icon">brand_family</i>
+                            <p>Main Font</p>
+                        </span>
                         <MenuSelect
                             id="font-sans"
                             value={font.sans}
@@ -360,7 +363,10 @@ export default function Body() {
                     </div>
 
                     <div className="row-group">
-                        <p className="text-label text-main-name">Monospace Font</p>
+                        <span className="text-main-name">
+                            <i className="icon">brand_family</i>
+                            <p>Code Font</p>
+                        </span>
                         <MenuSelect
                             id="font-code"
                             value={font.code}
@@ -393,7 +399,10 @@ export default function Body() {
                 <div className="box-hole">
                     
                     <div className="row-group">
-                        <p className="text-label text-main-name">Theme Color</p>
+                        <span className="text-main-name">
+                            <i className="icon">colors</i>
+                            <p>Theme Color</p>
+                        </span>
                         <MenuSelect
                             value="color"
                             options={[{ value: "color", label: "Theme Color" }]}
@@ -422,7 +431,10 @@ export default function Body() {
                     </div>
 
                     <div className="row-group">
-                        <p className="text-label text-main-name">Appearance</p>
+                        <span className="text-main-name">
+                            <i className="icon">palette</i>
+                            <p>Appearance</p>
+                        </span>
                         <MenuSelect
                             id="theme-scheme"
                             value={theme.scheme}
@@ -436,7 +448,10 @@ export default function Body() {
                     </div>
 
                     <div className="row-group">
-                        <p className="text-label text-main-name">Contrast</p>
+                        <span className="text-main-name">
+                            <i className="icon">contrast</i>
+                            <p>Contrast</p>
+                        </span>
                         <MenuSelect
                             id="theme-contrast"
                             value={theme.contrast}
@@ -451,7 +466,11 @@ export default function Body() {
                     </div>
 
                     <div className="row-group">
-                        <p className="text-label text-main-name">Brightness</p>
+                        
+                        <span className="text-main-name">
+                            <i className="icon">light_mode</i>
+                            <p>Lightness</p>
+                        </span>
                         <Slider
                             value={theme.brightness}
                             min={-30}
@@ -462,7 +481,10 @@ export default function Body() {
                     </div>
                     
                     <div className="row-group">
-                        <p className="text-label text-main-name">Presets</p>
+                        <span className="text-main-name">
+                            <i className="icon">style</i>
+                            <p>Presets</p>
+                        </span>
                         <MenuSelect
                             id="theme-preset"
                             value={currentPresetId}
@@ -488,22 +510,29 @@ export default function Body() {
                 <h4 className="text-label font-bold">Syntax Highlights</h4>
 
                 <div className="box-hole">
-                    <div
+                    <button
                         className="row-group section-collapsable"
                         onClick={() => handleOnClickCollapsable("1")}
                     >
-                        <p className="text-label text-main-name">Code Editor</p>
+                        <span className="text-main-name">
+                            <i className="icon">palette</i>
+                            <p className="text-label">Code Editor</p>
+                        </span>
+                        <p className="text-main-name"></p>
                         <div className="flex flex-row-reverse mr-[60px] -scale-x-100">
                             {SYNTAX_HIGHLIGHT_OPTIONS.map(({ key }) => 
                                 <div key={key} className="section-color-label -ml-[28px]" style={{"--this-label-color": `rgb(var(--md-color-${key.replace(/([A-Z])/g, "-$1").toLowerCase()}))` } as React.CSSProperties}/>
                             )}
                         </div>
-                    </div>
+                    </button>
                     {isCollapsableOpen && isCollapsableOpen.isOpen && isCollapsableOpen.id === "1" && 
                         (<div className={`this section-collapsable-content` /* woah, tailwind hidden */}>
                             {SYNTAX_HIGHLIGHT_OPTIONS.map(({ key, label }) => (
                                 <span className="row-group items-center" key={key}>
-                                    <p className="text-label text-main-name" style={{ height: "stretch" }}>{label}</p>
+                                    <span className="text-main-name">
+                                        <i className="icon">code</i>
+                                        <p className="text-label">{label}</p>
+                                    </span>
                                     <div className="flex gap-[8px] items-center">
                                         <label className="ml-[4px] mr-[4px] checkbox">
                                             <input
@@ -569,7 +598,7 @@ export default function Body() {
                         </div>)
                     }
                     <div className="row-group">
-                        <p className="text-label text-main-name"> Code Preview</p>
+                        <p className="text-main-name"> Code Preview</p>
                         <div className="flex flex-col gap-[8px]">
                             <MacroCode>{
 `[store/x/0][unescape/[repeat/10/\\[store\\/x\\/\\[add\\/\\[load\\/x\\]\\/1\\]\\]\\[load\\/x\\]/ ]]
@@ -586,10 +615,7 @@ export default function Body() {
     ]][/
 ]]`
                             }</MacroCode>
-                            <div
-                                className="search-details-detailbox macro max-w-[400px]"
-                                style={{ background: "var(--editor-body)" }}
-                            >
+                            <div className="search-details-detailbox macro max-w-[400px]">
                                 <span className="flag-name">-f</span>=
                                 <span className="flag-value">png</span>{` `}
                                 baba
@@ -625,7 +651,7 @@ export default function Body() {
 
                 <div className="box-hole">
                     <div className="row-group">
-                        <h3 className="text-label text-main-name">Version:</h3>
+                        <h3 className="text-main-name">Version</h3>
                         <div className="stack" style={{
                             alignItems: "center",
                             justifyItems: "center",
@@ -646,18 +672,17 @@ export default function Body() {
                                 fontSize: "2rem",
                                 color: "rgb(var(--md-color-on-tertiary-container))",
                                 zIndex: 1,
-                            }}>v0.123.6</div>
+                            }}>v0.123.7</div>
                         </div>
                         
                     </div>
+                    <a className="row-group" href="https://github.com/Siwakornpc/ROBOT-IS-CHILL-web-demo" rel="noopener noreferrer" target="_blank">
+                        <h4 className="text-main-name">Github</h4>
+                        Siwakornpc/ROBOT-IS-CHILL-web-demo
+                        <i className="icon">chevron_right</i>
+                    </a>
                     <div className="row-group">
-                        <p className="text-label text-main-name">Github:</p>
-                        <a className="btn small secondary-container" href="https://github.com/Siwakornpc/ROBOT-IS-CHILL-web-demo" rel="noopener noreferrer" target="_blank">
-                            <i className="icon">open_in_new</i>Siwakornpc/ROBOT-IS-CHILL-web-demo
-                        </a>
-                    </div>
-                    <div className="row-group">
-                        <p className="text-label text-main-name">Contributors:</p>
+                        <p className="text-main-name">Contributors</p>
                         <Contributors />
                     </div>
                 </div>
