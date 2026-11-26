@@ -57,7 +57,7 @@ const morphEasingOptions: MenuOption[] = [
     { value: "ease-in", label: "Ease in" },
     { value: "ease-out", label: "Ease out" },
     { value: "ease-in-out", label: "Ease in-out" },
-    { value: "cubic-bezier(0.2, 0, 0, 1)", label: "Emphasized" },
+    { value: "cubic-bezier(.5, -.02, 0, 1)", label: "Emphasized" },
 ];
 
 const options = [
@@ -166,7 +166,7 @@ export default function Body() {
     const [sliderValue4, setSliderValue4] = useState(-5);
     const [shapeName, setShapeName] = useState("circle");
     const [morphDuration, setMorphDuration] = useState(400);
-    const [morphEasing, setMorphEasing] = useState("cubic-bezier(0.2, 0, 0, 1)");
+    const [morphEasing, setMorphEasing] = useState("cubic-bezier(.5, -.02, 0, 1)");
     const [outlined, setOutlined] = useState(false);
     const [autoPlay, setAutoPlay] = useState(false);
 

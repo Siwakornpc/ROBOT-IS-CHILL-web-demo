@@ -111,7 +111,7 @@
     --easing-standard: cubic-bezier(.2, 0, 0, 1);
     --easing-accelerate: cubic-bezier(.3, 0, 1, 1);
     --easing-decelerate: cubic-bezier(0, 0, 0, 1);
-    --easing-em: cubic-bezier(.5, -.02, .15, 1);
+    --easing-em: cubic-bezier(.5, -.02, 0, 1);
     --easing-em-accelerate: cubic-bezier(.3, 0, .8, .15);
     --easing-em-decelerate: cubic-bezier(.05, .7, .1, 1);
 }
@@ -1242,19 +1242,6 @@ hr {
 .slider-tick-filled, .slider-track-filled::after {
     background: rgb(var(--md-color-on-primary));
 }
-.slider-handle + .slider-track, .slider-track:has(+ .slider-handle) {
-    transition: flex-basis 200ms var(--easing-standard);
-}
-.slider-start-track:not(:has(+ .slider-handle)), :not(.slider-handle) + .slider-end-track {
-    flex-basis: 12px;
-}
-.slider-container:active .slider-handle + .slider-track, .slider-container:active .slider-track:has(+ .slider-handle) {
-    flex-basis: 1px;
-}
-.slider-container:active :is(.slider-start-track:not(:has(+ .slider-handle)), :not(.slider-handle) + .slider-end-track) {
-    flex-basis: 13px;
-}
-
 .slider-handle {
     pointer-events: none;
     align-self: center;
@@ -1262,10 +1249,14 @@ hr {
     height: stretch;
     background: rgb(var(--md-color-primary));
     border-radius: 2px;
+    transform: translateX(-50%);
     transition: width 200ms var(--easing-standard);
     z-index: 3;
 }
-.slider-container:active .slider-handle {
+[dir=rtl] .slider-handle {
+    transform: translateX(50%);
+}
+.slider-container.is-pressed .slider-handle {
     width: 2px;
 }
 .slider-handle::after {

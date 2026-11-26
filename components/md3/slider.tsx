@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useCallback, CSSProperties } from "react";
+import { useRef, useCallback, useEffect, useState, CSSProperties } from "react";
 
 type PrecisionFormat = `${"<" | ">" | ""}${number}${"d" | "f"}` | number | null | undefined;
 
@@ -62,10 +62,91 @@ export default function Slider({
 }: SliderProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const dragRef = useRef(false);
+    const [containerWidth, setContainerWidth] = useState(0);
+    const [isPressed, setIsPressed] = useState(false);
+
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const observer = new ResizeObserver(([entry]) => {
+            setContainerWidth(entry.target.getBoundingClientRect().width);
+        });
+        observer.observe(container);
+
+        return () => observer.disconnect();
+    }, []);
+
     const clampedValue = Math.min(Math.max(value, min), max);
-    const ratio = (clampedValue - min) / (max - min);
+    const range = max - min;
+    const ratio = range === 0 ? 0 : (clampedValue - min) / range;
+    const sliderWidth = Math.max(0, containerWidth - 12);
+    const position = sliderWidth * ratio;
+    const zeroPosition = range === 0 ? 0 : -sliderWidth * min / range;
+    const thumbGapOffset = isPressed ? 7 : 8;
     const hasZero = min < 0 && max > 0;
-    const zeroRatio = hasZero ? (0 - min) / (max - min) : 0;
+    const zeroAtStart = zeroPosition <= 0;
+    const zeroAtEnd = zeroPosition >= sliderWidth;
+    const leftTrackEnd = Math.max(-6, Math.min(zeroPosition - 2, position - thumbGapOffset));
+    const leftFillStart = Math.max(-6, position - thumbGapOffset);
+    const leftFillEnd = Math.max(
+        -6,
+        Math.min(zeroPosition + 2, position - thumbGapOffset)
+    );
+    const rightFillStart = Math.min(
+        6 + sliderWidth,
+        Math.max(zeroPosition - 2, position + thumbGapOffset)
+    );
+    const rightFillEnd = Math.min(6 + sliderWidth, position + thumbGapOffset);
+    const rightTrackEnd = Math.min(
+        6 + sliderWidth,
+        Math.max(zeroPosition + 2, position + thumbGapOffset)
+    );
+
+    const trackSegments = [
+        ...(zeroAtStart
+            ? []
+            : [{
+                key: "start",
+                className: "slider-track slider-start-track",
+                start: 0,
+                end: leftTrackEnd + 6,
+            }]),
+        {
+            key: "start-fill",
+            className: `slider-track ${zeroAtStart ? "slider-start-track" : "slider-mid-track"} slider-track-filled`,
+            start: zeroAtStart ? 0 : leftFillStart + 6,
+            end: zeroAtStart
+                ? Math.max(leftFillStart + 6, leftFillEnd + 6)
+                : leftFillEnd + 6,
+        },
+        {
+            key: "end-fill",
+            className: `slider-track ${zeroAtEnd ? "slider-end-track" : "slider-mid-track"} slider-track-filled`,
+            start: zeroAtEnd
+                ? Math.min(rightFillStart + 6, rightFillEnd + 6)
+                : rightFillStart + 6,
+            end: zeroAtEnd ? containerWidth : rightFillEnd + 6,
+        },
+        ...(zeroAtEnd
+            ? []
+            : [{
+                key: "end",
+                className: "slider-track slider-end-track",
+                start: containerWidth,
+                end: rightTrackEnd + 6,
+            }]),
+    ];
+
+    const trackSegmentStyle = (start: number, end: number): CSSProperties => ({
+        position: "absolute",
+        insetInlineStart: start,
+        insetBlockStart: "50%",
+        transform: "translateY(-50%)",
+        flex: "none",
+        width: Math.abs(end - start),
+        marginInlineStart: Math.min(0, end - start),
+    });
 
     const updateValueFromPosition = useCallback(
         (clientX: number) => {
@@ -75,7 +156,9 @@ export default function Slider({
             const rect = container.getBoundingClientRect();
             const isRtl = window.getComputedStyle(container).direction === "rtl";
 
-            let rawRatio = (clientX - rect.left - 6) / (rect.width - 12);
+            let rawRatio = rect.width <= 12
+                ? 0
+                : (clientX - rect.left - 6) / (rect.width - 12);
             if (isRtl) rawRatio = 1 - rawRatio;
 
             rawRatio = Math.min(1, Math.max(0, rawRatio));
@@ -94,6 +177,7 @@ export default function Slider({
         if (e.button !== 0) return;
         e.currentTarget.setPointerCapture(e.pointerId);
         dragRef.current = true;
+        setIsPressed(true);
         updateValueFromPosition(e.clientX);
     };
 
@@ -104,8 +188,14 @@ export default function Slider({
 
     const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
         dragRef.current = false;
+        setIsPressed(false);
         if (e.currentTarget.hasPointerCapture(e.pointerId))
             e.currentTarget.releasePointerCapture(e.pointerId);
+    };
+
+    const handlePointerCancel = () => {
+        dragRef.current = false;
+        setIsPressed(false);
     };
 
     const ticks: number[] = [];
@@ -133,59 +223,46 @@ export default function Slider({
     return (
         <div
             ref={containerRef}
-            className={`slider-container ${size} ${className}`}
-            style={{ 
-                display: "flex", 
+            className={`slider-container ${size} ${isPressed ? "is-pressed" : ""} ${className}`}
+            style={{
+                display: "flex",
                 alignItems: "center", 
                 position: "relative",
                 "--slider-thumb-label": `"${thumbLabel}"`,
-                ...style 
+                ...style
             } as CSSProperties}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
-            onPointerCancel={() => dragRef.current = false}
-        >{hasZero && clampedValue !== 0
-            ? <>
-                <div 
-                    className="slider-track slider-start-track"
-                    style={{flexGrow: clampedValue >= 0 ? zeroRatio : ratio}}
+            onPointerCancel={handlePointerCancel}
+            onLostPointerCapture={handlePointerCancel}
+        >
+            {trackSegments.map(({ key, className: segmentClassName, start, end }) => (
+                <div
+                    key={key}
+                    className={segmentClassName}
+                    style={trackSegmentStyle(start, end)}
                 />
-                {clampedValue >= 0
-                    ? <>
-                        <div 
-                            className="slider-track slider-mid-track slider-track-filled" 
-                            style={{flexGrow: ratio - zeroRatio}} 
-                        />
-                        <div className="slider-handle" />
-                    </>
-                    : <>
-                        <div className="slider-handle" />
-                        <div 
-                            className="slider-track slider-mid-track slider-track-filled" 
-                            style={{flexGrow: zeroRatio - ratio}} 
-                        />
-                    </>
-                }
-                <div 
-                    className="slider-track slider-end-track" 
-                    style={{flexGrow: 1 - (clampedValue >= 0 ? ratio : zeroRatio)}} 
-                />
-            </>
-            : <>
-                <div 
-                    className={`slider-track slider-start-track ${min >= 0 ? "slider-track-filled" : ""}`}
-                    style={{flexGrow: ratio}} 
-                />
-                <div className="slider-handle" />
-                <div 
-                    className={`slider-track slider-end-track ${min < 0 && clampedValue !== 0 ? "slider-track-filled" : ""}`}
-                    style={{flexGrow: 1 - ratio}} 
-                />
-            </>}
+            ))}
+            <div
+                className="slider-handle"
+                style={{
+                    position: "absolute",
+                    insetInlineStart: position + 6,
+                    insetBlockStart: 0,
+                    height: "100%",
+                    flex: "none",
+                }}
+            />
 
             {showTicks && ticks.map((tickVal) => {
-                const tickRatio = (tickVal - min) / (max - min);
+                const tickRatio = range === 0 ? 0 : (tickVal - min) / range;
+                const tickPosition = sliderWidth * tickRatio;
+                if (
+                    Math.abs(tickPosition - position) < 10 ||
+                    Math.abs(tickPosition - zeroPosition) < 4
+                ) return null;
+
                 const filled = isTickFilled(tickVal);
                 return (
                     <div
