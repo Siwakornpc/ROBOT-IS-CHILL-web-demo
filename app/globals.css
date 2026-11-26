@@ -1259,7 +1259,7 @@ hr {
     height: stretch;
     border-radius: 2px;
     transform: translateX(-50%);
-    transition: width 200ms var(--easing-standard);
+    transition: width var(--easing-fast-ex);
     z-index: 3;
 }
 [dir=rtl] .slider-handle {
