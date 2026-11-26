@@ -1274,6 +1274,7 @@ hr {
     position: absolute;
     bottom: 100%;
     width: fit-content;
+    white-space: nowrap;
     font-size: 14px;
     font-weight: 500;
     line-height: 20px;

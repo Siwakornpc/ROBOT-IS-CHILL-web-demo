@@ -21,6 +21,7 @@ import "./globals.css";
 import ThemeScript, { ThemeProvider } from '@/components/themescript';
 import { MenuProvider } from '@/components/md3/MenuContext';
 import FontScript, { FontProvider } from '@/components/fontscript';
+import ButtonWidthTransition from '@/components/md3/ButtonWidthTransition';
 import "material-symbols";
 
 const nunitoSans = Nunito_Sans({
@@ -129,6 +130,7 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
         >
             <body className="min-h-full flex flex-col bg-background text-foreground">
                 <ThemeScript /> <FontScript />
+                <ButtonWidthTransition />
                 <MenuProvider><ThemeProvider><FontProvider>
                     <Header />
                     {children}
