@@ -27,6 +27,7 @@ import type { FontState } from "@/components/fontscript";
 import { THEME_PRESETS, resolvePreset } from "@/components/themepresets";
 import type { ThemePreset, PresetColor } from "@/components/themepresets";
 import MaterialShape from "@/components/md3/MaterialShape";
+import entry from "next/dist/server/typescript/rules/entry";
 
 type SelectionCollapsable = {
     isOpen: boolean,
@@ -302,7 +303,7 @@ export default function Body() {
                     contrast: theme.contrast,
                     brightness: theme.brightness,
                 },
-                colors
+                colors: colors,
             }, null, 4)
         );
     };
@@ -374,7 +375,7 @@ export default function Body() {
                 }
                 <button
                     type="button"
-                    className="btn medium btn-filled !w-48 !justify-center mb-[8px]"
+                    className="btn medium primary !w-48 !justify-center mb-[8px]"
                     onClick={handleDefaultFont}
                 ><i className="icon">settings_backup_restore</i>Reset
                 </button>
@@ -479,7 +480,7 @@ export default function Body() {
                 }
                 <button
                     type="button"
-                    className="btn medium btn-filled !w-48 !justify-center mb-[8px]"
+                    className="btn medium primary !w-48 !justify-center mb-[8px]"
                     onClick={handleDefaultTheme}
                 ><i className="icon">settings_backup_restore</i>Reset
                 </button>
@@ -488,9 +489,16 @@ export default function Body() {
 
                 <div className="box-hole">
                     <div
-                        className="section-collapsable"
+                        className="row-group section-collapsable"
                         onClick={() => handleOnClickCollapsable("1")}
-                    >Code Editor</div>
+                    >
+                        <p className="text-label text-main-name">Code Editor</p>
+                        <div className="flex flex-row-reverse mr-[60px] -scale-x-100">
+                            {SYNTAX_HIGHLIGHT_OPTIONS.map(({ key }) => 
+                                <div key={key} className="section-color-label -ml-[28px]" style={{"--this-label-color": `rgb(var(--md-color-${key.replace(/([A-Z])/g, "-$1").toLowerCase()}))` } as React.CSSProperties}/>
+                            )}
+                        </div>
+                    </div>
                     {isCollapsableOpen && isCollapsableOpen.isOpen && isCollapsableOpen.id === "1" && 
                         (<div className={`this section-collapsable-content` /* woah, tailwind hidden */}>
                             {SYNTAX_HIGHLIGHT_OPTIONS.map(({ key, label }) => (
@@ -602,7 +610,7 @@ export default function Body() {
 
                 <button
                     type="button"
-                    className="btn medium btn-filled !w-48 !justify-center mb-[8px]"
+                    className="btn medium primary !w-48 !justify-center mb-[8px]"
                     onClick={handleDefaultSyntaxHighlight}
                 ><i className="icon">settings_backup_restore</i>Reset
                 </button>
@@ -638,13 +646,13 @@ export default function Body() {
                                 fontSize: "2rem",
                                 color: "rgb(var(--md-color-on-tertiary-container))",
                                 zIndex: 1,
-                            }}>v0.123.1</div>
+                            }}>v0.123.2</div>
                         </div>
                         
                     </div>
                     <div className="row-group">
                         <p className="text-label text-main-name">Github:</p>
-                        <a className="btn small btn-tonal" href="https://github.com/Siwakornpc/ROBOT-IS-CHILL-web-demo" rel="noopener noreferrer" target="_blank">
+                        <a className="btn small secondary-container" href="https://github.com/Siwakornpc/ROBOT-IS-CHILL-web-demo" rel="noopener noreferrer" target="_blank">
                             <i className="icon">open_in_new</i>Siwakornpc/ROBOT-IS-CHILL-web-demo
                         </a>
                     </div>
@@ -654,10 +662,10 @@ export default function Body() {
                     </div>
                 </div>
 
-                <div className="flex gap-[8px]">
+                <div className="btn-group">
                     <button
                         type="button"
-                        className="btn medium btn-tonal !justify-center"
+                        className="btn medium secondary-container !justify-center"
                         onClick={() => {
                             handleDefaultFont();
                             handleDefaultTheme();
@@ -667,7 +675,7 @@ export default function Body() {
                     </button>
                     <button
                         type="button"
-                        className="btn medium btn-outline !justify-center"
+                        className="btn medium outlined !justify-center"
                         onClick={handlePrintPreset}
                     ><i className="icon">download</i>Print Log
                     </button>

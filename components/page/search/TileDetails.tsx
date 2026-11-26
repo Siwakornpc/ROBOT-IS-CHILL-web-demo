@@ -427,10 +427,7 @@ export function Details({ selected, allResults }: DetailsProps) {
 
             {selected.tile.tiling !== "none"
                 ? <>
-                    <div
-                        // ref={(el) => applyOverflowFade(el, "x")}
-                        className="search-details-image-wrapper ascroll-x ascroll-y"
-                    >
+                    <div className="search-details-image-wrapper ascroll-x ascroll-y">
                         {select === "one_tile"
                             ? <div className="search-details-image-asize" data-frame={currentIndex}>
                                 <img
@@ -597,7 +594,7 @@ export function Details({ selected, allResults }: DetailsProps) {
                 <div className="flex justify-between">
                     <p className="search-details-label">Description</p>
                     <button
-                        className="btn ibtn xsmall btn-tonal wide"
+                        className="btn ibtn xsmall secondary-container wide"
                         onClick={() => {
                             if (selected.macro.description) {
                                 void handleCopyValue(selected.macro.description);
@@ -616,7 +613,7 @@ export function Details({ selected, allResults }: DetailsProps) {
                         <div className="flex justify-between">
                             <p className="search-details-label">Value</p>
                             <button
-                                className="btn ibtn xsmall btn-tonal wide"
+                                className="btn ibtn xsmall secondary-container wide"
                                 onClick={() => {
                                     if (selected.macro.value) {
                                         void handleCopyValue(selected.macro.value);
@@ -880,22 +877,20 @@ export function Details({ selected, allResults }: DetailsProps) {
                 <tbody>
                     <tr>
                         <th className="table-description">Description</th>
-                        <th colSpan={2}>Label</th>
+                        <th>Label</th>
                     </tr>
                     <tr>
                         <td>Source</td>
-                        <td colSpan={2}>{selected.palette.source}</td>
+                        <td>{selected.palette.source}</td>
                     </tr>
                     <tr>
                         <td rowSpan={selected.palette.colors.flat().length + 2}>Colors</td>
-                        <td>Index</td>
-                        <td>Hex Code</td>
                     </tr>
                     {
                         <tr>
                             {getPaletteColorData
                                 ? <>
-                                    <td className="before">
+                                    <td className="before flex justify-between">
                                         <div>
                                             <div
                                                 className="palette-color-display"
@@ -903,27 +898,25 @@ export function Details({ selected, allResults }: DetailsProps) {
                                             />
                                             {`${getPaletteColorData.x}, ${getPaletteColorData.y}`}
                                         </div>
-                                    </td>
-                                    <td className="discord-markdown before">
-                                        <code className="discord-inline-code">{getPaletteColorData.color?.toUpperCase() ?? "None"}</code><br/>
-                                        { getRgbPaletteColorData
-                                            ? <>
-                                                <code className="discord-inline-code inline-block! w-[2.4rem]! text-center">{getRgbPaletteColorData.r}</code>
-                                                <code className="discord-inline-code inline-block! w-[2.4rem]! text-center">{getRgbPaletteColorData.g}</code>
-                                                <code className="discord-inline-code inline-block! w-[2.4rem]! text-center">{getRgbPaletteColorData.b}</code>
-                                            </> : "None"
-                                        }
+                                        <span className="discord-markdown before">
+                                            <code className="discord-inline-code">{getPaletteColorData.color?.toUpperCase() ?? "None"}</code><br/>
+                                            { getRgbPaletteColorData
+                                                ? <>
+                                                    <code className="discord-inline-code inline-block! w-[2.4rem]! text-center">{getRgbPaletteColorData.r}</code>
+                                                    <code className="discord-inline-code inline-block! w-[2.4rem]! text-center">{getRgbPaletteColorData.g}</code>
+                                                    <code className="discord-inline-code inline-block! w-[2.4rem]! text-center">{getRgbPaletteColorData.b}</code>
+                                                </> : "None"
+                                            }
+                                        </span>
                                     </td>
                                 </>
                                 : <td
-                                    colSpan={2}
                                     className="placeholder"
                                 > {!isMobile
-                                    ? <>Hover to see the current color.<br/>
-                                        Click to copy the Hex of the current color,<br/>
-                                        Ctrl + Click to copy the RGB of the current color.</>
-                                    : <>Tap on the color to see the current color.<br/>
-                                        Tap and hold on the color to copy the current color.</>
+                                    ? <>Click to copy HEX<br/>
+                                        Ctrl + Click to copy RGB</>
+                                    : <>Tap on the color to view<br/>
+                                        Hold on the color to copy</>
                                 }
                                 </td>
                             }
@@ -932,7 +925,7 @@ export function Details({ selected, allResults }: DetailsProps) {
                     {selected.palette.colors.map((row, index) =>
                         row.map((color, jndex) => 
                             <tr key={`palette-${selected.name}-color-${jndex}-${index}`}>
-                                <td>
+                                <td className="flex justify-between">
                                     <div>
                                         <div
                                             className="palette-color-display"
@@ -940,10 +933,11 @@ export function Details({ selected, allResults }: DetailsProps) {
                                         />
                                         {`${jndex}, ${index}`}
                                     </div>
+                                    <span className="discord-markdown">
+                                        <code className="discord-inline-code">{color?.toUpperCase() ?? "None"}</code>
+                                    </span>
                                 </td>
-                                <td className="discord-markdown">
-                                    <code className="discord-inline-code">{color?.toUpperCase() ?? "None"}</code>
-                                </td>
+                                
                             </tr>
                         )
                     )}

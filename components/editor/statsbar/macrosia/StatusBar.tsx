@@ -9,7 +9,7 @@ export function StatusBar({
 }) {
     return (
         <div className="status-bar">
-            <div className={`flex overflow-hidden h-full ${!collapse ? "" : "hidden"}`}>
+            {!collapse && <>
                 <div className="status">
                     {small
                         ? <span className="status-label icon emph">directions_walk</span>
@@ -24,42 +24,40 @@ export function StatusBar({
                     }
                     <span className="status-value" id="status-time">0ms</span>
                 </div>
-            </div>
-            <div className={collapse ? "" : "hidden"}>
-                <MenuSelect
-                    id="status-collapsed"
-                    title="Status:"
-                    value=""
-                    options={[]}
-                    content={
-                        <div
-                            className="flex flex-col ps-[4px]"
-                            style={{ color: "rgb(var(--md-color-outline))" }}
-                        >
-                            <div className="flex gap-[8px] items-center p-[12px]">
-                                <i className="icon menu-option-icon">directions_walk</i>
-                                <div><span className="status-value" id="status-steps">0</span></div>
-                            </div>
-
-                            <div className="flex gap-[8px] items-center p-[12px]">
-                                <i className="icon menu-option-icon">speed</i>
-                                <div><span className="status-value" id="status-time">0ms</span></div>
-                            </div>
+            </>}
+            {collapse && <MenuSelect
+                id="status-collapsed"
+                title="Status:"
+                value=""
+                options={[]}
+                content={
+                    <div
+                        className="flex flex-col ps-[4px]"
+                        style={{ color: "rgb(var(--md-color-outline))" }}
+                    >
+                        <div className="flex gap-[8px] items-center p-[12px]">
+                            <i className="icon menu-option-icon">directions_walk</i>
+                            <div><span className="status-value" id="status-steps">0</span></div>
                         </div>
-                    }
-                    trigger={({getInputProps}) =>
-                        <button
-                            {...getInputProps()}
-                            className="menu-trigger status status-btn"
-                        ><i className="icon">more_horiz</i>
-                        </button>
-                    }
-                    onChange={() => {}}
-                />
-            </div>
+
+                        <div className="flex gap-[8px] items-center p-[12px]">
+                            <i className="icon menu-option-icon">speed</i>
+                            <div><span className="status-value" id="status-time">0ms</span></div>
+                        </div>
+                    </div>
+                }
+                trigger={({getInputProps}) =>
+                    <button
+                        {...getInputProps()}
+                        className="menu-trigger status status-btn"
+                    ><i className="icon">more_horiz</i>
+                    </button>
+                }
+                onChange={() => {}}
+            />}
             <button
                 id="run-button"
-                className="status status-btn"
+                className="secondary-container status status-btn"
             ><i className="icon">play_arrow</i>
             </button>
         </div>

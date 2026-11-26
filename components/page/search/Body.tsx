@@ -351,16 +351,29 @@ export function FilterPanel({
 
                 return (
                     <div className="flex flex-col gap-[4px]">
-                        <MenuSelect
-                            id={`date-mode-select-${index}`}
-                            value={dateMode}
-                            options={[
-                                { value: "before", label: "Before" },
-                                { value: "on", label: "On" },
-                                { value: "after", label: "After" },
-                            ]}
-                            onChange={(newValue) => handleValueChange(type, index, `${newValue};${dateValue}`)}
-                        />
+                        <div className="cbtn-group small">
+                            <button
+                                type="button"
+                                className={`cbtn ${dateMode === "before" ? "selected" : ""}`}
+                                data-tab_action="before"
+                                onClick={() => handleValueChange(type, index, `${"before"};${dateValue}`)}
+                            >Before
+                            </button>
+                            <button
+                                type="button"
+                                className={`cbtn ${dateMode === "on" ? "selected" : ""}`}
+                                data-tab_action="on"
+                                onClick={() => handleValueChange(type, index, `${"on"};${dateValue}`)}
+                            >On
+                            </button>
+                            <button
+                                type="button"
+                                className={`cbtn ${dateMode === "after" ? "selected" : ""}`}
+                                data-tab_action="after"
+                                onClick={() => handleValueChange(type, index, `${"after"};${dateValue}`)}
+                            >After
+                            </button>
+                        </div>
                         <label className="text-field">
                             <span className="text-field-label">Date</span>
                             <input
@@ -432,31 +445,31 @@ export function FilterPanel({
 
             {currentOptions.length > 0 && <>
                 <p className="text-label">Filters</p>
-                <div ref={(el) => applyOverflowFade(el, "y")} className="filter-section ascroll-y">
-
-                    {activeItems.map(({ type, value, index }) => (
-                        <div key={`${type}-${index}`} className="filter-item">
-                            <div className="filter-item-title">
-                                <span className="filter-title">{getFilterTitle(type)}</span>
-                                <button
-                                    type="button"
-                                    className="btn ibtn xsmall btn-text"
-                                    onClick={() => handleRemoveFilter(type, index)}
-                                ><i className="icon">remove</i>
-                                </button>
+                <div className="stack">
+                    <div ref={(el) => applyOverflowFade(el, "y")} className="filter-section ascroll-y">
+                        {activeItems.map(({ type, value, index }) => (
+                            <div key={`${type}-${index}`} className="filter-item">
+                                <div className="filter-item-title">
+                                    <span className="filter-title">{getFilterTitle(type)}</span>
+                                    <button
+                                        type="button"
+                                        className="btn ibtn xsmall btn-text"
+                                        onClick={() => handleRemoveFilter(type, index)}
+                                    ><i className="icon">remove</i>
+                                    </button>
+                                </div>
+                                {renderFilterInput(type, value, index)}
                             </div>
-                            {renderFilterInput(type, value, index)}
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                     
                     <MenuSelect
                         id={"filter-select"}
-                        title="Add Filter"
                         value=""
                         options={currentOptions}
                         onChange={handleAddFilter}
                         triggerValue={() => <i className="icon">add</i>}
-                        className="btn ibtn small btn-filled"
+                        className="btn ibtn medium primary square self-end justify-self-end z-1"
                     />
                 </div>
             </>}
@@ -500,8 +513,8 @@ export default function Body({
                             checked={showMenu}
                             onChange={(e) => onToggleFilter(e.currentTarget.checked)}
                         />
-                        <i className="icon btn-false">menu</i>
-                        <i className="icon btn-true">menu_open</i>
+                        <span className="btn-false"><i className="icon">menu</i></span>
+                        <span className="btn-true"><i className="icon">menu_open</i></span>
                     </label>
                     <input
                         className="searchbar"

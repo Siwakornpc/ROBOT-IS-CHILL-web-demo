@@ -271,14 +271,13 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                             )}
                         </div>
                     </div>
-                    <hr />
                     <EditorScreen onCodeChange={onCodeChange} />
                     
                     <MacroInitializer />
                 </div>
 
                 <div
-                    className="split-handle"
+                    className="split-handle-hitbox"
                     role="separator"
                     aria-orientation={activeSplitscreen === "left-right" ? "vertical" : "horizontal"}
                     aria-valuemin={min_size}
@@ -287,7 +286,9 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                         event.currentTarget.setPointerCapture(event.pointerId);
                     }}
                     onPointerMove={handleSplitPointerMove}
-                />
+                >
+                    <div className="split-handle" />
+                </div>
 
                 <div className="flex flex-col gap-[8px] h-full min-h-0 this-e">
                     <div className="run-controls">
@@ -307,7 +308,6 @@ export default function Body({ onCodeChange }: { onCodeChange?: (code: string) =
                             </div>
                         )}
                     </div>
-                    <hr />
                     <RenderScreen />
                 </div>
             </div>
