@@ -337,13 +337,13 @@ export default function Body() {
                             <div className="btn-group">
                                 <button
                                     type="button"
-                                    className="btn ibtn small btn-outline wide"
+                                    className="btn ibtn small outlined wide"
                                     onClick={() => stepShape(-1)}
                                 >
                                     <i className="icon">skip_previous</i>
                                 </button>
                                 <label
-                                    className={`btn medium btn-filled`}
+                                    className={`btn medium primary`}
                                     onClick={() => setAutoPlay((playing) => !playing)}
                                     aria-pressed={autoPlay}
                                 >
@@ -357,7 +357,7 @@ export default function Body() {
                                     <span className="btn-true"><i className="icon">pause</i>Pause</span>
                                 </label>
                                 <button
-                                    className="btn ibtn small btn-outline wide"
+                                    className="btn ibtn small outlined wide"
                                     onClick={() => stepShape(1)}
                                 >
                                     <i className="icon">skip_next</i>

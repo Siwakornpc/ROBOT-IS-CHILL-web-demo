@@ -26,7 +26,7 @@ export function StatusBar({
 }) {
     return (
         <div className="status-bar">
-            <div className={`flex overflow-hidden h-full ${!collapse ? "" : "hidden"}`}>
+            {!collapse && <>
                 <div className="status">
                     {small
                         ? <span className="status-label icon">speed</span>
@@ -41,44 +41,42 @@ export function StatusBar({
                     }
                     <span className="status-value">{formatMs(renderMs)}</span>
                 </div>
-            </div>
-            <div className={collapse ? "" : "hidden"}>
-                <MenuSelect
-                    id="status-collapsed"
-                    title="Status:"
-                    value=""
-                    options={[]}
-                    content={
-                        <div
-                            className="flex flex-col ps-[4px]"
-                            style={{ color: "rgb(var(--md-color-outline))" }}
-                        >
-                            <div className="flex gap-[8px] items-center p-[12px]">
-                                <i className="icon menu-option-icon">speed</i>
-                                <div><span className="status-value">{formatMs(startupMs)}</span></div>
-                            </div>
-
-                            <div className="flex gap-[8px] items-center p-[12px]">
-                                <i className="icon menu-option-icon">layers</i>
-                                <div><span className="status-value">{formatMs(renderMs)}</span></div>
-                            </div>
-
+            </>}
+            {collapse && <MenuSelect
+                id="status-collapsed"
+                title="Status:"
+                value=""
+                options={[]}
+                content={
+                    <div
+                        className="flex flex-col ps-[4px]"
+                        style={{ color: "rgb(var(--md-color-outline))" }}
+                    >
+                        <div className="flex gap-[8px] items-center p-[12px]">
+                            <i className="icon menu-option-icon">speed</i>
+                            <div><span className="status-value">{formatMs(startupMs)}</span></div>
                         </div>
-                    }
-                    trigger={({getInputProps}) =>
-                        <button
-                            {...getInputProps()}
-                            className="menu-trigger status status-btn"
-                        ><i className="icon">more_horiz</i>
-                        </button>
-                    }
-                    onChange={() => {}}
-                />
-            </div>
+
+                        <div className="flex gap-[8px] items-center p-[12px]">
+                            <i className="icon menu-option-icon">layers</i>
+                            <div><span className="status-value">{formatMs(renderMs)}</span></div>
+                        </div>
+
+                    </div>
+                }
+                trigger={({getInputProps}) =>
+                    <button
+                        {...getInputProps()}
+                        className="menu-trigger status status-btn"
+                    ><i className="icon">more_horiz</i>
+                    </button>
+                }
+                onChange={() => {}}
+            />}
             <button
                 type="button"
                 id="run-button"
-                className="status status-btn"
+                className="secondary-container status status-btn"
                 onClick={onRun}
                 aria-label={isRunning ? "Stop render" : "Run render"}
                 title={isRunning ? "Stop render" : "Run render"}

@@ -12,6 +12,7 @@ import {
     useRef,
     useState,
     useId,
+    isValidElement,
 } from "react";
 import {createPortal} from "react-dom";
 
@@ -294,6 +295,7 @@ interface MenuItemProps<T extends string> {
     menuGap?: number;
     instanceId: string;
     closeOnSelect?: boolean;
+    className?: string;
 }
 
 function MenuItem<T extends string>({
@@ -308,6 +310,7 @@ function MenuItem<T extends string>({
     menuGap = 4,
     instanceId,
     closeOnSelect = true,
+    className = "",
 }: MenuItemProps<T>) {
     const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
     const [submenuStyle, setSubmenuStyle] = useState<CSSProperties>({
@@ -471,7 +474,7 @@ function MenuItem<T extends string>({
     return (
         <div
             ref={triggerRef}
-            className="menu-option-wrapper"
+            className={`menu-option-wrapper ${className}`}
             onMouseEnter={() => {
                 if (isCoarsePointer || !hasChildren) return;
                 clearCloseTimer();
@@ -539,7 +542,7 @@ function MenuItem<T extends string>({
                     }}
                 >
                     {item.children!.map((child) => (
-                        <MenuItem
+                        <MenuItem<T>
                             key={child.value}
                             item={child}
                             selectedValue={selectedValue}
@@ -826,44 +829,57 @@ export default function MenuSelect<T extends string>({
         >{triggerValue ? triggerValue(selectedOption) : <span>{selectedOption.label}</span>}
         </button>
 
+        const triggerElementProps = (isValidElement(triggerElement) 
+            ? (triggerElement.props as { className?: string }) 
+            : null);
+        const triggerClassArray = triggerElementProps?.className 
+            ? triggerElementProps.className.trim().split(" ") 
+            : [];
+
     return (<>
         {triggerElement}
-        {isMounted &&
-            createPortal(
-                <div
-                    ref={menuRef}
-                    role="menu"
-                    data-menu-instance={instanceId}
-                    className={[
-                        "menu",
-                        placementClass,
-                        "ascroll-y",
-                        "inset-scrollbar",
-                        isOpen ? "visible" : "",
-                        id ? `${id}-options` : "",
-                    ].filter(Boolean).join(" ")}
-                    style={menuStyle}
-                    onMouseDown={(event) => event.stopPropagation()}
-                >
-                    {title && <div className="menu-title">{title}</div>}
-                    {content ?? options.map((item) =>
-                        <MenuItem
-                            key={item.value}
-                            item={item}
-                            selectedValue={value}
-                            onChange={onChange}
-                            onCloseAll={closeMenu}
-                            closeSignal={closeSignal}
-                            optionIcon={optionIcon}
-                            submenuPlacement={submenuPlacement}
-                            pageMargin={pageMargin}
-                            menuGap={menuGap}
-                            instanceId={instanceId}
-                            closeOnSelect={closeOnSelect}
-                        />
-                    )}
-                </div>,
-                document.body
-            )}
+        {isMounted && createPortal(
+            <div
+                ref={menuRef}
+                role="menu"
+                data-menu-instance={instanceId}
+                className={[
+                    "menu",
+                    triggerClassArray.includes("fab") ? "fab-menu" : "",
+                    placementClass,
+                    "ascroll-y",
+                    "inset-scrollbar",
+                    isOpen ? "visible" : "",
+                    id ? `${id}-options` : "",
+                ].filter(Boolean).join(" ")}
+                style={menuStyle}
+                onMouseDown={(event) => event.stopPropagation()}
+            >
+                {title && <div className="menu-title">{title}</div>}
+                {content ?? options.map((item) =>
+                    <MenuItem<T>
+                        key={item.value}
+                        item={item}
+                        selectedValue={value}
+                        onChange={onChange}
+                        onCloseAll={closeMenu}
+                        closeSignal={closeSignal}
+                        optionIcon={optionIcon}
+                        submenuPlacement={submenuPlacement}
+                        pageMargin={pageMargin}
+                        menuGap={menuGap}
+                        instanceId={instanceId}
+                        closeOnSelect={closeOnSelect}
+                        className={triggerClassArray.includes("fab") ? (() => {
+                            if (triggerClassArray.some(c => c.includes("primary"))) return "primary-container";
+                            if (triggerClassArray.some(c => c.includes("secondary"))) return "secondary-container";
+                            if (triggerClassArray.some(c => c.includes("tertiary"))) return "tertiary-container";
+                            return "";
+                        })() : ""}
+                    />
+                )}
+            </div>,
+            document.body
+        )}
     </>);
 }

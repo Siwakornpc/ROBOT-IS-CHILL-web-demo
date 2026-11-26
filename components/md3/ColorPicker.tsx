@@ -495,7 +495,7 @@ export default function ColorPicker({
                 {hasNone &&
                     <button
                         type="button"
-                        className={`btn small btn-filled !w-full !justify-center${
+                        className={`btn small primary !w-full !justify-center${
                             value === null ? " active" : ""
                         }`}
                         onClick={handleNone}

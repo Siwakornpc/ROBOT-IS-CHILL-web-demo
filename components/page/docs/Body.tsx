@@ -83,7 +83,7 @@ export default function Body() {
                                 key={file} 
                                 type="button" 
                                 onClick={() => selectedFile !== file ? void read(`${docsPath}/${file}`) : ""}
-                                className={`tab-v ${selectedFile === file ? "selected" : ""}`}
+                                className={`tab vert ${selectedFile === file ? "selected" : ""}`}
                             >{file.slice(0, -3)}
                             </button>
                         )}

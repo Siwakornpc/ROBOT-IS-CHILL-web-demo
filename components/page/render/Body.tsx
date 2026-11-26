@@ -469,12 +469,11 @@ export default function Body({
                             )}
                         </div>
                     </div>
-                    <hr />
                     <EditorScreen onCodeChange={handleCodeChange} />
                 </div>
 
                 <div
-                    className="split-handle"
+                    className="split-handle-hitbox"
                     role="separator"
                     aria-orientation={activeSplitscreen === "left-right" ? "vertical" : "horizontal"}
                     aria-valuemin={min_size}
@@ -483,7 +482,9 @@ export default function Body({
                         event.currentTarget.setPointerCapture(event.pointerId);
                     }}
                     onPointerMove={handleSplitPointerMove}
-                />
+                >
+                    <div className="split-handle" />
+                </div>
 
                 <div className="flex flex-col gap-[8px] h-full min-h-0 this-e">
                     <div className="run-controls">
@@ -518,7 +519,6 @@ export default function Body({
                             )}
                         </div>
                     </div>
-                    <hr />
                     <RenderScreen
                         imageUrl={scene.trim() ? renderedImageUrl : null}
                         isRendering={!!scene.trim() && isRendering}
