@@ -74,9 +74,9 @@ export default function Body() {
     }, [selectedFile, initialized]);
 
     return (
-        <main className="flex w-full" style={{ paddingTop: "0" }}>
+        <main className="flex w-full">
             {files !== null &&
-                <div className="bg-[rgb(var(--md-color-surface-container))] h-full box-content ascroll-y h-[40px]" style={{ paddingTop: "56px" }}>
+                <div className="bg-[rgb(var(--md-color-surface-container))] h-full box-content ascroll-y h-[40px]">
                     <div className="flex flex-col">
                         {files.map(file => 
                             <button
@@ -90,14 +90,16 @@ export default function Body() {
                     </div>
                 </div>
             }
-            <div className="main-body docs-page ascroll-y">
-                {error !== null && <p role="alert">{error}</p>}
-                {selectedFile !== null && (<>
-                    <h2 className="text-label font-bold">{selectedFile.split("-")[1].slice(1, -3)}</h2>
-                    <hr/>
-                </>)}
-                {fileText !== null && <DiscordMarkdown>{fileText}</DiscordMarkdown>}
-            </div>
+            <main className="min-w-0 flex-1 ascroll-y">
+                <div className="main-body docs-page">
+                    {error !== null && <p role="alert">{error}</p>}
+                    {selectedFile !== null && (<>
+                        <h2 className="text-label font-bold">{selectedFile.split("-")[1].slice(1, -3)}</h2>
+                        <hr/>
+                    </>)}
+                    {fileText !== null && <DiscordMarkdown>{fileText}</DiscordMarkdown>}
+                </div>
+            </main>
         </main>
     );
 }

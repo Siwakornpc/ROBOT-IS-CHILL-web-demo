@@ -975,14 +975,14 @@ hr {
 }
 
 .tab-v {
-    padding: 4px 8px;
+    width: 192px;
+    padding: 8px 14px;
     margin: 4px;
     text-align: start;
     text-overflow: ellipsis;
     text-wrap: nowrap;
     overflow: hidden;
-    border-radius: 20px;
-    border: 0 solid rgb(var(--md-color-primary));
+    border-radius: 30px;
     transition: 0.2s ease;
 }
 .tab-v:hover {
@@ -993,11 +993,11 @@ hr {
     border-radius: 8px;
 }
 .tab-v.selected {
-    padding: 8px 12px;
+    width: 200px;
+    padding: 12px 18px;
     margin: 0;
     border-radius: calc(var(--font-size) + 4px) 0 0 calc(var(--font-size) + 4px);
     background: rgb(var(--md-color-surface));
-    border-right-width: 3px;
 }
 
 .docs-page.docs-page {

@@ -638,7 +638,7 @@ export default function Body() {
                                 fontSize: "2rem",
                                 color: "rgb(var(--md-color-on-tertiary-container))",
                                 zIndex: 1,
-                            }}>v0.123.1</div>
+                            }}>v0.123.2</div>
                         </div>
                         
                     </div>
