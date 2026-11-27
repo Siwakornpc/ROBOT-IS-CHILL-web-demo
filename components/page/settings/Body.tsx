@@ -31,7 +31,7 @@ import type { ThemePreset, PresetColor } from "@/components/themepresets";
 import MaterialShape from "@/components/md3/MaterialShape";
 import entry from "next/dist/server/typescript/rules/entry";
 
-type CollapsibleSectionId = "tabsize" | "syntax";
+type CollapsibleSectionId = string;
 
 const SYNTAX_HIGHLIGHT_OPTIONS: { key: SyntaxHighlightKey; label: string }[] = [
     { key: "syntaxName", label: "Macro Name" },
@@ -223,6 +223,8 @@ export default function Body() {
                 : [...openSections, id]
         );
     };
+    const isFontSizeOpen = openCollapsibleSections.includes("fontsize");
+    const isCodeFontSizeOpen = openCollapsibleSections.includes("codesize");
     const isTabSizeOpen = openCollapsibleSections.includes("tabsize");
     const isSyntaxHighlightOpen = openCollapsibleSections.includes("syntax");
 
@@ -320,32 +322,66 @@ export default function Body() {
                 <h4 className="text-label font-bold">Size</h4>
 
                 <div className="box-hole">
-                    <div className="row-group long">
+                    <button
+                        className="row-group section-collapsable"
+                        aria-expanded={isTabSizeOpen}
+                        onClick={() => handleOnClickCollapsable("fontsize")}
+                    >
                         <span className="text-main-name">
                             <i className="icon">format_size</i>
                             <p>Font Size</p>
                         </span>
-                        <Slider
-                            value={font.sansSize}
-                            min={12}
-                            max={28}
-                            step={1}
-                            onChange={(value) => updateFont({ sansSize: value })}
-                        />
+                        <span className="value-label">{`${font.sansSize}px`}</span>
+                    </button>
+                    
+                    <div
+                        className={`this section-collapsable-content syntax-collapsible-panel ${isFontSizeOpen ? "open" : ""}`}
+                        aria-hidden={!isFontSizeOpen}
+                        inert={!isFontSizeOpen}
+                    >
+                        <div 
+                            data-auto-size-transition="height"
+                            className="row-group items-center"
+                        >
+                            <Slider
+                                value={font.sansSize}
+                                min={12}
+                                max={28}
+                                step={1}
+                                onChange={(value) => updateFont({ sansSize: value })}
+                            />
+                        </div>
                     </div>
 
-                    <div className="row-group long">
+                    <button
+                        className="row-group section-collapsable"
+                        aria-expanded={isTabSizeOpen}
+                        onClick={() => handleOnClickCollapsable("codesize")}
+                    >
                         <span className="text-main-name">
                             <i className="icon">format_size</i>
                             <p>Code Font Size</p>
                         </span>
-                        <Slider
-                            value={font.codeSize}
-                            min={10}
-                            max={28}
-                            step={1}
-                            onChange={(value) => updateFont({ codeSize: value })}
-                        />
+                        <span className="value-label">{`${font.sansSize}px`}</span>
+                    </button>
+                    
+                    <div
+                        className={`this section-collapsable-content syntax-collapsible-panel ${isCodeFontSizeOpen ? "open" : ""}`}
+                        aria-hidden={!isCodeFontSizeOpen}
+                        inert={!isCodeFontSizeOpen}
+                    >
+                        <div 
+                            data-auto-size-transition="height"
+                            className="row-group items-center"
+                        >
+                            <Slider
+                                value={font.codeSize}
+                                min={10}
+                                max={28}
+                                step={1}
+                                onChange={(value) => updateFont({ codeSize: value })}
+                            />
+                        </div>
                     </div>
                 </div>
 
@@ -516,7 +552,7 @@ export default function Body() {
                     <label className="row-group section-toggle">
                         <span className="text-main-name">
                             <i className="icon">format_list_numbered</i>
-                            <p className="text-label">Line Numbers</p>
+                            <p>Line Numbers</p>
                         </span>
                         <input
                             type="checkbox"
@@ -528,7 +564,7 @@ export default function Body() {
                     <label className="row-group section-toggle">
                         <span className="text-main-name">
                             <i className="icon">space_bar</i>
-                            <p className="text-label">Whitespace Icons</p>
+                            <p>Whitespace Icons</p>
                         </span>
                         <input
                             type="checkbox"
@@ -540,7 +576,7 @@ export default function Body() {
                     <label className="row-group section-toggle">
                         <span className="text-main-name">
                             <i className="icon">keyboard_tab</i>
-                            <p className="text-label">Indent Guides</p>
+                            <p>Indent Guides</p>
                         </span>
                         <input
                             type="checkbox"
@@ -556,7 +592,7 @@ export default function Body() {
                     >
                         <span className="text-main-name">
                             <i className="icon">keyboard_tab</i>
-                            <p className="text-label">Tab Size</p>
+                            <p>Tab Size</p>
                         </span>
                         <span className="value-label">{`${editorSettings.tabSize} space${editorSettings.tabSize != 1 ? "s" : ""}`}</span>
                     </button>
@@ -589,7 +625,7 @@ export default function Body() {
                     >
                         <span className="text-main-name">
                             <i className="icon">palette</i>
-                            <p className="text-label">Syntax Highlights</p>
+                            <p>Syntax Highlights</p>
                         </span>
                         <div className="colors-stack">
                             {SYNTAX_HIGHLIGHT_OPTIONS.map(({ key }) => 
@@ -610,7 +646,7 @@ export default function Body() {
                             >
                                 <span className="text-main-name">
                                     <i className="icon">code</i>
-                                    <p className="text-label">{label}</p>
+                                    <p>{label}</p>
                                 </span>
                                 <div className="flex gap-[8px] items-center">
                                     <label className="ml-[4px] mr-[4px] checkbox">
@@ -675,7 +711,7 @@ export default function Body() {
 
                 <div className="box-hole">
                     <div className="row-group long">
-                        <p className="text-main-name"> Code Preview</p>
+                        <p className="text-main-name">Code Preview</p>
                         <div className="flex flex-col gap-[8px]">
                             <EditorScreen className="h-fit"
                                 defaultCode={`[store/x/0][unescape/[repeat/10/\\[store\\/x\\/\\[add\\/\\[load\\/x\\]\\/1\\]\\]\\[load\\/x\\]/ ]]
@@ -749,7 +785,7 @@ export default function Body() {
                                 fontSize: "2rem",
                                 color: "rgb(var(--md-color-on-tertiary-container))",
                                 zIndex: 1,
-                            }}>v0.124</div>
+                            }}>v0.124.1</div>
                         </div>
                         
                     </div>
