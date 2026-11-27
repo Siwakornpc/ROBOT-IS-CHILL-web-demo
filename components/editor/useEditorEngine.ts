@@ -31,6 +31,7 @@ type EditorRefs = {
     gutterElRef: RefObject<HTMLDivElement | null>;
     gutterWrapRef: RefObject<HTMLDivElement | null>;
     scrollElRef: RefObject<HTMLDivElement | null>;
+    defaultCode?: string;
     onCodeChange?: (code: string) => void;
     onAutocompleteChange?: (state: AutocompleteState) => void;
     onInsertSuggestionRef?: React.RefObject<((startIndex: number, text: string, focusEditor: boolean) => void) | null>;
@@ -77,6 +78,7 @@ export function useEditorEngine({
     gutterElRef,
     gutterWrapRef,
     scrollElRef,
+    defaultCode,
     onCodeChange,
     onAutocompleteChange,
     onInsertSuggestionRef,
@@ -87,6 +89,7 @@ export function useEditorEngine({
     const isACLetterTypingRef = useRef(false);
     const isAutocompleteOpenRef = useRef(false);
     const autocompleteTypeRef = useRef<AutocompleteState["type"]>("macro");
+    const defaultCodeRef = useRef(defaultCode);
 
     useEffect(() => {
         const editorArea = editorAreaRef.current;
@@ -656,9 +659,9 @@ export function useEditorEngine({
         window.addEventListener("executionmodechange", refreshHighlighting);
         window.addEventListener("rendersyntaxloaded", refreshHighlighting);
 
-        state.value = "";
+        state.value = normalizeNewlines(defaultCodeRef.current ?? "");
         saveState(0, 0);
-        render(0, 0);
+        render(state.value.length, state.value.length);
 
         resolveEditorReady?.(api);
 

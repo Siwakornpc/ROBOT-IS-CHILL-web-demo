@@ -24,6 +24,16 @@ function renderLineHtml(highlightedLine: string) {
     return highlightedLine.length === 0 ? "<br class=\"br\">" : highlightedLine;
 }
 
+function addWhitespaceMarkers(highlightedLine: string) {
+    return highlightedLine.replace(/(<[^>]*>|[^<]+)/g, (part) => {
+        if (part.startsWith("<")) return part;
+        return part.replace(/[ \t]/g, (whitespace) => {
+            const kind = whitespace === "\t" ? "tab" : "space";
+            return `<span class="editor-whitespace-${kind}">${whitespace}</span>`;
+        });
+    });
+}
+
 // Highlights the whole document in a single pass (not line-by-line) so that
 // bracket/escape state, and therefore data-pos/data-bid, stay correct across
 // line breaks - a macro call (or anything else tracking state) that spans
@@ -163,7 +173,7 @@ export function createRenderer(deps: RendererDeps) {
         const highlightedLines = highlightLines(win, lines, state.value);
 
         editorArea.innerHTML = highlightedLines
-            .map((lineHtml) => `<div class="editor-line">${renderLineHtml(lineHtml)}</div>`)
+            .map((lineHtml) => `<div class="editor-line">${renderLineHtml(addWhitespaceMarkers(lineHtml))}</div>`)
             .join("");
 
         const s = clamp(start, 0, state.value.length);

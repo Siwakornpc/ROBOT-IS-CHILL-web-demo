@@ -6,6 +6,8 @@ import ColorPicker from "@/components/md3/ColorPicker";
 import MenuSelect from "@/components/md3/MenuSelect";
 import Slider from "@/components/md3/slider";
 import { Contributors } from "@/components/contributors";
+import EditorScreen from "@/components/editor/EditorScreen"
+import { updateEditorSettings, useEditorSettings } from "@/components/editor/editorSettings";
 import {
     applySyntaxHighlightColors,
     DEFAULT_SYNTAX_HIGHLIGHT,
@@ -29,10 +31,7 @@ import type { ThemePreset, PresetColor } from "@/components/themepresets";
 import MaterialShape from "@/components/md3/MaterialShape";
 import entry from "next/dist/server/typescript/rules/entry";
 
-type SelectionCollapsable = {
-    isOpen: boolean,
-    id: string,
-}
+type CollapsibleSectionId = "tabsize" | "syntax";
 
 const SYNTAX_HIGHLIGHT_OPTIONS: { key: SyntaxHighlightKey; label: string }[] = [
     { key: "syntaxName", label: "Macro Name" },
@@ -61,6 +60,7 @@ function MacroCode({ children }: { children: string }) {
 }
 
 export default function Body() {
+    const editorSettings = useEditorSettings();
     const [theme, setTheme] = useState<ThemeState>(DEFAULT_THEME);
     const [loaded, setLoaded] = useState(false);
     const [font, setFontState] = useState<FontState>(DEFAULT_FONT_STATE);
@@ -214,14 +214,17 @@ export default function Body() {
         applyFont(font.sans, font.code, font.sansSize, font.codeSize);
     }, [font, loaded]);
 
-    const [isCollapsableOpen, setIsCollapsableOpen] = useState<SelectionCollapsable>();
+    const [openCollapsibleSections, setOpenCollapsibleSections] = useState<CollapsibleSectionId[]>([]);
 
-    const handleOnClickCollapsable = (id: string) => {
-        setIsCollapsableOpen({
-            isOpen: !isCollapsableOpen?.isOpen,
-            id,
-        });
-    }
+    const handleOnClickCollapsable = (id: CollapsibleSectionId) => {
+        setOpenCollapsibleSections((openSections) =>
+            openSections.includes(id)
+                ? openSections.filter((openId) => openId !== id)
+                : [...openSections, id]
+        );
+    };
+    const isTabSizeOpen = openCollapsibleSections.includes("tabsize");
+    const isSyntaxHighlightOpen = openCollapsibleSections.includes("syntax");
 
     const isSyntaxHighlightDefault = (key: SyntaxHighlightKey) =>
         syntaxHighlight[key].toLowerCase() === DEFAULT_SYNTAX_HIGHLIGHT[key].toLowerCase() &&
@@ -317,7 +320,7 @@ export default function Body() {
                 <h4 className="text-label font-bold">Size</h4>
 
                 <div className="box-hole">
-                    <div className="row-group">
+                    <div className="row-group long">
                         <span className="text-main-name">
                             <i className="icon">format_size</i>
                             <p>Font Size</p>
@@ -331,7 +334,7 @@ export default function Body() {
                         />
                     </div>
 
-                    <div className="row-group">
+                    <div className="row-group long">
                         <span className="text-main-name">
                             <i className="icon">format_size</i>
                             <p>Code Font Size</p>
@@ -349,7 +352,7 @@ export default function Body() {
                 <h4 className="text-label font-bold">Fontface</h4>
 
                 <div className="box-hole">
-                    <div className="row-group">
+                    <div className="row-group long">
                         <span className="text-main-name">
                             <i className="icon">brand_family</i>
                             <p>Main Font</p>
@@ -362,7 +365,7 @@ export default function Body() {
                         />
                     </div>
 
-                    <div className="row-group">
+                    <div className="row-group long">
                         <span className="text-main-name">
                             <i className="icon">brand_family</i>
                             <p>Code Font</p>
@@ -430,7 +433,7 @@ export default function Body() {
                         />
                     </div>
 
-                    <div className="row-group">
+                    <div className="row-group long">
                         <span className="text-main-name">
                             <i className="icon">palette</i>
                             <p>Appearance</p>
@@ -447,7 +450,7 @@ export default function Body() {
                         />
                     </div>
 
-                    <div className="row-group">
+                    <div className="row-group long">
                         <span className="text-main-name">
                             <i className="icon">contrast</i>
                             <p>Contrast</p>
@@ -465,7 +468,7 @@ export default function Body() {
                         />
                     </div>
 
-                    <div className="row-group">
+                    <div className="row-group long">
                         
                         <span className="text-main-name">
                             <i className="icon">light_mode</i>
@@ -480,7 +483,7 @@ export default function Body() {
                         />
                     </div>
                     
-                    <div className="row-group">
+                    <div className="row-group long">
                         <span className="text-main-name">
                             <i className="icon">style</i>
                             <p>Presets</p>
@@ -507,101 +510,175 @@ export default function Body() {
                 ><i className="icon">settings_backup_restore</i>Reset
                 </button>
 
-                <h4 className="text-label font-bold">Syntax Highlights</h4>
+                <h4 className="text-label font-bold">Code Editor</h4>
+
+                <div className="box-hole">
+                    <label className="row-group section-toggle">
+                        <span className="text-main-name">
+                            <i className="icon">format_list_numbered</i>
+                            <p className="text-label">Line Numbers</p>
+                        </span>
+                        <input
+                            type="checkbox"
+                            className="switch"
+                            checked={editorSettings.showLineNumbers}
+                            onChange={(event) => updateEditorSettings({ showLineNumbers: event.target.checked })}
+                        />
+                    </label>
+                    <label className="row-group section-toggle">
+                        <span className="text-main-name">
+                            <i className="icon">space_bar</i>
+                            <p className="text-label">Whitespace Icons</p>
+                        </span>
+                        <input
+                            type="checkbox"
+                            className="switch"
+                            checked={editorSettings.showWhitespace}
+                            onChange={(event) => updateEditorSettings({ showWhitespace: event.target.checked })}
+                        />
+                    </label>
+                    <label className="row-group section-toggle">
+                        <span className="text-main-name">
+                            <i className="icon">keyboard_tab</i>
+                            <p className="text-label">Indent Guides</p>
+                        </span>
+                        <input
+                            type="checkbox"
+                            className="switch"
+                            checked={editorSettings.showIndentGuides}
+                            onChange={(event) => updateEditorSettings({ showIndentGuides: event.target.checked })}
+                        />
+                    </label>
+                    <button
+                        className="row-group section-collapsable"
+                        aria-expanded={isTabSizeOpen}
+                        onClick={() => handleOnClickCollapsable("tabsize")}
+                    >
+                        <span className="text-main-name">
+                            <i className="icon">keyboard_tab</i>
+                            <p className="text-label">Tab Size</p>
+                        </span>
+                        <span className="value-label">{`${editorSettings.tabSize} space${editorSettings.tabSize != 1 ? "s" : ""}`}</span>
+                    </button>
+                    
+                    <div
+                        className={`this section-collapsable-content syntax-collapsible-panel ${isTabSizeOpen ? "open" : ""}`}
+                        aria-hidden={!isTabSizeOpen}
+                        inert={!isTabSizeOpen}
+                    >
+                        <div 
+                            data-auto-size-transition="height"
+                            className="row-group items-center"
+                        >
+                            <Slider
+                                value={editorSettings.tabSize}
+                                min={1}
+                                max={8}
+                                step={1}
+                                onChange={(value) => updateEditorSettings({ tabSize: value })}
+                            />
+                        </div>
+                    </div>
+                </div>
 
                 <div className="box-hole">
                     <button
-                        className="row-group section-collapsable"
-                        onClick={() => handleOnClickCollapsable("1")}
+                        className="row-group long section-collapsable"
+                        aria-expanded={isSyntaxHighlightOpen}
+                        onClick={() => handleOnClickCollapsable("syntax")}
                     >
                         <span className="text-main-name">
                             <i className="icon">palette</i>
-                            <p className="text-label">Code Editor</p>
+                            <p className="text-label">Syntax Highlights</p>
                         </span>
-                        <p className="text-main-name"></p>
-                        <div className="flex flex-row-reverse mr-[60px] -scale-x-100">
+                        <div className="colors-stack">
                             {SYNTAX_HIGHLIGHT_OPTIONS.map(({ key }) => 
                                 <div key={key} className="section-color-label -ml-[28px]" style={{"--this-label-color": `rgb(var(--md-color-${key.replace(/([A-Z])/g, "-$1").toLowerCase()}))` } as React.CSSProperties}/>
                             )}
                         </div>
                     </button>
-                    {isCollapsableOpen && isCollapsableOpen.isOpen && isCollapsableOpen.id === "1" && 
-                        (<div className={`this section-collapsable-content` /* woah, tailwind hidden */}>
-                            {SYNTAX_HIGHLIGHT_OPTIONS.map(({ key, label }) => (
-                                <span className="row-group items-center" key={key}>
-                                    <span className="text-main-name">
-                                        <i className="icon">code</i>
-                                        <p className="text-label">{label}</p>
-                                    </span>
-                                    <div className="flex gap-[8px] items-center">
-                                        <label className="ml-[4px] mr-[4px] checkbox">
-                                            <input
-                                                type="checkbox"
-                                                checked={syntaxReal[key]}
-                                                onChange={(e) => updateSyntaxReal(key, e.target.checked)}
-                                            />
-                                            <span>Real</span>
-                                        </label>
-
-                                        <label
-                                            className="ml-[4px] mr-[4px] checkbox"
-                                            style={{ opacity: syntaxReal[key] ? 0.4 : 1 }}
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                checked={syntaxBlend[key]}
-                                                disabled={syntaxReal[key]}
-                                                onChange={(e) => updateSyntaxBlend(key, e.target.checked)}
-                                            />
-                                            <span>Harmonise</span>
-                                        </label>
-                                        
-                                        <MenuSelect
-                                            id={`syntax-${key}`}
-                                            value="color"
-                                            options={[{ value: "color", label }]}
-                                            trigger={({ getInputProps }) => (<>
-                                                <button
-                                                    {...getInputProps({
-                                                        className: "section-color-label",
-                                                        "aria-label": `Choose ${label} color`,
-                                                    })}
-                                                    style={{ "--this-label-color": syntaxHighlight[key] } as React.CSSProperties}
-                                                />
-                                            </>)}
-                                            content={
-                                                <div className="ml-[12px] mr-[12px] mt-[8px] mb-[8px]">
-                                                    <ColorPicker
-                                                        value={syntaxHighlight[key]}
-                                                        onChange={(color) => {if (color !== null) updateSyntaxHighlight(key, color);}}
-                                                        hasNone={false}
-                                                    />
-                                                </div>
-                                            }
-                                            onChange={() => undefined}
-                                        />
-                                        <div className="section-color-label" style={{ "--this-label-color": `rgb(var(--md-color-${key.replace(/([A-Z])/g, "-$1").toLowerCase()}))` } as React.CSSProperties}/>
-
-                                        <button
-                                            type="button"
-                                            className={`btn ibtn small btn-text ${isSyntaxHighlightDefault(key) ? "disabled" : ""}`}
-                                            aria-label={`Reset ${label} color`}
-                                            title={`Reset ${label}`}
-                                            disabled={isSyntaxHighlightDefault(key)}
-                                            style={{ opacity: isSyntaxHighlightDefault(key) ? 0.4 : 1 }}
-                                            onClick={() => handleDefaultSyntaxHighlightKey(key)}
-                                        ><span className="icon">refresh</span>
-                                        </button>
-                                    </div>
+                    <div
+                        className={`this section-collapsable-content syntax-collapsible-panel ${isSyntaxHighlightOpen ? "open" : ""}`}
+                        aria-hidden={!isSyntaxHighlightOpen}
+                        inert={!isSyntaxHighlightOpen}
+                    >
+                        {SYNTAX_HIGHLIGHT_OPTIONS.map(({ key, label }) => (
+                            <div 
+                                data-auto-size-transition="height"
+                                className="row-group long items-center"
+                                key={key}
+                            >
+                                <span className="text-main-name">
+                                    <i className="icon">code</i>
+                                    <p className="text-label">{label}</p>
                                 </span>
-                            ))}
-                        </div>)
-                    }
-                    <div className="row-group">
+                                <div className="flex gap-[8px] items-center">
+                                    <label className="ml-[4px] mr-[4px] checkbox">
+                                        <input
+                                            type="checkbox"
+                                            checked={syntaxReal[key]}
+                                            onChange={(e) => updateSyntaxReal(key, e.target.checked)}
+                                        />
+                                        <span>Real</span>
+                                    </label>
+
+                                    <label className={`ml-[4px] mr-[4px] checkbox ${syntaxReal[key] ? "disabled" : ""}`}>
+                                        <input
+                                            type="checkbox"
+                                            checked={syntaxBlend[key]}
+                                            disabled={syntaxReal[key]}
+                                            onChange={(e) => updateSyntaxBlend(key, e.target.checked)}
+                                        />
+                                        <span>Harmonise</span>
+                                    </label>
+                                    
+                                    <MenuSelect
+                                        id={`syntax-${key}`}
+                                        value="color"
+                                        options={[{ value: "color", label }]}
+                                        trigger={({ getInputProps }) => (<>
+                                            <button
+                                                {...getInputProps({
+                                                    className: "section-color-label",
+                                                    "aria-label": `Choose ${label} color`,
+                                                })}
+                                                style={{ "--this-label-color": syntaxHighlight[key] } as React.CSSProperties}
+                                            />
+                                        </>)}
+                                        content={
+                                            <div className="ml-[12px] mr-[12px] mt-[8px] mb-[8px]">
+                                                <ColorPicker
+                                                    value={syntaxHighlight[key]}
+                                                    onChange={(color) => {if (color !== null) updateSyntaxHighlight(key, color);}}
+                                                    hasNone={false}
+                                                />
+                                            </div>
+                                        }
+                                        onChange={() => undefined}
+                                    />
+                                    <div className="section-color-label" style={{ "--this-label-color": `rgb(var(--md-color-${key.replace(/([A-Z])/g, "-$1").toLowerCase()}))` } as React.CSSProperties}/>
+
+                                    <button
+                                        type="button"
+                                        className={`btn ibtn small btn-text ${isSyntaxHighlightDefault(key) ? "disabled" : ""}`}
+                                        aria-label={`Reset ${label} color`}
+                                        title={`Reset ${label}`}
+                                        disabled={isSyntaxHighlightDefault(key)}
+                                        onClick={() => handleDefaultSyntaxHighlightKey(key)}
+                                    ><span className="icon">refresh</span>
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="box-hole">
+                    <div className="row-group long">
                         <p className="text-main-name"> Code Preview</p>
                         <div className="flex flex-col gap-[8px]">
-                            <MacroCode>{
-`[store/x/0][unescape/[repeat/10/\\[store\\/x\\/\\[add\\/\\[load\\/x\\]\\/1\\]\\]\\[load\\/x\\]/ ]]
+                            <EditorScreen className="h-fit"
+                                defaultCode={`[store/x/0][unescape/[repeat/10/\\[store\\/x\\/\\[add\\/\\[load\\/x\\]\\/1\\]\\]\\[load\\/x\\]/ ]]
 
 [store/x/0][/
 ][unescape/[/
@@ -613,9 +690,9 @@ export default function Body() {
         ]\\[load\\/x\\][/
         ] /[/
     ]][/
-]]`
-                            }</MacroCode>
-                            <div className="search-details-detailbox macro max-w-[400px]">
+]`}
+                            />
+                            <div className="search-details-detailbox macro">
                                 <span className="flag-name">-f</span>=
                                 <span className="flag-value">png</span>{` `}
                                 baba
@@ -650,7 +727,7 @@ export default function Body() {
                 <h4 className="text-label font-bold">About</h4>
 
                 <div className="box-hole">
-                    <div className="row-group">
+                    <div className="row-group long">
                         <h3 className="text-main-name">Version</h3>
                         <div className="stack" style={{
                             alignItems: "center",
@@ -672,7 +749,7 @@ export default function Body() {
                                 fontSize: "2rem",
                                 color: "rgb(var(--md-color-on-tertiary-container))",
                                 zIndex: 1,
-                            }}>v0.123.7</div>
+                            }}>v0.124</div>
                         </div>
                         
                     </div>
@@ -681,7 +758,7 @@ export default function Body() {
                         Siwakornpc/ROBOT-IS-CHILL-web-demo
                         <i className="icon">chevron_right</i>
                     </a>
-                    <div className="row-group">
+                    <div className="row-group long">
                         <p className="text-main-name">Contributors</p>
                         <Contributors />
                     </div>

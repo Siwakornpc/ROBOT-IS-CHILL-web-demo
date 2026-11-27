@@ -6,6 +6,7 @@ import { offsetToLineColumn } from "./lineModel";
 import { updateCurrentLineClass } from "./domUpdaters";
 import { updateCaretMatch } from "./highlighting";
 import { clearLeftBracketStatesFromKeyDirections } from "./beforeInputHandler";
+import { getEditorSettings } from "./editorSettings";
 
 export function createEditorClickHandler(editorArea: HTMLElement, onFocusToEnd?: () => void) {
     return function handleClick(e: MouseEvent) {
@@ -33,9 +34,6 @@ type KeydownDeps = {
     onCodeChange?: (code: string) => void;
 };
 
-const INDENT = "    ";
-const INDENT_SIZE = 4;
-
 function getLineStart(value: string, offset: number): number {
     const i = value.lastIndexOf("\n", offset - 1);
     return i === -1 ? 0 : i + 1;
@@ -51,12 +49,12 @@ function getLineIndent(line: string): string {
     return match?.[0] ?? "";
 }
 
-function indentationColumns(indent: string): number {
+function indentationColumns(indent: string, indentSize: number): number {
     let columns = 0;
 
     for (const ch of indent) {
         if (ch === "\t") {
-            columns += INDENT_SIZE - (columns % INDENT_SIZE);
+            columns += indentSize - (columns % indentSize);
         } else {
             columns++;
         }
@@ -65,7 +63,7 @@ function indentationColumns(indent: string): number {
     return columns;
 }
 
-function removeOneIndentLevel(indent: string): string {
+function removeOneIndentLevel(indent: string, indentSize: number): string {
     if (!indent) return indent;
 
     let columns = 0;
@@ -73,9 +71,9 @@ function removeOneIndentLevel(indent: string): string {
 
     for (const ch of indent) {
         const width = ch === "\t"
-            ? INDENT_SIZE - (columns % INDENT_SIZE)
+            ? indentSize - (columns % indentSize)
             : 1;
-        if (columns + width > INDENT_SIZE) break;
+        if (columns + width > indentSize) break;
         columns += width;
         removeChars++;
     }
@@ -83,25 +81,26 @@ function removeOneIndentLevel(indent: string): string {
     return indent.slice(removeChars);
 }
 
-function spacesToNextTabStop(column: number): number {
-    return INDENT_SIZE - (column % INDENT_SIZE);
+function spacesToNextTabStop(column: number, indentSize: number): number {
+    return indentSize - (column % indentSize);
 }
 
 function indentAtCaret(
     value: string,
     position: number,
+    indentSize: number,
 ): { value: string; position: number } {
     const lineStart = getLineStart(value, position);
     const beforeCaret = value.slice(lineStart, position);
 
     const leadingWhitespace = getLineIndent(beforeCaret);
 
-    const column = indentationColumns(leadingWhitespace);
+    const column = indentationColumns(leadingWhitespace, indentSize);
     const visualColumn = leadingWhitespace.length === beforeCaret.length
         ? column
         : column + (beforeCaret.length - leadingWhitespace.length);
 
-    const spaces = spacesToNextTabStop(visualColumn);
+    const spaces = spacesToNextTabStop(visualColumn, indentSize);
     const newValue = value.slice(0, position) + " ".repeat(spaces) + value.slice(position);
 
     return {
@@ -116,6 +115,7 @@ function indentAtCaret(
 function unindentLine(
     value: string,
     position: number,
+    indentSize: number,
 ): { value: string; position: number } {
     const lineStart = getLineStart(value, position);
     const lineEnd = getLineEnd(value, position);
@@ -125,7 +125,7 @@ function unindentLine(
 
     if (!oldIndent) return { value, position };
 
-    const newIndent = removeOneIndentLevel(oldIndent);
+    const newIndent = removeOneIndentLevel(oldIndent, indentSize);
     const removed = oldIndent.length - newIndent.length;
 
     const newValue = value.slice(0, lineStart) + newIndent + value.slice(lineStart + oldIndent.length);
@@ -141,6 +141,7 @@ export function createKeydownHandler(deps: KeydownDeps) {
     const { editorArea, state, saveState, render, undo, redo, onCodeChange } = deps;
 
     return function handleKeydown(e: KeyboardEvent) {
+        const indentSize = getEditorSettings().tabSize;
         if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) {
             clearLeftBracketStatesFromKeyDirections();
         }
@@ -153,7 +154,7 @@ export function createKeydownHandler(deps: KeydownDeps) {
 
             if (start === end) {
                 if (e.shiftKey) {
-                    const { value, position } = unindentLine(state.value, start);
+                    const { value, position } = unindentLine(state.value, start, indentSize);
                     if (value === state.value) return;
                     state.value = value;
 
@@ -163,7 +164,7 @@ export function createKeydownHandler(deps: KeydownDeps) {
                     return;
                 }
 
-                const result = indentAtCaret(state.value, start);
+                const result = indentAtCaret(state.value, start, indentSize);
                 state.value = result.value;
 
                 onCodeChange?.(state.value);
@@ -194,7 +195,7 @@ export function createKeydownHandler(deps: KeydownDeps) {
             const newLines = selectedLines.map((line, index) => {
                 if (e.shiftKey) {
                     const oldIndent = getLineIndent(line);
-                    const newIndent = removeOneIndentLevel(oldIndent);
+                    const newIndent = removeOneIndentLevel(oldIndent, indentSize);
                     const delta = newIndent.length - oldIndent.length;
 
                     if (index === 0) firstLineDelta = delta;
@@ -202,9 +203,9 @@ export function createKeydownHandler(deps: KeydownDeps) {
                     return (newIndent + line.slice(oldIndent.length));
                 }
 
-                if (index === 0) firstLineDelta = INDENT.length;
-                totalDelta += INDENT.length;
-                return INDENT + line;
+                if (index === 0) firstLineDelta = indentSize;
+                totalDelta += indentSize;
+                return " ".repeat(indentSize) + line;
             });
 
             const replacement = newLines.join("\n");
@@ -235,7 +236,7 @@ export function createKeydownHandler(deps: KeydownDeps) {
             if (beforeCaret === indent && indent.length > 0) {
                 e.preventDefault();
 
-                const { value, position } = unindentLine(state.value, start);
+                const { value, position } = unindentLine(state.value, start, indentSize);
                 state.value = value;
 
                 onCodeChange?.(state.value);

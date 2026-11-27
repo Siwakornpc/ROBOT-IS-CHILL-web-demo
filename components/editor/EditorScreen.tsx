@@ -2,11 +2,21 @@
 
 import { useRef, useState, useEffect } from "react";
 import { useEditorEngine, type HoverState, type HoverControls } from "./useEditorEngine";
+import { useEditorSettings } from "./editorSettings";
 import { AutocompleteDropdown, SuggestionItem } from "./autocompleteDropdown";
 import { HoverTooltip } from "./hoverTooltip";
 import "./editorReady";
 
-export function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) => void }) {
+export function EditorScreen({
+    onCodeChange,
+    defaultCode = "",
+    className = "",
+}: {
+    onCodeChange?: (code: string) => void;
+    defaultCode?: string;
+    className?: string;
+}) {
+    const editorSettings = useEditorSettings();
     const editorAreaRef = useRef<HTMLDivElement | null>(null);
     const gutterElRef = useRef<HTMLDivElement | null>(null);
     const gutterWrapRef = useRef<HTMLDivElement | null>(null);
@@ -37,6 +47,7 @@ export function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) =
         gutterElRef,
         gutterWrapRef,
         scrollElRef,
+        defaultCode,
         onCodeChange,
         onAutocompleteChange: (state: any) => setAutoComplete(state),
         onInsertSuggestionRef: insertSuggestionRef,
@@ -45,15 +56,25 @@ export function EditorScreen({ onCodeChange }: { onCodeChange?: (code: string) =
     });
 
     return (
-        <div className="editor-code">
+        <div className={`editor-code ${className}`}>
             <div className="editor-body-row ascroll-y" id="editor-text-scroll" ref={scrollElRef}>
-                <div className="editor-gutter-wrap" id="editor-gutter-wrap" ref={gutterWrapRef}>
+                <div
+                    className="editor-gutter-wrap"
+                    id="editor-gutter-wrap"
+                    ref={gutterWrapRef}
+                    hidden={!editorSettings.showLineNumbers}
+                >
                     <div className="editor-gutter" id="editor-gutter" ref={gutterElRef}></div>
                 </div>
                 <div className="editor-text" id="editor-text-scroll-inner">
                     <div
                         id="editor-area"
-                        className="editor-input"
+                        className={[
+                            "editor-input",
+                            editorSettings.showWhitespace && "editor-show-whitespace",
+                            editorSettings.showIndentGuides && "editor-indent-guides",
+                        ].filter(Boolean).join(" ")}
+                        style={{ "--editor-tab-size": editorSettings.tabSize } as React.CSSProperties}
                         contentEditable="true"
                         spellCheck="false"
                         autoCapitalize="off"
