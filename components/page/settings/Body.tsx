@@ -362,7 +362,7 @@ export default function Body() {
                             <i className="icon">format_size</i>
                             <p>Code Font Size</p>
                         </span>
-                        <span className="value-label">{`${font.sansSize}px`}</span>
+                        <span className="value-label">{`${font.codeSize}px`}</span>
                     </button>
                     
                     <div
