@@ -2,19 +2,26 @@
 
 import { useSyncExternalStore } from "react";
 
+export const WHITESPACE_ICONS = ["space", "tab", "line-break"] as const;
+export type WhitespaceIcon = typeof WHITESPACE_ICONS[number];
+
 export type EditorSettings = {
     showLineNumbers: boolean;
     showWhitespace: boolean;
+    whitespaceIcons: WhitespaceIcon[];
     showIndentGuides: boolean;
     tabSize: number;
 };
 
 export const DEFAULT_EDITOR_SETTINGS: EditorSettings = {
     showLineNumbers: true,
-    showWhitespace: true,
+    showWhitespace: false,
+    whitespaceIcons: [...WHITESPACE_ICONS],
     showIndentGuides: true,
     tabSize: 4,
 };
+
+export const EDITOR_TAB_SIZE_CHANGE_EVENT = "editortabsizechange";
 
 const STORAGE_KEY = "editorSettings";
 const listeners = new Set<() => void>();
@@ -30,17 +37,25 @@ function readStoredSettings(): EditorSettings {
         if (!parsed || typeof parsed !== "object") return DEFAULT_EDITOR_SETTINGS;
 
         const value = parsed as Partial<EditorSettings>;
+        const storedSettings = parsed as Record<string, unknown>;
+        const storedWhitespace = storedSettings.showWhitespace;
+        const storedWhitespaceIcons = storedSettings.whitespaceIcons;
         return {
             showLineNumbers: typeof value.showLineNumbers === "boolean"
                 ? value.showLineNumbers
                 : DEFAULT_EDITOR_SETTINGS.showLineNumbers,
-            showWhitespace: typeof value.showWhitespace === "boolean"
-                ? value.showWhitespace
-                : DEFAULT_EDITOR_SETTINGS.showWhitespace,
+            showWhitespace: typeof storedWhitespace === "boolean"
+                ? storedWhitespace
+                : true,
+            whitespaceIcons: Array.isArray(storedWhitespaceIcons)
+                ? WHITESPACE_ICONS.filter((icon) => storedWhitespaceIcons.includes(icon))
+                : Array.isArray(storedWhitespace)
+                    ? WHITESPACE_ICONS.filter((icon) => storedWhitespace.includes(icon))
+                    : [...WHITESPACE_ICONS],
             showIndentGuides: typeof value.showIndentGuides === "boolean"
                 ? value.showIndentGuides
                 : DEFAULT_EDITOR_SETTINGS.showIndentGuides,
-            tabSize: typeof value.tabSize === "number" && [2, 4, 8].includes(value.tabSize)
+            tabSize: typeof value.tabSize === "number" && Number.isInteger(value.tabSize) && value.tabSize >= 1 && value.tabSize <= 8
                 ? value.tabSize
                 : DEFAULT_EDITOR_SETTINGS.tabSize,
         };
@@ -66,8 +81,11 @@ function subscribe(listener: () => void) {
 
     const handleStorage = (event: StorageEvent) => {
         if (event.key !== STORAGE_KEY) return;
+        const previousTabSize = currentSettings.tabSize;
         currentSettings = readStoredSettings();
         notifyListeners();
+        if (currentSettings.tabSize !== previousTabSize)
+            window.dispatchEvent(new Event(EDITOR_TAB_SIZE_CHANGE_EVENT));
     };
     window.addEventListener("storage", handleStorage);
 
@@ -96,6 +114,7 @@ export function useEditorSettings() {
 
 export function updateEditorSettings(updates: Partial<EditorSettings>) {
     initialize();
+    const previousTabSize = currentSettings.tabSize;
     currentSettings = { ...currentSettings, ...updates };
 
     try {
@@ -105,4 +124,6 @@ export function updateEditorSettings(updates: Partial<EditorSettings>) {
     }
 
     notifyListeners();
+    if (currentSettings.tabSize !== previousTabSize)
+        window.dispatchEvent(new Event(EDITOR_TAB_SIZE_CHANGE_EVENT));
 }

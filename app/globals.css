@@ -693,7 +693,7 @@ hr {
     padding: 6px 12px;
     border-radius: calc(20 / 16 * var(--font-size) / 2 + 6px);
 }
-.btn.xsmall .icon {
+:is(.btn.xsmall, .cbtn-group.xsmall > .cbtn) .icon {
     --icon-opsz: calc(20 / 16px * var(--font-size));
 }
 .ibtn.xsmall {
@@ -726,7 +726,7 @@ hr {
     padding: 10px 16px;
     border-radius: calc(20 / 16 * var(--font-size) / 2 + 10px);
 }
-.btn.small .icon {
+:is(.btn.small, .cbtn-group.small > .cbtn) .icon {
     --icon-opsz: calc(20 / 16px * var(--font-size));
 }
 .ibtn.small {
@@ -762,7 +762,7 @@ hr {
     padding: 16px 24px;
     border-radius: calc(24 / 16 * var(--font-size) / 2 + 16px);
 }
-.btn.medium .icon {
+:is(.btn.medium, .cbtn-group.medium > .cbtn) {
     --icon-opsz: calc(24 / 16px * var(--font-size));
 }
 .ibtn.medium {
@@ -794,7 +794,7 @@ hr {
     padding: 32px 48px;
     border-radius: calc(32 / 16 * var(--font-size) / 2 + 32px);
 }
-.btn.large .icon {
+:is(.btn.large, .cbtn-group.large > .cbtn) {
     --icon-opsz: calc(32 / 16px * var(--font-size));
 }
 .ibtn.large {
@@ -826,7 +826,7 @@ hr {
     padding: 48px 64px;
     border-radius: calc(40 / 16 * var(--font-size) / 2 + 48px);
 }
-.btn.xlarge .icon {
+:is(.btn.xlarge, .cbtn-group.xlarge > .cbtn) {
     --icon-opsz: calc(40 / 16px * var(--font-size));
 }
 .ibtn.xlarge {
@@ -905,6 +905,7 @@ hr {
 .cbtn-group {
     display: flex;
     gap: 2px;
+    width: stretch;
     transition: width 400ms var(--easing-standard);
 }
 .cbtn-group.xsmall {
@@ -923,6 +924,9 @@ hr {
     height: 136px;
 }
 .cbtn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: stretch;
     height: stretch;
     text-align: center;
@@ -941,6 +945,7 @@ hr {
     background: rgb(var(--md-color-secondary));
 }
 .cbtn-group.xsmall .cbtn {
+    gap: 4px;
     font-size: 14px;
     font-weight: 500;
     line-height: 20px;
@@ -955,6 +960,7 @@ hr {
     border-bottom-right-radius: 16px;
 }
 .cbtn-group.small .cbtn {
+    gap: 8px;
     font-size: 14px;
     font-weight: 500;
     line-height: 20px;
@@ -969,6 +975,7 @@ hr {
     border-bottom-right-radius: 20px;
 }
 .cbtn-group.medium .cbtn {
+    gap: 8px;
     font-size: 16px;
     font-weight: 500;
     line-height: 24px;
@@ -983,6 +990,7 @@ hr {
     border-bottom-right-radius: 28px;
 }
 .cbtn-group.large .cbtn {
+    gap: 12px;
     font-size: 24px;
     line-height: 32px;
     border-radius: 16px;
@@ -996,6 +1004,7 @@ hr {
     border-bottom-right-radius: 48px;
 }
 .cbtn-group.xlarge .cbtn {
+    gap: 16px;
     font-size: 32px;
     line-height: 40px;
     border-radius: 20px;
@@ -2245,8 +2254,8 @@ main.ascroll-y .main-body {
     color: var(--normal);
     background: var(--editor-current-line);
 }
-.editor-show-whitespace .editor-line:not(:last-child,:has(.br)):after,
-.editor-show-whitespace .editor-line:has(.br):not(:last-child):before {
+.editor-show-whitespace-line-break .editor-line:not(:last-child,:has(.br)):after,
+.editor-show-whitespace-line-break .editor-line:has(.br):not(:last-child):before {
     content: "subdirectory_arrow_left";
     position: absolute;
     pointer-events: none;
@@ -2257,7 +2266,15 @@ main.ascroll-y .main-body {
 }
 .editor-whitespace-space,
 .editor-whitespace-tab {
+    display: inline-block;
     position: relative;
+}
+.editor-indent-guides .editor-whitespace-space.editor-indent:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-right: 1px solid rgb(var(--md-color-outline), 0.45);
+    pointer-events: none;
 }
 .editor-whitespace-space::after,
 .editor-whitespace-tab::after {
@@ -2275,8 +2292,8 @@ main.ascroll-y .main-body {
 .editor-whitespace-tab::after {
     content: "→";
 }
-.editor-show-whitespace .editor-whitespace-space::after,
-.editor-show-whitespace .editor-whitespace-tab::after {
+.editor-show-whitespace-space .editor-whitespace-space::after,
+.editor-show-whitespace-tab .editor-whitespace-tab::after {
     opacity: 0.65;
 }
 .editor-indent-guides .editor-line {
@@ -3630,7 +3647,7 @@ tr:nth-child(odd) td {
     justify-content: space-between;
     align-items: center;
     gap: 8px;
-    padding: 12px;
+    padding: 10px 16px;
     border-radius: 4px;
     color: var(--variant);
     background: rgb(var(--md-color-surface-container-low));
@@ -3641,24 +3658,24 @@ tr:nth-child(odd) td {
         var(--easing-default-ex-effect);
 }
 :not(.section-collapsable-content:not(:first-child)) > :is(.row-group, .section-collapsable):first-child {
-    border-top-left-radius: 24px;
-    border-top-right-radius: 24px;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
 }
 :not(.section-collapsable-content:not(:last-child)) > :is(.row-group:last-child,
 .section-collapsable:not(:has(+ .section-collapsable-content:is(.open, :not(:last-child))))) {
-    border-bottom-left-radius: 24px;
-    border-bottom-right-radius: 24px;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
 }
 a.row-group {
     flex-direction: row;
 }
 .row-group:is(button, a, .section-toggle):hover, .section-toggle:has(.switch:checked) {
-    border-radius: 24px;
+    border-radius: 16px;
     color: rgb(var(--md-color-on-secondary-container));
     background: rgb(var(--md-color-secondary-container));
 }
 .row-group:is(button, a, .section-toggle):active {
-    border-radius: 12px;
+    border-radius: 8px;
 }
 .text-main-name {
     display: inline-flex;
@@ -3669,7 +3686,6 @@ a.row-group {
 }
 .row-group:not(:is(button:hover, a:hover, .section-toggle:hover, .section-toggle:has(.switch:checked))) .text-main-name .icon {
     color: rgb(var(--md-color-primary));
-    border-radius: 22px;
 }
 .text-label:has(+ .box-hole) {
     margin-top: 8px;
@@ -3753,7 +3769,7 @@ a.row-group {
     position: relative;
     user-select: none;
 }
-.section-collapsable:not(:has(.value-label))::after {
+.section-dropdown::after {
     content: "arrow_drop_down";
     align-self: center;
     position: absolute;

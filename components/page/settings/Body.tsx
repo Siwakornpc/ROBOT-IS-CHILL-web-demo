@@ -1,13 +1,18 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type ChangeEvent } from "react";
 import { updateMacroStaticHighlight } from "@/components/highlight/macro-highlight-static.js";
 import ColorPicker from "@/components/md3/ColorPicker";
 import MenuSelect from "@/components/md3/MenuSelect";
 import Slider from "@/components/md3/slider";
 import { Contributors } from "@/components/contributors";
 import EditorScreen from "@/components/editor/EditorScreen"
-import { updateEditorSettings, useEditorSettings } from "@/components/editor/editorSettings";
+import {
+    DEFAULT_EDITOR_SETTINGS,
+    updateEditorSettings,
+    useEditorSettings,
+    type WhitespaceIcon,
+} from "@/components/editor/editorSettings";
 import {
     applySyntaxHighlightColors,
     DEFAULT_SYNTAX_HIGHLIGHT,
@@ -27,9 +32,11 @@ import { DEFAULT_FONT_STATE, FONT_SANS_OPTIONS, FONT_CODE_OPTIONS } from "@/comp
 import type { FontState } from "@/components/fontscript";
 
 import { THEME_PRESETS, resolvePreset } from "@/components/themepresets";
-import type { ThemePreset, PresetColor } from "@/components/themepresets";
+import type { ThemePreset } from "@/components/themepresets";
 import MaterialShape from "@/components/md3/MaterialShape";
 import entry from "next/dist/server/typescript/rules/entry";
+import { createSettingsOverrides, parseSettingsOverrides } from "./settingsTransfer";
+import type { SettingsOverrides } from "./settingsTransfer";
 
 type CollapsibleSectionId = string;
 
@@ -45,6 +52,12 @@ const SYNTAX_HIGHLIGHT_OPTIONS: { key: SyntaxHighlightKey; label: string }[] = [
     { key: "renderFlagValue", label: "Render Flag Value" },
     { key: "renderVariantName", label: "Render Variant Name" },
     { key: "renderVariantValue", label: "Render Variant Value" },
+];
+
+const WHITESPACE_ICON_OPTIONS: { value: WhitespaceIcon; icon: string; label: string }[] = [
+    { value: "space", icon: "space_bar", label: "Spaces" },
+    { value: "tab", icon: "keyboard_tab", label: "Tabs" },
+    { value: "line-break", icon: "subdirectory_arrow_left", label: "Line breaks" },
 ];
 
 function MacroCode({ children }: { children: string }) {
@@ -67,6 +80,8 @@ export default function Body() {
     const [syntaxHighlight, setSyntaxHighlight] = useState<SyntaxHighlightState>(DEFAULT_SYNTAX_HIGHLIGHT);
     const [syntaxBlend, setSyntaxBlend] = useState<SyntaxBlendState>(DEFAULT_SYNTAX_BLEND);
     const [syntaxReal, setSyntaxReal] = useState<SyntaxRealState>(DEFAULT_SYNTAX_REAL);
+    const [settingsFileError, setSettingsFileError] = useState<string | null>(null);
+    const settingsFileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         try {
@@ -228,6 +243,13 @@ export default function Body() {
     const isTabSizeOpen = openCollapsibleSections.includes("tabsize");
     const isSyntaxHighlightOpen = openCollapsibleSections.includes("syntax");
 
+    const toggleWhitespaceIcon = (icon: WhitespaceIcon) => {
+        const whitespaceIcons = editorSettings.whitespaceIcons.includes(icon)
+            ? editorSettings.whitespaceIcons.filter((enabledIcon) => enabledIcon !== icon)
+            : [...editorSettings.whitespaceIcons, icon];
+        updateEditorSettings({ whitespaceIcons });
+    };
+
     const isSyntaxHighlightDefault = (key: SyntaxHighlightKey) =>
         syntaxHighlight[key].toLowerCase() === DEFAULT_SYNTAX_HIGHLIGHT[key].toLowerCase() &&
         syntaxBlend[key] === DEFAULT_SYNTAX_BLEND[key] &&
@@ -275,36 +297,78 @@ export default function Body() {
 
     const currentPresetId = THEME_PRESETS.find(matchesPreset)?.id ?? "custom";
 
-    const handlePrintPreset = () => {
-        const colors: Partial<Record<SyntaxHighlightKey, PresetColor>> = {};
+    const getSettingsOverrides = () => createSettingsOverrides({
+        theme,
+        font,
+        syntax: {
+            highlight: syntaxHighlight,
+            blend: syntaxBlend,
+            real: syntaxReal,
+        },
+        editor: editorSettings,
+    });
 
-        for (const { key } of SYNTAX_HIGHLIGHT_OPTIONS) {
-            const entry: PresetColor = {};
+    const handlePrintSettings = () => {
+        console.log(JSON.stringify(getSettingsOverrides(), null, 4));
+    };
 
-            if (syntaxHighlight[key].toLowerCase() !== DEFAULT_SYNTAX_HIGHLIGHT[key].toLowerCase())
-                entry.color = syntaxHighlight[key];
-            if (syntaxReal[key] !== DEFAULT_SYNTAX_REAL[key])
-                entry.real = syntaxReal[key];
-            // blend is irrelevant while Real is on, so skip it
-            if (!syntaxReal[key] && syntaxBlend[key] !== DEFAULT_SYNTAX_BLEND[key])
-                entry.blend = syntaxBlend[key];
-
-            if (Object.keys(entry).length > 0) colors[key] = entry;
+    const handleExportSettings = () => {
+        try {
+            const file = new Blob([JSON.stringify(getSettingsOverrides(), null, 4)], {
+                type: "application/json",
+            });
+            const url = URL.createObjectURL(file);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "ricwd-settings.json";
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.setTimeout(() => URL.revokeObjectURL(url), 0);
+            setSettingsFileError(null);
+        } catch (error) {
+            console.error("Could not export settings:", error);
+            setSettingsFileError(error instanceof Error ? error.message : "Could not export settings.");
         }
+    };
 
-        console.log(
-            JSON.stringify({
-                id: "my-preset",
-                label: "My Preset",
-                theme: {
-                    color: theme.color,
-                    scheme: theme.scheme,
-                    contrast: theme.contrast,
-                    brightness: theme.brightness,
-                },
-                colors: colors,
-            }, null, 4)
-        );
+    const applyImportedSettings = (settings: SettingsOverrides) => {
+        if (settings.theme) updateTheme(settings.theme);
+        if (settings.font) updateFont(settings.font);
+        if (settings.syntax?.highlight) {
+            const updated = { ...syntaxHighlight, ...settings.syntax.highlight };
+            localStorage.setItem("syntaxHighlight", JSON.stringify(updated));
+            setSyntaxHighlight(updated);
+        }
+        if (settings.syntax?.blend) {
+            const updated = { ...syntaxBlend, ...settings.syntax.blend };
+            localStorage.setItem("syntaxBlend", JSON.stringify(updated));
+            setSyntaxBlend(updated);
+        }
+        if (settings.syntax?.real) {
+            const updated = { ...syntaxReal, ...settings.syntax.real };
+            localStorage.setItem("syntaxReal", JSON.stringify(updated));
+            setSyntaxReal(updated);
+        }
+        if (settings.editor) updateEditorSettings(settings.editor);
+    };
+
+    const handleImportSettings = async (event: ChangeEvent<HTMLInputElement>) => {
+        const input = event.currentTarget;
+        const file = input.files?.[0];
+        if (!file) return;
+
+        try {
+            const contents: unknown = JSON.parse(await file.text());
+            const settings = parseSettingsOverrides(contents);
+            applyImportedSettings(settings);
+            setSettingsFileError(null);
+        } catch (error) {
+            console.error("Could not import settings:", error);
+            setSettingsFileError(error instanceof Error ? error.message : "Could not import settings.");
+        } finally {
+            input.value = "";
+        }
     };
 
     return (
@@ -313,127 +377,12 @@ export default function Body() {
             style={{ width: "stretch" }}
         >
             <div className="main-body">
-                {
-                    // Fonts Section
-                }
-
-                <h2 className="text-label font-bold">Fonts</h2>
-
-                <h4 className="text-label font-bold">Size</h4>
-
-                <div className="box-hole">
-                    <button
-                        className="row-group section-collapsable"
-                        aria-expanded={isTabSizeOpen}
-                        onClick={() => handleOnClickCollapsable("fontsize")}
-                    >
-                        <span className="text-main-name">
-                            <i className="icon">format_size</i>
-                            <p>Font Size</p>
-                        </span>
-                        <span className="value-label">{`${font.sansSize}px`}</span>
-                    </button>
-                    
-                    <div
-                        className={`this section-collapsable-content syntax-collapsible-panel ${isFontSizeOpen ? "open" : ""}`}
-                        aria-hidden={!isFontSizeOpen}
-                        inert={!isFontSizeOpen}
-                    >
-                        <div 
-                            data-auto-size-transition="height"
-                            className="row-group items-center"
-                        >
-                            <Slider
-                                value={font.sansSize}
-                                min={12}
-                                max={28}
-                                step={1}
-                                onChange={(value) => updateFont({ sansSize: value })}
-                            />
-                        </div>
-                    </div>
-
-                    <button
-                        className="row-group section-collapsable"
-                        aria-expanded={isTabSizeOpen}
-                        onClick={() => handleOnClickCollapsable("codesize")}
-                    >
-                        <span className="text-main-name">
-                            <i className="icon">format_size</i>
-                            <p>Code Font Size</p>
-                        </span>
-                        <span className="value-label">{`${font.codeSize}px`}</span>
-                    </button>
-                    
-                    <div
-                        className={`this section-collapsable-content syntax-collapsible-panel ${isCodeFontSizeOpen ? "open" : ""}`}
-                        aria-hidden={!isCodeFontSizeOpen}
-                        inert={!isCodeFontSizeOpen}
-                    >
-                        <div 
-                            data-auto-size-transition="height"
-                            className="row-group items-center"
-                        >
-                            <Slider
-                                value={font.codeSize}
-                                min={10}
-                                max={28}
-                                step={1}
-                                onChange={(value) => updateFont({ codeSize: value })}
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                <h4 className="text-label font-bold">Fontface</h4>
-
-                <div className="box-hole">
-                    <div className="row-group long">
-                        <span className="text-main-name">
-                            <i className="icon">brand_family</i>
-                            <p>Main Font</p>
-                        </span>
-                        <MenuSelect
-                            id="font-sans"
-                            value={font.sans}
-                            options={FONT_SANS_OPTIONS}
-                            onChange={(newValue) => updateFont({ sans: newValue })}
-                        />
-                    </div>
-
-                    <div className="row-group long">
-                        <span className="text-main-name">
-                            <i className="icon">brand_family</i>
-                            <p>Code Font</p>
-                        </span>
-                        <MenuSelect
-                            id="font-code"
-                            value={font.code}
-                            options={FONT_CODE_OPTIONS}
-                            onChange={(newValue) => updateFont({ code: newValue })}
-                        />
-                    </div>
-                </div>
-
-                {
-                    // Reset Defalt for Fonts
-                }
-                <button
-                    type="button"
-                    className="btn medium primary !w-48 !justify-center mb-[8px]"
-                    onClick={handleDefaultFont}
-                ><i className="icon">settings_backup_restore</i>Reset
-                </button>
-
-                <hr />
-
+                <h2 className="text-label font-bold">Appearance</h2>
                 {
                     // Theme Section
                 }
 
-                <h2 className="text-label font-bold">Theme</h2>
-
-                <h4 className="text-label font-bold">Appearance</h4>
+                <h4 className="text-label font-bold">Theme</h4>
 
                 <div className="box-hole">
                     
@@ -539,10 +488,123 @@ export default function Body() {
                 {
                     // Reset Defalt for Theme
                 }
+                
+                <hr />
+
                 <button
                     type="button"
                     className="btn medium primary !w-48 !justify-center mb-[8px]"
                     onClick={handleDefaultTheme}
+                ><i className="icon">settings_backup_restore</i>Reset
+                </button>
+
+                {
+                    // Fonts Section
+                }
+
+                <h4 className="text-label font-bold">Font Size</h4>
+
+                <div className="box-hole">
+                    <button
+                        className="row-group section-collapsable"
+                        aria-expanded={isTabSizeOpen}
+                        onClick={() => handleOnClickCollapsable("fontsize")}
+                    >
+                        <span className="text-main-name">
+                            <i className="icon">format_size</i>
+                            <p>Font Size</p>
+                        </span>
+                        <span className="value-label">{`${font.sansSize}px`}</span>
+                    </button>
+                    
+                    <div
+                        className={`this section-collapsable-content syntax-collapsible-panel ${isFontSizeOpen ? "open" : ""}`}
+                        aria-hidden={!isFontSizeOpen}
+                        inert={!isFontSizeOpen}
+                    >
+                        <div 
+                            data-auto-size-transition="height"
+                            className="row-group items-center"
+                        >
+                            <Slider
+                                value={font.sansSize}
+                                min={12}
+                                max={28}
+                                step={1}
+                                onChange={(value) => updateFont({ sansSize: value })}
+                            />
+                        </div>
+                    </div>
+
+                    <button
+                        className="row-group section-collapsable"
+                        aria-expanded={isTabSizeOpen}
+                        onClick={() => handleOnClickCollapsable("codesize")}
+                    >
+                        <span className="text-main-name">
+                            <i className="icon">format_size</i>
+                            <p>Code Font Size</p>
+                        </span>
+                        <span className="value-label">{`${font.codeSize}px`}</span>
+                    </button>
+                    
+                    <div
+                        className={`this section-collapsable-content syntax-collapsible-panel ${isCodeFontSizeOpen ? "open" : ""}`}
+                        aria-hidden={!isCodeFontSizeOpen}
+                        inert={!isCodeFontSizeOpen}
+                    >
+                        <div 
+                            data-auto-size-transition="height"
+                            className="row-group items-center"
+                        >
+                            <Slider
+                                value={font.codeSize}
+                                min={10}
+                                max={28}
+                                step={1}
+                                onChange={(value) => updateFont({ codeSize: value })}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <h4 className="text-label font-bold">Fontface</h4>
+
+                <div className="box-hole">
+                    <div className="row-group long">
+                        <span className="text-main-name">
+                            <i className="icon">brand_family</i>
+                            <p>Main Font</p>
+                        </span>
+                        <MenuSelect
+                            id="font-sans"
+                            value={font.sans}
+                            options={FONT_SANS_OPTIONS}
+                            onChange={(newValue) => updateFont({ sans: newValue })}
+                        />
+                    </div>
+
+                    <div className="row-group long">
+                        <span className="text-main-name">
+                            <i className="icon">brand_family</i>
+                            <p>Code Font</p>
+                        </span>
+                        <MenuSelect
+                            id="font-code"
+                            value={font.code}
+                            options={FONT_CODE_OPTIONS}
+                            onChange={(newValue) => updateFont({ code: newValue })}
+                        />
+                    </div>
+                </div>
+
+                {
+                    // Reset Defalt for Fonts
+                }
+                <button
+                    type="button"
+                    className="btn medium primary !w-48 !justify-center mb-[8px]"
+                    onClick={handleDefaultFont}
                 ><i className="icon">settings_backup_restore</i>Reset
                 </button>
 
@@ -561,7 +623,11 @@ export default function Body() {
                             onChange={(event) => updateEditorSettings({ showLineNumbers: event.target.checked })}
                         />
                     </label>
-                    <label className="row-group section-toggle">
+                    <label
+                        className="row-group section-toggle"
+                        aria-expanded={editorSettings.showWhitespace}
+                        aria-controls="space-icons-panel"
+                    >
                         <span className="text-main-name">
                             <i className="icon">space_bar</i>
                             <p>Whitespace Icons</p>
@@ -573,6 +639,34 @@ export default function Body() {
                             onChange={(event) => updateEditorSettings({ showWhitespace: event.target.checked })}
                         />
                     </label>
+                    <div
+                        id="space-icons-panel"
+                        className={`this section-collapsable-content syntax-collapsible-panel ${editorSettings.showWhitespace ? "open" : ""}`}
+                        aria-hidden={!editorSettings.showWhitespace}
+                        inert={!editorSettings.showWhitespace}
+                    >
+                        <div
+                            data-auto-size-transition="height"
+                            className="row-group items-center"
+                        >
+                            <div className="cbtn-group small" role="group" aria-label="Whitespace icons">
+                                {WHITESPACE_ICON_OPTIONS.map(({ value, icon, label }) => (
+                                    <button
+                                        key={value}
+                                        type="button"
+                                        className={`cbtn ${editorSettings.whitespaceIcons.includes(value) ? "selected" : ""}`}
+                                        aria-label={label}
+                                        aria-pressed={editorSettings.whitespaceIcons.includes(value)}
+                                        title={label}
+                                        onClick={() => toggleWhitespaceIcon(value)}
+                                    >
+                                        <i className="icon">{icon}</i>
+                                        <span>{label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                     <label className="row-group section-toggle">
                         <span className="text-main-name">
                             <i className="icon">keyboard_tab</i>
@@ -619,7 +713,7 @@ export default function Body() {
 
                 <div className="box-hole">
                     <button
-                        className="row-group long section-collapsable"
+                        className="row-group long section-collapsable section-dropdown"
                         aria-expanded={isSyntaxHighlightOpen}
                         onClick={() => handleOnClickCollapsable("syntax")}
                     >
@@ -785,7 +879,7 @@ export default function Body() {
                                 fontSize: "2rem",
                                 color: "rgb(var(--md-color-on-tertiary-container))",
                                 zIndex: 1,
-                            }}>v0.124.1</div>
+                            }}>v0.124.2</div>
                         </div>
                         
                     </div>
@@ -800,22 +894,37 @@ export default function Body() {
                     </div>
                 </div>
 
+                {settingsFileError && <p role="alert">{settingsFileError}</p>}
+                <input
+                    ref={settingsFileInputRef}
+                    className="hidden"
+                    type="file"
+                    accept=".json,application/json"
+                    onChange={handleImportSettings}
+                />
                 <div className="btn-group">
                     <button
                         type="button"
-                        className="btn medium secondary-container !justify-center"
+                        className="btn medium primary"
+                        onClick={() => settingsFileInputRef.current?.click()}
+                    ><i className="icon">upload</i>Import
+                    </button>
+                    <button
+                        type="button"
+                        className="btn medium secondary-container"
+                        onClick={handleExportSettings}
+                    ><i className="icon">download</i>Export
+                    </button>
+                    <button
+                        type="button"
+                        className="btn medium secondary-container"
                         onClick={() => {
                             handleDefaultFont();
                             handleDefaultTheme();
                             handleDefaultSyntaxHighlight();
+                            updateEditorSettings(DEFAULT_EDITOR_SETTINGS);
                         }}
                     ><i className="icon">settings_backup_restore</i>Reset All
-                    </button>
-                    <button
-                        type="button"
-                        className="btn medium outlined !justify-center"
-                        onClick={handlePrintPreset}
-                    ><i className="icon">download</i>Print Log
                     </button>
                 </div>
 

@@ -71,7 +71,9 @@ export function EditorScreen({
                         id="editor-area"
                         className={[
                             "editor-input",
-                            editorSettings.showWhitespace && "editor-show-whitespace",
+                            ...(editorSettings.showWhitespace
+                                ? editorSettings.whitespaceIcons.map((icon) => `editor-show-whitespace-${icon}`)
+                                : []),
                             editorSettings.showIndentGuides && "editor-indent-guides",
                         ].filter(Boolean).join(" ")}
                         style={{ "--editor-tab-size": editorSettings.tabSize } as React.CSSProperties}

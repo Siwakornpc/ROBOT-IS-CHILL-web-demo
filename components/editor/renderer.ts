@@ -1,9 +1,10 @@
 import type { EditorState, WindowWithEditor } from "./types";
 import { clamp, normalizeNewlines } from "./lineUtils";
 import { offsetToLineColumn } from "./lineModel";
-import { setRange, getCaret, getCaretCoordinates } from "./caretUtils";
+import { setRange, getCaret } from "./caretUtils";
 import { updateGutter, updateCurrentLineClass, syncGutterScroll } from "./domUpdaters";
 import { highlight, updateCaretMatch } from "./highlighting";
+import { getEditorSettings } from "./editorSettings";
 
 type RendererDeps = {
     win: WindowWithEditor;
@@ -25,11 +26,21 @@ function renderLineHtml(highlightedLine: string) {
 }
 
 function addWhitespaceMarkers(highlightedLine: string) {
+    let spaceIndex = 0;
+    let isLinePrefix = true;
+    const tabSize = getEditorSettings().tabSize;
     return highlightedLine.replace(/(<[^>]*>|[^<]+)/g, (part) => {
         if (part.startsWith("<")) return part;
-        return part.replace(/[ \t]/g, (whitespace) => {
-            const kind = whitespace === "\t" ? "tab" : "space";
-            return `<span class="editor-whitespace-${kind}">${whitespace}</span>`;
+        return part.replace(/[ \t]|[^ \t]+/g, (token) => {
+            if (token !== " " && token !== "\t") {
+                isLinePrefix = false;
+                return token;
+            }
+
+            const kind = token === "\t" ? "tab" : "space";
+            const isTabGuide = isLinePrefix && kind === "space" && (spaceIndex + 1) % tabSize === 0;
+            if (isLinePrefix && kind === "space") spaceIndex++;
+            return `<span class="editor-whitespace-${kind}${isTabGuide ? " editor-indent" : ""}">${token}</span>`;
         });
     });
 }

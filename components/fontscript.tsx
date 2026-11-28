@@ -9,21 +9,21 @@ export interface FontOption {
 }
 
 export const FONT_SANS_OPTIONS: FontOption[] = [
+    { value: "google-sans-flex", label: "Google Sans Flex", cssVar: "--font-google-sans-flex" },
+    { value: "roboto-flex", label: "Roboto Flex", cssVar: "--font-roboto-flex" },
     { value: "nunito-sans", label: "Nunito Sans", cssVar: "--font-nunito-sans" },
     { value: "ibm-plex-sans", label: "IBM Plex Sans", cssVar: "--font-ibm-plex-sans" },
     { value: "inter", label: "Inter", cssVar: "--font-inter" },
-    { value: "roboto-flex", label: "Roboto Flex", cssVar: "--font-roboto-flex" },
-    { value: "google-sans-flex", label: "Google Sans Flex", cssVar: "--font-google-sans-flex" },
     { value: "bytesized", label: "Bytesized", cssVar: "--font-bytesized" },
     { value: "noto-sans", label: "Noto Sans", cssVar: "--font-noto-sans" },
     { value: "geist", label: "Geist", cssVar: "--font-geist" },
 ];
 
 export const FONT_CODE_OPTIONS: FontOption[] = [
+    { value: "cascadia-code", label: "Cascadia Code", cssVar: "--font-cascadia-code" },
     { value: "ibm-plex-mono", label: "IBM Plex Mono", cssVar: "--font-ibm-plex-mono" },
     { value: "jetbrains-mono", label: "JetBrains Mono", cssVar: "--font-jetbrains-mono" },
     { value: "bytesized", label: "Bytesized", cssVar: "--font-bytesized" },
-    { value: "cascadia-code", label: "Cascadia Code", cssVar: "--font-cascadia-code" },
     { value: "source-code-pro", label: "Source Code Pro", cssVar: "--font-source-code-pro" },
     { value: "courier-prime", label: "Courier Prime", cssVar: "--font-courier-prime" },
     { value: "noto-sans-mono", label: "Noto Sans Mono", cssVar: "--font-noto-sans-mono" },

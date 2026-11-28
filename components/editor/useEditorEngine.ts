@@ -16,6 +16,7 @@ import { getAutocompleteContext } from "./autocompleteUtils";
 import stdlib_macros from "../page/search/stdlib_macros";
 import { loadFlags, flags } from "@/components/highlight/render-highlight";
 import { getStoredVariables } from "@/components/highlight/macro-highlight.js";
+import { EDITOR_TAB_SIZE_CHANGE_EVENT } from "./editorSettings";
 import {
     buildMacroDefinitionUrl,
     getMacroDefinitionNameFromElement,
@@ -627,7 +628,6 @@ export function useEditorEngine({
         editorArea.addEventListener("beforeinput", handleBeforeInput as EventListener);
         editorArea.addEventListener("keydown", handleKeydown);
         editorArea.addEventListener("click", handleClick);
-        scrollEl.addEventListener("scroll", handleScroll);
         editorArea.addEventListener("mouseover", handleMacroHover);
         editorArea.addEventListener("click", handleMacroDefinition);
         editorArea.addEventListener("mouseover", handleVariableHover);
@@ -636,6 +636,7 @@ export function useEditorEngine({
         editorArea.addEventListener("mouseleave", scheduleHide);
         editorArea.addEventListener("beforeinput", closeHover);
         scrollEl.addEventListener("scroll", closeHover);
+        scrollEl.addEventListener("scroll", handleScroll);
 
         const api: EditorApi = {
             get value() { return state.value },
@@ -658,6 +659,7 @@ export function useEditorEngine({
 
         window.addEventListener("executionmodechange", refreshHighlighting);
         window.addEventListener("rendersyntaxloaded", refreshHighlighting);
+        window.addEventListener(EDITOR_TAB_SIZE_CHANGE_EVENT, refreshHighlighting);
 
         state.value = normalizeNewlines(defaultCodeRef.current ?? "");
         saveState(0, 0);
@@ -671,6 +673,7 @@ export function useEditorEngine({
             window.removeEventListener("pageshow", handleMacroReferencePageshowPersisted);
             window.removeEventListener("executionmodechange", refreshHighlighting);
             window.removeEventListener("rendersyntaxloaded", refreshHighlighting);
+            window.removeEventListener(EDITOR_TAB_SIZE_CHANGE_EVENT, refreshHighlighting);
             window.clearTimeout(showTimer);
             window.clearTimeout(hideTimer);
             document.removeEventListener("keydown", handleGlobalKeydown);
@@ -687,7 +690,6 @@ export function useEditorEngine({
             editorArea.removeEventListener("beforeinput", handleBeforeInput as EventListener);
             editorArea.removeEventListener("keydown", handleKeydown);
             editorArea.removeEventListener("click", handleClick);
-            scrollEl.removeEventListener("scroll", handleScroll);
             editorArea.removeEventListener("mouseover", handleMacroHover);
             editorArea.removeEventListener("click", handleMacroDefinition);
             editorArea.removeEventListener("mouseover", handleVariableHover);
@@ -697,6 +699,7 @@ export function useEditorEngine({
             editorArea.removeEventListener("beforeinput", closeHover);
             scrollEl.removeEventListener("scroll", closeHover);
             scrollEl.removeEventListener("scroll", handleACSelectionChange);
+            scrollEl.removeEventListener("scroll", handleScroll);
             layoutResizeObserver?.disconnect();
             visualViewport?.removeEventListener("resize", handleACSelectionChange);
         };
